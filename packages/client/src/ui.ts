@@ -20,6 +20,7 @@ export interface UiActions {
   onClearEye: (slotId: string) => void;
   onDiscardFood: (index: number) => void;
   onSetAutosave: (min: number) => void;
+  onSetLang: (lang: 'tr' | 'en') => void;
   onSaveNow: () => void;
   onExportSave: () => void;
   onImportSave: () => void;
@@ -274,7 +275,8 @@ function skillsTab(state: GameState): string {
     .map((s) => {
       const def = CONTENT.skills.get(s.id);
       const name = def ? t(def.locKeyName) : s.id;
-      return `<li><b>${name}</b> — ${t('ui.lv')} ${s.level} · ${s.exp} xp</li>`;
+      const tierTag = (s.tier ?? 1) > 1 ? `<span class="muted">T${s.tier}</span> ` : '';
+      return `<li><b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</li>`;
     })
     .join('');
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
@@ -449,8 +451,13 @@ function settingsTab(state: GameState): string {
   const autosave = [5, 10, 15]
     .map((m) => `<button class="autosave${state.autosaveMin === m ? ' active' : ''}" data-min="${m}">${m}</button>`)
     .join('');
+  const langs = (['tr', 'en'] as const)
+    .map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${l === 'tr' ? 'Türkçe' : 'English'}</button>`)
+    .join('');
   return `
     <section class="panel">
+      <div class="row"><span>${t('ui.language')}</span><span></span></div>
+      <div class="controls">${langs}</div>
       <div class="row"><span>${t('ui.autosave')}</span><span></span></div>
       <div class="controls">${autosave}</div>
     </section>
@@ -471,6 +478,9 @@ function settingsTab(state: GameState): string {
 function wireSettings(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.autosave').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetAutosave(Number(b.getAttribute('data-min'))));
+  });
+  el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
+    b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en'));
   });
   el.querySelector<HTMLButtonElement>('#savenow')?.addEventListener('click', ACTIONS.onSaveNow);
   el.querySelector<HTMLButtonElement>('#exportsave')?.addEventListener('click', ACTIONS.onExportSave);

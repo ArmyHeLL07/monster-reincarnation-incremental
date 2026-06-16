@@ -13,12 +13,11 @@ const OFFLINE_TICK_CAP = 1800;
 
 async function init(): Promise<void> {
   const base = import.meta.env.BASE_URL;
-  const lang = navigator.language.startsWith('tr') ? 'tr' : 'en';
-  await loadI18n(base, lang);
-  const content = await loadContent(base);
-
   let state = load() ?? newGame();
   migrate(state);
+  const lang = state.lang ?? (navigator.language.startsWith('tr') ? 'tr' : 'en');
+  await loadI18n(base, lang);
+  const content = await loadContent(base);
   recomputeMaxes(state);
   for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
 
@@ -85,6 +84,13 @@ async function init(): Promise<void> {
       state.autosaveMin = m;
       save(state);
       render(state);
+    },
+    onSetLang: (l) => {
+      state.lang = l;
+      void loadI18n(base, l).then(() => {
+        save(state);
+        render(state);
+      });
     },
     onSaveNow: () => {
       save(state);

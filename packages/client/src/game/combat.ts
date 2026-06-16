@@ -2,7 +2,7 @@ import type { DamageType, StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, MAX_HUNGER } from './state';
-import { appraisalAssigned, dreadChance } from './eyes';
+import { appraisalAssigned, appraisalTier, dreadChance } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 
 type Log = (e: LogEvent) => void;
@@ -16,6 +16,8 @@ const HUNGER_RISE_COMBAT = 0.7;
 const DEEP_READ_XP = 5;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
+const EYE_DISCOVER_CHANCE = 0.03;
+const EYE_DISCOVER_LEVEL = 5;
 const LOW_HP_STOP = 0.2; // auto-rest below this HP fraction
 const HIGH_HP_RESUME = 0.85; // auto-resume combat once HP recovers
 const STAT_POINTS_PER_LEVEL = 3;
@@ -143,11 +145,13 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
   }
   state.mp -= DEEP_READ_MP_COST;
   const def = content.enemies.get(enemy.id);
+  const tier = appraisalTier(state);
   if (def) {
-    log({
-      key: 'log.appraise',
-      params: { enemy: def.locKey, type: dmgTypeKey(def.damageType), atk: def.attack, hp: enemy.hp, maxhp: enemy.maxHp },
-    });
+    // Reveal gated by Appraisal level: LV1 = name only; more detail as it grows.
+    log({ key: 'log.appraise_name', params: { enemy: def.locKey } });
+    if (tier >= 2) log({ key: 'log.appraise_type', params: { type: dmgTypeKey(def.damageType) } });
+    if (tier >= 3) log({ key: 'log.appraise_atk', params: { atk: def.attack } });
+    if (tier >= 4) log({ key: 'log.appraise_hp', params: { hp: enemy.hp, maxhp: enemy.maxHp } });
   }
   const slot = state.skills.find((s) => s.id === 'appraisal' || s.id === 'insight');
   if (slot) addSkillExp(content, slot, DEEP_READ_XP, log);
@@ -340,6 +344,14 @@ function onKill(state: GameState, content: Content, log: Log): void {
     state.skills.push({ id: 'larder', level: 1, exp: 0 });
     log({ key: 'log.discover_larder' });
   }
+  if (
+    state.level >= EYE_DISCOVER_LEVEL &&
+    !state.skills.some((s) => s.id === 'dread_gaze') &&
+    Math.random() < EYE_DISCOVER_CHANCE
+  ) {
+    state.skills.push({ id: 'dread_gaze', level: 1, exp: 0 });
+    log({ key: 'log.discover_dread' });
+  }
 }
 
 function onDeath(state: GameState, log: Log): void {
@@ -365,6 +377,7 @@ function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log
     if (next) {
       log({ key: 'log.evolve', params: { from: def.locKeyName, to: next.locKeyName } });
       slot.id = nextId;
+      slot.tier = (slot.tier ?? 1) + 1;
       slot.level = 1;
       slot.exp = 0;
     }

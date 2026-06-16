@@ -16,6 +16,8 @@ export interface SkillSlot {
   id: string;
   level: number;
   exp: number;
+  /** Evolution tier (1 = base). T2 Lv1 reads as the "11th level" of mastery, and so on. */
+  tier?: number;
 }
 
 export interface ResistSlot {
@@ -51,6 +53,8 @@ export interface GameState {
   statPoints: number;
   /** Autosave interval in minutes (player choice). */
   autosaveMin: number;
+  /** Chosen language ('tr' | 'en'); undefined = auto-detect. */
+  lang?: 'tr' | 'en';
   /** 0 = full, MAX_HUNGER = starving. */
   hunger: number;
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
@@ -129,7 +133,6 @@ export function newGame(): GameState {
       { id: 'silk_thread', level: 1, exp: 0 },
       { id: 'hp_regen', level: 1, exp: 0 },
       { id: 'appraisal', level: 1, exp: 0 },
-      { id: 'dread_gaze', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
     ],
     resistances: [
