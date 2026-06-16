@@ -122,12 +122,7 @@ function eyePanel(state: GameState, content: Content): string {
   `;
 }
 
-function fusionName(r: FusionResult, content: Content): string {
-  if (r.locKeyName === 'fusion.temp') {
-    const a = content.skills.get(r.aId)?.locKeyName ?? r.aId;
-    const b = content.skills.get(r.bId)?.locKeyName ?? r.bId;
-    return tmsg('fusion.temp', { a, b });
-  }
+function fusionName(r: FusionResult): string {
   return t(r.locKeyName);
 }
 
@@ -185,7 +180,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
 
   const log = logLines.map((l) => `<div>${l}</div>`).join('');
   const fz = actions.lastFusion
-    ? `<p><b>${fusionName(actions.lastFusion, content)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>`
+    ? `<p><b>${fusionName(actions.lastFusion)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>`
     : '';
   const transfer = state.mpTransferUnlocked ? `<p class="muted">${t('ui.mp_transfer_on')}</p>` : '';
 

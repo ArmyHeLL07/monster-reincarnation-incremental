@@ -6,7 +6,7 @@ import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/s
 import { tick, manualAttack, deepRead, trainStamina } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
-import { fuse } from './game/fusion';
+import { fuse, registerFusionSkill } from './game/fusion';
 import { load, save, clear } from './game/save';
 import { render, pushLog, setSelectedEye } from './ui';
 
@@ -22,6 +22,8 @@ async function init(): Promise<void> {
   let state = load() ?? newGame();
   migrate(state);
   recomputeMaxes(state);
+  // Re-register previously discovered fusion skills so saved fused-skill slots work.
+  for (const result of Object.values(state.fusionCache)) registerFusionSkill(content, result);
 
   let lastFusion: FusionResult | null = null;
 

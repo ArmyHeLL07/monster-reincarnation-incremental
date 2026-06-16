@@ -142,5 +142,6 @@
   "fusion.effect.mud": "Mud",
   "fusion.effect.reinforce": "Reinforced",
   "fusion.effect.precise_strike": "Precise Strike",
-  "fusion.effect.toxic_blood": "Toxic Blood"
+  "fusion.effect.toxic_blood": "Toxic Blood",
+  "fusion.effect.mix": "Hybrid Strike"
 }

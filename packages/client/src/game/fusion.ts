@@ -1,5 +1,5 @@
 import { comboKey, fnv1a } from '@mri/shared';
-import type { FusionClass, FusionResult } from '@mri/shared';
+import type { FusionClass, FusionResult, Skill } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
 
@@ -12,8 +12,8 @@ function elementOf(content: Content, id: string): string | undefined {
 }
 
 /**
- * Deterministic fusion — element reaction matrix decides effect+class; the hash picks a
- * magnitude from the class pool. Same combo always yields the same result (instant, offline).
+ * Deterministic fusion — special pairs (by id) and the element matrix decide effect+class;
+ * the hash picks a magnitude from the class pool. Same combo always yields the same result.
  */
 export function resolveFusion(aId: string, bId: string, content: Content): FusionResult {
   const key = comboKey(aId, bId);
@@ -21,7 +21,6 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
   const elA = elementOf(content, aId);
   const elB = elementOf(content, bId);
 
-  // Hand-authored special pairs (by skill id) take priority over the element matrix.
   const special = content.fusionRules.special?.find(
     (r) => (r.a === aId && r.b === bId) || (r.a === bId && r.b === aId),
   );
@@ -50,13 +49,34 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
 
   const pool = content.fusionRules.magnitudePools[cls];
   const magnitude = pool[0] + (h % (pool[1] - pool[0] + 1));
-  const locKeyName = effect === 'mix' ? 'fusion.temp' : `fusion.effect.${effect}`;
-  return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: effect, magnitude };
+  return { id: `fz_${key}`, aId, bId, locKeyName: `fusion.effect.${effect}`, cls, effectType: effect, magnitude };
+}
+
+/** Build a usable active skill from a fusion result (damage = magnitude → class drives power). */
+function fusionSkillDef(content: Content, result: FusionResult): Skill {
+  const parentType = content.skills.get(result.aId)?.damageType;
+  return {
+    id: result.id,
+    locKeyName: result.locKeyName,
+    locKeyDesc: result.locKeyName,
+    kind: 'active',
+    stats: ['STR'],
+    lvMax: 10,
+    evolvesTo: [],
+    damage: result.magnitude,
+    damageType: parentType ?? 'physical',
+    element: result.effectType,
+  };
+}
+
+/** Register a fused skill's definition into the runtime content map (idempotent). */
+export function registerFusionSkill(content: Content, result: FusionResult): void {
+  if (!content.skills.has(result.id)) content.skills.set(result.id, fusionSkillDef(content, result));
 }
 
 /**
- * Produce a fusion: caches the combo (global-pool skeleton — produced once) and records
- * a telemetry attempt to the local outbox. Display name is localized by the UI layer.
+ * Produce a fusion: caches the combo (global-pool skeleton), registers a usable skill,
+ * grants it to the player, and records a telemetry attempt to the local outbox.
  */
 export function fuse(
   state: GameState,
@@ -70,6 +90,11 @@ export function fuse(
   const result = cached ?? resolveFusion(aId, bId, content);
   const discovered = !cached;
   if (discovered) state.fusionCache[key] = result;
+
+  registerFusionSkill(content, result);
+  if (!state.skills.some((s) => s.id === result.id)) {
+    state.skills.push({ id: result.id, level: 1, exp: 0 });
+  }
 
   state.outbox.push({ aId, bId, resultId: result.id, cls: result.cls, ts: Date.now() });
   log({
