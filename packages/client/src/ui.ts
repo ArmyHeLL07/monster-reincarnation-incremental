@@ -4,7 +4,6 @@ import type { GameState } from './game/state';
 import { MAX_HUNGER } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve } from './game/evolution';
-import { staminaTrainCost } from './game/combat';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
@@ -12,7 +11,6 @@ export interface UiActions {
   onToggleCombat: () => void;
   onAttack: () => void;
   onDeepRead: () => void;
-  onTrain: () => void;
   onReset: () => void;
   onFuse: (aId: string, bId: string) => void;
   onExportOutbox: () => void;
@@ -196,7 +194,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       ${statRow(t('ui.hp'), state.hp, state.maxHp, '#3fa34d')}
       ${statRow(t('ui.mp'), state.mp, state.maxMp, '#3f6fa3')}
       ${statRow(t('ui.sp'), state.sp, state.maxSp, '#c9a227')}
-      <div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>
+      <div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)} · ${t('ui.food')}: ${Math.round(state.food)}</span></div>
       ${bar(state.hunger, MAX_HUNGER, hungerColor)}
       ${transfer}
     </section>
@@ -210,9 +208,6 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       <button id="combat">${state.combatActive ? t('ui.rest') : t('ui.engage')}</button>
       <button id="attack">${t('ui.attack')}</button>
       <button id="deepread">${t('ui.deepread')}</button>
-    </div>
-    <div class="controls">
-      <button id="train" class="ghost">${t('ui.train')} (${staminaTrainCost(state)} EP)</button>
     </div>
 
     ${det('evolution')}
@@ -277,7 +272,6 @@ export function render(state: GameState, content: Content, actions: UiActions): 
   click('combat', actions.onToggleCombat);
   click('attack', actions.onAttack);
   click('deepread', actions.onDeepRead);
-  click('train', actions.onTrain);
   click('reset', actions.onReset);
   click('export', actions.onExportOutbox);
   click('bugreport', actions.onBugReport);

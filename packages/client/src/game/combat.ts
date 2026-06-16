@@ -14,7 +14,8 @@ const DEEP_READ_MP_COST = 5;
 const HUNGER_RISE_COMBAT = 0.7;
 const HUNGER_RISE_REST = 0.3;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
-const STAMINA_TRAIN_GAIN = 3;
+const LOW_HP_STOP = 0.2; // auto-disengage combat below this HP fraction
+const HIGH_HP_RESUME = 0.85; // auto-resume combat once HP recovers above this (AFK loop)
 
 function skillExpToNext(level: number): number {
   return level * 10;
@@ -48,6 +49,17 @@ function damageMult(state: GameState): number {
 
 /** One real-time tick — combat round when engaged, otherwise a rest round. */
 export function tick(state: GameState, content: Content, log: Log): void {
+  // Safety: auto-disengage before death so leaving it AFK never kills you…
+  if (state.combatActive && state.hp <= state.maxHp * LOW_HP_STOP) {
+    state.combatActive = false;
+    state.autoResting = true;
+    log({ key: 'log.auto_rest' });
+  } else if (!state.combatActive && state.autoResting && state.hp >= state.maxHp * HIGH_HP_RESUME) {
+    // …then auto-resume once HP has recovered (perpetual safe AFK loop).
+    state.combatActive = true;
+    state.autoResting = false;
+    log({ key: 'log.auto_engage' });
+  }
   if (state.combatActive) {
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT);
     combatRound(state, content, log);
@@ -55,11 +67,31 @@ export function tick(state: GameState, content: Content, log: Log): void {
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_REST);
     restRound(state, content);
   }
+  autoEat(state); // eat from the stocked reserve when hungry (AFK feeding)
+  growStaminaMax(state); // passive max-SP growth (more in combat / low HP, +0.01 idle)
   if (hungerStage(state) >= 3) {
-    state.hp = Math.max(0, state.hp - 1); // starvation erodes HP
+    state.hp = Math.max(0, state.hp - 1); // starvation erodes HP (only when no food left)
     if (state.hp <= 0) onDeath(state, log);
   }
   state.lastSeen = Date.now();
+}
+
+const EAT_THRESHOLD = 50;
+
+/** Auto-eat from the stocked food reserve once hungry — keeps an AFK player fed. */
+function autoEat(state: GameState): void {
+  if (state.hunger >= EAT_THRESHOLD && state.food > 0) {
+    const eat = Math.min(state.food, state.hunger);
+    state.food -= eat;
+    state.hunger -= eat;
+  }
+}
+
+/** Max SP grows with play: faster in combat and at low HP (risk), a tiny trickle while idle. */
+function growStaminaMax(state: GameState): void {
+  const gain = state.combatActive ? 0.05 * (1 + (1 - state.hp / Math.max(1, state.maxHp))) : 0.01;
+  state.spTrainingBonus += gain;
+  recomputeMaxes(state);
 }
 
 /** A single manual strike — engages combat and hits once (no enemy retaliation). */
@@ -100,25 +132,6 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
   }
   const slot = state.skills.find((s) => s.id === 'appraisal' || s.id === 'insight');
   if (slot) addSkillExp(content, slot, 5, log);
-}
-
-/** EP cost of the next stamina training (rises as you train — no free infinite growth). */
-export function staminaTrainCost(state: GameState): number {
-  return 10 + Math.floor(state.spTrainingBonus / STAMINA_TRAIN_GAIN) * 5;
-}
-
-/** Stamina training — spend EP to raise max SP (player action). */
-export function trainStamina(state: GameState, log: Log): void {
-  const cost = staminaTrainCost(state);
-  if (state.ep < cost) {
-    log({ key: 'log.no_ep' });
-    return;
-  }
-  state.ep -= cost;
-  state.spTrainingBonus += STAMINA_TRAIN_GAIN;
-  recomputeMaxes(state);
-  state.sp = state.maxSp;
-  log({ key: 'log.train_stamina', params: { max: state.maxSp } });
 }
 
 // ---- rounds ----------------------------------------------------------------
@@ -251,11 +264,19 @@ function enemyAttack(state: GameState, content: Content, log: Log): void {
     log({ key: 'log.flee', params: { enemy: def.locKey } });
     return;
   }
-  const reduction = resistReduction(state, content, def.damageType);
-  const taken = Math.max(0, Math.round(def.attack * (1 - reduction)));
-  state.hp = Math.max(0, state.hp - taken);
-  log({ key: 'log.hit', params: { enemy: def.locKey, dmg: taken, type: dmgTypeKey(def.damageType) } });
-  if (taken > 0) addResistExp(state, content, def.damageType, taken, log);
+  // Split the attack across the enemy's damage type(s); each trains its own resistance,
+  // and the type the player resists less takes (and so trains from) more damage.
+  const types = def.damageType2 ? [def.damageType, def.damageType2] : [def.damageType];
+  const share = def.attack / types.length;
+  let totalTaken = 0;
+  for (const type of types) {
+    const reduction = resistReduction(state, content, type);
+    const taken = Math.max(0, Math.round(share * (1 - reduction)));
+    totalTaken += taken;
+    if (taken > 0) addResistExp(state, content, type, taken, log);
+  }
+  state.hp = Math.max(0, state.hp - totalTaken);
+  log({ key: 'log.hit', params: { enemy: def.locKey, dmg: totalTaken, type: dmgTypeKey(def.damageType) } });
 }
 
 function onKill(state: GameState, content: Content, log: Log): void {
@@ -264,7 +285,7 @@ function onKill(state: GameState, content: Content, log: Log): void {
   const def = content.enemies.get(enemy.id);
   if (def) {
     state.ep += def.ep;
-    state.hunger = Math.max(0, state.hunger - def.satiety); // auto-eat
+    state.food += def.satiety; // stock the kill as food (auto-eaten when hungry)
     log({ key: 'log.kill', params: { enemy: def.locKey, ep: def.ep } });
   }
   state.enemy = null;

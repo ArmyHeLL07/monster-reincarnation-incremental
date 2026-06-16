@@ -88,6 +88,8 @@ export interface Enemy {
   hp: number;
   attack: number;
   damageType: DamageType;
+  /** Optional second damage type — the attack is split and trains both resistances. */
+  damageType2?: DamageType;
   /** Hunger value when eaten (used by the feeding system). */
   satiety: number;
   /** Evolution points granted on kill. */

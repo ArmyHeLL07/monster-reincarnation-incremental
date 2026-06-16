@@ -3,7 +3,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, manualAttack, deepRead, trainStamina } from './game/combat';
+import { tick, manualAttack, deepRead } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -44,6 +44,7 @@ async function init(): Promise<void> {
       lastFusion,
       onToggleCombat: () => {
         state.combatActive = !state.combatActive;
+        state.autoResting = false; // manual control cancels the auto loop
         save(state);
         draw();
       },
@@ -54,11 +55,6 @@ async function init(): Promise<void> {
       },
       onDeepRead: () => {
         deepRead(state, content, logFn);
-        save(state);
-        draw();
-      },
-      onTrain: () => {
-        trainStamina(state, logFn);
         save(state);
         draw();
       },
@@ -151,11 +147,13 @@ function migrate(s: GameState): void {
   s.outbox ??= d.outbox;
   s.spTrainingBonus ??= 0;
   s.hunger ??= 0;
+  s.food ??= 0;
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;
   if (s.mp == null) s.mp = s.maxMp;
   s.combatActive ??= false;
+  s.autoResting ??= false;
   s.mpTransferUnlocked ??= false;
 }
 

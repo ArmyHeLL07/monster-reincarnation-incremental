@@ -37,6 +37,8 @@ export interface GameState {
   spTrainingBonus: number;
   /** 0 = full, MAX_HUNGER = starving. */
   hunger: number;
+  /** Stocked food (from kills) — auto-eaten when hunger crosses the threshold. */
+  food: number;
   ep: number;
   zoneId: string;
   raceId: string;
@@ -45,6 +47,8 @@ export interface GameState {
   eyeAssignments: Record<string, EyeAssignment | null>;
   /** true = fighting (drains SP), false = resting (regenerates). */
   combatActive: boolean;
+  /** true when combat auto-paused at low HP — auto-resumes when HP recovers (AFK loop). */
+  autoResting: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
   mpTransferUnlocked: boolean;
   skills: SkillSlot[];
@@ -90,12 +94,14 @@ export function newGame(): GameState {
     maxSp: 0,
     spTrainingBonus: 0,
     hunger: 0,
+    food: 0,
     ep: 0,
     zoneId: 'lower_stratum',
     raceId: 'spider',
     formId: 'hatchling_spider',
     eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
     combatActive: false,
+    autoResting: false,
     mpTransferUnlocked: false,
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
@@ -109,6 +115,7 @@ export function newGame(): GameState {
     resistances: [
       { id: 'fire_res', level: 0, exp: 0, nullified: false },
       { id: 'physical_res', level: 0, exp: 0, nullified: false },
+      { id: 'pierce_res', level: 0, exp: 0, nullified: false },
       { id: 'poison_res', level: 0, exp: 0, nullified: false },
     ],
     enemy: null,

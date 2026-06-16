@@ -14,6 +14,13 @@
     "nullityKey": "res.blunt_immunity.name"
   },
   {
+    "id": "pierce_res",
+    "locKey": "res.pierce_res.name",
+    "damageType": "pierce",
+    "lvMax": 10,
+    "nullityKey": "res.pierce_immunity.name"
+  },
+  {
     "id": "poison_res",
     "locKey": "res.poison_res.name",
     "damageType": "poison",
