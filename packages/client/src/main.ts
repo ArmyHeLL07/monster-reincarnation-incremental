@@ -1,19 +1,17 @@
-import type { FusionResult } from '@mri/shared';
 import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, manualAttack, deepRead } from './game/combat';
+import { tick, deepRead, allocStat } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { load, save, clear } from './game/save';
-import { render, pushLog, setSelectedEye } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, type UiActions } from './ui';
 
-const OFFLINE_TICK_CAP = 1800; // ~30 min of offline progress at 1s/tick
+const OFFLINE_TICK_CAP = 1800;
 
 async function init(): Promise<void> {
-  // BASE_URL is "/" locally and "/<repo>/" on GitHub Pages.
   const base = import.meta.env.BASE_URL;
   const lang = navigator.language.startsWith('tr') ? 'tr' : 'en';
   await loadI18n(base, lang);
@@ -22,10 +20,7 @@ async function init(): Promise<void> {
   let state = load() ?? newGame();
   migrate(state);
   recomputeMaxes(state);
-  // Re-register previously discovered fusion skills so saved fused-skill slots work.
-  for (const result of Object.values(state.fusionCache)) registerFusionSkill(content, result);
-
-  let lastFusion: FusionResult | null = null;
+  for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
 
   function logFn(e: LogEvent): void {
     pushLog(e.key, e.params);
@@ -33,81 +28,94 @@ async function init(): Promise<void> {
 
   applyOffline(state, content, logFn);
 
+  const actions: UiActions = {
+    onSetAction: (a) => {
+      state.action = a;
+      state.autoResume = false;
+      save(state);
+      render(state);
+    },
+    onDeepRead: () => {
+      deepRead(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onSelectZone: (z) => {
+      state.zoneId = z;
+      state.enemy = null;
+      save(state);
+      render(state);
+    },
+    onAllocStat: (stat) => {
+      allocStat(state, stat);
+      save(state);
+      render(state);
+    },
+    onEvolve: (formId) => {
+      evolve(state, content, formId, logFn);
+      save(state);
+      render(state);
+    },
+    onFuse: (a, b) => {
+      setLastFusion(fuse(state, content, a, b, logFn));
+      save(state);
+      render(state);
+    },
+    onAssignEye: (slot, ability) => {
+      assignEye(state, content, slot, ability);
+      save(state);
+      render(state);
+    },
+    onCycleMode: (slot) => {
+      cycleEyeMode(state, content, slot);
+      save(state);
+      render(state);
+    },
+    onClearEye: (slot) => {
+      clearEye(state, slot);
+      save(state);
+      render(state);
+    },
+    onDiscardFood: (i) => {
+      state.inventory.splice(i, 1);
+      save(state);
+      render(state);
+    },
+    onSetAutosave: (m) => {
+      state.autosaveMin = m;
+      save(state);
+      render(state);
+    },
+    onSaveNow: () => {
+      save(state);
+      logFn({ key: 'log.saved' });
+      render(state);
+    },
+    onExportSave: () => download('save.json', JSON.stringify(state)),
+    onImportSave: () => importSave(),
+    onBugReport: () => reportBug(state),
+    onReset: () => {
+      clear();
+      state = newGame();
+      resetUi();
+      save(state);
+      render(state);
+    },
+  };
+
+  mount(state, content, actions);
+
+  let ticks = 0;
   const clock = new GameClock(1000, () => {
     tick(state, content, logFn);
-    save(state);
-    draw();
+    ticks += 1;
+    if (ticks % Math.max(1, state.autosaveMin * 60) === 0) save(state);
+    live(state);
   });
+  clock.start();
 
-  function draw(): void {
-    render(state, content, {
-      lastFusion,
-      onToggleCombat: () => {
-        state.combatActive = !state.combatActive;
-        state.autoResting = false; // manual control cancels the auto loop
-        save(state);
-        draw();
-      },
-      onAttack: () => {
-        manualAttack(state, content, logFn);
-        save(state);
-        draw();
-      },
-      onDeepRead: () => {
-        deepRead(state, content, logFn);
-        save(state);
-        draw();
-      },
-      onReset: () => {
-        clear();
-        state = newGame();
-        lastFusion = null;
-        setSelectedEye(null);
-        save(state);
-        draw();
-      },
-      onFuse: (a, b) => {
-        lastFusion = fuse(state, content, a, b, logFn);
-        save(state);
-        draw();
-      },
-      onExportOutbox: () => exportOutbox(state),
-      onBugReport: () => reportBug(state),
-      onSaveNow: () => {
-        save(state);
-        logFn({ key: 'log.saved' });
-        draw();
-      },
-      onExportSave: () => download('save.json', JSON.stringify(state)),
-      onImportSave: () => importSave(),
-      onSelectEye: (slotId) => {
-        setSelectedEye(slotId);
-        draw();
-      },
-      onAssignEye: (slotId, abilityId) => {
-        assignEye(state, content, slotId, abilityId);
-        save(state);
-        draw();
-      },
-      onCycleMode: (slotId) => {
-        cycleEyeMode(state, content, slotId);
-        save(state);
-        draw();
-      },
-      onClearEye: (slotId) => {
-        clearEye(state, slotId);
-        save(state);
-        draw();
-      },
-      onEvolve: (formId) => {
-        evolve(state, content, formId, logFn);
-        save(state);
-        draw();
-      },
-    });
-  }
+  window.addEventListener('beforeunload', () => save(state));
 
-  // Import a save file (phone↔PC backup/transfer).
   function importSave(): void {
     const input = document.createElement('input');
     input.type = 'file';
@@ -121,23 +129,20 @@ async function init(): Promise<void> {
           migrate(state);
           recomputeMaxes(state);
           for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
-          lastFusion = null;
+          resetUi();
           save(state);
           logFn({ key: 'log.imported' });
         } catch {
           logFn({ key: 'log.import_failed' });
         }
-        draw();
+        render(state);
       });
     });
     input.click();
   }
-
-  clock.start(); // the GameClock always runs — idle accumulation never stops
-  draw();
 }
 
-/** Backfill fields missing from older saves so they don't crash newer code. */
+/** Backfill fields missing from older saves. */
 function migrate(s: GameState): void {
   const d = newGame();
   s.raceId ??= d.raceId;
@@ -145,22 +150,26 @@ function migrate(s: GameState): void {
   s.eyeAssignments ??= d.eyeAssignments;
   s.fusionCache ??= d.fusionCache;
   s.outbox ??= d.outbox;
-  s.spTrainingBonus ??= 0;
-  s.hunger ??= 0;
   s.inventory ??= [];
+  s.spRegenBonus ??= 0;
+  s.level ??= 1;
+  s.xp ??= 0;
+  s.statPoints ??= 0;
+  s.autosaveMin ??= 5;
+  s.hunger ??= 0;
+  s.action ??= 'idle';
+  s.autoResume ??= false;
+  s.mpTransferUnlocked ??= false;
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;
   if (s.mp == null) s.mp = s.maxMp;
-  s.combatActive ??= false;
-  s.autoResting ??= false;
-  s.mpTransferUnlocked ??= false;
 }
 
-/** Simulate elapsed offline time (capped), then summarize. */
+/** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
 function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => void): void {
   const elapsedSec = Math.floor((Date.now() - state.lastSeen) / 1000);
-  if (elapsedSec < 5) return;
+  if (elapsedSec < 5 || state.action === 'idle') return;
   const ticks = Math.min(elapsedSec, OFFLINE_TICK_CAP);
   const beforeEp = state.ep;
   const silent: (e: LogEvent) => void = () => {};
@@ -178,19 +187,14 @@ function download(filename: string, text: string): void {
   URL.revokeObjectURL(url);
 }
 
-function exportOutbox(state: GameState): void {
-  download('outbox.json', JSON.stringify(state.outbox, null, 2));
-}
-
-/** Bug/feedback report — saved as a JSON file (no backend / no email exposed yet). */
 function reportBug(state: GameState): void {
   const desc = window.prompt(t('ui.bug_prompt')) ?? '';
   if (!desc.trim()) return;
   const report = {
     description: desc.trim(),
+    level: state.level,
     formId: state.formId,
-    raceId: state.raceId,
-    ep: state.ep,
+    zoneId: state.zoneId,
     lang: navigator.language,
     userAgent: navigator.userAgent,
     ts: Date.now(),

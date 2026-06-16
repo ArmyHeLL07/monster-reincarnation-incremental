@@ -26,5 +26,43 @@
     "damageType": "poison",
     "satiety": 10,
     "ep": 2
+  },
+  {
+    "id": "cave_lurker",
+    "locKey": "enemy.cave_lurker.name",
+    "hp": 42,
+    "attack": 7,
+    "damageType": "physical",
+    "satiety": 16,
+    "ep": 4
+  },
+  {
+    "id": "flame_jaw",
+    "locKey": "enemy.flame_jaw.name",
+    "hp": 48,
+    "attack": 9,
+    "damageType": "fire",
+    "damageType2": "physical",
+    "satiety": 18,
+    "ep": 5
+  },
+  {
+    "id": "venom_brute",
+    "locKey": "enemy.venom_brute.name",
+    "hp": 64,
+    "attack": 11,
+    "damageType": "poison",
+    "damageType2": "physical",
+    "satiety": 24,
+    "ep": 8
+  },
+  {
+    "id": "bone_render",
+    "locKey": "enemy.bone_render.name",
+    "hp": 78,
+    "attack": 14,
+    "damageType": "pierce",
+    "satiety": 26,
+    "ep": 10
   }
 ]

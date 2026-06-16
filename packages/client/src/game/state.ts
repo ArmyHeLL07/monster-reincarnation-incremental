@@ -33,6 +33,9 @@ export interface EnemyInstance {
 
 export const MAX_HUNGER = 100;
 
+/** What the player is doing. `idle` freezes the world (no time passes). */
+export type ActionMode = 'idle' | 'combat' | 'rest';
+
 export interface GameState {
   stats: Record<StatKey, number>;
   hp: number;
@@ -41,7 +44,13 @@ export interface GameState {
   maxMp: number;
   sp: number;
   maxSp: number;
-  spTrainingBonus: number;
+  /** Passive growth from sustained play — raises SP *regen*, not max SP. */
+  spRegenBonus: number;
+  level: number;
+  xp: number;
+  statPoints: number;
+  /** Autosave interval in minutes (player choice). */
+  autosaveMin: number;
   /** 0 = full, MAX_HUNGER = starving. */
   hunger: number;
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
@@ -52,10 +61,10 @@ export interface GameState {
   formId: string;
   /** slotId → assigned eye ability + mode (or null/absent = empty). */
   eyeAssignments: Record<string, EyeAssignment | null>;
-  /** true = fighting (drains SP), false = resting (regenerates). */
-  combatActive: boolean;
+  /** Current action: idle = time frozen (nothing progresses); combat / rest run the clock. */
+  action: ActionMode;
   /** true when combat auto-paused at low HP — auto-resumes when HP recovers (AFK loop). */
-  autoResting: boolean;
+  autoResume: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
   mpTransferUnlocked: boolean;
   skills: SkillSlot[];
@@ -81,9 +90,9 @@ export interface GameEvents extends Record<string, unknown> {
 
 /** Recompute max HP/MP/SP from stats (+ stamina training) and clamp current values. */
 export function recomputeMaxes(state: GameState): void {
-  state.maxHp = 20 + state.stats.VIT * 4;
-  state.maxMp = 10 + state.stats.INT * 3;
-  state.maxSp = 30 + state.stats.VIT * 3 + state.spTrainingBonus;
+  state.maxHp = 20 + state.stats.VIT * 4; // VIT → HP
+  state.maxMp = 10 + state.stats.INT * 3; // INT → MP (and magic power, later)
+  state.maxSp = 10 + state.stats.VIT * 2 + state.stats.AGI * 2; // small base, grows with VIT/AGI
   state.hp = Math.min(state.hp, state.maxHp);
   state.mp = Math.min(state.mp, state.maxMp);
   state.sp = Math.min(state.sp, state.maxSp);
@@ -99,7 +108,11 @@ export function newGame(): GameState {
     maxMp: 0,
     sp: 0,
     maxSp: 0,
-    spTrainingBonus: 0,
+    spRegenBonus: 0,
+    level: 1,
+    xp: 0,
+    statPoints: 0,
+    autosaveMin: 5,
     hunger: 0,
     inventory: [],
     ep: 0,
@@ -107,8 +120,8 @@ export function newGame(): GameState {
     raceId: 'spider',
     formId: 'hatchling_spider',
     eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
-    combatActive: false,
-    autoResting: false,
+    action: 'idle',
+    autoResume: false,
     mpTransferUnlocked: false,
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
@@ -118,7 +131,6 @@ export function newGame(): GameState {
       { id: 'appraisal', level: 1, exp: 0 },
       { id: 'dread_gaze', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
-      { id: 'larder', level: 1, exp: 0 },
     ],
     resistances: [
       { id: 'fire_res', level: 0, exp: 0, nullified: false },

@@ -3,6 +3,21 @@
     "id": "lower_stratum",
     "locKey": "zone.lower_stratum.name",
     "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"],
-    "spDrainMult": 1
+    "spDrainMult": 1,
+    "levelReq": 1
+  },
+  {
+    "id": "middle_stratum",
+    "locKey": "zone.middle_stratum.name",
+    "enemyPool": ["cave_lurker", "flame_jaw"],
+    "spDrainMult": 2,
+    "levelReq": 8
+  },
+  {
+    "id": "deep_warren",
+    "locKey": "zone.deep_warren.name",
+    "enemyPool": ["venom_brute", "bone_render"],
+    "spDrainMult": 3,
+    "levelReq": 20
   }
 ]

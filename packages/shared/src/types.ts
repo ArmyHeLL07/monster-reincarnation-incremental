@@ -46,7 +46,8 @@ export interface EvolutionForm {
   raceId: string;
   locKey: string;
   evolvesTo: string[];
-  epCost: number;
+  /** Minimum character level required to take this evolution. */
+  levelReq: number;
   statBonus?: Partial<Record<StatKey, number>>;
   grantSkills?: string[];
 }
@@ -102,6 +103,8 @@ export interface Zone {
   locKey: string;
   enemyPool: string[];
   spDrainMult: number;
+  /** Minimum character level to enter this zone (default 1). */
+  levelReq?: number;
 }
 
 /** Fusion outcome class — see GDD §5.0.3. */

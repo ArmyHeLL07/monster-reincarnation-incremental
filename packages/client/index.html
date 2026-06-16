@@ -9,51 +9,58 @@
       * { box-sizing: border-box; }
       body {
         font-family: system-ui, -apple-system, sans-serif;
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 1rem;
-        line-height: 1.6;
-        color: #e8e8ea;
-        background: #14141a;
-        -webkit-text-size-adjust: 100%;
+        margin: 0; padding: 0.6rem; line-height: 1.55;
+        color: #e8e8ea; background: #14141a; -webkit-text-size-adjust: 100%;
       }
-      h1 { font-size: clamp(1.4rem, 6vw, 2rem); margin: 0.2rem 0 0.6rem; }
-      h2 { font-size: clamp(1rem, 4.5vw, 1.25rem); margin: 0 0 0.5rem; }
-      ul { padding-left: 1.2rem; margin: 0; }
-      li { margin: 0.35rem 0; }
-      .muted { color: #9a9aa6; margin: 0.2rem 0 1rem; }
-      .panel {
-        background: #1d1d26;
-        border: 1px solid #2a2a36;
-        border-radius: 12px;
-        padding: 0.8rem 1rem;
-        margin: 0.8rem 0;
+      h2 { font-size: clamp(1rem, 4.5vw, 1.2rem); margin: 0 0 0.5rem; }
+      ul { padding-left: 1.1rem; margin: 0; }
+      li { margin: 0.3rem 0; }
+      .muted { color: #9a9aa6; }
+
+      .game {
+        display: grid; gap: 0.6rem; max-width: 920px; margin: 0 auto;
+        grid-template-columns: 150px 1fr;
+        grid-template-areas: "top top" "side main" "side log";
       }
-      .row { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
-      .bar { height: 12px; border-radius: 6px; background: #2a2a36; overflow: hidden; }
-      .bar-fill { height: 100%; transition: width 0.2s ease; }
-      .controls { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.8rem 0; }
-      button {
-        flex: 1 1 auto;
-        min-height: 48px;
-        min-width: 120px;
-        padding: 0.7rem 1rem;
-        font-size: 1.05rem;
-        border: 0;
-        border-radius: 10px;
-        background: #6d44d9;
-        color: #fff;
-        cursor: pointer;
-        touch-action: manipulation;
-      }
+      .topbar { grid-area: top; background: #1a1a22; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.6rem 0.9rem; }
+      .topbar .brand { font-weight: 700; font-size: 1.1rem; }
+      .topbar .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.8rem; margin-top: 0.5rem; }
+      .sidebar { grid-area: side; display: flex; flex-direction: column; gap: 0.4rem; }
+      .content { grid-area: main; min-width: 0; }
+      .logpanel { grid-area: log; }
+
+      .tabbtn { background: #1d1d26; color: #cfcfd6; border: 1px solid #2a2a36; border-radius: 10px; min-height: 44px; padding: 0.5rem 0.7rem; font-size: 0.98rem; text-align: left; cursor: pointer; }
+      .tabbtn.active { background: #6d44d9; color: #fff; border-color: #6d44d9; }
+
+      .panel { background: #1d1d26; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.7rem 0.9rem; margin: 0 0 0.6rem; }
+      .row { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.3rem; }
+      .statline { margin-bottom: 0.4rem; }
+      .bar { height: 11px; border-radius: 6px; background: #2a2a36; overflow: hidden; }
+      .bar-fill { height: 100%; transition: width 0.25s ease; }
+
+      .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+      button { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 1rem; border: 0; border-radius: 10px; background: #6d44d9; color: #fff; cursor: pointer; touch-action: manipulation; }
       button.ghost { background: #2a2a36; }
+      button.active { background: #3fa34d; }
+      button:disabled { opacity: 0.45; cursor: default; }
       button:active { opacity: 0.85; }
-      .log { max-height: 220px; overflow-y: auto; font-size: 0.92rem; }
-      .log div { padding: 0.15rem 0; border-bottom: 1px solid #20202a; }
-      details > summary { cursor: pointer; font-weight: 600; padding: 0.2rem 0; }
-      .head { width: 100%; max-width: 320px; height: auto; display: block; margin: 0.4rem auto 0.8rem; }
-      .eye:active circle { opacity: 0.8; }
+      select { min-height: 44px; border-radius: 10px; background: #2a2a36; color: #e8e8ea; border: 1px solid #3a3a48; padding: 0 0.5rem; flex: 1 1 auto; }
+
+      .actbtn { flex: 1 1 auto; }
+      .statadd, .discard { min-height: 30px; min-width: 36px; padding: 0.1rem 0.5rem; font-size: 1rem; }
       .ability.on { outline: 2px solid #fff; outline-offset: 1px; }
+
+      .log { max-height: 240px; overflow-y: auto; font-size: 0.9rem; background: #16161d; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.5rem 0.8rem; }
+      .log div { padding: 0.12rem 0; border-bottom: 1px solid #20202a; }
+      .head { width: 100%; max-width: 300px; height: auto; display: block; margin: 0.3rem auto 0.7rem; }
+      .eye:active circle { opacity: 0.8; }
+
+      @media (max-width: 640px) {
+        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; }
+        .sidebar { flex-direction: row; overflow-x: auto; }
+        .tabbtn { flex: 1 0 auto; text-align: center; min-width: 84px; }
+        .topbar .bars { grid-template-columns: 1fr; }
+      }
     </style>
   </head>
   <body>

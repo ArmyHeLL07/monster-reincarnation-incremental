@@ -19,17 +19,21 @@ export function availableEvolutions(state: GameState, content: Content): Evoluti
 }
 
 export function canEvolve(state: GameState, form: EvolutionForm): boolean {
-  return state.ep >= form.epCost;
+  return state.level >= form.levelReq;
 }
 
-/** Evolve into a branch: spend EP, apply stat bonus, grant skills, heal. Permanent choice. */
+/** True when the player is at/over the level for any next form (show the "evolve?" prompt). */
+export function evolutionReady(state: GameState, content: Content): boolean {
+  return availableEvolutions(state, content).some((f) => canEvolve(state, f));
+}
+
+/** Evolve into a branch: gated by character level; applies stat bonus, grants skills, heals. */
 export function evolve(state: GameState, content: Content, formId: string, log: Log): boolean {
   const cur = content.forms.get(state.formId);
   if (!cur || !cur.evolvesTo.includes(formId)) return false;
   const form = content.forms.get(formId);
-  if (!form || state.ep < form.epCost) return false;
+  if (!form || state.level < form.levelReq) return false;
 
-  state.ep -= form.epCost;
   if (form.statBonus) {
     for (const [k, v] of Object.entries(form.statBonus)) {
       state.stats[k as StatKey] += v ?? 0;
