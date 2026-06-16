@@ -220,5 +220,25 @@
   "enemy.venom_brute.name": "Venom Brute",
   "enemy.bone_render.name": "Bone Render",
   "zone.middle_stratum.name": "Middle Stratum",
-  "zone.deep_warren.name": "Deep Warren"
+  "zone.deep_warren.name": "Deep Warren",
+
+  "layer.1.name": "Upper Dark",
+  "layer.2.name": "Deep Dark",
+  "layer.3.name": "The Abyss",
+  "ui.room": "Room",
+  "ui.floor": "Floor",
+  "ui.boss": "BOSS",
+  "ui.layers": "Layers",
+  "log.boss_spawn": "A boss appears: {enemy}!",
+  "log.boss_kill": "Boss defeated: {enemy}! +{ep} EP.",
+  "log.floor_cleared": "Floor cleared → {pos}.",
+  "log.layer_cleared": "Layer cleared! Entering Layer {layer}.",
+  "log.layer_locked": "Layer boss down — next layer needs Tier {tier}.",
+  "log.dungeon_end": "You've reached the deepest known point… for now.",
+  "form.lesser_weaver.name.desc": "First growth — bigger stats and an extra skill slot.",
+  "form.venom_weaver.name.desc": "Venom specialist — boosts INT/STR and venom power.",
+  "form.blade_weaver.name.desc": "Physical path — STR/AGI, scythe limbs and crits.",
+  "form.greater_weaver.name.desc": "Tank/bulk — a big VIT/HP leap.",
+  "form.shade_stalker.name.desc": "Assassin — high AGI, stealth and sudden strikes.",
+  "form.scythe_hunter.name.desc": "Hunter — high speed and multi-hits."
 }

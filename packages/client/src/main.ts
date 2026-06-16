@@ -39,11 +39,14 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
-    onSelectZone: (z) => {
-      state.zoneId = z;
-      state.enemy = null;
-      save(state);
-      render(state);
+    onSelectLayer: (id) => {
+      const layer = content.dungeon.layers.find((l) => l.id === id);
+      if (layer && state.tier >= layer.tierReq) {
+        state.pos = { layer: id, floor: 1, room: 1 };
+        state.enemy = null;
+        save(state);
+        render(state);
+      }
     },
     onAllocStat: (stat) => {
       allocStat(state, stat);
@@ -152,6 +155,7 @@ async function init(): Promise<void> {
 function migrate(s: GameState): void {
   const d = newGame();
   s.raceId ??= d.raceId;
+  s.pos ??= d.pos;
   s.formId ??= d.formId;
   s.eyeAssignments ??= d.eyeAssignments;
   s.fusionCache ??= d.fusionCache;
@@ -194,19 +198,21 @@ function download(filename: string, text: string): void {
   URL.revokeObjectURL(url);
 }
 
+const REPO = 'https://github.com/ArmyHeLL07/monster-reincarnation-incremental';
+
+/** Open a prefilled GitHub issue (public bug report). No private/email channel. */
 function reportBug(state: GameState): void {
   const desc = window.prompt(t('ui.bug_prompt')) ?? '';
   if (!desc.trim()) return;
-  const report = {
-    description: desc.trim(),
-    level: state.level,
-    formId: state.formId,
-    zoneId: state.zoneId,
-    lang: navigator.language,
-    userAgent: navigator.userAgent,
-    ts: Date.now(),
-  };
-  download(`bugreport-${report.ts}.json`, JSON.stringify(report, null, 2));
+  const body = [
+    desc.trim(),
+    '',
+    '---',
+    `T${state.tier} Lv${state.level} · ${state.formId} · ${state.pos.layer}.${state.pos.floor}.${state.pos.room}`,
+    `${navigator.language} · ${navigator.userAgent}`,
+  ].join('\n');
+  const url = `${REPO}/issues/new?title=${encodeURIComponent('[bug] ' + desc.trim().slice(0, 50))}&body=${encodeURIComponent(body)}`;
+  window.open(url, '_blank', 'noopener');
 }
 
 void init();

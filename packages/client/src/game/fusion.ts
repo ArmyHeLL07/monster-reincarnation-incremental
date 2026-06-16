@@ -7,6 +7,13 @@ type Log = (e: LogEvent) => void;
 
 const CLASSES: FusionClass[] = ['synergy', 'quirk', 'backfire'];
 
+// Coined names for procedural ("mix") fusions so they aren't all called the same thing.
+const NAME_PRE = ['Gloom', 'Rift', 'Bane', 'Thorn', 'Ash', 'Mire', 'Dusk', 'Venom', 'Hex', 'Grave', 'Spire', 'Murk', 'Snare', 'Wraith'];
+const NAME_SUF = ['fang', 'coil', 'lash', 'surge', 'veil', 'rend', 'bite', 'shroud', 'spike', 'grasp', 'husk', 'bloom', 'maw', 'warden'];
+function coinName(h: number): string {
+  return NAME_PRE[h % NAME_PRE.length] + NAME_SUF[Math.floor(h / 16) % NAME_SUF.length];
+}
+
 function elementOf(content: Content, id: string): string | undefined {
   return content.skills.get(id)?.element;
 }
@@ -49,7 +56,9 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
 
   const pool = content.fusionRules.magnitudePools[cls];
   const magnitude = pool[0] + (h % (pool[1] - pool[0] + 1));
-  return { id: `fz_${key}`, aId, bId, locKeyName: `fusion.effect.${effect}`, cls, effectType: effect, magnitude };
+  // Curated effects get a localized name; procedural "mix" combos get a unique coined name.
+  const locKeyName = effect === 'mix' ? coinName(h) : `fusion.effect.${effect}`;
+  return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: effect, magnitude };
 }
 
 /** Build a usable active skill from a fusion result (damage = magnitude → class drives power). */
@@ -58,7 +67,7 @@ function fusionSkillDef(content: Content, result: FusionResult): Skill {
   return {
     id: result.id,
     locKeyName: result.locKeyName,
-    locKeyDesc: `${result.locKeyName}.desc`,
+    locKeyDesc: `fusion.effect.${result.effectType}.desc`,
     kind: 'active',
     stats: ['STR'],
     lvMax: 10,

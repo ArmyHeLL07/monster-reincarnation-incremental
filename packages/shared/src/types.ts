@@ -107,6 +107,22 @@ export interface Zone {
   levelReq?: number;
 }
 
+/** A dungeon layer (Katman): floors × rooms, last room = boss; gated by character tier. */
+export interface DungeonLayer {
+  id: number;
+  locKey: string;
+  tierReq: number;
+  floors: number;
+  roomsPerFloor: number;
+  spDrainMult: number;
+  enemyPool: string[];
+  boss: string;
+}
+
+export interface Dungeon {
+  layers: DungeonLayer[];
+}
+
 /** Fusion outcome class — see GDD §5.0.3. */
 export type FusionClass = 'synergy' | 'quirk' | 'backfire';
 

@@ -220,5 +220,25 @@
   "enemy.venom_brute.name": "Zehir Canavarı",
   "enemy.bone_render.name": "Kemik Parçalayıcı",
   "zone.middle_stratum.name": "Orta Katman",
-  "zone.deep_warren.name": "Derin İn"
+  "zone.deep_warren.name": "Derin İn",
+
+  "layer.1.name": "Üst Karanlık",
+  "layer.2.name": "Derin Karanlık",
+  "layer.3.name": "Uçurum",
+  "ui.room": "Oda",
+  "ui.floor": "Kat",
+  "ui.boss": "BOSS",
+  "ui.layers": "Katmanlar",
+  "log.boss_spawn": "Bir boss belirdi: {enemy}!",
+  "log.boss_kill": "Boss yenildi: {enemy}! +{ep} EP.",
+  "log.floor_cleared": "Kat temizlendi → {pos}.",
+  "log.layer_cleared": "Katman geçildi! Katman {layer}'e giriliyor.",
+  "log.layer_locked": "Katman boss'u düştü — sonraki katman Tier {tier} ister.",
+  "log.dungeon_end": "Bilinen en derin noktaya ulaştın… şimdilik.",
+  "form.lesser_weaver.name.desc": "İlk gelişim — daha çok stat ve +1 skill slotu.",
+  "form.venom_weaver.name.desc": "Zehir uzmanı — INT/STR ve zehir gücü artar.",
+  "form.blade_weaver.name.desc": "Fiziksel yol — STR/AGI, tırpan bacak ve kritik.",
+  "form.greater_weaver.name.desc": "Tank — büyük VIT/can sıçraması.",
+  "form.shade_stalker.name.desc": "Suikastçı — yüksek AGI, gizlilik ve ani vuruş.",
+  "form.scythe_hunter.name.desc": "Avcı — yüksek hız ve çoklu saldırı."
 }

@@ -11,7 +11,7 @@ import { t, tmsg } from './i18n';
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
-  onSelectZone: (zoneId: string) => void;
+  onSelectLayer: (layerId: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -124,12 +124,13 @@ export function render(state: GameState): void {
 
 function topbarHtml(state: GameState): string {
   const form = currentForm(state, CONTENT);
-  const zone = CONTENT.zones.get(state.zoneId);
+  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
+  const posStr = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
   const stage = hungerStage(state.hunger);
   return `
     <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${zone ? t(zone.locKey) : ''} · ${t(`act.${state.action}`)}${evo}</p>
+    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}</p>
     <div class="bars">
       ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
       ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
@@ -187,15 +188,13 @@ function renderTab(): void {
 function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
-  const def = CONTENT.enemies.get(inst.id);
   const tier = appraisalTier(state);
-  const name = tier >= 1 && def ? t(def.locKey) : t('ui.unknown');
+  const baseName = tier >= 1 ? t(inst.locKey) : t('ui.unknown');
+  const name = inst.isBoss ? `☠ ${baseName}` : baseName;
   const bits: string[] = [`<b>${name}</b>`];
-  if (def) {
-    if (tier >= 2) bits.push(`[${t(`dmgtype.${def.damageType}`)}${def.damageType2 ? '+' + t(`dmgtype.${def.damageType2}`) : ''}]`);
-    if (tier >= 3) bits.push(`ATK ${def.attack}`);
-  }
-  const hpText = tier >= 4 ? `${inst.hp}/${inst.maxHp}` : '';
+  if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
+  if (tier >= 3) bits.push(`ATK ${inst.attack}`);
+  const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
   return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
 }
 
@@ -238,27 +237,36 @@ function wireCombat(el: HTMLElement): void {
 // ---- MAP -------------------------------------------------------------------
 
 function mapTab(state: GameState): string {
-  const zones = [...CONTENT.zones.values()]
-    .map((z) => {
-      const req = z.levelReq ?? 1;
-      const locked = state.level < req;
-      const current = state.zoneId === z.id;
-      const btn = locked
-        ? `<span class="muted">${t('ui.locked')} (${t('ui.lv')} ${req})</span>`
-        : current
-          ? `<span class="muted">${t('ui.current')}</span>`
-          : `<button class="zonebtn" data-zone="${z.id}">${t('ui.enter')}</button>`;
-      return `<li><b>${t(z.locKey)}</b> — ${t('ui.lv')} ${req}+ ${btn}</li>`;
+  const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
+  const bossSoon = cur && state.pos.room >= cur.roomsPerFloor ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
+  const layers = CONTENT.dungeon.layers
+    .map((l) => {
+      const unlocked = state.tier >= l.tierReq;
+      const current = state.pos.layer === l.id;
+      const status = current
+        ? `<span class="muted">${t('ui.current')}</span>`
+        : !unlocked
+          ? `<span class="muted">${t('ui.locked')} (T${l.tierReq})</span>`
+          : `<button class="layerbtn" data-layer="${l.id}">${t('ui.enter')}</button>`;
+      return `<li><b>${t(l.locKey)}</b> — T${l.tierReq}+ ${status}</li>`;
     })
     .join('');
-  return `<section class="panel"><h2>${t('tab.map')}</h2><ul>${zones}</ul></section>`;
+  return `
+    <section class="panel">
+      <h2>${t('tab.map')}</h2>
+      <p><b>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</b> — ${cur ? t(cur.locKey) : ''}</p>
+      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${cur?.roomsPerFloor ?? '?'}${bossSoon}</p>
+      ${cur ? bar(state.pos.room, cur.roomsPerFloor, '#8ab23f') : ''}
+    </section>
+    <section class="panel"><h2>${t('ui.layers')}</h2><ul>${layers}</ul></section>
+  `;
 }
 
 function wireMap(el: HTMLElement): void {
-  el.querySelectorAll<HTMLButtonElement>('.zonebtn').forEach((b) => {
+  el.querySelectorAll<HTMLButtonElement>('.layerbtn').forEach((b) => {
     b.addEventListener('click', () => {
-      const z = b.getAttribute('data-zone');
-      if (z) ACTIONS.onSelectZone(z);
+      const id = Number(b.getAttribute('data-layer'));
+      if (!Number.isNaN(id)) ACTIONS.onSelectLayer(id);
     });
   });
 }
@@ -289,7 +297,7 @@ function skillsTab(state: GameState): string {
       })
       .join('');
   const fz = lastFusion
-    ? `<p><b>${t(lastFusion.locKeyName)}</b> · ${t(`fusion.${lastFusion.cls}`)} · ${lastFusion.magnitude}</p><p class="muted">${t(`${lastFusion.locKeyName}.desc`)}</p>`
+    ? `<p><b>${t(lastFusion.locKeyName)}</b> · ${t(`fusion.${lastFusion.cls}`)} · ${lastFusion.magnitude}</p><p class="muted">${t(`fusion.effect.${lastFusion.effectType}.desc`)}</p>`
     : '';
   return `
     <section class="panel"><h2>${t('ui.skills')}</h2><ul>${skills}</ul></section>
@@ -413,7 +421,7 @@ function statsTab(state: GameState): string {
     ? evos
         .map(
           (f) =>
-            `<button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t(f.locKey)} · ${t('ui.lv')} ${f.levelReq}</button>`,
+            `<div class="panel"><div class="row"><b>${t(f.locKey)}</b><span>${t('ui.lv')} ${f.levelReq}+</span></div><p class="muted">${t(`${f.locKey}.desc`)}</p><button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t('ui.evolve')}</button></div>`,
         )
         .join('')
     : `<span class="muted">${t('ui.final_form')}</span>`;
@@ -428,7 +436,7 @@ function statsTab(state: GameState): string {
     <section class="panel">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
-      <div class="controls">${evoHtml}</div>
+      ${evoHtml}
     </section>
   `;
 }

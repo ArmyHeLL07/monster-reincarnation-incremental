@@ -1,4 +1,4 @@
-import type { StatKey, FusionResult, ComboAttempt, EyeMode } from '@mri/shared';
+import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType } from '@mri/shared';
 
 export interface EyeAssignment {
   abilityId: string;
@@ -27,10 +27,24 @@ export interface ResistSlot {
   nullified: boolean;
 }
 
+export interface DungeonPos {
+  layer: number;
+  floor: number;
+  room: number;
+}
+
+/** A spawned enemy — stats are snapshot here (scaled by dungeon depth) so combat is data-free. */
 export interface EnemyInstance {
   id: string;
+  locKey: string;
   hp: number;
   maxHp: number;
+  attack: number;
+  damageType: DamageType;
+  damageType2?: DamageType;
+  ep: number;
+  satiety: number;
+  isBoss: boolean;
 }
 
 export const MAX_HUNGER = 100;
@@ -64,7 +78,7 @@ export interface GameState {
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
   inventory: FoodItem[];
   ep: number;
-  zoneId: string;
+  pos: DungeonPos;
   raceId: string;
   formId: string;
   /** slotId → assigned eye ability + mode (or null/absent = empty). */
@@ -125,7 +139,7 @@ export function newGame(): GameState {
     hunger: 0,
     inventory: [],
     ep: 0,
-    zoneId: 'lower_stratum',
+    pos: { layer: 1, floor: 1, room: 1 },
     raceId: 'spider',
     formId: 'hatchling_spider',
     eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
