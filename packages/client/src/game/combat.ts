@@ -2,6 +2,7 @@ import type { DamageType } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, MAX_HUNGER } from './state';
+import { appraisalAssigned, dreadChance } from './eyes';
 
 type Log = (e: LogEvent) => void;
 
@@ -75,6 +76,10 @@ export function manualAttack(state: GameState, content: Content, log: Log): void
 export function deepRead(state: GameState, content: Content, log: Log): void {
   const enemy = state.enemy;
   if (!enemy) return;
+  if (!appraisalAssigned(state)) {
+    log({ key: 'log.no_eye' });
+    return;
+  }
   if (state.mp < DEEP_READ_MP_COST) {
     log({ key: 'log.no_mp' });
     return;
@@ -230,6 +235,10 @@ function enemyAttack(state: GameState, content: Content, log: Log): void {
   if (!enemy) return;
   const def = content.enemies.get(enemy.id);
   if (!def) return;
+  if (Math.random() < dreadChance(state)) {
+    log({ key: 'log.flee', params: { enemy: def.locKey } });
+    return;
+  }
   const reduction = resistReduction(state, content, def.damageType);
   const taken = Math.max(0, Math.round(def.attack * (1 - reduction)));
   state.hp = Math.max(0, state.hp - taken);

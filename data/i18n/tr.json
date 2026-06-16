@@ -24,6 +24,15 @@
   "ui.telemetry": "Telemetri (outbox)",
   "ui.export": "Outbox'ı dışa aktar",
   "ui.mp_transfer_on": "MP→Stamina aktarımı: açık",
+  "ui.eyes": "Gözler (kafa)",
+  "ui.eye": "Göz",
+  "ui.mode": "Mod",
+  "ui.clear": "Boşalt",
+  "ui.empty_eye": "boş",
+  "ui.no_eye_abilities": "Henüz göz yeteneğin yok.",
+  "ui.tap_eye": "Kafadaki bir göze dokun.",
+  "eyemode.passive": "Pasif",
+  "eyemode.active": "Aktif",
 
   "hunger.0": "Tok",
   "hunger.1": "Aç",
@@ -55,6 +64,8 @@
   "log.fuse_new": "Yeni füzyon keşfedildi! [{cls}] güç {mag}.",
   "log.fuse_cached": "Füzyon (cache): [{cls}] güç {mag}.",
   "log.offline": "Yokken ({sec} sn): +{ep} EP.",
+  "log.no_eye": "Takılı Appraisal gözü yok.",
+  "log.flee": "{enemy} dehşetle irkildi — saldırısı boşa gitti!",
 
   "skill.venom_bite.name": "Zehirli Isırık",
   "skill.venom_bite.desc": "Isırıkla zehir enjekte eder; zamanla hasar verir.",
@@ -80,6 +91,8 @@
   "skill.appraisal.desc": "Göz yeteneği; seviye atladıkça hedef bilgisini açar.",
   "skill.insight.name": "Sezgi",
   "skill.insight.desc": "Derin inceleme; zayıf nokta ve dirençler.",
+  "skill.dread_gaze.name": "Dehşet Bakışı",
+  "skill.dread_gaze.desc": "Göz yeteneği; takılıysa düşmanlar irkilip saldırısını kaçırabilir.",
 
   "res.fire_res.name": "Ateş Direnci",
   "res.flame_immunity.name": "Alev Bağışıklığı",
@@ -90,6 +103,9 @@
   "enemy.ember_crawler.name": "Köz Sürüngeni",
 
   "zone.lower_stratum.name": "Alt Katman",
+
+  "race.spider.name": "Örümcek",
+  "race.human.name": "İnsan",
 
   "fusion.synergy": "Sinerji",
   "fusion.quirk": "Tuhaf",

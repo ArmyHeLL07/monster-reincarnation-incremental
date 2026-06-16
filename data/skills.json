@@ -110,7 +110,8 @@
     "kind": "eye",
     "stats": ["INT", "WIS"],
     "lvMax": 10,
-    "evolvesTo": ["insight"]
+    "evolvesTo": ["insight"],
+    "eyeModes": ["passive", "active"]
   },
   {
     "id": "insight",
@@ -119,6 +120,17 @@
     "kind": "eye",
     "stats": ["INT", "WIS"],
     "lvMax": 10,
-    "evolvesTo": []
+    "evolvesTo": [],
+    "eyeModes": ["passive", "active"]
+  },
+  {
+    "id": "dread_gaze",
+    "locKeyName": "skill.dread_gaze.name",
+    "locKeyDesc": "skill.dread_gaze.desc",
+    "kind": "eye",
+    "stats": ["WIS"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": ["passive"]
   }
 ]

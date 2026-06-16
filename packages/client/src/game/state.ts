@@ -1,4 +1,9 @@
-import type { StatKey, FusionResult, ComboAttempt } from '@mri/shared';
+import type { StatKey, FusionResult, ComboAttempt, EyeMode } from '@mri/shared';
+
+export interface EyeAssignment {
+  abilityId: string;
+  mode: EyeMode;
+}
 
 export interface SkillSlot {
   id: string;
@@ -34,6 +39,9 @@ export interface GameState {
   hunger: number;
   ep: number;
   zoneId: string;
+  raceId: string;
+  /** slotId → assigned eye ability + mode (or null/absent = empty). */
+  eyeAssignments: Record<string, EyeAssignment | null>;
   /** true = fighting (drains SP), false = resting (regenerates). */
   combatActive: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
@@ -83,6 +91,8 @@ export function newGame(): GameState {
     hunger: 0,
     ep: 0,
     zoneId: 'lower_stratum',
+    raceId: 'spider',
+    eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
     combatActive: false,
     mpTransferUnlocked: false,
     skills: [
@@ -91,6 +101,7 @@ export function newGame(): GameState {
       { id: 'silk_thread', level: 1, exp: 0 },
       { id: 'hp_regen', level: 1, exp: 0 },
       { id: 'appraisal', level: 1, exp: 0 },
+      { id: 'dread_gaze', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
     ],
     resistances: [

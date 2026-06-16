@@ -2,9 +2,11 @@ import type { FusionResult } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER } from './game/state';
+import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
+  lastFusion: FusionResult | null;
   onToggleCombat: () => void;
   onAttack: () => void;
   onDeepRead: () => void;
@@ -12,17 +14,25 @@ export interface UiActions {
   onReset: () => void;
   onFuse: (aId: string, bId: string) => void;
   onExportOutbox: () => void;
-  lastFusion: FusionResult | null;
+  onSelectEye: (slotId: string) => void;
+  onAssignEye: (slotId: string, abilityId: string) => void;
+  onCycleMode: (slotId: string) => void;
+  onClearEye: (slotId: string) => void;
 }
 
 const LOG_CAP = 60;
 const logLines: string[] = [];
 let selectedA: string | null = null;
 let selectedB: string | null = null;
+let selectedEye: string | null = null;
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
   logLines.unshift(tmsg(key, params));
   if (logLines.length > LOG_CAP) logLines.length = LOG_CAP;
+}
+
+export function setSelectedEye(id: string | null): void {
+  selectedEye = id;
 }
 
 function bar(value: number, max: number, color: string): string {
@@ -41,19 +51,11 @@ function hungerStage(hunger: number): number {
   return 3;
 }
 
-function eyeTier(state: GameState): number {
-  for (const slot of state.skills) {
-    if (slot.id === 'appraisal') return slot.level;
-    if (slot.id === 'insight') return slot.level + 10;
-  }
-  return 0;
-}
-
 function enemyView(state: GameState, content: Content): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${t('ui.no_enemy')}</p>`;
   const def = content.enemies.get(inst.id);
-  const tier = eyeTier(state);
+  const tier = appraisalTier(state);
   const name = tier >= 1 && def ? t(def.locKey) : t('ui.unknown');
   const bits: string[] = [`<b>${name}</b>`];
   if (def) {
@@ -62,6 +64,52 @@ function enemyView(state: GameState, content: Content): string {
   }
   const hpText = tier >= 4 ? `${inst.hp}/${inst.maxHp}` : '';
   return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#c0444f')}`;
+}
+
+function headView(state: GameState, content: Content): string {
+  const race = content.races.get(state.raceId);
+  if (!race) return '';
+  const eyes = race.head.eyes
+    .map((e) => {
+      const a = state.eyeAssignments[e.id];
+      const color = a ? (a.mode === 'active' ? '#d98324' : '#c9a227') : '#3a3a48';
+      const ring =
+        selectedEye === e.id
+          ? `<circle cx="${e.x}" cy="${e.y}" r="${e.r + 5}" fill="none" stroke="#fff" stroke-width="2"/>`
+          : '';
+      return `<g class="eye" data-eye="${e.id}" style="cursor:pointer">
+        <circle cx="${e.x}" cy="${e.y}" r="${e.r + 10}" fill="transparent"/>
+        <circle cx="${e.x}" cy="${e.y}" r="${e.r}" fill="${color}" stroke="#15151c" stroke-width="2"/>
+        ${ring}
+      </g>`;
+    })
+    .join('');
+  return `<svg viewBox="${race.head.viewBox}" class="head" role="img">${race.head.silhouette}${eyes}</svg>`;
+}
+
+function eyePanel(state: GameState, content: Content): string {
+  if (!selectedEye) return `<p class="muted">${t('ui.tap_eye')}</p>`;
+  const a = state.eyeAssignments[selectedEye];
+  const owned = ownedEyeAbilities(state, content);
+  const abilBtns = owned
+    .map((s) => {
+      const def = content.skills.get(s.id);
+      const name = def ? t(def.locKeyName) : s.id;
+      const here = a?.abilityId === s.id;
+      const elsewhere = !here && isAbilityAssigned(state, s.id);
+      return `<button class="ability${here ? ' on' : ''}" data-ability="${s.id}">${name}${elsewhere ? ' ⟳' : ''}</button>`;
+    })
+    .join('');
+  const cur = a
+    ? `${t(content.skills.get(a.abilityId)?.locKeyName ?? a.abilityId)} · ${t(`eyemode.${a.mode}`)}`
+    : t('ui.empty_eye');
+  const modeBtn = a ? `<button id="mode" class="ghost">${t('ui.mode')}: ${t(`eyemode.${a.mode}`)}</button>` : '';
+  const clearBtn = a ? `<button id="cleareye" class="ghost">${t('ui.clear')}</button>` : '';
+  return `
+    <div class="row"><span><b>${t('ui.eye')} ${selectedEye}</b></span><span>${cur}</span></div>
+    <div class="controls">${abilBtns || `<span class="muted">${t('ui.no_eye_abilities')}</span>`}</div>
+    <div class="controls">${modeBtn}${clearBtn}</div>
+  `;
 }
 
 function fusionName(r: FusionResult, content: Content): string {
@@ -95,7 +143,8 @@ export function render(state: GameState, content: Content, actions: UiActions): 
   const stage = hungerStage(state.hunger);
   const hungerColor = ['#3fa34d', '#c9a227', '#d98324', '#c0444f'][stage];
 
-  const skills = state.skills
+  const nonEye = state.skills.filter((s) => content.skills.get(s.id)?.kind !== 'eye');
+  const skills = nonEye
     .map((s) => {
       const def = content.skills.get(s.id);
       const name = def ? t(def.locKeyName) : s.id;
@@ -114,8 +163,6 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     .join('');
 
   const log = logLines.map((l) => `<div>${l}</div>`).join('');
-  const opts = skillOptions(state, content, selectedA);
-  const optsB = skillOptions(state, content, selectedB);
   const fz = actions.lastFusion
     ? `<p><b>${fusionName(actions.lastFusion, content)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>`
     : '';
@@ -150,6 +197,12 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     </div>
 
     <details open class="panel">
+      <summary>${t('ui.eyes')}</summary>
+      ${headView(state, content)}
+      ${eyePanel(state, content)}
+    </details>
+
+    <details class="panel">
       <summary>${t('ui.skills')}</summary>
       <ul>${skills}</ul>
     </details>
@@ -162,8 +215,8 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     <details class="panel">
       <summary>${t('ui.fusion')}</summary>
       <div class="controls">
-        <select id="fa">${opts}</select>
-        <select id="fb">${optsB}</select>
+        <select id="fa">${skillOptions(state, content, selectedA)}</select>
+        <select id="fb">${skillOptions(state, content, selectedB)}</select>
         <button id="fuse">${t('ui.fuse')}</button>
       </div>
       ${fz}
@@ -180,19 +233,39 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     </details>
   `;
 
-  app.querySelector<HTMLButtonElement>('#combat')?.addEventListener('click', actions.onToggleCombat);
-  app.querySelector<HTMLButtonElement>('#attack')?.addEventListener('click', actions.onAttack);
-  app.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', actions.onDeepRead);
-  app.querySelector<HTMLButtonElement>('#train')?.addEventListener('click', actions.onTrain);
-  app.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', actions.onReset);
-  app.querySelector<HTMLButtonElement>('#export')?.addEventListener('click', actions.onExportOutbox);
+  const click = (id: string, fn: () => void) =>
+    app.querySelector<HTMLButtonElement>(`#${id}`)?.addEventListener('click', fn);
+
+  click('combat', actions.onToggleCombat);
+  click('attack', actions.onAttack);
+  click('deepread', actions.onDeepRead);
+  click('train', actions.onTrain);
+  click('reset', actions.onReset);
+  click('export', actions.onExportOutbox);
+  click('fuse', () => {
+    if (selectedA && selectedB) actions.onFuse(selectedA, selectedB);
+  });
+  if (selectedEye) {
+    click('mode', () => actions.onCycleMode(selectedEye as string));
+    click('cleareye', () => actions.onClearEye(selectedEye as string));
+  }
+
   app.querySelector<HTMLSelectElement>('#fa')?.addEventListener('change', (e) => {
     selectedA = (e.target as HTMLSelectElement).value;
   });
   app.querySelector<HTMLSelectElement>('#fb')?.addEventListener('change', (e) => {
     selectedB = (e.target as HTMLSelectElement).value;
   });
-  app.querySelector<HTMLButtonElement>('#fuse')?.addEventListener('click', () => {
-    if (selectedA && selectedB) actions.onFuse(selectedA, selectedB);
+  app.querySelectorAll<SVGGElement>('.eye').forEach((g) => {
+    g.addEventListener('click', () => {
+      const id = g.getAttribute('data-eye');
+      if (id) actions.onSelectEye(id);
+    });
+  });
+  app.querySelectorAll<HTMLButtonElement>('.ability').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-ability');
+      if (id && selectedEye) actions.onAssignEye(selectedEye, id);
+    });
   });
 }

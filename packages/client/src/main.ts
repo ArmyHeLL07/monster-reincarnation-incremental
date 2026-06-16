@@ -4,9 +4,10 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
 import { tick, manualAttack, deepRead, trainStamina } from './game/combat';
+import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { fuse } from './game/fusion';
 import { load, save, clear } from './game/save';
-import { render, pushLog } from './ui';
+import { render, pushLog, setSelectedEye } from './ui';
 
 const OFFLINE_TICK_CAP = 1800; // ~30 min of offline progress at 1s/tick
 
@@ -18,7 +19,8 @@ async function init(): Promise<void> {
   const content = await loadContent(base);
 
   let state = load() ?? newGame();
-  recomputeMaxes(state); // re-derive maxes in case formulas changed since the save
+  migrate(state);
+  recomputeMaxes(state);
 
   let lastFusion: FusionResult | null = null;
 
@@ -61,6 +63,7 @@ async function init(): Promise<void> {
         clear();
         state = newGame();
         lastFusion = null;
+        setSelectedEye(null);
         save(state);
         draw();
       },
@@ -70,11 +73,47 @@ async function init(): Promise<void> {
         draw();
       },
       onExportOutbox: () => exportOutbox(state),
+      onSelectEye: (slotId) => {
+        setSelectedEye(slotId);
+        draw();
+      },
+      onAssignEye: (slotId, abilityId) => {
+        assignEye(state, content, slotId, abilityId);
+        save(state);
+        draw();
+      },
+      onCycleMode: (slotId) => {
+        cycleEyeMode(state, content, slotId);
+        save(state);
+        draw();
+      },
+      onClearEye: (slotId) => {
+        clearEye(state, slotId);
+        save(state);
+        draw();
+      },
     });
   }
 
   clock.start(); // the GameClock always runs — idle accumulation never stops
   draw();
+}
+
+/** Backfill fields missing from older saves so they don't crash newer code. */
+function migrate(s: GameState): void {
+  const d = newGame();
+  s.raceId ??= d.raceId;
+  s.eyeAssignments ??= d.eyeAssignments;
+  s.fusionCache ??= d.fusionCache;
+  s.outbox ??= d.outbox;
+  s.spTrainingBonus ??= 0;
+  s.hunger ??= 0;
+  if (s.maxSp == null) s.maxSp = d.maxSp;
+  if (s.sp == null) s.sp = s.maxSp;
+  if (s.maxMp == null) s.maxMp = d.maxMp;
+  if (s.mp == null) s.mp = s.maxMp;
+  s.combatActive ??= false;
+  s.mpTransferUnlocked ??= false;
 }
 
 /** Simulate elapsed offline time (capped), then summarize. */

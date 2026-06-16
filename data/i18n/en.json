@@ -24,6 +24,15 @@
   "ui.telemetry": "Telemetry (outbox)",
   "ui.export": "Export outbox",
   "ui.mp_transfer_on": "MP→Stamina transfer: unlocked",
+  "ui.eyes": "Eyes (head)",
+  "ui.eye": "Eye",
+  "ui.mode": "Mode",
+  "ui.clear": "Clear",
+  "ui.empty_eye": "empty",
+  "ui.no_eye_abilities": "No eye abilities yet.",
+  "ui.tap_eye": "Tap an eye on the head.",
+  "eyemode.passive": "Passive",
+  "eyemode.active": "Active",
 
   "hunger.0": "Full",
   "hunger.1": "Hungry",
@@ -55,6 +64,8 @@
   "log.fuse_new": "New fusion discovered! [{cls}] power {mag}.",
   "log.fuse_cached": "Fusion (cached): [{cls}] power {mag}.",
   "log.offline": "While away ({sec}s): +{ep} EP.",
+  "log.no_eye": "No Appraisal eye slotted.",
+  "log.flee": "{enemy} recoils in dread — its attack misses!",
 
   "skill.venom_bite.name": "Venom Bite",
   "skill.venom_bite.desc": "Inject venom with a bite; damage over time.",
@@ -80,6 +91,8 @@
   "skill.appraisal.desc": "Eye ability; reveals target info as it levels.",
   "skill.insight.name": "Insight",
   "skill.insight.desc": "Deep appraisal; weak points and resistances.",
+  "skill.dread_gaze.name": "Dread Gaze",
+  "skill.dread_gaze.desc": "Eye ability; a slotted dread gaze may make enemies recoil (skip an attack).",
 
   "res.fire_res.name": "Fire Resistance",
   "res.flame_immunity.name": "Flame Immunity",
@@ -90,6 +103,9 @@
   "enemy.ember_crawler.name": "Ember Crawler",
 
   "zone.lower_stratum.name": "Lower Stratum",
+
+  "race.spider.name": "Spider",
+  "race.human.name": "Human",
 
   "fusion.synergy": "Synergy",
   "fusion.quirk": "Quirk",

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "spider",
+    "locKey": "race.spider.name",
+    "head": {
+      "viewBox": "0 0 220 180",
+      "silhouette": "<ellipse cx='110' cy='90' rx='96' ry='66' fill='#241f2b' stroke='#4a4458' stroke-width='3'/><ellipse cx='110' cy='150' rx='34' ry='22' fill='#1d1922' stroke='#4a4458' stroke-width='2'/>",
+      "eyes": [
+        { "id": "e1", "x": 66, "y": 66, "r": 8 },
+        { "id": "e2", "x": 92, "y": 62, "r": 8 },
+        { "id": "e3", "x": 128, "y": 62, "r": 8 },
+        { "id": "e4", "x": 154, "y": 66, "r": 8 },
+        { "id": "e5", "x": 96, "y": 94, "r": 12 },
+        { "id": "e6", "x": 124, "y": 94, "r": 12 },
+        { "id": "e7", "x": 72, "y": 118, "r": 8 },
+        { "id": "e8", "x": 148, "y": 118, "r": 8 }
+      ]
+    }
+  },
+  {
+    "id": "human",
+    "locKey": "race.human.name",
+    "head": {
+      "viewBox": "0 0 160 200",
+      "silhouette": "<ellipse cx='80' cy='96' rx='58' ry='78' fill='#241f2b' stroke='#4a4458' stroke-width='3'/>",
+      "eyes": [
+        { "id": "e1", "x": 58, "y": 92, "r": 12 },
+        { "id": "e2", "x": 102, "y": 92, "r": 12 }
+      ]
+    }
+  }
+]

@@ -15,6 +15,31 @@ export type DamageType =
   | 'frost'
   | 'magic';
 
+/** Eye-slot mode — one mode per eye (GDD §5.0.5). */
+export type EyeMode = 'passive' | 'active';
+
+/** A clickable eye position on a race's head (data-driven SVG coordinates). */
+export interface EyeSlotDef {
+  id: string;
+  x: number;
+  y: number;
+  r: number;
+}
+
+/** A race head: SVG viewBox + silhouette markup + the eye slots placed on it. */
+export interface HeadDef {
+  viewBox: string;
+  silhouette: string;
+  eyes: EyeSlotDef[];
+}
+
+/** A playable race. Eye-slot count/arrangement is the race identity (GDD §5.0.5). */
+export interface Race {
+  id: string;
+  locKey: string;
+  head: HeadDef;
+}
+
 /** A data-driven skill. Player-facing text is referenced by localization key, never inlined. */
 export interface Skill {
   id: string;
@@ -30,6 +55,8 @@ export interface Skill {
   /** Passive regen contributions. */
   hpRegen?: number;
   spRegen?: number;
+  /** For `kind: 'eye'` abilities — which modes this eye ability allows. */
+  eyeModes?: EyeMode[];
 }
 
 /** Damage-based resistance line — evolves to a Nullity (immunity) at lvMax. */
