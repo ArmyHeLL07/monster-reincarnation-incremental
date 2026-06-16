@@ -33,6 +33,9 @@
   "ui.tap_eye": "Kafadaki bir göze dokun.",
   "eyemode.passive": "Pasif",
   "eyemode.active": "Aktif",
+  "ui.evolution": "Evrim",
+  "ui.form": "Form",
+  "ui.final_form": "Son form (şimdilik).",
 
   "hunger.0": "Tok",
   "hunger.1": "Aç",
@@ -66,6 +69,7 @@
   "log.offline": "Yokken ({sec} sn): +{ep} EP.",
   "log.no_eye": "Takılı Appraisal gözü yok.",
   "log.flee": "{enemy} dehşetle irkildi — saldırısı boşa gitti!",
+  "log.evolve_form": "{form} formuna evrimleştin!",
 
   "skill.venom_bite.name": "Zehirli Isırık",
   "skill.venom_bite.desc": "Isırıkla zehir enjekte eder; zamanla hasar verir.",
@@ -106,6 +110,14 @@
 
   "race.spider.name": "Örümcek",
   "race.human.name": "İnsan",
+
+  "form.hatchling_spider.name": "Yavru Örümcek",
+  "form.lesser_weaver.name": "Küçük Dokumacı",
+  "form.venom_weaver.name": "Zehir Dokumacısı",
+  "form.blade_weaver.name": "Bıçak Dokumacısı",
+  "form.greater_weaver.name": "Büyük Dokumacı",
+  "form.shade_stalker.name": "Gölge Avcısı",
+  "form.scythe_hunter.name": "Tırpan Avcısı",
 
   "fusion.synergy": "Sinerji",
   "fusion.quirk": "Tuhaf",

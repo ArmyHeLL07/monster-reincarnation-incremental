@@ -40,6 +40,17 @@ export interface Race {
   head: HeadDef;
 }
 
+/** A node in a race's (branching) evolution tree. Choosing a branch is permanent. */
+export interface EvolutionForm {
+  id: string;
+  raceId: string;
+  locKey: string;
+  evolvesTo: string[];
+  epCost: number;
+  statBonus?: Partial<Record<StatKey, number>>;
+  grantSkills?: string[];
+}
+
 /** A data-driven skill. Player-facing text is referenced by localization key, never inlined. */
 export interface Skill {
   id: string;

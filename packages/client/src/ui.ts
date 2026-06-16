@@ -3,6 +3,7 @@ import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
+import { availableEvolutions, currentForm, canEvolve } from './game/evolution';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
@@ -18,6 +19,7 @@ export interface UiActions {
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
   onClearEye: (slotId: string) => void;
+  onEvolve: (formId: string) => void;
 }
 
 const LOG_CAP = 60;
@@ -140,6 +142,17 @@ export function render(state: GameState, content: Content, actions: UiActions): 
 
   const zone = content.zones.get(state.zoneId);
   const zoneName = zone ? t(zone.locKey) : state.zoneId;
+  const form = currentForm(state, content);
+  const formName = form ? t(form.locKey) : state.formId;
+  const evos = availableEvolutions(state, content);
+  const evoBtns = evos.length
+    ? evos
+        .map(
+          (f) =>
+            `<button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t(f.locKey)} · ${f.epCost} EP</button>`,
+        )
+        .join('')
+    : `<span class="muted">${t('ui.final_form')}</span>`;
   const stage = hungerStage(state.hunger);
   const hungerColor = ['#3fa34d', '#c9a227', '#d98324', '#c0444f'][stage];
 
@@ -170,7 +183,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
 
   app.innerHTML = `
     <h1>${t('app.title')}</h1>
-    <p class="muted">${t('ui.zone')}: ${zoneName} · ${t('ui.ep')}: ${state.ep}</p>
+    <p class="muted">${t('ui.form')}: ${formName} · ${t('ui.zone')}: ${zoneName} · ${t('ui.ep')}: ${state.ep}</p>
 
     <section class="panel">
       ${statRow(t('ui.hp'), state.hp, state.maxHp, '#3fa34d')}
@@ -195,6 +208,12 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       <button id="train" class="ghost">${t('ui.train')}</button>
       <button id="reset" class="ghost">${t('ui.reset')}</button>
     </div>
+
+    <details open class="panel">
+      <summary>${t('ui.evolution')}</summary>
+      <p class="muted">${t('ui.form')}: <b>${formName}</b></p>
+      <div class="controls">${evoBtns}</div>
+    </details>
 
     <details open class="panel">
       <summary>${t('ui.eyes')}</summary>
@@ -266,6 +285,12 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-ability');
       if (id && selectedEye) actions.onAssignEye(selectedEye, id);
+    });
+  });
+  app.querySelectorAll<HTMLButtonElement>('.evo').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-form');
+      if (id) actions.onEvolve(id);
     });
   });
 }

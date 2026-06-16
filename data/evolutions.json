@@ -1,0 +1,57 @@
+[
+  {
+    "id": "hatchling_spider",
+    "raceId": "spider",
+    "locKey": "form.hatchling_spider.name",
+    "evolvesTo": ["lesser_weaver"],
+    "epCost": 0
+  },
+  {
+    "id": "lesser_weaver",
+    "raceId": "spider",
+    "locKey": "form.lesser_weaver.name",
+    "evolvesTo": ["venom_weaver", "blade_weaver", "greater_weaver"],
+    "epCost": 20,
+    "statBonus": { "VIT": 2, "STR": 1, "AGI": 1 }
+  },
+  {
+    "id": "venom_weaver",
+    "raceId": "spider",
+    "locKey": "form.venom_weaver.name",
+    "evolvesTo": ["shade_stalker"],
+    "epCost": 50,
+    "statBonus": { "INT": 3, "STR": 2 }
+  },
+  {
+    "id": "blade_weaver",
+    "raceId": "spider",
+    "locKey": "form.blade_weaver.name",
+    "evolvesTo": ["scythe_hunter"],
+    "epCost": 50,
+    "statBonus": { "STR": 3, "AGI": 2 }
+  },
+  {
+    "id": "greater_weaver",
+    "raceId": "spider",
+    "locKey": "form.greater_weaver.name",
+    "evolvesTo": [],
+    "epCost": 50,
+    "statBonus": { "VIT": 6, "STR": 2 }
+  },
+  {
+    "id": "shade_stalker",
+    "raceId": "spider",
+    "locKey": "form.shade_stalker.name",
+    "evolvesTo": [],
+    "epCost": 120,
+    "statBonus": { "AGI": 4, "INT": 2 }
+  },
+  {
+    "id": "scythe_hunter",
+    "raceId": "spider",
+    "locKey": "form.scythe_hunter.name",
+    "evolvesTo": [],
+    "epCost": 120,
+    "statBonus": { "AGI": 3, "STR": 3 }
+  }
+]

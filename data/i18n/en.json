@@ -33,6 +33,9 @@
   "ui.tap_eye": "Tap an eye on the head.",
   "eyemode.passive": "Passive",
   "eyemode.active": "Active",
+  "ui.evolution": "Evolution",
+  "ui.form": "Form",
+  "ui.final_form": "Final form (for now).",
 
   "hunger.0": "Full",
   "hunger.1": "Hungry",
@@ -66,6 +69,7 @@
   "log.offline": "While away ({sec}s): +{ep} EP.",
   "log.no_eye": "No Appraisal eye slotted.",
   "log.flee": "{enemy} recoils in dread — its attack misses!",
+  "log.evolve_form": "Evolved into {form}!",
 
   "skill.venom_bite.name": "Venom Bite",
   "skill.venom_bite.desc": "Inject venom with a bite; damage over time.",
@@ -106,6 +110,14 @@
 
   "race.spider.name": "Spider",
   "race.human.name": "Human",
+
+  "form.hatchling_spider.name": "Hatchling Spider",
+  "form.lesser_weaver.name": "Lesser Weaver",
+  "form.venom_weaver.name": "Venom Weaver",
+  "form.blade_weaver.name": "Blade Weaver",
+  "form.greater_weaver.name": "Greater Weaver",
+  "form.shade_stalker.name": "Shade Stalker",
+  "form.scythe_hunter.name": "Scythe Hunter",
 
   "fusion.synergy": "Synergy",
   "fusion.quirk": "Quirk",

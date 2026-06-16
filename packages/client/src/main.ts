@@ -5,6 +5,7 @@ import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
 import { tick, manualAttack, deepRead, trainStamina } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
+import { evolve } from './game/evolution';
 import { fuse } from './game/fusion';
 import { load, save, clear } from './game/save';
 import { render, pushLog, setSelectedEye } from './ui';
@@ -92,6 +93,11 @@ async function init(): Promise<void> {
         save(state);
         draw();
       },
+      onEvolve: (formId) => {
+        evolve(state, content, formId, logFn);
+        save(state);
+        draw();
+      },
     });
   }
 
@@ -103,6 +109,7 @@ async function init(): Promise<void> {
 function migrate(s: GameState): void {
   const d = newGame();
   s.raceId ??= d.raceId;
+  s.formId ??= d.formId;
   s.eyeAssignments ??= d.eyeAssignments;
   s.fusionCache ??= d.fusionCache;
   s.outbox ??= d.outbox;

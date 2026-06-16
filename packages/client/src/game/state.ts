@@ -40,6 +40,7 @@ export interface GameState {
   ep: number;
   zoneId: string;
   raceId: string;
+  formId: string;
   /** slotId → assigned eye ability + mode (or null/absent = empty). */
   eyeAssignments: Record<string, EyeAssignment | null>;
   /** true = fighting (drains SP), false = resting (regenerates). */
@@ -92,6 +93,7 @@ export function newGame(): GameState {
     ep: 0,
     zoneId: 'lower_stratum',
     raceId: 'spider',
+    formId: 'hatchling_spider',
     eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
     combatActive: false,
     mpTransferUnlocked: false,
