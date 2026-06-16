@@ -159,7 +159,7 @@ function migrate(s: GameState): void {
   s.inventory ??= [];
   s.spRegenBonus ??= 0;
   s.level ??= 1;
-  s.tier ??= 1;
+  s.tier ??= 0;
   s.xp ??= 0;
   s.statPoints ??= 0;
   s.autosaveMin ??= 5;

@@ -51,7 +51,7 @@ export interface GameState {
   /** Passive growth from sustained play — raises SP *regen*, not max SP. */
   spRegenBonus: number;
   level: number;
-  /** Evolution tier (1 = hatchling). Effective progress = (tier-1)*10 + level. */
+  /** Evolution tier; starts at 0 (hidden) and shows from T1 after the first evolution. */
   tier: number;
   xp: number;
   statPoints: number;
@@ -118,7 +118,7 @@ export function newGame(): GameState {
     maxSp: 0,
     spRegenBonus: 0,
     level: 1,
-    tier: 1,
+    tier: 0,
     xp: 0,
     statPoints: 0,
     autosaveMin: 5,

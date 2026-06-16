@@ -129,7 +129,7 @@ function topbarHtml(state: GameState): string {
   const stage = hungerStage(state.hunger);
   return `
     <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-    <p class="sub">T${state.tier} · ${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${zone ? t(zone.locKey) : ''} · ${t(`act.${state.action}`)}${evo}</p>
+    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${zone ? t(zone.locKey) : ''} · ${t(`act.${state.action}`)}${evo}</p>
     <div class="bars">
       ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
       ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
@@ -420,7 +420,7 @@ function statsTab(state: GameState): string {
   const form = currentForm(state, CONTENT);
   return `
     <section class="panel">
-      <div class="row"><span>T${state.tier} · ${t('ui.level')} ${state.level}/${LEVEL_CAP}</span><span>${state.level >= LEVEL_CAP ? t('ui.evolution_ready') : `${t('ui.xp')} ${state.xp}/${xpToNext(state.level)}`}</span></div>
+      <div class="row"><span>${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level}/${LEVEL_CAP}</span><span>${state.level >= LEVEL_CAP ? t('ui.evolution_ready') : `${t('ui.xp')} ${state.xp}/${xpToNext(state.level)}`}</span></div>
       ${bar(state.level >= LEVEL_CAP ? 1 : state.xp, state.level >= LEVEL_CAP ? 1 : xpToNext(state.level), '#6d44d9')}
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints}</p>
       <ul>${statRows}</ul>
