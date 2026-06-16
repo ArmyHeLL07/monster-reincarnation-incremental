@@ -6,18 +6,24 @@ type Log = (e: LogEvent) => void;
 
 const CLASSES: FusionClass[] = ['synergy', 'quirk', 'backfire'];
 
-/** Curated names for known combos; everything else gets a deterministic temp tag. */
-const KNOWN: Record<string, string> = {
-  [comboKey('venom_bite', 'silk_thread')]: 'fusion.poison_web',
+interface KnownCombo {
+  locKeyName: string;
+  cls: FusionClass;
+}
+
+/** Curated combos: fixed name + class (overrides the hashed class). Everything else is procedural. */
+const KNOWN: Record<string, KnownCombo> = {
+  [comboKey('venom_bite', 'silk_thread')]: { locKeyName: 'fusion.poison_web', cls: 'synergy' },
 };
 
 /** Deterministic fusion — same combo always yields the same result (client-side, instant). */
 export function resolveFusion(aId: string, bId: string): FusionResult {
   const key = comboKey(aId, bId);
   const h = fnv1a(key);
-  const cls = CLASSES[h % CLASSES.length];
+  const known = KNOWN[key];
+  const cls = known?.cls ?? CLASSES[h % CLASSES.length];
   const magnitude = 5 + (h % 20);
-  const locKeyName = KNOWN[key] ?? 'fusion.temp';
+  const locKeyName = known?.locKeyName ?? 'fusion.temp';
   return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: cls, magnitude };
 }
 
