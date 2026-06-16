@@ -77,6 +77,13 @@ async function init(): Promise<void> {
       },
       onExportOutbox: () => exportOutbox(state),
       onBugReport: () => reportBug(state),
+      onSaveNow: () => {
+        save(state);
+        logFn({ key: 'log.saved' });
+        draw();
+      },
+      onExportSave: () => download('save.json', JSON.stringify(state)),
+      onImportSave: () => importSave(),
       onSelectEye: (slotId) => {
         setSelectedEye(slotId);
         draw();
@@ -102,6 +109,32 @@ async function init(): Promise<void> {
         draw();
       },
     });
+  }
+
+  // Import a save file (phone↔PC backup/transfer).
+  function importSave(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      void file.text().then((text) => {
+        try {
+          state = JSON.parse(text) as GameState;
+          migrate(state);
+          recomputeMaxes(state);
+          for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
+          lastFusion = null;
+          save(state);
+          logFn({ key: 'log.imported' });
+        } catch {
+          logFn({ key: 'log.import_failed' });
+        }
+        draw();
+      });
+    });
+    input.click();
   }
 
   clock.start(); // the GameClock always runs — idle accumulation never stops

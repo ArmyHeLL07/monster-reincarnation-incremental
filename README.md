@@ -16,6 +16,13 @@
 - **Data-driven & multilanguage by construction.** All content lives in JSON; no language is hardcoded — every player-facing string comes from a localization table.
 - **Mobile-first.** Responsive, touch-friendly UI — plays in the phone browser; the demo auto-deploys to GitHub Pages on every push to `main`.
 
+## AI & data
+
+Skill fusion is **AI-assisted**: the in-game result is computed instantly and offline, and
+anonymous *gameplay* data (which combinations players try, how they solve things — **never
+personal data**) is collected to help an AI suggest better fusion names, lore, and balance
+over time. Telemetry stays in a local outbox until you choose to share it.
+
 ## Tech stack
 
 | Layer | Choice |

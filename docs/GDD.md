@@ -695,9 +695,9 @@ Lore ve keşif kaydı:
 > Signal→event-emitter, save→`localStorage`.
 
 - **Tick sistemi**: tek bir `GameClock` (örn. 0.1s tick, `setInterval`/rAF) tüm idle birikimini sürer; UI ondan ayrık güncellenir.
-- **Data-driven tasarım**: skiller, evrimler, ırklar, düşmanlar **kodda hardcode değil**, JSON/Resource dosyalarında tanımlı → yeni içerik = yeni veri, kod değişmez. *(Marvion'daki "hiçbir şeyi hardcode etme" prensibinin oyun karşılığı.)*
+- **Data-driven tasarım**: skiller, evrimler, ırklar, düşmanlar **kodda hardcode değil**, JSON/Resource dosyalarında tanımlı → yeni içerik = yeni veri, kod değişmez. *("hiçbir şeyi hardcode etme" prensibi.)*
 - **Save sistemi**: JSON serialize; offline progress için son kayıt zamanı (timestamp) tutulur.
-- **Event/Signal mimarisi**: "skill level up", "evolution available" gibi olaylar sinyalle yayılır, UI dinler (Marvion'daki sinyal/observer mantığına benzer).
+- **Event/Signal mimarisi**: "skill level up", "evolution available" gibi olaylar sinyalle yayılır, UI dinler (sinyal/observer deseni).
 - **Lokalizasyon hazır**: tüm metin (skill adı, açıklama, bildirim) çeviri tablosundan gelir, hiçbir dil hardcode edilmez → çok dilli destek baştan açık.
 
 ---

@@ -58,7 +58,7 @@ function fusionSkillDef(content: Content, result: FusionResult): Skill {
   return {
     id: result.id,
     locKeyName: result.locKeyName,
-    locKeyDesc: result.locKeyName,
+    locKeyDesc: `${result.locKeyName}.desc`,
     kind: 'active',
     stats: ['STR'],
     lvMax: 10,

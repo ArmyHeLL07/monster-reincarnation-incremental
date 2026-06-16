@@ -17,6 +17,9 @@ export interface UiActions {
   onFuse: (aId: string, bId: string) => void;
   onExportOutbox: () => void;
   onBugReport: () => void;
+  onSaveNow: () => void;
+  onExportSave: () => void;
+  onImportSave: () => void;
   onSelectEye: (slotId: string) => void;
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
@@ -180,7 +183,8 @@ export function render(state: GameState, content: Content, actions: UiActions): 
 
   const log = logLines.map((l) => `<div>${l}</div>`).join('');
   const fz = actions.lastFusion
-    ? `<p><b>${fusionName(actions.lastFusion)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>`
+    ? `<p><b>${fusionName(actions.lastFusion)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>
+       <p class="muted">${t(`${actions.lastFusion.locKeyName}.desc`)}</p>`
     : '';
   const transfer = state.mpTransferUnlocked ? `<p class="muted">${t('ui.mp_transfer_on')}</p>` : '';
 
@@ -251,6 +255,11 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     ${det('settings')}
       <summary>${t('ui.settings')}</summary>
       <div class="controls">
+        <button id="savenow" class="ghost">${t('ui.save')}</button>
+        <button id="exportsave" class="ghost">${t('ui.export_save')}</button>
+        <button id="importsave" class="ghost">${t('ui.import_save')}</button>
+      </div>
+      <div class="controls">
         <button id="bugreport">${t('ui.bug_report')}</button>
         <button id="reset" class="ghost">${t('ui.reset')}</button>
       </div>
@@ -272,6 +281,9 @@ export function render(state: GameState, content: Content, actions: UiActions): 
   click('reset', actions.onReset);
   click('export', actions.onExportOutbox);
   click('bugreport', actions.onBugReport);
+  click('savenow', actions.onSaveNow);
+  click('exportsave', actions.onExportSave);
+  click('importsave', actions.onImportSave);
   click('fuse', () => {
     if (selectedA && selectedB) actions.onFuse(selectedA, selectedB);
   });

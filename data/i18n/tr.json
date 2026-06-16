@@ -26,6 +26,9 @@
   "ui.settings": "Ayarlar",
   "ui.bug_report": "Hata bildir",
   "ui.bug_prompt": "Hatayı veya geri bildirimi yaz:",
+  "ui.save": "Kaydet",
+  "ui.export_save": "Kaydı dışa aktar",
+  "ui.import_save": "Kaydı içe aktar",
   "ui.mp_transfer_on": "MP→Stamina aktarımı: açık",
   "ui.eyes": "Gözler (kafa)",
   "ui.eye": "Göz",
@@ -72,6 +75,9 @@
   "log.offline": "Yokken ({sec} sn): +{ep} EP.",
   "log.no_eye": "Takılı Appraisal gözü yok.",
   "log.no_ep": "EP yetersiz.",
+  "log.saved": "Kaydedildi.",
+  "log.imported": "Kayıt içe aktarıldı.",
+  "log.import_failed": "İçe aktarma başarısız (geçersiz dosya).",
   "log.flee": "{enemy} dehşetle irkildi — saldırısı boşa gitti!",
   "log.evolve_form": "{form} formuna evrimleştin!",
 
@@ -143,5 +149,19 @@
   "fusion.effect.reinforce": "Güçlendirilmiş",
   "fusion.effect.precise_strike": "İsabetli Vuruş",
   "fusion.effect.toxic_blood": "Zehirli Kan",
-  "fusion.effect.mix": "Melez Vuruş"
+  "fusion.effect.mix": "Melez Vuruş",
+
+  "fusion.effect.poison_web.desc": "Zehir her ipliğe sızar — bağlanan av kaçamadan zehirlenir.",
+  "fusion.effect.tainted_strike.desc": "Pençe zehirle buluşur: her darbe sinsi bir toksin bırakır.",
+  "fusion.effect.snare_strike.desc": "İplik hedefi sarar, darbe inmeden bir an önce.",
+  "fusion.effect.rend.desc": "Kesik ve delik birlikte derin, tırtıklı yaralar açar.",
+  "fusion.effect.flame_storm.desc": "Rüzgâr alevi körükler — kükreyen, yayılan bir ateş fırtınası.",
+  "fusion.effect.steam.desc": "Su ateşle buluşur, kavurucu ve kör edici buhara dönüşür.",
+  "fusion.effect.thermal_shock.desc": "Ateş ve buz çarpışır — kararsız, geri tepen ısı dökene de zarar verir.",
+  "fusion.effect.conductive_shock.desc": "Yıldırım ıslak hedefte koşar, çok daha sert vurur.",
+  "fusion.effect.mud.desc": "Toprak ve su yapışkan, yavaşlatan çamura dönüşür.",
+  "fusion.effect.reinforce.desc": "Aynıdan iki tane, birleşip yoğunlaşmış — sadece daha güçlü.",
+  "fusion.effect.precise_strike.desc": "Keskin bir zihin pençeyi tam zayıf noktaya yönlendirir.",
+  "fusion.effect.toxic_blood.desc": "Kendi zehrin, yenilenmeyi sinsi bir zehir rezervine çevirir.",
+  "fusion.effect.mix.desc": "İki uyumsuz güç zorla birleşti — kararsız bir melez vuruş."
 }

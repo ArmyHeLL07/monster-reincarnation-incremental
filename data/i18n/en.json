@@ -26,6 +26,9 @@
   "ui.settings": "Settings",
   "ui.bug_report": "Report a bug",
   "ui.bug_prompt": "Describe the bug or feedback:",
+  "ui.save": "Save",
+  "ui.export_save": "Export save",
+  "ui.import_save": "Import save",
   "ui.mp_transfer_on": "MP→Stamina transfer: unlocked",
   "ui.eyes": "Eyes (head)",
   "ui.eye": "Eye",
@@ -72,6 +75,9 @@
   "log.offline": "While away ({sec}s): +{ep} EP.",
   "log.no_eye": "No Appraisal eye slotted.",
   "log.no_ep": "Not enough EP.",
+  "log.saved": "Saved.",
+  "log.imported": "Save imported.",
+  "log.import_failed": "Import failed (invalid file).",
   "log.flee": "{enemy} recoils in dread — its attack misses!",
   "log.evolve_form": "Evolved into {form}!",
 
@@ -143,5 +149,19 @@
   "fusion.effect.reinforce": "Reinforced",
   "fusion.effect.precise_strike": "Precise Strike",
   "fusion.effect.toxic_blood": "Toxic Blood",
-  "fusion.effect.mix": "Hybrid Strike"
+  "fusion.effect.mix": "Hybrid Strike",
+
+  "fusion.effect.poison_web.desc": "Venom seeps along every strand — bound prey is poisoned with no escape.",
+  "fusion.effect.tainted_strike.desc": "Claw meets venom: each blow leaves a lingering, creeping toxin.",
+  "fusion.effect.snare_strike.desc": "Silk tangles the target a heartbeat before the blow lands.",
+  "fusion.effect.rend.desc": "Edge and point together tear deep, jagged wounds.",
+  "fusion.effect.flame_storm.desc": "Wind fans the flame into a roaring, spreading firestorm.",
+  "fusion.effect.steam.desc": "Water meets fire and erupts into scalding, blinding steam.",
+  "fusion.effect.thermal_shock.desc": "Fire and frost collide — unstable, recoiling heat that bites the caster too.",
+  "fusion.effect.conductive_shock.desc": "Lightning races through soaked targets, striking far harder.",
+  "fusion.effect.mud.desc": "Earth and water churn into clinging, slowing mud.",
+  "fusion.effect.reinforce.desc": "Two of a kind, fused and concentrated — simply stronger.",
+  "fusion.effect.precise_strike.desc": "A sharpened mind guides the claw to the exact weak point.",
+  "fusion.effect.toxic_blood.desc": "Your own venom turns regeneration into a creeping poison reserve.",
+  "fusion.effect.mix.desc": "Two unlike powers forced together — an unstable hybrid strike."
 }
