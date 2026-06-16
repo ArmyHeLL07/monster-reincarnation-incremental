@@ -654,6 +654,7 @@ Lore ve keşif kaydı:
 - Tüm paneller **collapsible** — oyuncu düzeni kendi kurar.
 - **Çok dilli (kritik):** Tüm log metinleri (hasar, ödül, kitap adı, olay) **lokalizasyon tablosundan** gelir. Hiçbir dil (Türkçe/İngilizce) hardcode edilmez — sayılar, tipler, etiketler, mesajlar dahil. Oyuncu hangi dildeyse log o dilde akar.
 - **Data-driven:** Log satırları olay tipinden üretilir (`{olay_tipi, kaynak, hedef, değer, tip}` → lokalize şablon), elle yazılmaz.
+- **Mobil-uyumlu (responsive):** UI telefon tarayıcısında rahat çalışır — dokunmatik-dostu hedefler, esnek yerleşim. Bedava demo GitHub Pages'te bir URL'den açılır (bkz §11).
 
 ---
 

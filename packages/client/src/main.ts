@@ -24,9 +24,11 @@ function resolveFusion(a: Skill, b: Skill) {
 }
 
 async function init(): Promise<void> {
+  // BASE_URL is "/" locally and "/<repo>/" on GitHub Pages — keep fetches base-relative.
+  const base = import.meta.env.BASE_URL;
   const lang = navigator.language.startsWith('tr') ? 'tr' : 'en';
-  dict = await fetch(`/i18n/${lang}.json`).then((r) => r.json());
-  const skills: Skill[] = await fetch('/skills.sample.json').then((r) => r.json());
+  dict = await fetch(`${base}i18n/${lang}.json`).then((r) => r.json());
+  const skills: Skill[] = await fetch(`${base}skills.sample.json`).then((r) => r.json());
 
   document.title = t('app.title');
   const app = document.querySelector<HTMLDivElement>('#app')!;

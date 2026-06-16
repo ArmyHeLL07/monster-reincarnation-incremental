@@ -14,6 +14,7 @@
 - **Branching race evolution**, damage-based resistances → immunities, hunger/feeding, a stamina (SP) layer that limits idle farming, and a layered eye-slot system (Appraisal, gradual info reveal).
 - **Deterministic skill fusion** with a shared **global discovery pool** (a combo is generated once, universe-wide) — the game is single-player, but discoveries are common.
 - **Data-driven & multilanguage by construction.** All content lives in JSON; no language is hardcoded — every player-facing string comes from a localization table.
+- **Mobile-first.** Responsive, touch-friendly UI — plays in the phone browser; the demo auto-deploys to GitHub Pages on every push to `main`.
 
 ## Tech stack
 

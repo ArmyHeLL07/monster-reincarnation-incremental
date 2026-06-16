@@ -4,10 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monster Reincarnation — Demo</title>
+    <meta name="theme-color" content="#14141a" />
     <style>
-      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-      button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
-      #out { font-weight: 600; }
+      * { box-sizing: border-box; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 1rem;
+        line-height: 1.6;
+        color: #e8e8ea;
+        background: #14141a;
+        -webkit-text-size-adjust: 100%;
+      }
+      h1 { font-size: clamp(1.4rem, 6vw, 2rem); margin: 0.2rem 0 1rem; }
+      h2 { font-size: clamp(1.1rem, 4.5vw, 1.4rem); }
+      ul { padding-left: 1.2rem; }
+      li { margin: 0.4rem 0; }
+      button {
+        width: 100%;
+        max-width: 360px;
+        padding: 0.9rem 1rem;
+        font-size: 1.05rem;
+        border: 0;
+        border-radius: 10px;
+        background: #6d44d9;
+        color: #fff;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      button:active { opacity: 0.85; }
+      #out { font-weight: 600; min-height: 1.5em; margin-top: 1rem; }
     </style>
   </head>
   <body>
