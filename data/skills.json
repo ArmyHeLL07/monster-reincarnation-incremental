@@ -1,0 +1,124 @@
+[
+  {
+    "id": "venom_bite",
+    "locKeyName": "skill.venom_bite.name",
+    "locKeyDesc": "skill.venom_bite.desc",
+    "kind": "active",
+    "stats": ["STR", "INT"],
+    "lvMax": 10,
+    "evolvesTo": ["lethal_venom"],
+    "damage": 4,
+    "damageType": "poison"
+  },
+  {
+    "id": "lethal_venom",
+    "locKeyName": "skill.lethal_venom.name",
+    "locKeyDesc": "skill.lethal_venom.desc",
+    "kind": "active",
+    "stats": ["STR", "INT"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 9,
+    "damageType": "poison"
+  },
+  {
+    "id": "sharp_claw",
+    "locKeyName": "skill.sharp_claw.name",
+    "locKeyDesc": "skill.sharp_claw.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": ["scythe_limb"],
+    "damage": 5,
+    "damageType": "physical"
+  },
+  {
+    "id": "scythe_limb",
+    "locKeyName": "skill.scythe_limb.name",
+    "locKeyDesc": "skill.scythe_limb.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 11,
+    "damageType": "pierce"
+  },
+  {
+    "id": "silk_thread",
+    "locKeyName": "skill.silk_thread.name",
+    "locKeyDesc": "skill.silk_thread.desc",
+    "kind": "active",
+    "stats": ["AGI", "INT"],
+    "lvMax": 10,
+    "evolvesTo": ["binding_silk"],
+    "damage": 2,
+    "damageType": "physical"
+  },
+  {
+    "id": "binding_silk",
+    "locKeyName": "skill.binding_silk.name",
+    "locKeyDesc": "skill.binding_silk.desc",
+    "kind": "active",
+    "stats": ["AGI", "INT"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 3,
+    "damageType": "physical"
+  },
+  {
+    "id": "quick_thought",
+    "locKeyName": "skill.quick_thought.name",
+    "locKeyDesc": "skill.quick_thought.desc",
+    "kind": "util",
+    "stats": ["INT"],
+    "lvMax": 10,
+    "evolvesTo": ["accelerated_mind"]
+  },
+  {
+    "id": "accelerated_mind",
+    "locKeyName": "skill.accelerated_mind.name",
+    "locKeyDesc": "skill.accelerated_mind.desc",
+    "kind": "util",
+    "stats": ["INT"],
+    "lvMax": 10,
+    "evolvesTo": []
+  },
+  {
+    "id": "hp_regen",
+    "locKeyName": "skill.hp_regen.name",
+    "locKeyDesc": "skill.hp_regen.desc",
+    "kind": "passive",
+    "stats": ["VIT"],
+    "lvMax": 10,
+    "evolvesTo": ["auto_heal"],
+    "hpRegen": 1
+  },
+  {
+    "id": "auto_heal",
+    "locKeyName": "skill.auto_heal.name",
+    "locKeyDesc": "skill.auto_heal.desc",
+    "kind": "passive",
+    "stats": ["VIT"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 3
+  },
+  {
+    "id": "appraisal",
+    "locKeyName": "skill.appraisal.name",
+    "locKeyDesc": "skill.appraisal.desc",
+    "kind": "eye",
+    "stats": ["INT", "WIS"],
+    "lvMax": 10,
+    "evolvesTo": ["insight"]
+  },
+  {
+    "id": "insight",
+    "locKeyName": "skill.insight.name",
+    "locKeyDesc": "skill.insight.desc",
+    "kind": "eye",
+    "stats": ["INT", "WIS"],
+    "lvMax": 10,
+    "evolvesTo": []
+  }
+]

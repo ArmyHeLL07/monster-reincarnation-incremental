@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monster Reincarnation — Demo</title>
+    <title>Monster Reincarnation</title>
     <meta name="theme-color" content="#14141a" />
     <style>
       * { box-sizing: border-box; }
@@ -17,14 +17,27 @@
         background: #14141a;
         -webkit-text-size-adjust: 100%;
       }
-      h1 { font-size: clamp(1.4rem, 6vw, 2rem); margin: 0.2rem 0 1rem; }
-      h2 { font-size: clamp(1.1rem, 4.5vw, 1.4rem); }
-      ul { padding-left: 1.2rem; }
-      li { margin: 0.4rem 0; }
+      h1 { font-size: clamp(1.4rem, 6vw, 2rem); margin: 0.2rem 0 0.6rem; }
+      h2 { font-size: clamp(1rem, 4.5vw, 1.25rem); margin: 0 0 0.5rem; }
+      ul { padding-left: 1.2rem; margin: 0; }
+      li { margin: 0.35rem 0; }
+      .muted { color: #9a9aa6; margin: 0.2rem 0 1rem; }
+      .panel {
+        background: #1d1d26;
+        border: 1px solid #2a2a36;
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        margin: 0.8rem 0;
+      }
+      .row { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
+      .bar { height: 12px; border-radius: 6px; background: #2a2a36; overflow: hidden; }
+      .bar-fill { height: 100%; transition: width 0.2s ease; }
+      .controls { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.8rem 0; }
       button {
-        width: 100%;
-        max-width: 360px;
-        padding: 0.9rem 1rem;
+        flex: 1 1 auto;
+        min-height: 48px;
+        min-width: 120px;
+        padding: 0.7rem 1rem;
         font-size: 1.05rem;
         border: 0;
         border-radius: 10px;
@@ -33,8 +46,10 @@
         cursor: pointer;
         touch-action: manipulation;
       }
+      button.ghost { background: #2a2a36; }
       button:active { opacity: 0.85; }
-      #out { font-weight: 600; min-height: 1.5em; margin-top: 1rem; }
+      .log { max-height: 220px; overflow-y: auto; font-size: 0.92rem; }
+      .log div { padding: 0.15rem 0; border-bottom: 1px solid #20202a; }
     </style>
   </head>
   <body>

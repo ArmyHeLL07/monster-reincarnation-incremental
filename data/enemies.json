@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cave_pest",
+    "locKey": "enemy.cave_pest.name",
+    "hp": 18,
+    "attack": 3,
+    "damageType": "physical",
+    "satiety": 8,
+    "ep": 1
+  },
+  {
+    "id": "ember_crawler",
+    "locKey": "enemy.ember_crawler.name",
+    "hp": 26,
+    "attack": 5,
+    "damageType": "fire",
+    "satiety": 12,
+    "ep": 2
+  }
+]

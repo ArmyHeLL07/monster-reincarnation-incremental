@@ -1,0 +1,8 @@
+[
+  {
+    "id": "lower_stratum",
+    "locKey": "zone.lower_stratum.name",
+    "enemyPool": ["cave_pest", "ember_crawler"],
+    "spDrainMult": 1
+  }
+]

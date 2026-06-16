@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fire_res",
+    "locKey": "res.fire_res.name",
+    "damageType": "fire",
+    "lvMax": 10,
+    "nullityKey": "res.flame_immunity.name"
+  },
+  {
+    "id": "physical_res",
+    "locKey": "res.physical_res.name",
+    "damageType": "physical",
+    "lvMax": 10,
+    "nullityKey": "res.blunt_immunity.name"
+  }
+]
