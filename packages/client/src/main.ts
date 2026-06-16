@@ -89,7 +89,7 @@ async function init(): Promise<void> {
       state.lang = l;
       void loadI18n(base, l).then(() => {
         save(state);
-        render(state);
+        mount(state, content, actions); // re-build shell so sidebar tab labels update too
       });
     },
     onSaveNow: () => {
