@@ -2,7 +2,7 @@
   {
     "id": "lower_stratum",
     "locKey": "zone.lower_stratum.name",
-    "enemyPool": ["cave_pest", "ember_crawler"],
+    "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"],
     "spDrainMult": 1
   }
 ]

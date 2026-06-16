@@ -21,8 +21,12 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
   const elA = elementOf(content, aId);
   const elB = elementOf(content, bId);
 
+  // Hand-authored special pairs (by skill id) take priority over the element matrix.
+  const special = content.fusionRules.special?.find(
+    (r) => (r.a === aId && r.b === bId) || (r.a === bId && r.b === aId),
+  );
   const rule =
-    elA && elB
+    !special && elA && elB
       ? content.fusionRules.matrix.find(
           (r) => (r.a === elA && r.b === elB) || (r.a === elB && r.b === elA),
         )
@@ -30,7 +34,10 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
 
   let cls: FusionClass;
   let effect: string;
-  if (rule) {
+  if (special) {
+    cls = special.cls;
+    effect = special.effect;
+  } else if (rule) {
     cls = rule.cls;
     effect = rule.effect;
   } else if (elA && elB && elA === elB) {

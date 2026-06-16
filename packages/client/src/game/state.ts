@@ -109,6 +109,7 @@ export function newGame(): GameState {
     resistances: [
       { id: 'fire_res', level: 0, exp: 0, nullified: false },
       { id: 'physical_res', level: 0, exp: 0, nullified: false },
+      { id: 'poison_res', level: 0, exp: 0, nullified: false },
     ],
     enemy: null,
     fusionCache: {},

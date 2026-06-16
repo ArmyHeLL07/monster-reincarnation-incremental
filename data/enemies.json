@@ -16,5 +16,14 @@
     "damageType": "fire",
     "satiety": 12,
     "ep": 2
+  },
+  {
+    "id": "venom_toad",
+    "locKey": "enemy.venom_toad.name",
+    "hp": 22,
+    "attack": 4,
+    "damageType": "poison",
+    "satiety": 10,
+    "ep": 2
   }
 ]

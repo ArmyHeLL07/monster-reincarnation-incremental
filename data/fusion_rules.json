@@ -14,5 +14,9 @@
     { "a": "fire", "b": "frost", "effect": "thermal_shock", "cls": "backfire" },
     { "a": "water", "b": "lightning", "effect": "conductive_shock", "cls": "synergy" },
     { "a": "earth", "b": "water", "effect": "mud", "cls": "quirk" }
+  ],
+  "special": [
+    { "a": "sharp_claw", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
+    { "a": "hp_regen", "b": "venom_bite", "effect": "toxic_blood", "cls": "quirk" }
   ]
 }

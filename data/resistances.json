@@ -12,5 +12,12 @@
     "damageType": "physical",
     "lvMax": 10,
     "nullityKey": "res.blunt_immunity.name"
+  },
+  {
+    "id": "poison_res",
+    "locKey": "res.poison_res.name",
+    "damageType": "poison",
+    "lvMax": 10,
+    "nullityKey": "res.poison_immunity.name"
   }
 ]

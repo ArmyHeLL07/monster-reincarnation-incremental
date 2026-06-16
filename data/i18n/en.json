@@ -105,9 +105,12 @@
   "res.flame_immunity.name": "Flame Immunity",
   "res.physical_res.name": "Physical Resistance",
   "res.blunt_immunity.name": "Blunt Immunity",
+  "res.poison_res.name": "Poison Resistance",
+  "res.poison_immunity.name": "Poison Immunity",
 
   "enemy.cave_pest.name": "Cave Pest",
   "enemy.ember_crawler.name": "Ember Crawler",
+  "enemy.venom_toad.name": "Venom Toad",
 
   "zone.lower_stratum.name": "Lower Stratum",
 
@@ -136,5 +139,7 @@
   "fusion.effect.thermal_shock": "Thermal Shock",
   "fusion.effect.conductive_shock": "Conductive Shock",
   "fusion.effect.mud": "Mud",
-  "fusion.effect.reinforce": "Reinforced"
+  "fusion.effect.reinforce": "Reinforced",
+  "fusion.effect.precise_strike": "Precise Strike",
+  "fusion.effect.toxic_blood": "Toxic Blood"
 }

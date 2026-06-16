@@ -117,6 +117,8 @@ export interface FusionRule {
 export interface FusionRules {
   magnitudePools: Record<FusionClass, [number, number]>;
   matrix: FusionRule[];
+  /** Hand-authored exceptions keyed by specific skill ids (a/b are skill ids, not elements). */
+  special?: FusionRule[];
 }
 
 /** Deterministic fusion result. Numbers come from data pools, never from an LLM. */

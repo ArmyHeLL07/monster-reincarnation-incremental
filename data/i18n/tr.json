@@ -105,9 +105,12 @@
   "res.flame_immunity.name": "Alev Bağışıklığı",
   "res.physical_res.name": "Fiziksel Direnç",
   "res.blunt_immunity.name": "Künt Bağışıklık",
+  "res.poison_res.name": "Zehir Direnci",
+  "res.poison_immunity.name": "Zehir Bağışıklığı",
 
   "enemy.cave_pest.name": "Mağara Haşeresi",
   "enemy.ember_crawler.name": "Köz Sürüngeni",
+  "enemy.venom_toad.name": "Zehir Kurbağası",
 
   "zone.lower_stratum.name": "Alt Katman",
 
@@ -136,5 +139,7 @@
   "fusion.effect.thermal_shock": "Termal Şok",
   "fusion.effect.conductive_shock": "İletken Şok",
   "fusion.effect.mud": "Çamur",
-  "fusion.effect.reinforce": "Güçlendirilmiş"
+  "fusion.effect.reinforce": "Güçlendirilmiş",
+  "fusion.effect.precise_strike": "İsabetli Vuruş",
+  "fusion.effect.toxic_blood": "Zehirli Kan"
 }

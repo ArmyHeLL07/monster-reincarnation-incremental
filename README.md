@@ -69,4 +69,6 @@ The full game design lives in [`docs/`](./docs):
 
 ## License
 
-UNLICENSED / all rights reserved (for now).
+**Proprietary — all rights reserved.** Copyright © 2026 Atıl (ArmyHeLL07).
+No use, copying, modification, or distribution without prior written permission.
+See [`LICENSE`](./LICENSE).
