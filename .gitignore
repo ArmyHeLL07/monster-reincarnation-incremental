@@ -24,3 +24,6 @@ outbox/
 .idea/
 .DS_Store
 Thumbs.db
+
+# internal Claude operating manual (Marvion strategy, paths) — never publish
+CLAUDE.md
