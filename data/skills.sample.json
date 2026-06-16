@@ -1,0 +1,29 @@
+[
+  {
+    "id": "venom_bite",
+    "locKeyName": "skill.venom_bite.name",
+    "locKeyDesc": "skill.venom_bite.desc",
+    "kind": "active",
+    "stats": ["STR", "INT"],
+    "lvMax": 10,
+    "evolvesTo": ["lethal_venom"]
+  },
+  {
+    "id": "silk_thread",
+    "locKeyName": "skill.silk_thread.name",
+    "locKeyDesc": "skill.silk_thread.desc",
+    "kind": "active",
+    "stats": ["AGI", "INT"],
+    "lvMax": 10,
+    "evolvesTo": ["binding_silk"]
+  },
+  {
+    "id": "sharp_claw",
+    "locKeyName": "skill.sharp_claw.name",
+    "locKeyDesc": "skill.sharp_claw.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": ["scythe_limb"]
+  }
+]

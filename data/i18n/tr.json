@@ -1,0 +1,16 @@
+{
+  "app.title": "Canavar Reenkarnasyonu — Demo",
+  "ui.skills": "Skiller",
+  "ui.fuse": "Birleştir: Zehirli Isırık + İpek İplik",
+  "skill.venom_bite.name": "Zehirli Isırık",
+  "skill.venom_bite.desc": "Isırıkla zehir enjekte eder; zamanla hasar verir.",
+  "skill.silk_thread.name": "İpek İplik",
+  "skill.silk_thread.desc": "Temel iplik; bağlar ve yavaşlatır.",
+  "skill.sharp_claw.name": "Keskin Pençe",
+  "skill.sharp_claw.desc": "Keskin bir uzuv; temel fiziksel vuruş.",
+  "fusion.synergy": "Sinerji",
+  "fusion.quirk": "Tuhaf",
+  "fusion.backfire": "Geri Tepme",
+  "fusion.poison_web": "Zehirli Ağ",
+  "fusion.result": "Füzyon → {name} [{cls}], güç {mag}"
+}

@@ -1,0 +1,16 @@
+{
+  "app.title": "Monster Reincarnation — Demo",
+  "ui.skills": "Skills",
+  "ui.fuse": "Fuse: Venom Bite + Silk Thread",
+  "skill.venom_bite.name": "Venom Bite",
+  "skill.venom_bite.desc": "Inject venom with a bite; damage over time.",
+  "skill.silk_thread.name": "Silk Thread",
+  "skill.silk_thread.desc": "Basic silk; bind and slow.",
+  "skill.sharp_claw.name": "Sharp Claw",
+  "skill.sharp_claw.desc": "A sharp limb; basic physical strike.",
+  "fusion.synergy": "Synergy",
+  "fusion.quirk": "Quirk",
+  "fusion.backfire": "Backfire",
+  "fusion.poison_web": "Poison Web",
+  "fusion.result": "Fusion → {name} [{cls}], magnitude {mag}"
+}

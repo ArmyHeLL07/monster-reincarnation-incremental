@@ -1,0 +1,13 @@
+name = "mri-server"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+
+# Backend bindings — uncomment and fill in after `wrangler login` and creating the resources:
+#
+# [[r2_buckets]]
+# binding = "MAILBOX"
+# bucket_name = "mri-mailbox"
+#
+# [[kv_namespaces]]
+# binding = "FUSION_CACHE"
+# id = "<kv-namespace-id>"
