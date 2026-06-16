@@ -1,10 +1,14 @@
+import type { FusionResult } from '@mri/shared';
 import { loadI18n } from './i18n';
-import { loadContent } from './game/content';
+import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
-import { newGame, type LogEvent } from './game/state';
-import { tick, manualAttack } from './game/combat';
+import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
+import { tick, manualAttack, deepRead, trainStamina } from './game/combat';
+import { fuse } from './game/fusion';
 import { load, save, clear } from './game/save';
 import { render, pushLog } from './ui';
+
+const OFFLINE_TICK_CAP = 1800; // ~30 min of offline progress at 1s/tick
 
 async function init(): Promise<void> {
   // BASE_URL is "/" locally and "/<repo>/" on GitHub Pages.
@@ -14,10 +18,15 @@ async function init(): Promise<void> {
   const content = await loadContent(base);
 
   let state = load() ?? newGame();
+  recomputeMaxes(state); // re-derive maxes in case formulas changed since the save
+
+  let lastFusion: FusionResult | null = null;
 
   function logFn(e: LogEvent): void {
     pushLog(e.key, e.params);
   }
+
+  applyOffline(state, content, logFn);
 
   const clock = new GameClock(1000, () => {
     tick(state, content, logFn);
@@ -27,9 +36,10 @@ async function init(): Promise<void> {
 
   function draw(): void {
     render(state, content, {
-      autoRunning: clock.running,
-      onToggleAuto: () => {
-        clock.toggle();
+      lastFusion,
+      onToggleCombat: () => {
+        state.combatActive = !state.combatActive;
+        save(state);
         draw();
       },
       onAttack: () => {
@@ -37,17 +47,55 @@ async function init(): Promise<void> {
         save(state);
         draw();
       },
-      onReset: () => {
-        clock.stop();
-        clear();
-        state = newGame();
+      onDeepRead: () => {
+        deepRead(state, content, logFn);
         save(state);
         draw();
       },
+      onTrain: () => {
+        trainStamina(state, logFn);
+        save(state);
+        draw();
+      },
+      onReset: () => {
+        clear();
+        state = newGame();
+        lastFusion = null;
+        save(state);
+        draw();
+      },
+      onFuse: (a, b) => {
+        lastFusion = fuse(state, a, b, logFn);
+        save(state);
+        draw();
+      },
+      onExportOutbox: () => exportOutbox(state),
     });
   }
 
+  clock.start(); // the GameClock always runs — idle accumulation never stops
   draw();
+}
+
+/** Simulate elapsed offline time (capped), then summarize. */
+function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => void): void {
+  const elapsedSec = Math.floor((Date.now() - state.lastSeen) / 1000);
+  if (elapsedSec < 5) return;
+  const ticks = Math.min(elapsedSec, OFFLINE_TICK_CAP);
+  const beforeEp = state.ep;
+  const silent: (e: LogEvent) => void = () => {};
+  for (let i = 0; i < ticks; i++) tick(state, content, silent);
+  log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - beforeEp } });
+}
+
+function exportOutbox(state: GameState): void {
+  const blob = new Blob([JSON.stringify(state.outbox, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'outbox.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 void init();

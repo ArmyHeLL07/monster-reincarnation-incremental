@@ -1,11 +1,19 @@
 import type { DamageType } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
-import { deriveMaxHp } from './state';
+import { recomputeMaxes, MAX_HUNGER } from './state';
 
 type Log = (e: LogEvent) => void;
 
 const LV_LABEL = 'ui.lv';
+const BASE_SP_DRAIN = 1;
+const REST_SP_REGEN = 5;
+const REST_MP_REGEN = 2;
+const DEEP_READ_MP_COST = 5;
+const HUNGER_RISE_COMBAT = 0.7;
+const HUNGER_RISE_REST = 0.3;
+const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
+const STAMINA_TRAIN_GAIN = 3;
 
 function skillExpToNext(level: number): number {
   return level * 10;
@@ -17,41 +25,160 @@ function dmgTypeKey(type?: DamageType): string {
   return `dmgtype.${type ?? 'physical'}`;
 }
 
-/** One combat round: passives → ensure enemy → player hits → enemy retaliates → resolve. */
+// ---- hunger / fatigue modifiers --------------------------------------------
+
+function hungerStage(state: GameState): number {
+  const h = state.hunger;
+  if (h < 50) return 0;
+  if (h < 75) return 1;
+  if (h < 90) return 2;
+  return 3;
+}
+function regenMult(state: GameState): number {
+  return [1, 0.6, 0.3, 0][hungerStage(state)];
+}
+function damageMult(state: GameState): number {
+  const hunger = [1, 1, 0.8, 0.6][hungerStage(state)];
+  const fatigue = state.sp <= 0 ? 0.5 : 1;
+  return hunger * fatigue;
+}
+
+// ---- main tick -------------------------------------------------------------
+
+/** One real-time tick — combat round when engaged, otherwise a rest round. */
 export function tick(state: GameState, content: Content, log: Log): void {
-  applyPassives(state, content);
+  if (state.combatActive) {
+    state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT);
+    combatRound(state, content, log);
+  } else {
+    state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_REST);
+    restRound(state, content);
+  }
+  if (hungerStage(state) >= 3) {
+    state.hp = Math.max(0, state.hp - 1); // starvation erodes HP
+    if (state.hp <= 0) onDeath(state, log);
+  }
+  state.lastSeen = Date.now();
+}
+
+/** A single manual strike — engages combat and hits once (no enemy retaliation). */
+export function manualAttack(state: GameState, content: Content, log: Log): void {
+  state.combatActive = true;
   if (!state.enemy) spawnEnemy(state, content, log);
   if (!state.enemy) return;
-
+  drainStamina(state, content);
   playerAttack(state, content, log);
+  if (state.enemy.hp <= 0) onKill(state, content, log);
+}
 
+/** Active Appraisal deep-read — spends MP to reveal full enemy info (GDD §5.0.7). */
+export function deepRead(state: GameState, content: Content, log: Log): void {
+  const enemy = state.enemy;
+  if (!enemy) return;
+  if (state.mp < DEEP_READ_MP_COST) {
+    log({ key: 'log.no_mp' });
+    return;
+  }
+  state.mp -= DEEP_READ_MP_COST;
+  const def = content.enemies.get(enemy.id);
+  if (def) {
+    log({
+      key: 'log.appraise',
+      params: {
+        enemy: def.locKey,
+        type: dmgTypeKey(def.damageType),
+        atk: def.attack,
+        hp: enemy.hp,
+        maxhp: enemy.maxHp,
+      },
+    });
+  }
+  const slot = state.skills.find((s) => s.id === 'appraisal' || s.id === 'insight');
+  if (slot) addSkillExp(content, slot, 5, log);
+}
+
+/** Stamina training — raise max SP (player action). */
+export function trainStamina(state: GameState, log: Log): void {
+  state.spTrainingBonus += STAMINA_TRAIN_GAIN;
+  recomputeMaxes(state);
+  state.sp = state.maxSp;
+  log({ key: 'log.train_stamina', params: { max: state.maxSp } });
+}
+
+// ---- rounds ----------------------------------------------------------------
+
+function combatRound(state: GameState, content: Content, log: Log): void {
+  if (!state.enemy) spawnEnemy(state, content, log);
+  if (!state.enemy) return;
+  applyCombatRegen(state, content);
+  drainStamina(state, content);
+  playerAttack(state, content, log);
   if (state.enemy.hp <= 0) {
     onKill(state, content, log);
   } else {
     enemyAttack(state, content, log);
   }
-
   if (state.hp <= 0) onDeath(state, log);
-
-  state.lastSeen = Date.now();
 }
 
-/** A single manual strike (no enemy retaliation) — the active-play complement to auto-battle. */
-export function manualAttack(state: GameState, content: Content, log: Log): void {
-  if (!state.enemy) spawnEnemy(state, content, log);
-  if (!state.enemy) return;
-  playerAttack(state, content, log);
-  if (state.enemy.hp <= 0) onKill(state, content, log);
+function restRound(state: GameState, content: Content): void {
+  state.enemy = null;
+  const mult = regenMult(state);
+  state.sp = Math.min(state.maxSp, state.sp + Math.round((REST_SP_REGEN + staminaRegenSum(state, content)) * mult));
+  state.mp = Math.min(state.maxMp, state.mp + Math.round(REST_MP_REGEN * mult));
+  const hp = passiveHpRegen(state, content);
+  if (hp > 0) state.hp = Math.min(state.maxHp, state.hp + Math.round(hp * mult));
 }
 
-function applyPassives(state: GameState, content: Content): void {
-  let regen = 0;
+// ---- stamina ---------------------------------------------------------------
+
+function staminaRegenSum(state: GameState, content: Content): number {
+  let sum = 0;
   for (const slot of state.skills) {
     const def = content.skills.get(slot.id);
-    if (def?.hpRegen) regen += def.hpRegen;
+    if (def?.spRegen) sum += def.spRegen;
   }
-  if (regen > 0 && state.hp < state.maxHp) {
-    state.hp = Math.min(state.maxHp, state.hp + regen);
+  return sum;
+}
+
+function drainStamina(state: GameState, content: Content): void {
+  const zone = content.zones.get(state.zoneId);
+  const mult = zone?.spDrainMult ?? 1;
+  const drain = Math.max(0, Math.round(BASE_SP_DRAIN * mult) - staminaRegenSum(state, content));
+  if (drain <= 0) return;
+  const after = state.sp - drain;
+  if (after >= 0) {
+    state.sp = after;
+    return;
+  }
+  // SP empty → cascade: MP (if transfer unlocked) then HP.
+  const deficit = -after;
+  state.sp = 0;
+  if (state.mpTransferUnlocked && state.mp > 0) {
+    const fromMp = Math.min(state.mp, deficit);
+    state.mp -= fromMp;
+    const rem = deficit - fromMp;
+    if (rem > 0) state.hp = Math.max(0, state.hp - rem);
+  } else {
+    state.hp = Math.max(0, state.hp - deficit);
+  }
+}
+
+// ---- combat helpers --------------------------------------------------------
+
+function passiveHpRegen(state: GameState, content: Content): number {
+  let sum = 0;
+  for (const slot of state.skills) {
+    const def = content.skills.get(slot.id);
+    if (def?.hpRegen) sum += def.hpRegen;
+  }
+  return sum;
+}
+
+function applyCombatRegen(state: GameState, content: Content): void {
+  const hp = passiveHpRegen(state, content);
+  if (hp > 0 && state.hp < state.maxHp) {
+    state.hp = Math.min(state.maxHp, state.hp + Math.round(hp * regenMult(state)));
   }
 }
 
@@ -86,12 +213,12 @@ function playerAttack(state: GameState, content: Content, log: Log): void {
   const def = content.skills.get(slot.id);
   if (!def) return;
 
-  const dmg = (def.damage ?? 0) + Math.floor(state.stats.STR / 5);
+  const raw = (def.damage ?? 0) + Math.floor(state.stats.STR / 5);
+  const dmg = Math.max(1, Math.round(raw * damageMult(state)));
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
   addSkillExp(content, slot, 2, log);
 
-  // Always-on skills (passive/eye/util) train slowly each round.
   for (const s of state.skills) {
     const d = content.skills.get(s.id);
     if (d && d.kind !== 'active') addSkillExp(content, s, 1, log);
@@ -116,15 +243,22 @@ function onKill(state: GameState, content: Content, log: Log): void {
   const def = content.enemies.get(enemy.id);
   if (def) {
     state.ep += def.ep;
+    state.hunger = Math.max(0, state.hunger - def.satiety); // auto-eat
     log({ key: 'log.kill', params: { enemy: def.locKey, ep: def.ep } });
   }
   state.enemy = null;
+
+  if (!state.mpTransferUnlocked && Math.random() < MP_TRANSFER_DISCOVER_CHANCE) {
+    state.mpTransferUnlocked = true;
+    log({ key: 'log.discover_mp_transfer' });
+  }
 }
 
 function onDeath(state: GameState, log: Log): void {
   log({ key: 'log.death' });
-  state.maxHp = deriveMaxHp(state.stats);
+  recomputeMaxes(state);
   state.hp = state.maxHp;
+  state.sp = state.maxSp;
   state.enemy = null;
 }
 
