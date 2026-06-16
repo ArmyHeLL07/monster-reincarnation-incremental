@@ -7,7 +7,7 @@
     "stats": ["STR", "INT"],
     "lvMax": 10,
     "evolvesTo": ["lethal_venom"],
-    "damage": 4,
+    "damage": 2,
     "damageType": "poison",
     "element": "poison"
   },
@@ -19,7 +19,7 @@
     "stats": ["STR", "INT"],
     "lvMax": 10,
     "evolvesTo": [],
-    "damage": 9,
+    "damage": 5,
     "damageType": "poison",
     "element": "poison"
   },
@@ -31,7 +31,7 @@
     "stats": ["STR", "AGI"],
     "lvMax": 10,
     "evolvesTo": ["scythe_limb"],
-    "damage": 5,
+    "damage": 3,
     "damageType": "physical",
     "element": "physical"
   },
@@ -43,7 +43,7 @@
     "stats": ["STR", "AGI"],
     "lvMax": 10,
     "evolvesTo": [],
-    "damage": 11,
+    "damage": 6,
     "damageType": "pierce",
     "element": "pierce"
   },
@@ -55,7 +55,7 @@
     "stats": ["AGI", "INT"],
     "lvMax": 10,
     "evolvesTo": ["binding_silk"],
-    "damage": 2,
+    "damage": 1,
     "damageType": "physical",
     "element": "silk"
   },
@@ -67,7 +67,7 @@
     "stats": ["AGI", "INT"],
     "lvMax": 10,
     "evolvesTo": [],
-    "damage": 3,
+    "damage": 2,
     "damageType": "physical",
     "element": "silk"
   },

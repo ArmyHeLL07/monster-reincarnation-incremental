@@ -24,7 +24,7 @@ const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
 
 function skillExpToNext(level: number): number {
-  return level * 10;
+  return 15 + level * 10; // slower early (Lv1→2 = 25, was 10)
 }
 function resistExpToNext(level: number): number {
   return 20 + level * 20;
@@ -275,8 +275,11 @@ function playerAttack(state: GameState, content: Content, log: Log): void {
   const dmg = Math.max(1, Math.round(raw * damageMult(state)));
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
-  addSkillExp(content, slot, 2, log);
 
+  // Skill exp scales with enemy strength + a small skill-level factor (≈ ep + level×0.3).
+  const ep = content.enemies.get(enemy.id)?.ep ?? 1;
+  const gain = Math.max(1, ep + 1 + Math.floor(slot.level * 0.3));
+  addSkillExp(content, slot, gain, log);
   for (const s of state.skills) {
     if (s !== slot) addSkillExp(content, s, 1, log);
   }

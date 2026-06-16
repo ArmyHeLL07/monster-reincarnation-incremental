@@ -2,8 +2,8 @@
   {
     "id": "cave_pest",
     "locKey": "enemy.cave_pest.name",
-    "hp": 18,
-    "attack": 3,
+    "hp": 12,
+    "attack": 2,
     "damageType": "physical",
     "satiety": 8,
     "ep": 1
@@ -11,8 +11,8 @@
   {
     "id": "ember_crawler",
     "locKey": "enemy.ember_crawler.name",
-    "hp": 26,
-    "attack": 5,
+    "hp": 18,
+    "attack": 3,
     "damageType": "fire",
     "damageType2": "pierce",
     "satiety": 12,
@@ -21,8 +21,8 @@
   {
     "id": "venom_toad",
     "locKey": "enemy.venom_toad.name",
-    "hp": 22,
-    "attack": 4,
+    "hp": 15,
+    "attack": 3,
     "damageType": "poison",
     "satiety": 10,
     "ep": 2

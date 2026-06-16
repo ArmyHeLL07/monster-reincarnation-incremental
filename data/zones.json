@@ -11,13 +11,13 @@
     "locKey": "zone.middle_stratum.name",
     "enemyPool": ["cave_lurker", "flame_jaw"],
     "spDrainMult": 2,
-    "levelReq": 8
+    "levelReq": 4
   },
   {
     "id": "deep_warren",
     "locKey": "zone.deep_warren.name",
     "enemyPool": ["venom_brute", "bone_render"],
     "spDrainMult": 3,
-    "levelReq": 20
+    "levelReq": 8
   }
 ]
