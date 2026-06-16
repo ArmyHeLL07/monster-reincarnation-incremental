@@ -102,8 +102,19 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
   if (slot) addSkillExp(content, slot, 5, log);
 }
 
-/** Stamina training — raise max SP (player action). */
+/** EP cost of the next stamina training (rises as you train — no free infinite growth). */
+export function staminaTrainCost(state: GameState): number {
+  return 10 + Math.floor(state.spTrainingBonus / STAMINA_TRAIN_GAIN) * 5;
+}
+
+/** Stamina training — spend EP to raise max SP (player action). */
 export function trainStamina(state: GameState, log: Log): void {
+  const cost = staminaTrainCost(state);
+  if (state.ep < cost) {
+    log({ key: 'log.no_ep' });
+    return;
+  }
+  state.ep -= cost;
   state.spTrainingBonus += STAMINA_TRAIN_GAIN;
   recomputeMaxes(state);
   state.sp = state.maxSp;
@@ -224,9 +235,10 @@ function playerAttack(state: GameState, content: Content, log: Log): void {
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
   addSkillExp(content, slot, 2, log);
 
+  // Every other carried skill also trains slowly each round, so lower-damage and
+  // passive/eye skills still level and evolve (no dead skills).
   for (const s of state.skills) {
-    const d = content.skills.get(s.id);
-    if (d && d.kind !== 'active') addSkillExp(content, s, 1, log);
+    if (s !== slot) addSkillExp(content, s, 1, log);
   }
 }
 

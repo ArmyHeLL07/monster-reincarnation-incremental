@@ -4,6 +4,7 @@ import type { GameState } from './game/state';
 import { MAX_HUNGER } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve } from './game/evolution';
+import { staminaTrainCost } from './game/combat';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
@@ -28,6 +29,12 @@ const logLines: string[] = [];
 let selectedA: string | null = null;
 let selectedB: string | null = null;
 let selectedEye: string | null = null;
+
+// Which collapsible panels are open — preserved across the per-tick re-render.
+const openPanels = new Set<string>(['evolution', 'eyes', 'log']);
+function det(id: string): string {
+  return `<details data-panel="${id}"${openPanels.has(id) ? ' open' : ''} class="panel">`;
+}
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
   logLines.unshift(tmsg(key, params));
@@ -206,32 +213,32 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       <button id="deepread">${t('ui.deepread')}</button>
     </div>
     <div class="controls">
-      <button id="train" class="ghost">${t('ui.train')}</button>
+      <button id="train" class="ghost">${t('ui.train')} (${staminaTrainCost(state)} EP)</button>
     </div>
 
-    <details open class="panel">
+    ${det('evolution')}
       <summary>${t('ui.evolution')}</summary>
       <p class="muted">${t('ui.form')}: <b>${formName}</b></p>
       <div class="controls">${evoBtns}</div>
     </details>
 
-    <details open class="panel">
+    ${det('eyes')}
       <summary>${t('ui.eyes')}</summary>
       ${headView(state, content)}
       ${eyePanel(state, content)}
     </details>
 
-    <details class="panel">
+    ${det('skills')}
       <summary>${t('ui.skills')}</summary>
       <ul>${skills}</ul>
     </details>
 
-    <details class="panel">
+    ${det('resistances')}
       <summary>${t('ui.resistances')}</summary>
       <ul>${resists}</ul>
     </details>
 
-    <details class="panel">
+    ${det('fusion')}
       <summary>${t('ui.fusion')}</summary>
       <div class="controls">
         <select id="fa">${skillOptions(state, content, selectedA)}</select>
@@ -241,12 +248,12 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       ${fz}
     </details>
 
-    <details class="panel">
+    ${det('telemetry')}
       <summary>${t('ui.telemetry')} (${state.outbox.length})</summary>
       <button id="export" class="ghost">${t('ui.export')}</button>
     </details>
 
-    <details class="panel">
+    ${det('settings')}
       <summary>${t('ui.settings')}</summary>
       <div class="controls">
         <button id="bugreport">${t('ui.bug_report')}</button>
@@ -254,7 +261,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       </div>
     </details>
 
-    <details open class="panel">
+    ${det('log')}
       <summary>${t('ui.log')}</summary>
       <div class="log">${log}</div>
     </details>
@@ -300,6 +307,15 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-form');
       if (id) actions.onEvolve(id);
+    });
+  });
+  // Preserve which panels are open across the per-tick re-render.
+  app.querySelectorAll<HTMLDetailsElement>('details[data-panel]').forEach((d) => {
+    d.addEventListener('toggle', () => {
+      const id = d.getAttribute('data-panel');
+      if (!id) return;
+      if (d.open) openPanels.add(id);
+      else openPanels.delete(id);
     });
   });
 }

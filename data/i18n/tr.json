@@ -71,6 +71,7 @@
   "log.fuse_cached": "Füzyon (cache): [{cls}] güç {mag}.",
   "log.offline": "Yokken ({sec} sn): +{ep} EP.",
   "log.no_eye": "Takılı Appraisal gözü yok.",
+  "log.no_ep": "EP yetersiz.",
   "log.flee": "{enemy} dehşetle irkildi — saldırısı boşa gitti!",
   "log.evolve_form": "{form} formuna evrimleştin!",
 

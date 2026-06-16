@@ -71,6 +71,7 @@
   "log.fuse_cached": "Fusion (cached): [{cls}] power {mag}.",
   "log.offline": "While away ({sec}s): +{ep} EP.",
   "log.no_eye": "No Appraisal eye slotted.",
+  "log.no_ep": "Not enough EP.",
   "log.flee": "{enemy} recoils in dread — its attack misses!",
   "log.evolve_form": "Evolved into {form}!",
 
