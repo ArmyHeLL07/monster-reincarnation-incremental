@@ -4,63 +4,130 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monster Reincarnation</title>
-    <meta name="theme-color" content="#14141a" />
+    <meta name="theme-color" content="#0a0910" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet" />
     <style>
+      :root {
+        --abyss: #0a0910;
+        --stone: #15131c;
+        --stone2: #1e1a28;
+        --chitin: #2c2838;
+        --venom: #8ab23f;
+        --venom-dim: #586f2c;
+        --ember: #e0902f;
+        --blood: #bb4140;
+        --mp: #4f86c2;
+        --sp: #d2a73a;
+        --bone: #e8e3d6;
+        --ash: #989384;
+        --rad: 12px;
+        --disp: 'Cinzel', Georgia, serif;
+        --body: system-ui, -apple-system, sans-serif;
+        --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
       * { box-sizing: border-box; }
       body {
-        font-family: system-ui, -apple-system, sans-serif;
-        margin: 0; padding: 0.6rem; line-height: 1.55;
-        color: #e8e8ea; background: #14141a; -webkit-text-size-adjust: 100%;
+        margin: 0; padding: 0.7rem; line-height: 1.5; color: var(--bone);
+        font-family: var(--body); -webkit-text-size-adjust: 100%;
+        background: radial-gradient(1100px 480px at 50% -8%, #1b1828 0%, var(--abyss) 62%) fixed, var(--abyss);
       }
-      h2 { font-size: clamp(1rem, 4.5vw, 1.2rem); margin: 0 0 0.5rem; }
+      h2 {
+        font-family: var(--disp); font-weight: 700; font-size: 0.86rem;
+        letter-spacing: 0.14em; text-transform: uppercase; color: var(--venom);
+        margin: 0 0 0.6rem;
+      }
       ul { padding-left: 1.1rem; margin: 0; }
-      li { margin: 0.3rem 0; }
-      .muted { color: #9a9aa6; }
+      li { margin: 0.32rem 0; }
+      .muted { color: var(--ash); }
 
       .game {
-        display: grid; gap: 0.6rem; max-width: 920px; margin: 0 auto;
-        grid-template-columns: 150px 1fr;
+        display: grid; gap: 0.6rem; max-width: 940px; margin: 0 auto;
+        grid-template-columns: 168px 1fr;
         grid-template-areas: "top top" "side main" "side log";
       }
-      .topbar { grid-area: top; background: #1a1a22; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.6rem 0.9rem; }
-      .topbar .brand { font-weight: 700; font-size: 1.1rem; }
-      .topbar .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.8rem; margin-top: 0.5rem; }
+      .topbar {
+        grid-area: top; border: 1px solid var(--chitin); border-radius: var(--rad);
+        padding: 0.7rem 1rem; background: linear-gradient(180deg, #1c1827, #131019);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .topbar .brand {
+        display: flex; align-items: center; gap: 0.5rem;
+        font-family: var(--disp); font-weight: 700; font-size: 1.06rem;
+        letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone);
+      }
+      .topbar .brand .mark { color: var(--venom); display: inline-flex; filter: drop-shadow(0 0 5px rgba(138, 178, 63, 0.5)); }
+      .topbar .sub { font-size: 0.8rem; margin: 0.35rem 0 0; color: var(--ash); }
+      .topbar .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 0.9rem; margin-top: 0.6rem; }
+
       .sidebar { grid-area: side; display: flex; flex-direction: column; gap: 0.4rem; }
       .content { grid-area: main; min-width: 0; }
       .logpanel { grid-area: log; }
 
-      .tabbtn { background: #1d1d26; color: #cfcfd6; border: 1px solid #2a2a36; border-radius: 10px; min-height: 44px; padding: 0.5rem 0.7rem; font-size: 0.98rem; text-align: left; cursor: pointer; }
-      .tabbtn.active { background: #6d44d9; color: #fff; border-color: #6d44d9; }
+      .tabbtn {
+        display: flex; align-items: center; gap: 0.55rem;
+        background: linear-gradient(180deg, #1d1928, #161320); color: var(--ash);
+        border: 1px solid var(--chitin); border-radius: 10px; min-height: 46px; padding: 0.5rem 0.75rem;
+        font-family: var(--disp); font-weight: 600; letter-spacing: 0.08em; font-size: 0.82rem;
+        text-transform: uppercase; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+      .tabbtn svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+      .tabbtn:hover { color: var(--bone); border-color: var(--venom-dim); }
+      .tabbtn.active { color: var(--abyss); background: linear-gradient(180deg, var(--venom), var(--venom-dim)); border-color: var(--venom); box-shadow: 0 0 14px rgba(138, 178, 63, 0.3); }
 
-      .panel { background: #1d1d26; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.7rem 0.9rem; margin: 0 0 0.6rem; }
-      .row { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.3rem; }
-      .statline { margin-bottom: 0.4rem; }
-      .bar { height: 11px; border-radius: 6px; background: #2a2a36; overflow: hidden; }
-      .bar-fill { height: 100%; transition: width 0.25s ease; }
+      .panel {
+        position: relative; background: linear-gradient(180deg, var(--stone2), var(--stone));
+        border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.8rem 0.95rem; margin: 0 0 0.7rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 6px 16px rgba(0, 0, 0, 0.3);
+      }
+      .panel::before {
+        content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        border-radius: var(--rad) var(--rad) 0 0;
+        background: linear-gradient(90deg, transparent, var(--venom-dim), transparent); opacity: 0.7;
+      }
+      .row { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.3rem; align-items: baseline; }
+      .row span:last-child { font-family: var(--mono); color: var(--bone); font-size: 0.85rem; }
+      .statline { margin-bottom: 0.45rem; }
+      .bar { height: 10px; border-radius: 6px; background: #0e0c14; overflow: hidden; border: 1px solid #241f2e; }
+      .bar-fill { height: 100%; transition: width 0.3s ease; box-shadow: 0 0 8px rgba(0, 0, 0, 0.3) inset; }
 
       .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
-      button { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 1rem; border: 0; border-radius: 10px; background: #6d44d9; color: #fff; cursor: pointer; touch-action: manipulation; }
-      button.ghost { background: #2a2a36; }
-      button.active { background: #3fa34d; }
-      button:disabled { opacity: 0.45; cursor: default; }
-      button:active { opacity: 0.85; }
-      select { min-height: 44px; border-radius: 10px; background: #2a2a36; color: #e8e8ea; border: 1px solid #3a3a48; padding: 0 0.5rem; flex: 1 1 auto; }
+      button {
+        font-family: var(--body); min-height: 44px; padding: 0.55rem 0.95rem; font-size: 0.96rem;
+        border: 1px solid var(--chitin); border-radius: 10px; cursor: pointer; touch-action: manipulation;
+        background: linear-gradient(180deg, #272233, #1d1a27); color: var(--bone);
+        transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+      }
+      button:hover { border-color: var(--venom-dim); }
+      button.ghost { background: #191522; }
+      button.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
+      button:disabled { opacity: 0.4; cursor: default; }
+      button:active { transform: translateY(1px); }
+      select { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); }
 
       .actbtn { flex: 1 1 auto; }
       .statadd, .discard { min-height: 30px; min-width: 36px; padding: 0.1rem 0.5rem; font-size: 1rem; }
-      .ability.on { outline: 2px solid #fff; outline-offset: 1px; }
+      .ability.on { outline: 2px solid var(--venom); outline-offset: 1px; }
+      .evoready { color: var(--ember); font-family: var(--disp); letter-spacing: 0.08em; animation: pulse 1.8s ease-in-out infinite; }
 
-      .log { max-height: 240px; overflow-y: auto; font-size: 0.9rem; background: #16161d; border: 1px solid #2a2a36; border-radius: 12px; padding: 0.5rem 0.8rem; }
-      .log div { padding: 0.12rem 0; border-bottom: 1px solid #20202a; }
-      .head { width: 100%; max-width: 300px; height: auto; display: block; margin: 0.3rem auto 0.7rem; }
+      .log {
+        max-height: 240px; overflow-y: auto; font-family: var(--mono); font-size: 0.8rem; color: var(--ash);
+        background: #0e0c14; border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.55rem 0.8rem;
+      }
+      .log div { padding: 0.14rem 0; border-bottom: 1px solid #1a1724; }
+      .log div:first-child { color: var(--bone); }
+      .head { width: 100%; max-width: 300px; height: auto; display: block; margin: 0.3rem auto 0.7rem; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); }
       .eye:active circle { opacity: 0.8; }
 
+      @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
         .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; }
-        .sidebar { flex-direction: row; overflow-x: auto; }
-        .tabbtn { flex: 1 0 auto; text-align: center; min-width: 84px; }
+        .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; }
+        .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; }
         .topbar .bars { grid-template-columns: 1fr; }
       }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
     </style>
   </head>
   <body>

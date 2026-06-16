@@ -32,6 +32,17 @@ const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'stats', 'settings'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
+const svg = (inner: string) => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+const EYE_SVG = svg('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>');
+const ICONS: Record<Tab, string> = {
+  combat: svg('<path d="M14 3l7 7-3 3-7-7zM4 20l6-6M3 21l2-1 1-2"/>'),
+  map: svg('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'),
+  skills: svg('<path d="M12 2v6M12 16v6M2 12h6M16 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>'),
+  body: EYE_SVG,
+  stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
+  settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
+};
+
 let CONTENT: Content;
 let ACTIONS: UiActions;
 let CURSTATE: GameState;
@@ -77,7 +88,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     <div class="game">
       <header id="topbar" class="topbar"></header>
       <nav id="sidebar" class="sidebar">
-        ${TABS.map((tb) => `<button class="tabbtn" data-tab="${tb}">${t(`tab.${tb}`)}</button>`).join('')}
+        ${TABS.map((tb) => `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`).join('')}
       </nav>
       <main id="content" class="content"></main>
       <section class="logpanel"><div class="log" id="log"></div></section>
@@ -113,16 +124,16 @@ export function render(state: GameState): void {
 function topbarHtml(state: GameState): string {
   const form = currentForm(state, CONTENT);
   const zone = CONTENT.zones.get(state.zoneId);
-  const evo = evolutionReady(state, CONTENT) ? ` · <b style="color:#e0b341">${t('ui.evolution_ready')}</b>` : '';
+  const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
   const stage = hungerStage(state.hunger);
   return `
-    <div class="brand">${t('app.title')}</div>
-    <div class="muted">${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${zone ? t(zone.locKey) : ''} · ${t(`act.${state.action}`)}${evo}</div>
+    <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
+    <p class="sub">${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${zone ? t(zone.locKey) : ''} · ${t(`act.${state.action}`)}${evo}</p>
     <div class="bars">
-      ${statBar(t('ui.hp'), state.hp, state.maxHp, '#3fa34d')}
-      ${statBar(t('ui.mp'), state.mp, state.maxMp, '#3f6fa3')}
-      ${statBar(t('ui.sp'), state.sp, state.maxSp, '#c9a227')}
-      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#3fa34d', '#c9a227', '#d98324', '#c0444f'][stage])}</div>
+      ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
+      ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
+      ${statBar(t('ui.sp'), state.sp, state.maxSp, '#d2a73a')}
+      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
     </div>
   `;
 }
@@ -184,7 +195,7 @@ function enemyView(state: GameState): string {
     if (tier >= 3) bits.push(`ATK ${def.attack}`);
   }
   const hpText = tier >= 4 ? `${inst.hp}/${inst.maxHp}` : '';
-  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#c0444f')}`;
+  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
 }
 
 function combatTab(state: GameState): string {
