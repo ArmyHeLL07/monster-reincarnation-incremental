@@ -138,5 +138,14 @@
     "lvMax": 10,
     "evolvesTo": [],
     "eyeModes": ["passive"]
+  },
+  {
+    "id": "larder",
+    "locKeyName": "skill.larder.name",
+    "locKeyDesc": "skill.larder.desc",
+    "kind": "util",
+    "stats": ["VIT"],
+    "lvMax": 10,
+    "evolvesTo": []
   }
 ]

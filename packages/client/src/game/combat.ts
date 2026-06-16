@@ -3,6 +3,7 @@ import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, MAX_HUNGER } from './state';
 import { appraisalAssigned, dreadChance } from './eyes';
+import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 
 type Log = (e: LogEvent) => void;
 
@@ -67,7 +68,8 @@ export function tick(state: GameState, content: Content, log: Log): void {
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_REST);
     restRound(state, content);
   }
-  autoEat(state); // eat from the stocked reserve when hungry (AFK feeding)
+  decayFood(state); // stored corpses rot over time (unless refrigerated)
+  autoEat(state, content, log); // eat a stored corpse when hungry (AFK feeding)
   growStaminaMax(state); // passive max-SP growth (more in combat / low HP, +0.01 idle)
   if (hungerStage(state) >= 3) {
     state.hp = Math.max(0, state.hp - 1); // starvation erodes HP (only when no food left)
@@ -78,13 +80,35 @@ export function tick(state: GameState, content: Content, log: Log): void {
 
 const EAT_THRESHOLD = 50;
 
-/** Auto-eat from the stocked food reserve once hungry — keeps an AFK player fed. */
-function autoEat(state: GameState): void {
-  if (state.hunger >= EAT_THRESHOLD && state.food > 0) {
-    const eat = Math.min(state.food, state.hunger);
-    state.food -= eat;
-    state.hunger -= eat;
+/** Auto-eat a stored corpse once hungry — freshest-about-to-spoil first; keeps an AFK player fed. */
+function autoEat(state: GameState, content: Content, log: Log): void {
+  if (state.hunger < EAT_THRESHOLD || state.inventory.length === 0) return;
+  let idx = -1;
+  let mostDecayed = -1;
+  for (let i = 0; i < state.inventory.length; i++) {
+    const it = state.inventory[i];
+    if (!isRotten(it) && it.decay > mostDecayed) {
+      mostDecayed = it.decay;
+      idx = i;
+    }
   }
+  if (idx >= 0) {
+    const [eaten] = state.inventory.splice(idx, 1);
+    state.hunger = Math.max(0, state.hunger - eaten.satiety);
+    return;
+  }
+  // Only rotten corpses left → no nourishment, but eating one grinds poison resistance.
+  const rotten = state.inventory.shift();
+  if (rotten) {
+    addResistExp(state, content, 'poison', 3, log);
+    log({ key: 'log.ate_rotten' });
+  }
+}
+
+/** Stored corpses rot over time unless the larder is refrigerated. */
+function decayFood(state: GameState): void {
+  if (refrigerated(state)) return;
+  for (const item of state.inventory) item.decay += 1;
 }
 
 /** Max SP grows with play: faster in combat and at low HP (risk), a tiny trickle while idle. */
@@ -285,7 +309,12 @@ function onKill(state: GameState, content: Content, log: Log): void {
   const def = content.enemies.get(enemy.id);
   if (def) {
     state.ep += def.ep;
-    state.food += def.satiety; // stock the kill as food (auto-eaten when hungry)
+    // Store the corpse in the larder if there's room; otherwise eat it now (no waste).
+    if (state.inventory.length < maxFoodSlots(state)) {
+      state.inventory.push({ enemyId: enemy.id, satiety: def.satiety, decay: 0 });
+    } else {
+      state.hunger = Math.max(0, state.hunger - def.satiety);
+    }
     log({ key: 'log.kill', params: { enemy: def.locKey, ep: def.ep } });
   }
   state.enemy = null;

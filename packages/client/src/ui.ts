@@ -4,6 +4,7 @@ import type { GameState } from './game/state';
 import { MAX_HUNGER } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve } from './game/evolution';
+import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
@@ -179,6 +180,19 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     })
     .join('');
 
+  const inventoryList =
+    state.inventory
+      .map((it) => {
+        const def = content.enemies.get(it.enemyId);
+        const name = def ? t(def.locKey) : it.enemyId;
+        const freshPct = Math.max(0, Math.round((1 - it.decay / SPOIL_THRESHOLD) * 100));
+        const status = isRotten(it)
+          ? `<span style="color:#c0444f">${t('ui.rotten')}</span>`
+          : `${t('ui.fresh')} ${freshPct}%`;
+        return `<li>${name} — ${status}</li>`;
+      })
+      .join('') || `<span class="muted">${t('ui.empty')}</span>`;
+
   const log = logLines.map((l) => `<div>${l}</div>`).join('');
   const fz = actions.lastFusion
     ? `<p><b>${fusionName(actions.lastFusion)}</b> · ${t(`fusion.${actions.lastFusion.cls}`)} · ${actions.lastFusion.magnitude}</p>
@@ -194,7 +208,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       ${statRow(t('ui.hp'), state.hp, state.maxHp, '#3fa34d')}
       ${statRow(t('ui.mp'), state.mp, state.maxMp, '#3f6fa3')}
       ${statRow(t('ui.sp'), state.sp, state.maxSp, '#c9a227')}
-      <div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)} · ${t('ui.food')}: ${Math.round(state.food)}</span></div>
+      <div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)} · ${t('ui.inventory')}: ${state.inventory.length}/${maxFoodSlots(state)}</span></div>
       ${bar(state.hunger, MAX_HUNGER, hungerColor)}
       ${transfer}
     </section>
@@ -230,6 +244,11 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     ${det('resistances')}
       <summary>${t('ui.resistances')}</summary>
       <ul>${resists}</ul>
+    </details>
+
+    ${det('larder')}
+      <summary>${t('ui.inventory')} (${state.inventory.length}/${maxFoodSlots(state)})${refrigerated(state) ? ' ❄' : ''}</summary>
+      <ul>${inventoryList}</ul>
     </details>
 
     ${det('fusion')}

@@ -147,7 +147,7 @@ function migrate(s: GameState): void {
   s.outbox ??= d.outbox;
   s.spTrainingBonus ??= 0;
   s.hunger ??= 0;
-  s.food ??= 0;
+  s.inventory ??= [];
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;

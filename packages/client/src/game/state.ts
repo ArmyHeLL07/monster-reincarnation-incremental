@@ -5,6 +5,13 @@ export interface EyeAssignment {
   mode: EyeMode;
 }
 
+/** A stored corpse in the larder. `decay` rises each tick (unless refrigerated). */
+export interface FoodItem {
+  enemyId: string;
+  satiety: number;
+  decay: number;
+}
+
 export interface SkillSlot {
   id: string;
   level: number;
@@ -37,8 +44,8 @@ export interface GameState {
   spTrainingBonus: number;
   /** 0 = full, MAX_HUNGER = starving. */
   hunger: number;
-  /** Stocked food (from kills) — auto-eaten when hunger crosses the threshold. */
-  food: number;
+  /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
+  inventory: FoodItem[];
   ep: number;
   zoneId: string;
   raceId: string;
@@ -94,7 +101,7 @@ export function newGame(): GameState {
     maxSp: 0,
     spTrainingBonus: 0,
     hunger: 0,
-    food: 0,
+    inventory: [],
     ep: 0,
     zoneId: 'lower_stratum',
     raceId: 'spider',
@@ -111,6 +118,7 @@ export function newGame(): GameState {
       { id: 'appraisal', level: 1, exp: 0 },
       { id: 'dread_gaze', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
+      { id: 'larder', level: 1, exp: 0 },
     ],
     resistances: [
       { id: 'fire_res', level: 0, exp: 0, nullified: false },
