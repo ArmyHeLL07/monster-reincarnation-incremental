@@ -1,0 +1,18 @@
+{
+  "magnitudePools": {
+    "synergy": [8, 20],
+    "quirk": [4, 14],
+    "backfire": [2, 8]
+  },
+  "matrix": [
+    { "a": "poison", "b": "silk", "effect": "poison_web", "cls": "synergy" },
+    { "a": "poison", "b": "physical", "effect": "tainted_strike", "cls": "synergy" },
+    { "a": "physical", "b": "silk", "effect": "snare_strike", "cls": "quirk" },
+    { "a": "physical", "b": "pierce", "effect": "rend", "cls": "synergy" },
+    { "a": "fire", "b": "wind", "effect": "flame_storm", "cls": "synergy" },
+    { "a": "water", "b": "fire", "effect": "steam", "cls": "quirk" },
+    { "a": "fire", "b": "frost", "effect": "thermal_shock", "cls": "backfire" },
+    { "a": "water", "b": "lightning", "effect": "conductive_shock", "cls": "synergy" },
+    { "a": "earth", "b": "water", "effect": "mud", "cls": "quirk" }
+  ]
+}

@@ -1,40 +1,66 @@
 import { comboKey, fnv1a } from '@mri/shared';
 import type { FusionClass, FusionResult } from '@mri/shared';
+import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
 
 type Log = (e: LogEvent) => void;
 
 const CLASSES: FusionClass[] = ['synergy', 'quirk', 'backfire'];
 
-interface KnownCombo {
-  locKeyName: string;
-  cls: FusionClass;
+function elementOf(content: Content, id: string): string | undefined {
+  return content.skills.get(id)?.element;
 }
 
-/** Curated combos: fixed name + class (overrides the hashed class). Everything else is procedural. */
-const KNOWN: Record<string, KnownCombo> = {
-  [comboKey('venom_bite', 'silk_thread')]: { locKeyName: 'fusion.poison_web', cls: 'synergy' },
-};
-
-/** Deterministic fusion — same combo always yields the same result (client-side, instant). */
-export function resolveFusion(aId: string, bId: string): FusionResult {
+/**
+ * Deterministic fusion — element reaction matrix decides effect+class; the hash picks a
+ * magnitude from the class pool. Same combo always yields the same result (instant, offline).
+ */
+export function resolveFusion(aId: string, bId: string, content: Content): FusionResult {
   const key = comboKey(aId, bId);
   const h = fnv1a(key);
-  const known = KNOWN[key];
-  const cls = known?.cls ?? CLASSES[h % CLASSES.length];
-  const magnitude = 5 + (h % 20);
-  const locKeyName = known?.locKeyName ?? 'fusion.temp';
-  return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: cls, magnitude };
+  const elA = elementOf(content, aId);
+  const elB = elementOf(content, bId);
+
+  const rule =
+    elA && elB
+      ? content.fusionRules.matrix.find(
+          (r) => (r.a === elA && r.b === elB) || (r.a === elB && r.b === elA),
+        )
+      : undefined;
+
+  let cls: FusionClass;
+  let effect: string;
+  if (rule) {
+    cls = rule.cls;
+    effect = rule.effect;
+  } else if (elA && elB && elA === elB) {
+    cls = 'synergy';
+    effect = 'reinforce';
+  } else {
+    cls = CLASSES[h % CLASSES.length];
+    effect = 'mix';
+  }
+
+  const pool = content.fusionRules.magnitudePools[cls];
+  const magnitude = pool[0] + (h % (pool[1] - pool[0] + 1));
+  const locKeyName = effect === 'mix' ? 'fusion.temp' : `fusion.effect.${effect}`;
+  return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: effect, magnitude };
 }
 
 /**
  * Produce a fusion: caches the combo (global-pool skeleton — produced once) and records
  * a telemetry attempt to the local outbox. Display name is localized by the UI layer.
  */
-export function fuse(state: GameState, aId: string, bId: string, log: Log): FusionResult {
+export function fuse(
+  state: GameState,
+  content: Content,
+  aId: string,
+  bId: string,
+  log: Log,
+): FusionResult {
   const key = comboKey(aId, bId);
   const cached = state.fusionCache[key];
-  const result = cached ?? resolveFusion(aId, bId);
+  const result = cached ?? resolveFusion(aId, bId, content);
   const discovered = !cached;
   if (discovered) state.fusionCache[key] = result;
 

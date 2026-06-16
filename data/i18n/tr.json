@@ -23,6 +23,9 @@
   "ui.fuse": "Birleştir",
   "ui.telemetry": "Telemetri (outbox)",
   "ui.export": "Outbox'ı dışa aktar",
+  "ui.settings": "Ayarlar",
+  "ui.bug_report": "Hata bildir",
+  "ui.bug_prompt": "Hatayı veya geri bildirimi yaz:",
   "ui.mp_transfer_on": "MP→Stamina aktarımı: açık",
   "ui.eyes": "Gözler (kafa)",
   "ui.eye": "Göz",
@@ -123,5 +126,15 @@
   "fusion.quirk": "Tuhaf",
   "fusion.backfire": "Geri Tepme",
   "fusion.poison_web": "Zehirli Ağ",
-  "fusion.temp": "{a} + {b} Füzyonu"
+  "fusion.temp": "{a} + {b} Füzyonu",
+  "fusion.effect.poison_web": "Zehirli Ağ",
+  "fusion.effect.tainted_strike": "Zehirli Vuruş",
+  "fusion.effect.snare_strike": "Tuzak Vuruşu",
+  "fusion.effect.rend": "Parçalama",
+  "fusion.effect.flame_storm": "Alev Fırtınası",
+  "fusion.effect.steam": "Buhar",
+  "fusion.effect.thermal_shock": "Termal Şok",
+  "fusion.effect.conductive_shock": "İletken Şok",
+  "fusion.effect.mud": "Çamur",
+  "fusion.effect.reinforce": "Güçlendirilmiş"
 }

@@ -1,4 +1,4 @@
-import type { Skill, Resistance, Enemy, Zone, Race, EvolutionForm } from '@mri/shared';
+import type { Skill, Resistance, Enemy, Zone, Race, EvolutionForm, FusionRules } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
 export interface Content {
@@ -8,16 +8,18 @@ export interface Content {
   zones: Map<string, Zone>;
   races: Map<string, Race>;
   forms: Map<string, EvolutionForm>;
+  fusionRules: FusionRules;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, zones, races, forms] = await Promise.all([
+  const [skills, resistances, enemies, zones, races, forms, fusionRules] = await Promise.all([
     fetchJson<Skill[]>(`${base}skills.json`),
     fetchJson<Resistance[]>(`${base}resistances.json`),
     fetchJson<Enemy[]>(`${base}enemies.json`),
     fetchJson<Zone[]>(`${base}zones.json`),
     fetchJson<Race[]>(`${base}races.json`),
     fetchJson<EvolutionForm[]>(`${base}evolutions.json`),
+    fetchJson<FusionRules>(`${base}fusion_rules.json`),
   ]);
   return {
     skills: byId(skills),
@@ -26,6 +28,7 @@ export async function loadContent(base: string): Promise<Content> {
     zones: byId(zones),
     races: byId(races),
     forms: byId(forms),
+    fusionRules,
   };
 }
 

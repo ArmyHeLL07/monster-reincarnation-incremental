@@ -8,7 +8,8 @@
     "lvMax": 10,
     "evolvesTo": ["lethal_venom"],
     "damage": 4,
-    "damageType": "poison"
+    "damageType": "poison",
+    "element": "poison"
   },
   {
     "id": "lethal_venom",
@@ -19,7 +20,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 9,
-    "damageType": "poison"
+    "damageType": "poison",
+    "element": "poison"
   },
   {
     "id": "sharp_claw",
@@ -30,7 +32,8 @@
     "lvMax": 10,
     "evolvesTo": ["scythe_limb"],
     "damage": 5,
-    "damageType": "physical"
+    "damageType": "physical",
+    "element": "physical"
   },
   {
     "id": "scythe_limb",
@@ -41,7 +44,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 11,
-    "damageType": "pierce"
+    "damageType": "pierce",
+    "element": "pierce"
   },
   {
     "id": "silk_thread",
@@ -52,7 +56,8 @@
     "lvMax": 10,
     "evolvesTo": ["binding_silk"],
     "damage": 2,
-    "damageType": "physical"
+    "damageType": "physical",
+    "element": "silk"
   },
   {
     "id": "binding_silk",
@@ -63,7 +68,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 3,
-    "damageType": "physical"
+    "damageType": "physical",
+    "element": "silk"
   },
   {
     "id": "quick_thought",

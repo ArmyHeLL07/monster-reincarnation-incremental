@@ -68,6 +68,8 @@ export interface Skill {
   spRegen?: number;
   /** For `kind: 'eye'` abilities — which modes this eye ability allows. */
   eyeModes?: EyeMode[];
+  /** Element tag used by the fusion reaction matrix (e.g. "poison", "physical", "silk"). */
+  element?: string;
 }
 
 /** Damage-based resistance line — evolves to a Nullity (immunity) at lvMax. */
@@ -102,6 +104,20 @@ export interface Zone {
 
 /** Fusion outcome class — see GDD §5.0.3. */
 export type FusionClass = 'synergy' | 'quirk' | 'backfire';
+
+/** One element-reaction rule (order-independent on a/b). */
+export interface FusionRule {
+  a: string;
+  b: string;
+  effect: string;
+  cls: FusionClass;
+}
+
+/** Data-driven fusion config: element matrix + per-class magnitude pools (GDD §5.0.3). */
+export interface FusionRules {
+  magnitudePools: Record<FusionClass, [number, number]>;
+  matrix: FusionRule[];
+}
 
 /** Deterministic fusion result. Numbers come from data pools, never from an LLM. */
 export interface FusionResult {

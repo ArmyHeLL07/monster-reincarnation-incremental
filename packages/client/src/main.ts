@@ -1,5 +1,5 @@
 import type { FusionResult } from '@mri/shared';
-import { loadI18n } from './i18n';
+import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
@@ -69,11 +69,12 @@ async function init(): Promise<void> {
         draw();
       },
       onFuse: (a, b) => {
-        lastFusion = fuse(state, a, b, logFn);
+        lastFusion = fuse(state, content, a, b, logFn);
         save(state);
         draw();
       },
       onExportOutbox: () => exportOutbox(state),
+      onBugReport: () => reportBug(state),
       onSelectEye: (slotId) => {
         setSelectedEye(slotId);
         draw();
@@ -134,14 +135,34 @@ function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => 
   log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - beforeEp } });
 }
 
-function exportOutbox(state: GameState): void {
-  const blob = new Blob([JSON.stringify(state.outbox, null, 2)], { type: 'application/json' });
+function download(filename: string, text: string): void {
+  const blob = new Blob([text], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'outbox.json';
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function exportOutbox(state: GameState): void {
+  download('outbox.json', JSON.stringify(state.outbox, null, 2));
+}
+
+/** Bug/feedback report — saved as a JSON file (no backend / no email exposed yet). */
+function reportBug(state: GameState): void {
+  const desc = window.prompt(t('ui.bug_prompt')) ?? '';
+  if (!desc.trim()) return;
+  const report = {
+    description: desc.trim(),
+    formId: state.formId,
+    raceId: state.raceId,
+    ep: state.ep,
+    lang: navigator.language,
+    userAgent: navigator.userAgent,
+    ts: Date.now(),
+  };
+  download(`bugreport-${report.ts}.json`, JSON.stringify(report, null, 2));
 }
 
 void init();

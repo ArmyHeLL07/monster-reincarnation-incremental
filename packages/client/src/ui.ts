@@ -15,6 +15,7 @@ export interface UiActions {
   onReset: () => void;
   onFuse: (aId: string, bId: string) => void;
   onExportOutbox: () => void;
+  onBugReport: () => void;
   onSelectEye: (slotId: string) => void;
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
@@ -206,7 +207,6 @@ export function render(state: GameState, content: Content, actions: UiActions): 
     </div>
     <div class="controls">
       <button id="train" class="ghost">${t('ui.train')}</button>
-      <button id="reset" class="ghost">${t('ui.reset')}</button>
     </div>
 
     <details open class="panel">
@@ -246,6 +246,14 @@ export function render(state: GameState, content: Content, actions: UiActions): 
       <button id="export" class="ghost">${t('ui.export')}</button>
     </details>
 
+    <details class="panel">
+      <summary>${t('ui.settings')}</summary>
+      <div class="controls">
+        <button id="bugreport">${t('ui.bug_report')}</button>
+        <button id="reset" class="ghost">${t('ui.reset')}</button>
+      </div>
+    </details>
+
     <details open class="panel">
       <summary>${t('ui.log')}</summary>
       <div class="log">${log}</div>
@@ -261,6 +269,7 @@ export function render(state: GameState, content: Content, actions: UiActions): 
   click('train', actions.onTrain);
   click('reset', actions.onReset);
   click('export', actions.onExportOutbox);
+  click('bugreport', actions.onBugReport);
   click('fuse', () => {
     if (selectedA && selectedB) actions.onFuse(selectedA, selectedB);
   });

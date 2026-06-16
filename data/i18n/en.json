@@ -23,6 +23,9 @@
   "ui.fuse": "Fuse",
   "ui.telemetry": "Telemetry (outbox)",
   "ui.export": "Export outbox",
+  "ui.settings": "Settings",
+  "ui.bug_report": "Report a bug",
+  "ui.bug_prompt": "Describe the bug or feedback:",
   "ui.mp_transfer_on": "MP→Stamina transfer: unlocked",
   "ui.eyes": "Eyes (head)",
   "ui.eye": "Eye",
@@ -123,5 +126,15 @@
   "fusion.quirk": "Quirk",
   "fusion.backfire": "Backfire",
   "fusion.poison_web": "Poison Web",
-  "fusion.temp": "{a} + {b} Fusion"
+  "fusion.temp": "{a} + {b} Fusion",
+  "fusion.effect.poison_web": "Poison Web",
+  "fusion.effect.tainted_strike": "Tainted Strike",
+  "fusion.effect.snare_strike": "Snare Strike",
+  "fusion.effect.rend": "Rend",
+  "fusion.effect.flame_storm": "Flame Storm",
+  "fusion.effect.steam": "Steam",
+  "fusion.effect.thermal_shock": "Thermal Shock",
+  "fusion.effect.conductive_shock": "Conductive Shock",
+  "fusion.effect.mud": "Mud",
+  "fusion.effect.reinforce": "Reinforced"
 }
