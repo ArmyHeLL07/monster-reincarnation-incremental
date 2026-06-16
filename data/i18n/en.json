@@ -211,6 +211,7 @@
   "stat.WIS": "WIS",
   "stat.LUCK": "LUCK",
   "log.levelup": "Level up! Now level {lv} (+{pts} stat points).",
+  "log.cap": "Level {lv} reached — evolve (Stats tab) to grow further.",
   "log.dodge": "Dodged {enemy}'s attack!",
   "log.larder_full": "Larder full — make room.",
   "log.discover_larder": "Discovery: you can now store corpses (Larder)!",

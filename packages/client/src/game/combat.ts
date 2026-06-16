@@ -1,7 +1,7 @@
 import type { DamageType, StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
-import { recomputeMaxes, MAX_HUNGER } from './state';
+import { recomputeMaxes, MAX_HUNGER, LEVEL_CAP } from './state';
 import { appraisalAssigned, appraisalTier, dreadChance } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 
@@ -309,12 +309,17 @@ function enemyAttack(state: GameState, content: Content, log: Log): void {
 }
 
 function gainXp(state: GameState, amount: number, log: Log): void {
+  if (state.level >= LEVEL_CAP) return; // capped per tier — must evolve to advance
   state.xp += amount;
-  while (state.xp >= xpToNext(state.level)) {
+  while (state.level < LEVEL_CAP && state.xp >= xpToNext(state.level)) {
     state.xp -= xpToNext(state.level);
     state.level += 1;
     state.statPoints += STAT_POINTS_PER_LEVEL;
     log({ key: 'log.levelup', params: { lv: state.level, pts: STAT_POINTS_PER_LEVEL } });
+  }
+  if (state.level >= LEVEL_CAP) {
+    state.xp = 0;
+    log({ key: 'log.cap', params: { lv: LEVEL_CAP } });
   }
 }
 

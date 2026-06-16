@@ -19,7 +19,7 @@
     "raceId": "spider",
     "locKey": "form.venom_weaver.name",
     "evolvesTo": ["shade_stalker"],
-    "levelReq": 20,
+    "levelReq": 10,
     "statBonus": { "INT": 3, "STR": 2 }
   },
   {
@@ -27,7 +27,7 @@
     "raceId": "spider",
     "locKey": "form.blade_weaver.name",
     "evolvesTo": ["scythe_hunter"],
-    "levelReq": 20,
+    "levelReq": 10,
     "statBonus": { "STR": 3, "AGI": 2 }
   },
   {
@@ -35,7 +35,7 @@
     "raceId": "spider",
     "locKey": "form.greater_weaver.name",
     "evolvesTo": [],
-    "levelReq": 20,
+    "levelReq": 10,
     "statBonus": { "VIT": 6, "STR": 2 }
   },
   {
@@ -43,7 +43,7 @@
     "raceId": "spider",
     "locKey": "form.shade_stalker.name",
     "evolvesTo": [],
-    "levelReq": 35,
+    "levelReq": 10,
     "statBonus": { "AGI": 4, "INT": 2 }
   },
   {
@@ -51,7 +51,7 @@
     "raceId": "spider",
     "locKey": "form.scythe_hunter.name",
     "evolvesTo": [],
-    "levelReq": 35,
+    "levelReq": 10,
     "statBonus": { "AGI": 3, "STR": 3 }
   }
 ]

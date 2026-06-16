@@ -34,6 +34,8 @@ export interface EnemyInstance {
 }
 
 export const MAX_HUNGER = 100;
+/** Character level cap per evolution tier — reach it, then evolve to advance to the next tier. */
+export const LEVEL_CAP = 10;
 
 /** What the player is doing. `idle` freezes the world (no time passes). */
 export type ActionMode = 'idle' | 'combat' | 'rest';
@@ -49,6 +51,8 @@ export interface GameState {
   /** Passive growth from sustained play — raises SP *regen*, not max SP. */
   spRegenBonus: number;
   level: number;
+  /** Evolution tier (1 = hatchling). Effective progress = (tier-1)*10 + level. */
+  tier: number;
   xp: number;
   statPoints: number;
   /** Autosave interval in minutes (player choice). */
@@ -114,6 +118,7 @@ export function newGame(): GameState {
     maxSp: 0,
     spRegenBonus: 0,
     level: 1,
+    tier: 1,
     xp: 0,
     statPoints: 0,
     autosaveMin: 5,

@@ -211,6 +211,7 @@
   "stat.WIS": "WIS",
   "stat.LUCK": "LUCK",
   "log.levelup": "Seviye atladın! Artık seviye {lv} (+{pts} stat puanı).",
+  "log.cap": "Seviye {lv} tavanına ulaştın — devam için evrimleş (Statlar sekmesi).",
   "log.dodge": "{enemy} saldırısını savuşturdun!",
   "log.larder_full": "Kiler dolu — yer aç.",
   "log.discover_larder": "Keşif: artık ceset depolayabilirsin (Kiler)!",

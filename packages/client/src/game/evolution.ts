@@ -45,6 +45,9 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
     }
   }
   state.formId = formId;
+  state.tier += 1; // advance evolution tier; level resets (effective level keeps climbing)
+  state.level = 1;
+  state.xp = 0;
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.mp = state.maxMp;
