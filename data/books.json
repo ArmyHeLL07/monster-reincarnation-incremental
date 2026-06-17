@@ -1,0 +1,8 @@
+[
+  { "id": "book_1", "locKeyLore": "book.book_1.lore", "locKeyDeep": "book.book_1.deep", "intReq": 8,  "order": 1, "hints": "regen" },
+  { "id": "book_2", "locKeyLore": "book.book_2.lore", "locKeyDeep": "book.book_2.deep", "intReq": 12, "order": 2, "hints": "brink" },
+  { "id": "book_3", "locKeyLore": "book.book_3.lore", "locKeyDeep": "book.book_3.deep", "intReq": 16, "order": 3, "hints": "meditation" },
+  { "id": "book_4", "locKeyLore": "book.book_4.lore", "locKeyDeep": "book.book_4.deep", "intReq": 20, "order": 4, "hints": "fusion" },
+  { "id": "book_5", "locKeyLore": "book.book_5.lore", "locKeyDeep": "book.book_5.deep", "intReq": 26, "order": 5, "hints": "taboo" },
+  { "id": "book_6", "locKeyLore": "book.book_6.lore", "locKeyDeep": "book.book_6.deep", "intReq": 32, "order": 6, "hints": "taboo" }
+]

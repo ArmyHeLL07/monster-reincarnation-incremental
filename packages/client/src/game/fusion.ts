@@ -110,5 +110,10 @@ export function fuse(
     key: discovered ? 'log.fuse_new' : 'log.fuse_cached',
     params: { cls: `fusion.${result.cls}`, mag: result.magnitude },
   });
+  // Backfire leaves a "scar" — a real, repairable penalty (GDD §5.0.4).
+  if (result.cls === 'backfire') {
+    state.scars += 1;
+    log({ key: 'log.fuse_scar', params: { scars: state.scars } });
+  }
   return result;
 }

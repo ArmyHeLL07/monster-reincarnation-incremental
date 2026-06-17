@@ -1,19 +1,19 @@
-import type { FusionResult, StatKey, DamageType } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
-import { MAX_HUNGER, LEVEL_CAP } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, rulerStatus } from './game/combat';
+import { xpToNext, weaknessOf } from './game/combat';
+import { canRebirth } from './game/rebirth';
+import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
-  onBrink: () => void;
-  onGoFrontier: () => void;
-  onSetPos: (layer: number, floor: number) => void;
+  onSelectLayer: (layerId: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -28,10 +28,19 @@ export interface UiActions {
   onImportSave: () => void;
   onBugReport: () => void;
   onReset: () => void;
+  onMeditate: () => void;
+  onSearch: () => void;
+  onCourtDeath: () => void;
+  onRebirth: () => void;
+  onReadBook: (id: string) => void;
+  onAnswerRoom: (answer: string) => void;
+  onRepairScar: () => void;
+  onSetDifficulty: (d: Difficulty) => void;
+  onTogglePermadeath: () => void;
 }
 
-type Tab = 'combat' | 'map' | 'skills' | 'body' | 'stats' | 'settings';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'stats', 'settings'];
+type Tab = 'combat' | 'map' | 'skills' | 'body' | 'lore' | 'stats' | 'settings';
+const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'lore', 'stats', 'settings'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -42,6 +51,7 @@ const ICONS: Record<Tab, string> = {
   map: svg('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'),
   skills: svg('<path d="M12 2v6M12 16v6M2 12h6M16 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>'),
   body: EYE_SVG,
+  lore: svg('<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8"/>'),
   stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
   settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
 };
@@ -75,6 +85,10 @@ function bar(value: number, max: number, color: string): string {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return `<div class="bar"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
 }
+function statBar(label: string, v: number, max: number, color: string): string {
+  return `<div class="statline"><div class="row"><span>${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div>${bar(v, max, color)}</div>`;
+}
+
 // ---- shell -----------------------------------------------------------------
 
 export function mount(state: GameState, content: Content, actions: UiActions): void {
@@ -99,19 +113,18 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       renderTab();
     });
   });
-  const top = document.querySelector<HTMLElement>('#topbar');
-  if (top) top.innerHTML = topbarShell(); // built once; values updated by refs in live()
   renderTab();
   live(state);
 }
 
-/** Per-tick light update: bars/log via refs (so bars slide smoothly, not rebuilt). */
+/** Per-tick light update: top bar, log, and the combat tab (no inputs to lose there). */
 export function live(state: GameState): void {
   CURSTATE = state;
-  updateTopbar(state);
+  const top = document.querySelector<HTMLElement>('#topbar');
+  if (top) top.innerHTML = topbarHtml(state);
   const log = document.querySelector<HTMLElement>('#log');
   if (log) log.innerHTML = logLines.map((l) => `<div>${l}</div>`).join('');
-  if (activeTab === 'combat') updateCombat(state);
+  if (activeTab === 'combat' || activeTab === 'map') renderTab();
 }
 
 /** Full refresh of the active tab + chrome — after an action or tab switch. */
@@ -121,47 +134,22 @@ export function render(state: GameState): void {
   live(state);
 }
 
-function barRow(id: string, label: string, color: string): string {
-  return `<div class="statline"><div class="row"><span>${label}</span><span id="${id}-txt"></span></div><div class="bar"><div class="bar-fill" id="${id}-fill" style="background:${color}"></div></div></div>`;
-}
-
-/** The top bar structure, built once; values are filled by updateTopbar via refs. */
-function topbarShell(): string {
-  return `
-    <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-    <p class="sub" id="sub"></p>
-    <div class="bars">
-      ${barRow('hp', t('ui.hp'), '#6fae53')}
-      ${barRow('mp', t('ui.mp'), '#4f86c2')}
-      ${barRow('sp', t('ui.sp'), '#d2a73a')}
-      ${barRow('hunger', t('ui.hunger'), '#6fae53')}
-    </div>
-  `;
-}
-
-function setBar(id: string, value: number, max: number, text: string, color?: string): void {
-  const fill = document.querySelector<HTMLElement>(`#${id}-fill`);
-  const txt = document.querySelector<HTMLElement>(`#${id}-txt`);
-  if (fill) {
-    fill.style.width = `${max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0}%`;
-    if (color) fill.style.background = color;
-  }
-  if (txt) txt.textContent = text;
-}
-
-function updateTopbar(state: GameState): void {
+function topbarHtml(state: GameState): string {
   const form = currentForm(state, CONTENT);
   const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
-  const stage = hungerStage(state.hunger);
+  const posStr = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
-  const sub = document.querySelector<HTMLElement>('#sub');
-  if (sub) {
-    sub.innerHTML = `${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${state.pos.layer}.${state.pos.floor}.${state.pos.room} · ${t(`act.${state.action}`)}${evo}`;
-  }
-  setBar('hp', state.hp, state.maxHp, `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
-  setBar('mp', state.mp, state.maxMp, `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
-  setBar('sp', state.sp, state.maxSp, `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
-  setBar('hunger', state.hunger, MAX_HUNGER, t(`hunger.${stage}`), ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage]);
+  const stage = hungerStage(state.hunger);
+  return `
+    <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
+    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}</p>
+    <div class="bars">
+      ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
+      ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
+      ${statBar(t('ui.sp'), state.sp, state.maxSp, '#d2a73a')}
+      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
+    </div>
+  `;
 }
 
 function hungerStage(h: number): number {
@@ -196,6 +184,10 @@ function renderTab(): void {
       el.innerHTML = bodyTab(CURSTATE);
       wireBody(el);
       break;
+    case 'lore':
+      el.innerHTML = loreTab(CURSTATE);
+      wireLore(el);
+      break;
     case 'stats':
       el.innerHTML = statsTab(CURSTATE);
       wireStats(el);
@@ -209,15 +201,7 @@ function renderTab(): void {
 
 // ---- COMBAT ----------------------------------------------------------------
 
-/** The attacker element that is strong against `type` (i.e. the enemy's weakness). */
-function weaknessOf(type: DamageType): DamageType | null {
-  const sv = CONTENT.elements.strongVs;
-  for (const k of Object.keys(sv) as DamageType[]) if (sv[k] === type) return k;
-  return null;
-}
-
-/** Build the enemy info line + HP bar text from the current appraisal tier. */
-function enemyInfoHtml(state: GameState): string {
+function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   const tier = appraisalTier(state);
@@ -225,25 +209,14 @@ function enemyInfoHtml(state: GameState): string {
   const name = inst.isBoss ? `☠ ${baseName}` : baseName;
   const bits: string[] = [`<b>${name}</b>`];
   if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
-  if (tier >= 2) {
-    const weak = weaknessOf(inst.damageType);
-    if (weak) bits.push(`<span class="weak">⚠ ${t('ui.weak')} ${t(`dmgtype.${weak}`)}</span>`);
-  }
   if (tier >= 3) bits.push(`ATK ${inst.attack}`);
   const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
-  return `<div>${bits.join(' · ')} ${hpText}</div>`;
-}
-
-/** Per-tick refresh of the enemy info + HP bar via refs, so the bar slides smoothly. */
-function updateCombat(state: GameState): void {
-  const info = document.querySelector<HTMLElement>('#enemy-info');
-  if (info) info.innerHTML = enemyInfoHtml(state);
-  const fill = document.querySelector<HTMLElement>('#enemy-fill');
-  if (fill) {
-    const inst = state.enemy;
-    const pct = inst && inst.maxHp > 0 ? Math.max(0, Math.min(100, (inst.hp / inst.maxHp) * 100)) : 0;
-    fill.style.width = `${pct}%`;
+  let weak = '';
+  if (tier >= 5) {
+    const w = weaknessOf(CONTENT, inst.damageType);
+    if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
+  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}`;
 }
 
 function combatTab(state: GameState): string {
@@ -260,15 +233,18 @@ function combatTab(state: GameState): string {
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
-      <div id="enemy-info"></div>
-      <div class="bar"><div class="bar-fill" id="enemy-fill" style="background:#bb4140"></div></div>
+      ${enemyView(state)}
     </section>
     <div class="controls">
       ${act('combat', t('ui.fight'))}
       ${act('rest', t('ui.rest'))}
       ${act('idle', t('ui.stop'))}
+      <button id="meditate"${state.action === 'meditate' ? ' class="active"' : ''}>${t('ui.meditate')}</button>
+    </div>
+    <div class="controls">
       <button id="deepread">${t('ui.deepread')}</button>
-      <button id="brink" class="ghost">${t('ui.brink')}</button>
+      <button id="search">${t('ui.search')}</button>
+      <button id="courtdeath" class="ghost">${t('ui.court_death')}</button>
     </div>
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
@@ -282,74 +258,93 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onSetAction(b.getAttribute('data-act') as 'idle' | 'combat' | 'rest'));
   });
   el.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', ACTIONS.onDeepRead);
-  el.querySelector<HTMLButtonElement>('#brink')?.addEventListener('click', ACTIONS.onBrink);
-  updateCombat(CURSTATE); // fill immediately so the bar has a starting width to slide from
+  el.querySelector<HTMLButtonElement>('#meditate')?.addEventListener('click', ACTIONS.onMeditate);
+  el.querySelector<HTMLButtonElement>('#search')?.addEventListener('click', ACTIONS.onSearch);
+  el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
 }
 
 // ---- MAP -------------------------------------------------------------------
 
-/** True if (layer, floor) has been reached and is safe to farm (at/behind the frontier). */
-function floorUnlocked(state: GameState, layer: number, floor: number): boolean {
-  const f = state.furthest;
-  return layer < f.layer || (layer === f.layer && floor <= f.floor);
+/** Fog-of-war grid of one layer: floors are rows, rooms are cells; cleared rooms light up. */
+function dungeonGrid(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
+  const R = layer.roomsPerFloor;
+  const F = layer.floors;
+  const onLayer = state.pos.layer === layer.id;
+  const curLinear = (state.pos.floor - 1) * R + state.pos.room;
+  const reached = Math.max(state.exploredMax[layer.id] ?? 0, onLayer ? curLinear : 0);
+  let rows = '';
+  for (let f = 1; f <= F; f++) {
+    let cells = '';
+    for (let r = 1; r <= R; r++) {
+      const idx = (f - 1) * R + r;
+      const isBoss = r === R;
+      const isCurrent = onLayer && f === state.pos.floor && r === state.pos.room;
+      const revealed = idx <= reached || isCurrent;
+      let cls = 'dcell';
+      let glyph = '';
+      if (isCurrent) {
+        cls += ' current';
+        glyph = isBoss ? '☠' : '◈';
+      } else if (!revealed) {
+        cls += ' fog';
+        if (isBoss) cls += ' boss';
+      } else {
+        cls += ' lit';
+        if (isBoss) {
+          cls += ' boss';
+          glyph = '☠';
+        }
+      }
+      cells += `<div class="${cls}">${glyph}</div>`;
+    }
+    rows += `<div class="dmap-floor" style="--cols:${R}"><span class="flabel">${f}</span>${cells}</div>`;
+  }
+  return `<div class="dmap">${rows}</div>`;
 }
 
 function mapTab(state: GameState): string {
   const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const bossSoon = cur && state.pos.room >= cur.roomsPerFloor ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
-  const atFrontier =
-    state.pos.layer === state.furthest.layer &&
-    state.pos.floor === state.furthest.floor &&
-    state.pos.room === state.furthest.room;
-  const frontierCtrl = atFrontier
-    ? `<p class="muted">${t('ui.at_frontier')}</p>`
-    : `<button id="gofrontier">${t('ui.frontier')} → ${state.furthest.layer}.${state.furthest.floor}.${state.furthest.room}</button>`;
-
+  const pending = state.pendingRoom ? `<p style="color:var(--ember)">⌑ ${t('ui.room_sensed')}: ${t(CONTENT.rooms.get(state.pendingRoom)?.locKey ?? '')}</p>` : '';
+  const legend = `
+    <div class="dlegend">
+      <span><i class="cur"></i>${t('ui.here')}</span>
+      <span><i class="lit"></i>${t('ui.cleared')}</span>
+      <span><i class="boss"></i>${t('ui.boss')}</span>
+      <span><i class="fog"></i>${t('ui.unknown_cell')}</span>
+    </div>`;
   const layers = CONTENT.dungeon.layers
     .map((l) => {
-      const reached = l.id <= state.furthest.layer;
-      if (!reached) {
-        const why = state.tier >= l.tierReq ? t('ui.locked') : `${t('ui.locked')} (T${l.tierReq})`;
-        return `<li><b>${t(l.locKey)}</b> <span class="muted">${why}</span></li>`;
-      }
-      // Farm buttons for every unlocked floor of a reached layer.
-      const floors: string[] = [];
-      for (let f = 1; f <= l.floors; f++) {
-        if (!floorUnlocked(state, l.id, f)) break;
-        const here = state.pos.layer === l.id && state.pos.floor === f;
-        floors.push(
-          here
-            ? `<span class="floorbtn current">${f}</span>`
-            : `<button class="floorbtn" data-layer="${l.id}" data-floor="${f}">${f}</button>`,
-        );
-      }
-      return `<li><b>${t(l.locKey)}</b><div class="controls">${floors.join('')}</div></li>`;
+      const unlocked = state.tier >= l.tierReq;
+      const current = state.pos.layer === l.id;
+      const max = state.exploredMax[l.id] ?? 0;
+      const total = l.floors * l.roomsPerFloor;
+      const prog = unlocked ? ` <span class="muted">${Math.floor((Math.min(max, total) / total) * 100)}%</span>` : '';
+      const status = current
+        ? `<span class="muted">${t('ui.current')}</span>`
+        : !unlocked
+          ? `<span class="muted">${t('ui.locked')} (T${l.tierReq})</span>`
+          : `<button class="layerbtn" data-layer="${l.id}">${t('ui.enter')}</button>`;
+      return `<li><b>${t(l.locKey)}</b> — T${l.tierReq}+${prog} ${status}</li>`;
     })
     .join('');
-
   return `
     <section class="panel">
-      <h2>${t('tab.map')}</h2>
-      <p><b>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</b> — ${cur ? t(cur.locKey) : ''}</p>
+      <div class="row"><h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
       <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${cur?.roomsPerFloor ?? '?'}${bossSoon}</p>
-      ${cur ? bar(state.pos.room, cur.roomsPerFloor, '#8ab23f') : ''}
-      <div class="controls">${frontierCtrl}</div>
+      ${cur ? dungeonGrid(state, cur) : ''}
+      ${legend}
+      ${pending}
     </section>
-    <section class="panel">
-      <h2>${t('ui.layers')}</h2>
-      <p class="muted">${t('ui.farm')}</p>
-      <ul class="floorlist">${layers}</ul>
-    </section>
+    <section class="panel"><h2>${t('ui.layers')}</h2><ul>${layers}</ul></section>
   `;
 }
 
 function wireMap(el: HTMLElement): void {
-  el.querySelector<HTMLButtonElement>('#gofrontier')?.addEventListener('click', ACTIONS.onGoFrontier);
-  el.querySelectorAll<HTMLButtonElement>('.floorbtn[data-layer]').forEach((b) => {
+  el.querySelectorAll<HTMLButtonElement>('.layerbtn').forEach((b) => {
     b.addEventListener('click', () => {
-      const layer = Number(b.getAttribute('data-layer'));
-      const floor = Number(b.getAttribute('data-floor'));
-      if (!Number.isNaN(layer) && !Number.isNaN(floor)) ACTIONS.onSetPos(layer, floor);
+      const id = Number(b.getAttribute('data-layer'));
+      if (!Number.isNaN(id)) ACTIONS.onSelectLayer(id);
     });
   });
 }
@@ -492,6 +487,67 @@ function wireBody(el: HTMLElement): void {
   });
 }
 
+// ---- LORE / DISCOVERY (books, rooms, fragments) ----------------------------
+
+function loreTab(state: GameState): string {
+  // Pending secret room: a riddle to type the answer to ("open sesame").
+  let roomHtml = `<p class="muted">${t('ui.no_room')}</p>`;
+  if (state.pendingRoom) {
+    const room = CONTENT.rooms.get(state.pendingRoom);
+    if (room) {
+      roomHtml = `
+        <div class="row"><b>${t(room.locKey)}</b></div>
+        <p class="muted">${t(room.locKeyClue)}</p>
+        <div class="controls">
+          <input id="riddle" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
+          <button id="answer">${t('ui.solve')}</button>
+        </div>`;
+    }
+  }
+
+  const books = state.booksFound.length
+    ? [...state.booksFound]
+        .map((id) => CONTENT.books.get(id))
+        .filter((b): b is NonNullable<typeof b> => !!b)
+        .sort((a, b) => a.order - b.order)
+        .map((bk) => {
+          const read = state.discoveries.includes(bk.id);
+          const deep = state.stats.INT >= bk.intReq;
+          const tag = read ? '✓' : deep ? '★' : `INT ${bk.intReq}`;
+          return `<li><button class="readbook" data-book="${bk.id}">${t('book.' + bk.id + '.title')}</button> <span class="muted">${tag}</span></li>`;
+        })
+        .join('')
+    : `<span class="muted">${t('ui.empty')}</span>`;
+
+  const medUnlocked = state.meditationUnlocked || state.meditation > 0;
+  const medHtml = medUnlocked
+    ? `<section class="panel"><div class="row"><span>${t('ui.meditation')}</span><span>${Math.floor((state.meditation / MEDITATION_MAX) * 100)}%</span></div>${bar(state.meditation, MEDITATION_MAX, '#9a7fd0')}</section>`
+    : '';
+
+  return `
+    <section class="panel">
+      <h2>${t('ui.discovery')}</h2>
+      <p class="muted">${t('ui.fragments')}: 🗺 ${state.mapFragments} · 📜 ${state.loreFragments} · ${t('ui.solved')}: ${state.discoveries.length}</p>
+      ${roomHtml}
+    </section>
+    <section class="panel"><h2>${t('ui.books')}</h2><ul>${books}</ul></section>
+    ${medHtml}
+  `;
+}
+
+function wireLore(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.readbook').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-book');
+      if (id) ACTIONS.onReadBook(id);
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#answer')?.addEventListener('click', () => {
+    const input = el.querySelector<HTMLInputElement>('#riddle');
+    if (input && input.value.trim()) ACTIONS.onAnswerRoom(input.value);
+  });
+}
+
 // ---- STATS (+ evolution) ---------------------------------------------------
 
 function statsTab(state: GameState): string {
@@ -516,33 +572,47 @@ function statsTab(state: GameState): string {
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints}</p>
       <ul>${statRows}</ul>
     </section>
-    ${rulerPanel(state)}
     <section class="panel">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${evoHtml}
     </section>
+    ${rulerPanel(state)}
+    ${rebirthPanel(state)}
   `;
 }
 
 function rulerPanel(state: GameState): string {
-  const r = rulerStatus(state, CONTENT);
-  // Hidden until the axis or meditation actually wakes up — keeps the early game clean.
-  if (r.sin === 0 && r.virtue === 0 && state.medGauge === 0 && !state.zenUnlocked) return '';
-  const sinTag = r.sinActive ? ` · <span class="sin">${t('ui.active')}</span>` : '';
-  const virTag = r.virtueActive ? ` · <span class="virtue">${t('ui.active')}</span>` : '';
-  const flags = `${r.parallelMind ? ` <span class="virtue">⟡ ${t('ui.parallel_mind')}</span>` : ''}${r.taboo ? ` <span class="sin">⛧ ${t('ui.taboo')}</span>` : ''}`;
-  const medPct = Math.round((state.medGauge / CONTENT.meditation.gaugeMax) * 100);
-  const medRow = state.zenUnlocked
-    ? `<div class="row"><span class="virtue">☯ ${t('ui.meditation')}: ${t('ui.zen_on')}</span></div>`
-    : `<div class="row"><span>☯ ${t('ui.meditation')}</span><span>${medPct}%</span></div>${bar(state.medGauge, CONTENT.meditation.gaugeMax, '#5aa9c2')}`;
+  const powers = CONTENT.ruler
+    .filter((r) => state.ruler.powers.includes(r.id))
+    .map((r) => `<li><b>${t(r.locKeyName)}</b> <span class="muted">${r.pole === 'sin' ? '🔥' : '☼'}</span> — ${t(r.locKeyDesc)}</li>`)
+    .join('');
+  const taboo = state.ruler.taboo > 0 ? ` · <b style="color:#a4506a">${t('ui.taboo')} ${state.ruler.taboo}</b>` : '';
+  const scar = state.scars > 0
+    ? `<div class="row"><span style="color:#c0626f">${t('ui.scars')}: ${state.scars}</span><button id="repair" class="ghost">${t('ui.repair')} (20 EP)</button></div>`
+    : '';
   return `
     <section class="panel">
-      <h2>${t('ui.axis')}</h2>
-      <div class="row"><span class="sin">😈 ${t('ui.sin')} ${Math.floor(r.sin)} · ${r.sinRulers}/${r.max}${sinTag}</span></div>
-      <div class="row"><span class="virtue">😇 ${t('ui.virtue')} ${Math.floor(r.virtue)} · ${r.virtueRulers}/${r.max}${virTag}</span></div>
-      ${flags ? `<p class="muted">${flags}</p>` : ''}
-      ${medRow}
+      <h2>${t('ui.ruler')}</h2>
+      <div class="row"><span>🔥 ${t('ui.sin')}</span><span>${Math.floor(state.ruler.sin)}</span></div>
+      <div class="row"><span>☼ ${t('ui.virtue')}</span><span>${Math.floor(state.ruler.virtue)}</span></div>
+      <p class="muted">${t('ui.ep')}: ${state.ep}${taboo}</p>
+      ${powers ? `<ul>${powers}</ul>` : `<p class="muted">${t('ui.no_ruler')}</p>`}
+      ${scar}
+    </section>
+  `;
+}
+
+function rebirthPanel(state: GameState): string {
+  const ready = canRebirth(state);
+  const info = `${t('ui.rebirths')}: ${state.rebirthCount}${state.rebirthBoon > 0 ? ` · +${state.rebirthBoon} ${t('ui.boon')}` : ''}`;
+  return `
+    <section class="panel">
+      <h2>${t('ui.rebirth')}</h2>
+      <p class="muted">${info}</p>
+      ${ready
+        ? `<p>${t('ui.rebirth_ready')}</p><button id="rebirth">${t('ui.rebirth_do')}</button>`
+        : `<p class="muted">${t('ui.rebirth_locked')}</p>`}
     </section>
   `;
 }
@@ -557,6 +627,8 @@ function wireStats(el: HTMLElement): void {
       if (f) ACTIONS.onEvolve(f);
     });
   });
+  el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
+  el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
 }
 
 // ---- SETTINGS --------------------------------------------------------------
@@ -568,7 +640,17 @@ function settingsTab(state: GameState): string {
   const langs = (['tr', 'en'] as const)
     .map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${l === 'tr' ? 'Türkçe' : 'English'}</button>`)
     .join('');
+  const diffs = [...CONTENT.difficulties.values()]
+    .map((d) => `<button class="diff${state.difficulty === d.id ? ' active' : ''}" data-diff="${d.id}">${t(d.locKey)}</button>`)
+    .join('');
+  const cur = diffDef(state, CONTENT);
   return `
+    <section class="panel">
+      <div class="row"><span>${t('ui.difficulty')}</span><span class="muted">${t(cur.locKey)}</span></div>
+      <div class="controls">${diffs}</div>
+      <div class="row"><span>${t('ui.permadeath')}</span><button id="permadeath" class="${state.permadeath ? 'active' : 'ghost'}">${state.permadeath ? t('ui.on') : t('ui.off')}</button></div>
+      <p class="muted">${t('ui.permadeath_hint')}</p>
+    </section>
     <section class="panel">
       <div class="row"><span>${t('ui.language')}</span><span></span></div>
       <div class="controls">${langs}</div>
@@ -596,6 +678,10 @@ function wireSettings(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en'));
   });
+  el.querySelectorAll<HTMLButtonElement>('.diff').forEach((b) => {
+    b.addEventListener('click', () => ACTIONS.onSetDifficulty(b.getAttribute('data-diff') as Difficulty));
+  });
+  el.querySelector<HTMLButtonElement>('#permadeath')?.addEventListener('click', ACTIONS.onTogglePermadeath);
   el.querySelector<HTMLButtonElement>('#savenow')?.addEventListener('click', ACTIONS.onSaveNow);
   el.querySelector<HTMLButtonElement>('#exportsave')?.addEventListener('click', ACTIONS.onExportSave);
   el.querySelector<HTMLButtonElement>('#importsave')?.addEventListener('click', ACTIONS.onImportSave);
