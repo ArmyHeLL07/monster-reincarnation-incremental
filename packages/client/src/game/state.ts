@@ -200,7 +200,7 @@ export function newGame(): GameState {
     pos: { layer: 1, floor: 1, room: 1 },
     raceId: 'spider',
     formId: 'hatchling_spider',
-    eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },
+    eyeAssignments: { e1: null }, // Appraisal is no longer free — it must be discovered, then slotted.
     action: 'idle',
     autoResume: false,
     mpTransferUnlocked: false,
@@ -210,7 +210,6 @@ export function newGame(): GameState {
       { id: 'sharp_claw', level: 1, exp: 0 },
       { id: 'silk_thread', level: 1, exp: 0 },
       { id: 'hp_regen', level: 1, exp: 0 },
-      { id: 'appraisal', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
       { id: 'chitin_hide', level: 1, exp: 0 },
       { id: 'many_legged_gait', level: 1, exp: 0 },

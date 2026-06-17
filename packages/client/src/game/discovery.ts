@@ -15,7 +15,8 @@ export function search(state: GameState, content: Content, log: Log): void {
   const tier = appraisalTier(state);
   const luck = state.stats.LUCK;
   const b = aggregateBonuses(state, content);
-  const roll = Math.random() * (1 + b.lootMult - 1);
+  // Only the loot *bonus* (lootMult above 1) helps — baseline adds nothing, so search isn't a sure thing.
+  const roll = Math.random() * Math.max(0, b.lootMult - 1);
   const baseFind = 0.25 + luck * 0.01 + roll;
 
   // 1) Perceive a secret room — the chance scales with the "seeing eye" level (GDD §5.0.7):

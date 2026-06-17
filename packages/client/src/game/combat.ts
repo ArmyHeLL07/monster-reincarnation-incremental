@@ -22,6 +22,7 @@ const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
 const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
+const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player
 const DEPTH_HP = 0.05; // enemy HP growth per room of depth
 const DEPTH_ATK = 0.045;
 const BOSS_HP = 2.5;
@@ -37,7 +38,7 @@ function skillExpToNext(level: number): number {
   return 15 + level * 10; // slower early (Lv1→2 = 25, was 10)
 }
 function resistExpToNext(level: number): number {
-  return 20 + level * 20;
+  return 8 + level * 22; // cheaper early levels (gains feel bigger at the base), steeper later
 }
 export function xpToNext(level: number): number {
   return level * 50;
@@ -302,7 +303,7 @@ function currentLayer(state: GameState, content: Content) {
 export function roomsOf(state: GameState, layer: { id: number; roomsPerFloor: number }): number {
   let r = state.layerRooms[layer.id];
   if (r == null) {
-    r = 10 + Math.floor(Math.random() * 13); // 10..22 inclusive
+    r = 12 + Math.floor(Math.random() * 9); // 12..20 inclusive
     state.layerRooms[layer.id] = r;
   }
   return r;
@@ -499,6 +500,11 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   if (!state.skills.some((s) => s.id === 'larder') && Math.random() < LARDER_DISCOVER_CHANCE) {
     state.skills.push({ id: 'larder', level: 1, exp: 0 });
     log({ key: 'log.discover_larder' });
+  }
+  // The basic Appraisal eye is now a discovery (no longer free) — slot it in Body to use it.
+  if (!state.skills.some((s) => s.id === 'appraisal' || s.id === 'insight') && Math.random() < APPRAISAL_DISCOVER_CHANCE) {
+    state.skills.push({ id: 'appraisal', level: 1, exp: 0 });
+    log({ key: 'log.discover_appraisal' });
   }
   if (
     state.level >= EYE_DISCOVER_LEVEL &&

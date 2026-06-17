@@ -14,6 +14,7 @@ export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
   onSelectLayer: (layerId: number) => void;
+  onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -64,11 +65,22 @@ let selectedA: string | null = null;
 let selectedB: string | null = null;
 let selectedEye: string | null = null;
 let lastFusion: FusionResult | null = null;
-const logLines: string[] = [];
+type LogCat = 'combat' | 'discovery' | 'loot';
+const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
+
+/** Route a log line to its stream so combat spam never buries loot/discovery. */
+function logCategory(key: string): LogCat {
+  if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
+  if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity/.test(key)) {
+    return 'discovery';
+  }
+  return 'combat';
+}
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
-  logLines.unshift(tmsg(key, params));
-  if (logLines.length > LOG_CAP) logLines.length = LOG_CAP;
+  const cat = logCategory(key);
+  logs[cat].unshift(tmsg(key, params));
+  if (logs[cat].length > LOG_CAP) logs[cat].length = LOG_CAP;
 }
 export function setLastFusion(r: FusionResult): void {
   lastFusion = r;
@@ -79,6 +91,9 @@ export function resetUi(): void {
   selectedB = null;
   lastFusion = null;
   activeTab = 'combat';
+  logs.combat.length = 0;
+  logs.discovery.length = 0;
+  logs.loot.length = 0;
 }
 
 function bar(value: number, max: number, color: string): string {
@@ -104,7 +119,11 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         ${TABS.map((tb) => `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`).join('')}
       </nav>
       <main id="content" class="content"></main>
-      <section class="logpanel"><div class="log" id="log"></div></section>
+      <section class="logpanel">
+        <div class="logcol"><h3>${t('ui.log_combat')}</h3><div class="log" id="log-combat"></div></div>
+        <div class="logcol"><h3>${t('ui.log_discovery')}</h3><div class="log" id="log-discovery"></div></div>
+        <div class="logcol"><h3>${t('ui.log_loot')}</h3><div class="log" id="log-loot"></div></div>
+      </section>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -122,8 +141,10 @@ export function live(state: GameState): void {
   CURSTATE = state;
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) top.innerHTML = topbarHtml(state);
-  const log = document.querySelector<HTMLElement>('#log');
-  if (log) log.innerHTML = logLines.map((l) => `<div>${l}</div>`).join('');
+  for (const cat of ['combat', 'discovery', 'loot'] as LogCat[]) {
+    const el = document.querySelector<HTMLElement>(`#log-${cat}`);
+    if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
+  }
   if (activeTab === 'combat' || activeTab === 'map') renderTab();
 }
 
@@ -205,6 +226,11 @@ function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   const tier = appraisalTier(state);
+  if (tier < 1) {
+    // No "seeing eye" slotted — you only perceive a vague shape, never its true stats.
+    const mark = inst.isBoss ? '☠ ' : '';
+    return `<div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
+  }
   const baseName = tier >= 1 ? t(inst.locKey) : t('ui.unknown');
   const name = inst.isBoss ? `☠ ${baseName}` : baseName;
   const bits: string[] = [`<b>${name}</b>`];
@@ -336,9 +362,28 @@ function mapTab(state: GameState): string {
       ${cur ? dungeonGrid(state, cur) : ''}
       ${legend}
       ${pending}
+      ${cur ? farmControls(state, cur) : ''}
     </section>
     <section class="panel"><h2>${t('ui.layers')}</h2><ul>${layers}</ul></section>
   `;
+}
+
+/** Buttons to jump back to any already-cleared floor of this layer and farm it. */
+function farmControls(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
+  const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
+  const reached = state.exploredMax[layer.id] ?? 0;
+  const reachedFloors = Math.min(layer.floors, Math.max(1, Math.ceil(reached / R)));
+  if (reachedFloors <= 1 && state.pos.floor === 1) return ''; // nothing earlier to revisit yet
+  const btns: string[] = [];
+  for (let f = 1; f <= reachedFloors; f++) {
+    const here = state.pos.layer === layer.id && state.pos.floor === f;
+    btns.push(
+      here
+        ? `<span class="floorbtn current">${f}</span>`
+        : `<button class="floorbtn" data-floor="${f}">${f}</button>`,
+    );
+  }
+  return `<p class="muted" style="margin:0.4rem 0 0.2rem">${t('ui.farm')}</p><div class="controls">${btns.join('')}</div>`;
 }
 
 function wireMap(el: HTMLElement): void {
@@ -346,6 +391,12 @@ function wireMap(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const id = Number(b.getAttribute('data-layer'));
       if (!Number.isNaN(id)) ACTIONS.onSelectLayer(id);
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.floorbtn[data-floor]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const f = Number(b.getAttribute('data-floor'));
+      if (!Number.isNaN(f)) ACTIONS.onSetPos(CURSTATE.pos.layer, f);
     });
   });
 }

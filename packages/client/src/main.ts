@@ -7,7 +7,6 @@ import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
-import { applyDifficultyStart } from './game/difficulty';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { load, save, clear } from './game/save';
 import { mount, live, render, pushLog, setLastFusion, resetUi, type UiActions } from './ui';
@@ -48,6 +47,17 @@ async function init(): Promise<void> {
       const layer = content.dungeon.layers.find((l) => l.id === id);
       if (layer && state.tier >= layer.tierReq) {
         state.pos = { layer: id, floor: 1, room: 1 };
+        state.enemy = null;
+        save(state);
+        render(state);
+      }
+    },
+    onSetPos: (layerId, floor) => {
+      // Revisit an already-cleared floor of this layer to farm it.
+      const R = state.layerRooms[layerId] ?? content.dungeon.layers.find((l) => l.id === layerId)?.roomsPerFloor ?? 1;
+      const reachedFloors = Math.ceil((state.exploredMax[layerId] ?? 0) / R);
+      if (state.pos.layer === layerId && floor >= 1 && floor <= Math.max(1, reachedFloors)) {
+        state.pos = { layer: layerId, floor, room: 1 };
         state.enemy = null;
         save(state);
         render(state);
@@ -128,7 +138,9 @@ async function init(): Promise<void> {
       render(state);
     },
     onSetDifficulty: (d: Difficulty) => {
-      applyDifficultyStart(state, content, d);
+      // Only change the difficulty knobs — never teleport the player or bypass layer/skill progression.
+      // (The "start at a deeper layer" behaviour applies on a fresh start / rebirth, not on a live toggle.)
+      state.difficulty = d;
       save(state);
       render(state);
     },

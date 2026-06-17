@@ -1,6 +1,6 @@
 [
   { "id": "easy",   "locKey": "diff.easy.name",   "startLayer": 1, "enemyMult": 0.7, "playerMult": 1.2, "deathPenalty": 0.1 },
   { "id": "normal", "locKey": "diff.normal.name", "startLayer": 1, "enemyMult": 1.0, "playerMult": 1.0, "deathPenalty": 0.3 },
-  { "id": "hard",   "locKey": "diff.hard.name",   "startLayer": 2, "enemyMult": 1.4, "playerMult": 0.9, "deathPenalty": 0.6 },
-  { "id": "hell",   "locKey": "diff.hell.name",   "startLayer": 5, "enemyMult": 2.2, "playerMult": 0.8, "deathPenalty": 1.0, "brutal": true }
+  { "id": "hard",   "locKey": "diff.hard.name",   "startLayer": 1, "enemyMult": 1.4, "playerMult": 0.9, "deathPenalty": 0.6 },
+  { "id": "hell",   "locKey": "diff.hell.name",   "startLayer": 3, "enemyMult": 2.2, "playerMult": 0.8, "deathPenalty": 1.0, "brutal": true }
 ]
