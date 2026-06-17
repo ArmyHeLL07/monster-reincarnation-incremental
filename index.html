@@ -109,6 +109,13 @@
       select { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); }
 
       .actbtn { flex: 1 1 auto; }
+      .castbtn { flex: 1 1 auto; }
+      .castbtn .cd { color: var(--ember); font-variant-numeric: tabular-nums; }
+      .castbtn:disabled { opacity: 0.45; }
+      .equipbtn { min-height: 30px; padding: 0.1rem 0.55rem; font-size: 0.82rem; }
+      .equipbtn.on { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
+      .floorbtn { min-width: 40px; min-height: 36px; padding: 0.2rem 0.5rem; flex: 0 0 auto; }
+      span.floorbtn.current { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
       .statadd, .discard { min-height: 30px; min-width: 36px; padding: 0.1rem 0.5rem; font-size: 1rem; }
       .ability.on { outline: 2px solid var(--venom); outline-offset: 1px; }
       .evoready { color: var(--ember); font-family: var(--disp); letter-spacing: 0.08em; animation: pulse 1.8s ease-in-out infinite; }
@@ -153,7 +160,7 @@
       }
       @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
     </style>
-    <script type="module" crossorigin src="/monster-reincarnation-incremental/assets/index-DyvXMLI0.js"></script>
+    <script type="module" crossorigin src="/monster-reincarnation-incremental/assets/index-D4yEzjWV.js"></script>
   </head>
   <body>
     <div id="app"></div>
