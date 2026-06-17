@@ -5,7 +5,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext } from './game/combat';
+import { xpToNext, weaknessOf } from './game/combat';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -211,7 +211,12 @@ function enemyView(state: GameState): string {
   if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
   if (tier >= 3) bits.push(`ATK ${inst.attack}`);
   const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
-  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
+  let weak = '';
+  if (tier >= 5) {
+    const w = weaknessOf(CONTENT, inst.damageType);
+    if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
+  }
+  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}`;
 }
 
 function combatTab(state: GameState): string {

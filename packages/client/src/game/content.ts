@@ -10,6 +10,7 @@ import type {
   SecretRoom,
   RulerDef,
   DifficultyDef,
+  ElementChart,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -25,10 +26,11 @@ export interface Content {
   rooms: Map<string, SecretRoom>;
   ruler: RulerDef[];
   difficulties: Map<string, DifficultyDef>;
+  elements: ElementChart;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -41,6 +43,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<SecretRoom[]>(`${base}secret_rooms.json`),
       fetchJson<RulerDef[]>(`${base}ruler.json`),
       fetchJson<DifficultyDef[]>(`${base}difficulty.json`),
+      fetchJson<ElementChart>(`${base}elements.json`),
     ]);
   return {
     skills: byId(skills),
@@ -54,6 +57,7 @@ export async function loadContent(base: string): Promise<Content> {
     rooms: byId(rooms),
     ruler,
     difficulties: byId(difficulties),
+    elements,
   };
 }
 

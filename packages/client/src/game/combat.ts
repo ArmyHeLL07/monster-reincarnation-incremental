@@ -46,6 +46,23 @@ function dmgTypeKey(type?: DamageType): string {
   return `dmgtype.${type ?? 'physical'}`;
 }
 
+/** Element type-chart multiplier (Atıl's design): attacker element vs enemy element. */
+function elementMultiplier(content: Content, atk: DamageType, enemyType: DamageType): number {
+  const c = content.elements;
+  if (!c?.strongVs) return 1;
+  if (c.strongVs[atk] === enemyType) return c.advantage;
+  if (c.strongVs[enemyType] === atk) return c.disadvantage;
+  return 1;
+}
+
+/** Which attacking element is strong against this enemy type (for the Appraisal weakness hint). */
+export function weaknessOf(content: Content, enemyType: DamageType): DamageType | null {
+  const sv = content.elements?.strongVs;
+  if (!sv) return null;
+  for (const atk of Object.keys(sv)) if (sv[atk] === enemyType) return atk as DamageType;
+  return null;
+}
+
 // ---- hunger / fatigue modifiers --------------------------------------------
 
 function hungerStage(state: GameState): number {
@@ -340,6 +357,7 @@ function playerAttack(state: GameState, content: Content, log: Log, b: Bonuses):
   }
   raw += b.overdrawFrac * (state.maxHp - state.hp); // Overdraw: missing HP → power (§6.1)
   raw *= b.dmgMult * diff.playerMult;
+  raw *= elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType); // element type-chart
   const dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });

@@ -268,6 +268,16 @@ export interface RulerDef {
   idleMult?: number;
 }
 
+/** Element type-chart (Atıl's design): attacking element vs enemy element advantage. */
+export interface ElementChart {
+  /** Multiplier when the attacker's element is strong vs the enemy's (e.g. 1.5). */
+  advantage: number;
+  /** Multiplier when the attacker's element is weak vs the enemy's (e.g. 0.7). */
+  disadvantage: number;
+  /** attackerType → the enemy type it is strong against. */
+  strongVs: Record<string, string>;
+}
+
 /** Difficulty modifiers (GDD §8.5). Normal = all 1×/0, the balance reference. */
 export interface DifficultyDef {
   id: Difficulty;

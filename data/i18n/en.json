@@ -413,6 +413,7 @@
   "fusion.effect.perfect_predator": "Perfect Predator", "fusion.effect.perfect_predator.desc": "Peak hunter identity; surprise kills.",
 
   "ui.here": "here", "ui.cleared": "cleared", "ui.unknown_cell": "unknown", "ui.room_sensed": "Secret room sensed",
+  "ui.weak_to": "Weak to",
   "tab.lore": "Lore", "act.meditate": "Meditating",
   "ui.meditate": "🧘 Meditate", "ui.search": "🔎 Search", "ui.court_death": "☠ Court Death",
   "ui.discovery": "Discovery", "ui.fragments": "Fragments", "ui.solved": "solved", "ui.books": "Sacrifice Books",

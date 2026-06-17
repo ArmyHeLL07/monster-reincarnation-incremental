@@ -413,6 +413,7 @@
   "fusion.effect.perfect_predator": "Kusursuz Avcı", "fusion.effect.perfect_predator.desc": "Avcı kimliği tavanı; sürpriz öldürme.",
 
   "ui.here": "şu an", "ui.cleared": "geçildi", "ui.unknown_cell": "bilinmiyor", "ui.room_sensed": "Gizli oda sezildi",
+  "ui.weak_to": "Zayıf olduğu",
   "tab.lore": "Keşif", "act.meditate": "Meditasyon",
   "ui.meditate": "🧘 Meditasyon", "ui.search": "🔎 Ara", "ui.court_death": "☠ Eşiğe Git",
   "ui.discovery": "Keşif", "ui.fragments": "Parçalar", "ui.solved": "çözülen", "ui.books": "Kurban Kitapları",
