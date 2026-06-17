@@ -1,0 +1,6 @@
+{
+  "setHp": 0.1,
+  "lowHpThreshold": 0.25,
+  "resistMult": 2.5,
+  "huskDiscoverChance": 0.02
+}

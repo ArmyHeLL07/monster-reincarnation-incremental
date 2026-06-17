@@ -37,6 +37,7 @@ export interface DungeonPos {
 export interface EnemyInstance {
   id: string;
   locKey: string;
+  raceId?: string;
   hp: number;
   maxHp: number;
   attack: number;
@@ -94,6 +95,17 @@ export interface GameState {
   autoResume: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
   mpTransferUnlocked: boolean;
+  /** Sin/Virtue ruler axis. Sin from killing your own race; Virtue from resting. */
+  sin: number;
+  virtue: number;
+  /** Both axes active at once (unlocked when sin & virtue both pass the parallel threshold). */
+  parallelMind: boolean;
+  /** Forbidden power — permanent damage bonus once Sin crosses the taboo threshold. */
+  taboo: boolean;
+  /** Meditation gauge (0..gaugeMax) filled by resting; fills Zen when full. */
+  medGauge: number;
+  /** Zen unlocked — granted the inner_calm skill + a virtue surge. */
+  zenUnlocked: boolean;
   skills: SkillSlot[];
   resistances: ResistSlot[];
   enemy: EnemyInstance | null;
@@ -153,6 +165,12 @@ export function newGame(): GameState {
     action: 'idle',
     autoResume: false,
     mpTransferUnlocked: false,
+    sin: 0,
+    virtue: 0,
+    parallelMind: false,
+    taboo: false,
+    medGauge: 0,
+    zenUnlocked: false,
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
       { id: 'sharp_claw', level: 1, exp: 0 },

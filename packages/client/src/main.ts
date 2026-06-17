@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat } from './game/combat';
+import { tick, deepRead, allocStat, brink } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -36,6 +36,11 @@ async function init(): Promise<void> {
     },
     onDeepRead: () => {
       deepRead(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onBrink: () => {
+      brink(state, content, logFn);
       save(state);
       render(state);
     },
@@ -179,6 +184,12 @@ function migrate(s: GameState): void {
   s.action ??= 'idle';
   s.autoResume ??= false;
   s.mpTransferUnlocked ??= false;
+  s.sin ??= 0;
+  s.virtue ??= 0;
+  s.parallelMind ??= false;
+  s.taboo ??= false;
+  s.medGauge ??= 0;
+  s.zenUnlocked ??= false;
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;

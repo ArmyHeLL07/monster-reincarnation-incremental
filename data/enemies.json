@@ -30,6 +30,7 @@
   {
     "id": "cave_lurker",
     "locKey": "enemy.cave_lurker.name",
+    "raceId": "spider",
     "hp": 42,
     "attack": 7,
     "damageType": "physical",
@@ -49,6 +50,7 @@
   {
     "id": "venom_brute",
     "locKey": "enemy.venom_brute.name",
+    "raceId": "spider",
     "hp": 64,
     "attack": 11,
     "damageType": "poison",

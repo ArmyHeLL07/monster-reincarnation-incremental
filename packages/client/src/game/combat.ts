@@ -40,6 +40,92 @@ function dmgTypeKey(type?: DamageType): string {
   return `dmgtype.${type ?? 'physical'}`;
 }
 
+/** Element advantage: attacker type vs defender type (ring in data/elements.json). */
+export function elementMult(content: Content, atk: DamageType, def: DamageType): number {
+  const rules = content.elements;
+  if (rules.strongVs[atk] === def) return rules.advantage;
+  if (rules.strongVs[def] === atk) return rules.disadvantage;
+  return 1;
+}
+
+// ---- Sin / Virtue ruler axis -----------------------------------------------
+
+function rulerCount(value: number, thresholds: number[]): number {
+  let c = 0;
+  for (const t of thresholds) if (value >= t) c++;
+  return c;
+}
+function sinRulers(state: GameState, content: Content): number {
+  return rulerCount(state.sin, content.rulers.thresholds);
+}
+function virtueRulers(state: GameState, content: Content): number {
+  return rulerCount(state.virtue, content.rulers.thresholds);
+}
+/** Sin's bonus applies when it leads (or Parallel Mind is on); includes the permanent Taboo bonus. */
+function sinDamageMult(state: GameState, content: Content): number {
+  const r = content.rulers;
+  const active = state.parallelMind || sinRulers(state, content) >= virtueRulers(state, content);
+  const base = active ? 1 + r.bonusPerRuler * sinRulers(state, content) : 1;
+  return base * (state.taboo ? 1 + r.tabooDamageBonus : 1);
+}
+/** Virtue's bonus (to XP) applies when it leads, or Parallel Mind is on. */
+function virtueXpMult(state: GameState, content: Content): number {
+  const r = content.rulers;
+  const active = state.parallelMind || virtueRulers(state, content) >= sinRulers(state, content);
+  return active ? 1 + r.bonusPerRuler * virtueRulers(state, content) : 1;
+}
+/** After Sin/Virtue change: announce new rulers + unlock Parallel Mind / Taboo. */
+function checkRulers(
+  state: GameState,
+  content: Content,
+  beforeSin: number,
+  beforeVirtue: number,
+  log: Log,
+): void {
+  const r = content.rulers;
+  const sBefore = rulerCount(beforeSin, r.thresholds);
+  const sAfter = sinRulers(state, content);
+  for (let i = sBefore; i < sAfter; i++) log({ key: 'log.ruler_sin', params: { name: r.sinNames[Math.min(i, r.sinNames.length - 1)] } });
+  const vBefore = rulerCount(beforeVirtue, r.thresholds);
+  const vAfter = virtueRulers(state, content);
+  for (let i = vBefore; i < vAfter; i++) log({ key: 'log.ruler_virtue', params: { name: r.virtueNames[Math.min(i, r.virtueNames.length - 1)] } });
+  if (!state.parallelMind && state.sin >= r.parallelThreshold && state.virtue >= r.parallelThreshold) {
+    state.parallelMind = true;
+    log({ key: 'log.parallel_mind' });
+  }
+  if (!state.taboo && state.sin >= r.tabooThreshold) {
+    state.taboo = true;
+    log({ key: 'log.taboo' });
+  }
+}
+function addSin(state: GameState, content: Content, amount: number, log: Log): void {
+  const before = state.sin;
+  state.sin += amount;
+  checkRulers(state, content, before, state.virtue, log);
+}
+function addVirtue(state: GameState, content: Content, amount: number, log: Log): void {
+  const before = state.virtue;
+  state.virtue += amount;
+  checkRulers(state, content, state.sin, before, log);
+}
+
+/** Read-only ruler snapshot for the UI. */
+export function rulerStatus(state: GameState, content: Content) {
+  const s = sinRulers(state, content);
+  const v = virtueRulers(state, content);
+  return {
+    sin: state.sin,
+    virtue: state.virtue,
+    sinRulers: s,
+    virtueRulers: v,
+    max: content.rulers.thresholds.length,
+    sinActive: state.parallelMind || s >= v,
+    virtueActive: state.parallelMind || v >= s,
+    parallelMind: state.parallelMind,
+    taboo: state.taboo,
+  };
+}
+
 // ---- hunger / fatigue modifiers --------------------------------------------
 
 function hungerStage(state: GameState): number {
@@ -81,7 +167,7 @@ export function tick(state: GameState, content: Content, log: Log): void {
     }
   } else {
     // rest: recover, no hunger pressure (hunger comes from combat)
-    restRound(state, content);
+    restRound(state, content, log);
   }
   growStaminaRegen(state); // training raises SP regen (more in combat / low HP)
   state.lastSeen = Date.now();
@@ -185,12 +271,35 @@ function combatRound(state: GameState, content: Content, log: Log): void {
   if (state.hp <= 0) onDeath(state, log);
 }
 
-function restRound(state: GameState, content: Content): void {
+function restRound(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   state.sp = Math.min(state.maxSp, state.sp + Math.round((REST_SP_REGEN + state.spRegenBonus + staminaRegenSum(state, content)) * REST_MULT));
   state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round(REST_MP_REGEN * REST_MULT)));
   const hp = (passiveHpRegen(state, content) + 1) * REST_MULT; // deliberately slow
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
+  // Stillness breeds Virtue — rare, rarer still unless fully rested (everything full).
+  const r = content.rulers;
+  const allFull = state.hp >= state.maxHp && state.mp >= state.maxMp && state.sp >= state.maxSp;
+  const chance = allFull ? r.virtueRestChanceFull : r.virtueRestChance;
+  if (Math.random() < chance) {
+    const hasSkill = state.skills.some((s) => s.id === r.virtueSkillId);
+    addVirtue(state, content, r.virtueGainAmount * (hasSkill ? 1 + r.virtueSkillBonus : 1), log);
+  }
+  meditate(state, content, allFull, log);
+}
+
+/** Resting fills the meditation gauge (faster when fully rested) → unlocks Zen once full. */
+function meditate(state: GameState, content: Content, allFull: boolean, log: Log): void {
+  const m = content.meditation;
+  if (state.zenUnlocked) return;
+  state.medGauge = Math.min(m.gaugeMax, state.medGauge + (allFull ? m.gaugePerRestFull : m.gaugePerRest));
+  if (state.medGauge < m.gaugeMax) return;
+  state.zenUnlocked = true;
+  if (!state.skills.some((s) => s.id === m.zenSkillId)) {
+    state.skills.push({ id: m.zenSkillId, level: 1, exp: 0 });
+  }
+  addVirtue(state, content, m.zenVirtueBonus, log);
+  log({ key: 'log.zen' });
 }
 
 // ---- stamina ---------------------------------------------------------------
@@ -267,6 +376,7 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
   state.enemy = {
     id: archId,
     locKey: def.locKey,
+    raceId: def.raceId,
     hp,
     maxHp: hp,
     attack: Math.max(1, Math.round(def.attack * atkMult)),
@@ -300,10 +410,12 @@ function playerAttack(state: GameState, content: Content, log: Log): void {
   const def = content.skills.get(slot.id);
   if (!def) return;
 
+  const em = elementMult(content, def.damageType ?? 'physical', enemy.damageType);
   const raw = (def.damage ?? 0) + Math.floor(state.stats.STR / 3);
-  const dmg = Math.max(1, Math.round(raw * damageMult(state)));
+  const dmg = Math.max(1, Math.round(raw * damageMult(state) * em * sinDamageMult(state, content)));
   enemy.hp -= dmg;
-  log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
+  const atkKey = em > 1 ? 'log.attack_adv' : em < 1 ? 'log.attack_dis' : 'log.attack';
+  log({ key: atkKey, params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
 
   // Skill exp scales with enemy strength + a small skill-level factor (≈ ep + level×0.3).
   const gain = Math.max(1, enemy.ep + 1 + Math.floor(slot.level * 0.3));
@@ -324,6 +436,8 @@ function enemyAttack(state: GameState, content: Content, log: Log): void {
     log({ key: 'log.dodge', params: { enemy: enemy.locKey } });
     return;
   }
+  // Fighting at the brink (low HP) trains resistances far faster — death-flirting pays off.
+  const brinkMult = atBrink(state, content) ? content.brink.resistMult : 1;
   const types = enemy.damageType2 ? [enemy.damageType, enemy.damageType2] : [enemy.damageType];
   const share = enemy.attack / types.length;
   let totalTaken = 0;
@@ -331,10 +445,32 @@ function enemyAttack(state: GameState, content: Content, log: Log): void {
     const reduction = resistReduction(state, content, type);
     const taken = Math.max(0, Math.round(share * (1 - reduction)));
     totalTaken += taken;
-    if (taken > 0) addResistExp(state, content, type, taken, log);
+    if (taken > 0) addResistExp(state, content, type, Math.round(taken * brinkMult), log);
   }
   state.hp = Math.max(0, state.hp - totalTaken);
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
+  // Surviving a hit at the brink can teach the body to refuse death (the revive skill).
+  if (
+    state.hp > 0 &&
+    atBrink(state, content) &&
+    !state.skills.some((s) => s.id === 'undying_husk') &&
+    Math.random() < content.brink.huskDiscoverChance
+  ) {
+    state.skills.push({ id: 'undying_husk', level: 1, exp: 0 });
+    log({ key: 'log.discover_husk' });
+  }
+}
+
+/** True when HP is low enough to count as "at the brink" (low-HP risk window). */
+function atBrink(state: GameState, content: Content): boolean {
+  return state.hp / Math.max(1, state.maxHp) <= content.brink.lowHpThreshold;
+}
+
+/** Deliberately drop to the brink — low HP for faster resistance gain (and revive discovery). */
+export function brink(state: GameState, content: Content, log: Log): void {
+  if (state.hp <= 0) return;
+  state.hp = Math.max(1, Math.round(state.maxHp * content.brink.setHp));
+  log({ key: 'log.brink' });
 }
 
 function gainXp(state: GameState, amount: number, log: Log): void {
@@ -356,7 +492,11 @@ function onKill(state: GameState, content: Content, log: Log): void {
   const enemy = state.enemy;
   if (!enemy) return;
   state.ep += enemy.ep;
-  gainXp(state, enemy.ep * XP_PER_EP, log);
+  gainXp(state, Math.round(enemy.ep * XP_PER_EP * virtueXpMult(state, content)), log);
+  // Killing your own kind is the source of Sin (GDD ruler axis).
+  if (enemy.raceId && enemy.raceId === state.raceId) {
+    addSin(state, content, enemy.isBoss ? content.rulers.sinPerOwnRaceBoss : content.rulers.sinPerOwnRaceKill, log);
+  }
   if (state.inventory.length < maxFoodSlots(state)) {
     state.inventory.push({ enemyId: enemy.id, satiety: enemy.satiety, decay: 0 });
   } else {

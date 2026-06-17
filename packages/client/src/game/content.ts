@@ -1,4 +1,4 @@
-import type { Skill, Resistance, Enemy, Race, EvolutionForm, FusionRules, Dungeon } from '@mri/shared';
+import type { Skill, Resistance, Enemy, Race, EvolutionForm, FusionRules, Dungeon, ElementRules, RulerRules, BrinkRules, MeditationRules } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
 export interface Content {
@@ -9,10 +9,14 @@ export interface Content {
   forms: Map<string, EvolutionForm>;
   fusionRules: FusionRules;
   dungeon: Dungeon;
+  elements: ElementRules;
+  rulers: RulerRules;
+  brink: BrinkRules;
+  meditation: MeditationRules;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon] = await Promise.all([
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, elements, rulers, brink, meditation] = await Promise.all([
     fetchJson<Skill[]>(`${base}skills.json`),
     fetchJson<Resistance[]>(`${base}resistances.json`),
     fetchJson<Enemy[]>(`${base}enemies.json`),
@@ -20,6 +24,10 @@ export async function loadContent(base: string): Promise<Content> {
     fetchJson<EvolutionForm[]>(`${base}evolutions.json`),
     fetchJson<FusionRules>(`${base}fusion_rules.json`),
     fetchJson<Dungeon>(`${base}dungeon.json`),
+    fetchJson<ElementRules>(`${base}elements.json`),
+    fetchJson<RulerRules>(`${base}rulers.json`),
+    fetchJson<BrinkRules>(`${base}brink.json`),
+    fetchJson<MeditationRules>(`${base}meditation.json`),
   ]);
   return {
     skills: byId(skills),
@@ -29,6 +37,10 @@ export async function loadContent(base: string): Promise<Content> {
     forms: byId(forms),
     fusionRules,
     dungeon,
+    elements,
+    rulers,
+    brink,
+    meditation,
   };
 }
 

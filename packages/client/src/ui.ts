@@ -1,16 +1,17 @@
-import type { FusionResult, StatKey } from '@mri/shared';
+import type { FusionResult, StatKey, DamageType } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext } from './game/combat';
+import { xpToNext, rulerStatus } from './game/combat';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
+  onBrink: () => void;
   onGoFrontier: () => void;
   onSetPos: (layer: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
@@ -208,6 +209,13 @@ function renderTab(): void {
 
 // ---- COMBAT ----------------------------------------------------------------
 
+/** The attacker element that is strong against `type` (i.e. the enemy's weakness). */
+function weaknessOf(type: DamageType): DamageType | null {
+  const sv = CONTENT.elements.strongVs;
+  for (const k of Object.keys(sv) as DamageType[]) if (sv[k] === type) return k;
+  return null;
+}
+
 /** Build the enemy info line + HP bar text from the current appraisal tier. */
 function enemyInfoHtml(state: GameState): string {
   const inst = state.enemy;
@@ -217,6 +225,10 @@ function enemyInfoHtml(state: GameState): string {
   const name = inst.isBoss ? `☠ ${baseName}` : baseName;
   const bits: string[] = [`<b>${name}</b>`];
   if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
+  if (tier >= 2) {
+    const weak = weaknessOf(inst.damageType);
+    if (weak) bits.push(`<span class="weak">⚠ ${t('ui.weak')} ${t(`dmgtype.${weak}`)}</span>`);
+  }
   if (tier >= 3) bits.push(`ATK ${inst.attack}`);
   const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
   return `<div>${bits.join(' · ')} ${hpText}</div>`;
@@ -256,6 +268,7 @@ function combatTab(state: GameState): string {
       ${act('rest', t('ui.rest'))}
       ${act('idle', t('ui.stop'))}
       <button id="deepread">${t('ui.deepread')}</button>
+      <button id="brink" class="ghost">${t('ui.brink')}</button>
     </div>
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
@@ -269,6 +282,7 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onSetAction(b.getAttribute('data-act') as 'idle' | 'combat' | 'rest'));
   });
   el.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', ACTIONS.onDeepRead);
+  el.querySelector<HTMLButtonElement>('#brink')?.addEventListener('click', ACTIONS.onBrink);
   updateCombat(CURSTATE); // fill immediately so the bar has a starting width to slide from
 }
 
@@ -502,10 +516,33 @@ function statsTab(state: GameState): string {
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints}</p>
       <ul>${statRows}</ul>
     </section>
+    ${rulerPanel(state)}
     <section class="panel">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${evoHtml}
+    </section>
+  `;
+}
+
+function rulerPanel(state: GameState): string {
+  const r = rulerStatus(state, CONTENT);
+  // Hidden until the axis or meditation actually wakes up — keeps the early game clean.
+  if (r.sin === 0 && r.virtue === 0 && state.medGauge === 0 && !state.zenUnlocked) return '';
+  const sinTag = r.sinActive ? ` · <span class="sin">${t('ui.active')}</span>` : '';
+  const virTag = r.virtueActive ? ` · <span class="virtue">${t('ui.active')}</span>` : '';
+  const flags = `${r.parallelMind ? ` <span class="virtue">⟡ ${t('ui.parallel_mind')}</span>` : ''}${r.taboo ? ` <span class="sin">⛧ ${t('ui.taboo')}</span>` : ''}`;
+  const medPct = Math.round((state.medGauge / CONTENT.meditation.gaugeMax) * 100);
+  const medRow = state.zenUnlocked
+    ? `<div class="row"><span class="virtue">☯ ${t('ui.meditation')}: ${t('ui.zen_on')}</span></div>`
+    : `<div class="row"><span>☯ ${t('ui.meditation')}</span><span>${medPct}%</span></div>${bar(state.medGauge, CONTENT.meditation.gaugeMax, '#5aa9c2')}`;
+  return `
+    <section class="panel">
+      <h2>${t('ui.axis')}</h2>
+      <div class="row"><span class="sin">😈 ${t('ui.sin')} ${Math.floor(r.sin)} · ${r.sinRulers}/${r.max}${sinTag}</span></div>
+      <div class="row"><span class="virtue">😇 ${t('ui.virtue')} ${Math.floor(r.virtue)} · ${r.virtueRulers}/${r.max}${virTag}</span></div>
+      ${flags ? `<p class="muted">${flags}</p>` : ''}
+      ${medRow}
     </section>
   `;
 }

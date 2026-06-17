@@ -110,6 +110,16 @@
     "hpRegen": 3
   },
   {
+    "id": "inner_calm",
+    "locKeyName": "skill.inner_calm.name",
+    "locKeyDesc": "skill.inner_calm.desc",
+    "kind": "passive",
+    "stats": ["WIS"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 1
+  },
+  {
     "id": "appraisal",
     "locKeyName": "skill.appraisal.name",
     "locKeyDesc": "skill.appraisal.desc",

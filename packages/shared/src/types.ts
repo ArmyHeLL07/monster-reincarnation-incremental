@@ -88,6 +88,8 @@ export interface Enemy {
   locKey: string;
   hp: number;
   attack: number;
+  /** Race tag — killing an enemy of your own race accrues Sin (GDD ruler axis). */
+  raceId?: string;
   damageType: DamageType;
   /** Optional second damage type — the attack is split and trains both resistances. */
   damageType2?: DamageType;
@@ -95,6 +97,48 @@ export interface Enemy {
   satiety: number;
   /** Evolution points granted on kill. */
   ep: number;
+}
+
+/** Sin/Virtue ruler axis (data/rulers.json). All numbers are balance knobs, tweakable in JSON. */
+export interface RulerRules {
+  thresholds: number[];
+  bonusPerRuler: number;
+  parallelThreshold: number;
+  tabooThreshold: number;
+  tabooDamageBonus: number;
+  sinPerOwnRaceKill: number;
+  sinPerOwnRaceBoss: number;
+  virtueRestChance: number;
+  virtueRestChanceFull: number;
+  virtueGainAmount: number;
+  virtueSkillId: string;
+  virtueSkillBonus: number;
+  sinNames: string[];
+  virtueNames: string[];
+}
+
+/** Meditation/Zen tuning (data/meditation.json). Gauge fills while resting → unlocks Zen. */
+export interface MeditationRules {
+  gaugeMax: number;
+  gaugePerRest: number;
+  gaugePerRestFull: number;
+  zenSkillId: string;
+  zenVirtueBonus: number;
+}
+
+/** Brink (deliberate low-HP risk) tuning (data/brink.json). */
+export interface BrinkRules {
+  setHp: number;
+  lowHpThreshold: number;
+  resistMult: number;
+  huskDiscoverChance: number;
+}
+
+/** Combat element-advantage ring (data/elements.json): attacker type → the type it beats. */
+export interface ElementRules {
+  advantage: number;
+  disadvantage: number;
+  strongVs: Partial<Record<DamageType, DamageType>>;
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */

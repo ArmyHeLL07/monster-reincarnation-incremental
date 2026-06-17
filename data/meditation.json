@@ -1,0 +1,7 @@
+{
+  "gaugeMax": 100,
+  "gaugePerRest": 3,
+  "gaugePerRestFull": 7,
+  "zenSkillId": "inner_calm",
+  "zenVirtueBonus": 20
+}
