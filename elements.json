@@ -1,0 +1,14 @@
+{
+  "advantage": 1.5,
+  "disadvantage": 0.7,
+  "strongVs": {
+    "physical": "poison",
+    "poison": "acid",
+    "acid": "pierce",
+    "pierce": "frost",
+    "frost": "fire",
+    "fire": "lightning",
+    "lightning": "magic",
+    "magic": "physical"
+  }
+}

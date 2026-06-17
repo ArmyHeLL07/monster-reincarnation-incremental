@@ -1,0 +1,32 @@
+{
+  "thresholds": [30, 80, 150, 250, 400, 600, 850],
+  "bonusPerRuler": 0.08,
+  "parallelThreshold": 80,
+  "tabooThreshold": 1000,
+  "tabooDamageBonus": 0.5,
+  "sinPerOwnRaceKill": 1,
+  "sinPerOwnRaceBoss": 3,
+  "virtueRestChance": 0.001,
+  "virtueRestChanceFull": 0.01,
+  "virtueGainAmount": 1,
+  "virtueSkillId": "inner_calm",
+  "virtueSkillBonus": 0.01,
+  "sinNames": [
+    "ruler.sin.pride",
+    "ruler.sin.wrath",
+    "ruler.sin.greed",
+    "ruler.sin.gluttony",
+    "ruler.sin.envy",
+    "ruler.sin.sloth",
+    "ruler.sin.lust"
+  ],
+  "virtueNames": [
+    "ruler.virtue.diligence",
+    "ruler.virtue.patience",
+    "ruler.virtue.temperance",
+    "ruler.virtue.charity",
+    "ruler.virtue.kindness",
+    "ruler.virtue.humility",
+    "ruler.virtue.chastity"
+  ]
+}
