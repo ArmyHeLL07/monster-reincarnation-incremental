@@ -1,30 +1,12 @@
 [
-  {
-    "id": "fire_res",
-    "locKey": "res.fire_res.name",
-    "damageType": "fire",
-    "lvMax": 10,
-    "nullityKey": "res.flame_immunity.name"
-  },
-  {
-    "id": "physical_res",
-    "locKey": "res.physical_res.name",
-    "damageType": "physical",
-    "lvMax": 10,
-    "nullityKey": "res.blunt_immunity.name"
-  },
-  {
-    "id": "pierce_res",
-    "locKey": "res.pierce_res.name",
-    "damageType": "pierce",
-    "lvMax": 10,
-    "nullityKey": "res.pierce_immunity.name"
-  },
-  {
-    "id": "poison_res",
-    "locKey": "res.poison_res.name",
-    "damageType": "poison",
-    "lvMax": 10,
-    "nullityKey": "res.poison_immunity.name"
-  }
+  { "id": "physical_res", "locKey": "res.physical_res.name", "damageType": "physical", "lvMax": 10, "nullityKey": "res.blunt_immunity.name" },
+  { "id": "pierce_res", "locKey": "res.pierce_res.name", "damageType": "pierce", "lvMax": 10, "nullityKey": "res.pierce_immunity.name" },
+  { "id": "fire_res", "locKey": "res.fire_res.name", "damageType": "fire", "lvMax": 10, "nullityKey": "res.flame_immunity.name" },
+  { "id": "frost_res", "locKey": "res.frost_res.name", "damageType": "frost", "lvMax": 10, "nullityKey": "res.frost_immunity.name" },
+  { "id": "poison_res", "locKey": "res.poison_res.name", "damageType": "poison", "lvMax": 10, "nullityKey": "res.poison_immunity.name" },
+  { "id": "acid_res", "locKey": "res.acid_res.name", "damageType": "acid", "lvMax": 10, "nullityKey": "res.corrosion_immunity.name" },
+  { "id": "lightning_res", "locKey": "res.lightning_res.name", "damageType": "lightning", "lvMax": 10, "nullityKey": "res.lightning_immunity.name" },
+  { "id": "magic_res", "locKey": "res.magic_res.name", "damageType": "magic", "lvMax": 10, "nullityKey": "res.magic_immunity.name" },
+  { "id": "fear_res", "locKey": "res.fear_res.name", "damageType": "fear", "lvMax": 10, "nullityKey": "res.mental_immunity.name" },
+  { "id": "soul_res", "locKey": "res.soul_res.name", "damageType": "soul", "lvMax": 10, "nullityKey": "res.soul_immunity.name" }
 ]

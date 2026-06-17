@@ -1,8 +1,20 @@
-import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType } from '@mri/shared';
+import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty } from '@mri/shared';
 
 export interface EyeAssignment {
   abilityId: string;
   mode: EyeMode;
+}
+
+/** Sin↔Virtue ruler axis + Taboo (GDD §C). Sin/virtue/taboo persist across rebirth. */
+export interface RulerState {
+  /** Dark axis — grows from kills, risk and Gluttony feeding. */
+  sin: number;
+  /** Light axis — grows from meditation and patient rest. */
+  virtue: number;
+  /** The dark-path key; unlocks ruler authority, never reset (top of the persistence hierarchy). */
+  taboo: number;
+  /** Ruler skill ids already granted (so we grant each once). */
+  powers: string[];
 }
 
 /** A stored corpse in the larder. `decay` rises each tick (unless refrigerated). */
@@ -50,9 +62,11 @@ export interface EnemyInstance {
 export const MAX_HUNGER = 100;
 /** Character level cap per evolution tier — reach it, then evolve to advance to the next tier. */
 export const LEVEL_CAP = 10;
+/** Meditation gauge needed to unlock the hidden zen skill (GDD §7.6). */
+export const MEDITATION_MAX = 600;
 
-/** What the player is doing. `idle` freezes the world (no time passes). */
-export type ActionMode = 'idle' | 'combat' | 'rest';
+/** What the player is doing. `idle` freezes the world; `meditate` is the hidden zen state. */
+export type ActionMode = 'idle' | 'combat' | 'rest' | 'meditate';
 
 export interface GameState {
   stats: Record<StatKey, number>;
@@ -97,6 +111,44 @@ export interface GameState {
   /** Local telemetry outbox — session combo attempts, ready to send. */
   outbox: ComboAttempt[];
   lastSeen: number;
+
+  // --- difficulty (GDD §8.5) -------------------------------------------------
+  difficulty: Difficulty;
+  /** Hell-only: death is a true wipe. */
+  permadeath: boolean;
+  /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
+  hellClears: string[];
+
+  // --- rebirth / prestige (GDD §7.5) ----------------------------------------
+  rebirthCount: number;
+  /** Content unlocked by rebirths/secret rooms (skill ids, layer keys…) — persists. */
+  unlocks: string[];
+  /** Total kills this life — feeds Sin and gatekeeper pacing. */
+  kills: number;
+  /** Set when the Gatekeeper boss falls — Rebirth becomes available (cleared on rebirth). */
+  gatekeeperCleared: boolean;
+  /** Permanent starting-stat boon accumulated across rebirths (the small kindness, §7.5.4). */
+  rebirthBoon: number;
+
+  // --- ruler axis + taboo (GDD §C) ------------------------------------------
+  ruler: RulerState;
+
+  // --- meditation (GDD §7.6) -------------------------------------------------
+  /** Hidden gauge; fills only while meditating. */
+  meditation: number;
+  meditationUnlocked: boolean;
+
+  // --- discovery: books, secret rooms, fragments, scars (GDD §7.7/§8.2/§5.0.4)
+  /** Sacrifice-book ids found (carried, may be unread). */
+  booksFound: string[];
+  /** Book/room ids whose lore or reward has been consumed. */
+  discoveries: string[];
+  mapFragments: number;
+  loreFragments: number;
+  /** A perceived-but-unsolved secret room awaiting its riddle answer. */
+  pendingRoom: string | null;
+  /** Accumulated fusion "scar" penalty (GDD §5.0.4) — flat stat drain until repaired. */
+  scars: number;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -153,17 +205,36 @@ export function newGame(): GameState {
       { id: 'hp_regen', level: 1, exp: 0 },
       { id: 'appraisal', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
+      { id: 'chitin_hide', level: 1, exp: 0 },
+      { id: 'many_legged_gait', level: 1, exp: 0 },
     ],
     resistances: [
-      { id: 'fire_res', level: 0, exp: 0, nullified: false },
       { id: 'physical_res', level: 0, exp: 0, nullified: false },
       { id: 'pierce_res', level: 0, exp: 0, nullified: false },
       { id: 'poison_res', level: 0, exp: 0, nullified: false },
+      { id: 'fire_res', level: 0, exp: 0, nullified: false },
     ],
     enemy: null,
     fusionCache: {},
     outbox: [],
     lastSeen: Date.now(),
+    difficulty: 'normal',
+    permadeath: false,
+    hellClears: [],
+    rebirthCount: 0,
+    unlocks: [],
+    kills: 0,
+    gatekeeperCleared: false,
+    rebirthBoon: 0,
+    ruler: { sin: 0, virtue: 0, taboo: 0, powers: [] },
+    meditation: 0,
+    meditationUnlocked: false,
+    booksFound: [],
+    discoveries: [],
+    mapFragments: 0,
+    loreFragments: 0,
+    pendingRoom: null,
+    scars: 0,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

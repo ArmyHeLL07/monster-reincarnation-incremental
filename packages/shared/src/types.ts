@@ -3,7 +3,7 @@
 
 export type StatKey = 'STR' | 'VIT' | 'AGI' | 'INT' | 'WIS' | 'LUCK';
 
-export type SkillKind = 'active' | 'passive' | 'resistance' | 'eye' | 'util';
+export type SkillKind = 'active' | 'passive' | 'resistance' | 'eye' | 'util' | 'magic' | 'ruler';
 
 export type DamageType =
   | 'physical'
@@ -13,7 +13,15 @@ export type DamageType =
   | 'acid'
   | 'lightning'
   | 'frost'
-  | 'magic';
+  | 'magic'
+  | 'fear'
+  | 'soul';
+
+/** Game difficulty (GDD §8.5). Normal is the balance reference; others are deviations. */
+export type Difficulty = 'easy' | 'normal' | 'hard' | 'hell';
+
+/** Sin (dark) vs Virtue (light) ruler axis (GDD §C). */
+export type RulerPole = 'sin' | 'virtue';
 
 /** Eye-slot mode — one mode per eye (GDD §5.0.5). */
 export type EyeMode = 'passive' | 'active';
@@ -67,10 +75,51 @@ export interface Skill {
   /** Passive regen contributions. */
   hpRegen?: number;
   spRegen?: number;
+  mpRegen?: number;
   /** For `kind: 'eye'` abilities — which modes this eye ability allows. */
   eyeModes?: EyeMode[];
   /** Element tag used by the fusion reaction matrix (e.g. "poison", "physical", "silk"). */
   element?: string;
+  // --- magic (kind: 'magic') -------------------------------------------------
+  /** MP spent per cast; magic skills scale extra damage with INT. */
+  mpCost?: number;
+  // --- passive / ruler / util effect modifiers (all optional, summed live) ---
+  /** Flat damage multiplier added to the player's outgoing damage (e.g. Pride/Wrath). */
+  dmgMult?: number;
+  /** Skill/character XP gain multiplier (Diligence, Memory Palace). */
+  xpMult?: number;
+  /** Loot/EP/resource multiplier (Greed, Forage, Lucky Find). */
+  lootMult?: number;
+  /** Passive HP-regen multiplier (Kindness, Regenerative Core). */
+  regenMult?: number;
+  /** Flat stat multiplier applied to all six stats (Pride, Sovereign Form). */
+  statMult?: number;
+  /** Idle/offline yield multiplier (Sloth). */
+  idleMult?: number;
+  /** Dodge chance bonus (Stealth line, Many-Legged Gait). */
+  dodgeBonus?: number;
+  /** Flat physical damage reduction added like resistance (Carapace, Chitin Hide). */
+  armor?: number;
+  /** Bonus damage as a fraction of the player's *missing* HP (Overdraw — risk/reward). */
+  overdrawFrac?: number;
+  /** Hunger-rate multiplier while owned (<1 = slower; Cold Blood). */
+  hungerMult?: number;
+  /** Chance to survive an otherwise-lethal hit at 1 HP (Undying Husk). */
+  surviveChance?: number;
+  /** Marks a hidden/meta skill discovered off the normal path (Stillness, Forbidden Knowledge). */
+  hidden?: boolean;
+  /** A slotted eye ability's combat effect, for gaze eyes (fear/charm/petrify…). */
+  gaze?: GazeEffect;
+}
+
+/** Eye-gaze combat effect (GDD §B6). */
+export interface GazeEffect {
+  /** Chance per enemy turn to negate its attack (fear/charm/petrify share this). */
+  negateChance?: number;
+  /** Bonus flat damage dealt by the gaze each round (Piercing/Soul gaze). */
+  damage?: number;
+  /** Ignores resistance (Soul gaze hits the soul directly). */
+  trueDamage?: boolean;
 }
 
 /** Damage-based resistance line — evolves to a Nullity (immunity) at lvMax. */
@@ -117,6 +166,8 @@ export interface DungeonLayer {
   spDrainMult: number;
   enemyPool: string[];
   boss: string;
+  /** Clearing this layer's boss is a Gatekeeper kill — it enables Rebirth (GDD §7.5). */
+  gatekeeper?: boolean;
 }
 
 export interface Dungeon {
@@ -170,4 +221,65 @@ export interface TelemetrySessionSummary {
   comboAttempts: ComboAttempt[];
   /** Combos newly added to the global pool this session. */
   discoveries: string[];
+}
+
+/** A sacrifice book / scroll — hidden lore that *implies* a mechanic, never states it (GDD §7.7). */
+export interface Book {
+  id: string;
+  /** Surface story layer — always readable. */
+  locKeyLore: string;
+  /** Deep layer — only revealed at/above this INT (GDD §7.8.1). */
+  locKeyDeep: string;
+  intReq: number;
+  /** Order in the chronological series (each book continues the last). */
+  order: number;
+  /** Which hidden path the book hints at (for the Discovery panel). */
+  hints?: 'meditation' | 'brink' | 'taboo' | 'fusion' | 'regen';
+}
+
+/** A bilingual riddle-gated secret room (GDD §8.2 — "open sesame"). */
+export interface SecretRoom {
+  id: string;
+  locKey: string;
+  locKeyClue: string;
+  /** Accepted answers per language (lower-cased, language-aware check). */
+  answers: { tr: string[]; en: string[] };
+  /** Minimum Appraisal tier to even perceive the room (GDD §5.0.7, ~LV7+). */
+  appraisalReq: number;
+  /** Reward on solve. */
+  reward: { kind: 'skill' | 'stat' | 'unlock' | 'ep'; value: string | number };
+}
+
+/** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */
+export interface RulerDef {
+  id: string;
+  pole: RulerPole;
+  locKeyName: string;
+  locKeyDesc: string;
+  /** Axis value at which this ruler skill is granted. */
+  threshold: number;
+  /** Flat stat bonus applied once on grant (mirrors EvolutionForm.statBonus). */
+  statBonus?: Partial<Record<StatKey, number>>;
+  /** Live multipliers, applied at point of use (mirror Skill's modifier fields). */
+  dmgMult?: number;
+  xpMult?: number;
+  lootMult?: number;
+  regenMult?: number;
+  idleMult?: number;
+}
+
+/** Difficulty modifiers (GDD §8.5). Normal = all 1×/0, the balance reference. */
+export interface DifficultyDef {
+  id: Difficulty;
+  locKey: string;
+  /** Starting dungeon layer id. */
+  startLayer: number;
+  /** Enemy HP/ATK multiplier. */
+  enemyMult: number;
+  /** Player outgoing-damage multiplier (the "scissors" opens from both sides). */
+  playerMult: number;
+  /** Fraction of dungeon progress lost on death (0 = none, 1 = back to layer start). */
+  deathPenalty: number;
+  /** Hell-only: enemies hunt actively, hunger/exp are harsher. */
+  brutal?: boolean;
 }

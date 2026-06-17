@@ -13,10 +13,25 @@
     { "a": "water", "b": "fire", "effect": "steam", "cls": "quirk" },
     { "a": "fire", "b": "frost", "effect": "thermal_shock", "cls": "backfire" },
     { "a": "water", "b": "lightning", "effect": "conductive_shock", "cls": "synergy" },
-    { "a": "earth", "b": "water", "effect": "mud", "cls": "quirk" }
+    { "a": "earth", "b": "water", "effect": "mud", "cls": "quirk" },
+    { "a": "acid", "b": "physical", "effect": "corrode", "cls": "synergy" },
+    { "a": "acid", "b": "silk", "effect": "dissolve_web", "cls": "quirk" },
+    { "a": "acid", "b": "poison", "effect": "necrosis", "cls": "synergy" },
+    { "a": "frost", "b": "wind", "effect": "blizzard", "cls": "synergy" },
+    { "a": "lightning", "b": "wind", "effect": "tempest", "cls": "synergy" },
+    { "a": "fire", "b": "earth", "effect": "magma", "cls": "synergy" },
+    { "a": "frost", "b": "lightning", "effect": "superconductor", "cls": "backfire" },
+    { "a": "pierce", "b": "poison", "effect": "envenom_pierce", "cls": "synergy" },
+    { "a": "void", "b": "soul", "effect": "oblivion", "cls": "synergy" },
+    { "a": "fear", "b": "soul", "effect": "despair", "cls": "synergy" },
+    { "a": "void", "b": "physical", "effect": "phase_rend", "cls": "quirk" }
   ],
   "special": [
     { "a": "sharp_claw", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
-    { "a": "hp_regen", "b": "venom_bite", "effect": "toxic_blood", "cls": "quirk" }
+    { "a": "hp_regen", "b": "venom_bite", "effect": "toxic_blood", "cls": "quirk" },
+    { "a": "all_sight", "b": "precognition", "effect": "omniscience", "cls": "synergy" },
+    { "a": "endless_mana", "b": "mana_mastery", "effect": "mana_singularity", "cls": "synergy" },
+    { "a": "soul_gaze", "b": "inner_silence", "effect": "apex_soul", "cls": "synergy" },
+    { "a": "apex_predator", "b": "stealth", "effect": "perfect_predator", "cls": "synergy" }
   ]
 }

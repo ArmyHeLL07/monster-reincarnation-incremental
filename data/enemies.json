@@ -1,68 +1,18 @@
 [
-  {
-    "id": "cave_pest",
-    "locKey": "enemy.cave_pest.name",
-    "hp": 12,
-    "attack": 2,
-    "damageType": "physical",
-    "satiety": 8,
-    "ep": 1
-  },
-  {
-    "id": "ember_crawler",
-    "locKey": "enemy.ember_crawler.name",
-    "hp": 18,
-    "attack": 3,
-    "damageType": "fire",
-    "damageType2": "pierce",
-    "satiety": 12,
-    "ep": 2
-  },
-  {
-    "id": "venom_toad",
-    "locKey": "enemy.venom_toad.name",
-    "hp": 15,
-    "attack": 3,
-    "damageType": "poison",
-    "satiety": 10,
-    "ep": 2
-  },
-  {
-    "id": "cave_lurker",
-    "locKey": "enemy.cave_lurker.name",
-    "hp": 42,
-    "attack": 7,
-    "damageType": "physical",
-    "satiety": 16,
-    "ep": 4
-  },
-  {
-    "id": "flame_jaw",
-    "locKey": "enemy.flame_jaw.name",
-    "hp": 48,
-    "attack": 9,
-    "damageType": "fire",
-    "damageType2": "physical",
-    "satiety": 18,
-    "ep": 5
-  },
-  {
-    "id": "venom_brute",
-    "locKey": "enemy.venom_brute.name",
-    "hp": 64,
-    "attack": 11,
-    "damageType": "poison",
-    "damageType2": "physical",
-    "satiety": 24,
-    "ep": 8
-  },
-  {
-    "id": "bone_render",
-    "locKey": "enemy.bone_render.name",
-    "hp": 78,
-    "attack": 14,
-    "damageType": "pierce",
-    "satiety": 26,
-    "ep": 10
-  }
+  { "id": "cave_pest", "locKey": "enemy.cave_pest.name", "hp": 12, "attack": 2, "damageType": "physical", "satiety": 8, "ep": 1 },
+  { "id": "ember_crawler", "locKey": "enemy.ember_crawler.name", "hp": 18, "attack": 3, "damageType": "fire", "damageType2": "pierce", "satiety": 12, "ep": 2 },
+  { "id": "venom_toad", "locKey": "enemy.venom_toad.name", "hp": 15, "attack": 3, "damageType": "poison", "satiety": 10, "ep": 2 },
+  { "id": "cave_lurker", "locKey": "enemy.cave_lurker.name", "hp": 42, "attack": 7, "damageType": "physical", "satiety": 16, "ep": 4 },
+  { "id": "frost_mite", "locKey": "enemy.frost_mite.name", "hp": 24, "attack": 4, "damageType": "frost", "satiety": 11, "ep": 3 },
+  { "id": "acid_slug", "locKey": "enemy.acid_slug.name", "hp": 30, "attack": 5, "damageType": "acid", "satiety": 13, "ep": 3 },
+  { "id": "flame_jaw", "locKey": "enemy.flame_jaw.name", "hp": 48, "attack": 9, "damageType": "fire", "damageType2": "physical", "satiety": 18, "ep": 5 },
+  { "id": "spark_wisp", "locKey": "enemy.spark_wisp.name", "hp": 36, "attack": 8, "damageType": "lightning", "satiety": 14, "ep": 5 },
+  { "id": "venom_brute", "locKey": "enemy.venom_brute.name", "hp": 64, "attack": 11, "damageType": "poison", "damageType2": "physical", "satiety": 24, "ep": 8 },
+  { "id": "bone_render", "locKey": "enemy.bone_render.name", "hp": 78, "attack": 14, "damageType": "pierce", "satiety": 26, "ep": 10 },
+  { "id": "shade_wraith", "locKey": "enemy.shade_wraith.name", "hp": 70, "attack": 13, "damageType": "fear", "damageType2": "magic", "satiety": 20, "ep": 12 },
+  { "id": "magma_titan", "locKey": "enemy.magma_titan.name", "hp": 120, "attack": 18, "damageType": "fire", "damageType2": "physical", "satiety": 34, "ep": 16 },
+  { "id": "soul_eater", "locKey": "enemy.soul_eater.name", "hp": 110, "attack": 17, "damageType": "soul", "damageType2": "magic", "satiety": 30, "ep": 18 },
+  { "id": "abyss_horror", "locKey": "enemy.abyss_horror.name", "hp": 160, "attack": 22, "damageType": "soul", "damageType2": "fear", "satiety": 40, "ep": 24 },
+  { "id": "warden_gate", "locKey": "enemy.warden_gate.name", "hp": 90, "attack": 15, "damageType": "physical", "damageType2": "magic", "satiety": 28, "ep": 14 },
+  { "id": "first_devourer", "locKey": "enemy.first_devourer.name", "hp": 240, "attack": 28, "damageType": "soul", "damageType2": "fear", "satiety": 50, "ep": 40 }
 ]

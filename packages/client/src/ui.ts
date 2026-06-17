@@ -1,11 +1,13 @@
-import type { FusionResult, StatKey } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
-import { MAX_HUNGER, LEVEL_CAP } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext } from './game/combat';
+import { canRebirth } from './game/rebirth';
+import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
 
 export interface UiActions {
@@ -26,10 +28,19 @@ export interface UiActions {
   onImportSave: () => void;
   onBugReport: () => void;
   onReset: () => void;
+  onMeditate: () => void;
+  onSearch: () => void;
+  onCourtDeath: () => void;
+  onRebirth: () => void;
+  onReadBook: (id: string) => void;
+  onAnswerRoom: (answer: string) => void;
+  onRepairScar: () => void;
+  onSetDifficulty: (d: Difficulty) => void;
+  onTogglePermadeath: () => void;
 }
 
-type Tab = 'combat' | 'map' | 'skills' | 'body' | 'stats' | 'settings';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'stats', 'settings'];
+type Tab = 'combat' | 'map' | 'skills' | 'body' | 'lore' | 'stats' | 'settings';
+const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'lore', 'stats', 'settings'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -40,6 +51,7 @@ const ICONS: Record<Tab, string> = {
   map: svg('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'),
   skills: svg('<path d="M12 2v6M12 16v6M2 12h6M16 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>'),
   body: EYE_SVG,
+  lore: svg('<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8"/>'),
   stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
   settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
 };
@@ -172,6 +184,10 @@ function renderTab(): void {
       el.innerHTML = bodyTab(CURSTATE);
       wireBody(el);
       break;
+    case 'lore':
+      el.innerHTML = loreTab(CURSTATE);
+      wireLore(el);
+      break;
     case 'stats':
       el.innerHTML = statsTab(CURSTATE);
       wireStats(el);
@@ -218,7 +234,12 @@ function combatTab(state: GameState): string {
       ${act('combat', t('ui.fight'))}
       ${act('rest', t('ui.rest'))}
       ${act('idle', t('ui.stop'))}
+      <button id="meditate"${state.action === 'meditate' ? ' class="active"' : ''}>${t('ui.meditate')}</button>
+    </div>
+    <div class="controls">
       <button id="deepread">${t('ui.deepread')}</button>
+      <button id="search">${t('ui.search')}</button>
+      <button id="courtdeath" class="ghost">${t('ui.court_death')}</button>
     </div>
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
@@ -232,6 +253,9 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onSetAction(b.getAttribute('data-act') as 'idle' | 'combat' | 'rest'));
   });
   el.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', ACTIONS.onDeepRead);
+  el.querySelector<HTMLButtonElement>('#meditate')?.addEventListener('click', ACTIONS.onMeditate);
+  el.querySelector<HTMLButtonElement>('#search')?.addEventListener('click', ACTIONS.onSearch);
+  el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
 }
 
 // ---- MAP -------------------------------------------------------------------
@@ -409,6 +433,67 @@ function wireBody(el: HTMLElement): void {
   });
 }
 
+// ---- LORE / DISCOVERY (books, rooms, fragments) ----------------------------
+
+function loreTab(state: GameState): string {
+  // Pending secret room: a riddle to type the answer to ("open sesame").
+  let roomHtml = `<p class="muted">${t('ui.no_room')}</p>`;
+  if (state.pendingRoom) {
+    const room = CONTENT.rooms.get(state.pendingRoom);
+    if (room) {
+      roomHtml = `
+        <div class="row"><b>${t(room.locKey)}</b></div>
+        <p class="muted">${t(room.locKeyClue)}</p>
+        <div class="controls">
+          <input id="riddle" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
+          <button id="answer">${t('ui.solve')}</button>
+        </div>`;
+    }
+  }
+
+  const books = state.booksFound.length
+    ? [...state.booksFound]
+        .map((id) => CONTENT.books.get(id))
+        .filter((b): b is NonNullable<typeof b> => !!b)
+        .sort((a, b) => a.order - b.order)
+        .map((bk) => {
+          const read = state.discoveries.includes(bk.id);
+          const deep = state.stats.INT >= bk.intReq;
+          const tag = read ? '✓' : deep ? '★' : `INT ${bk.intReq}`;
+          return `<li><button class="readbook" data-book="${bk.id}">${t('book.' + bk.id + '.title')}</button> <span class="muted">${tag}</span></li>`;
+        })
+        .join('')
+    : `<span class="muted">${t('ui.empty')}</span>`;
+
+  const medUnlocked = state.meditationUnlocked || state.meditation > 0;
+  const medHtml = medUnlocked
+    ? `<section class="panel"><div class="row"><span>${t('ui.meditation')}</span><span>${Math.floor((state.meditation / MEDITATION_MAX) * 100)}%</span></div>${bar(state.meditation, MEDITATION_MAX, '#9a7fd0')}</section>`
+    : '';
+
+  return `
+    <section class="panel">
+      <h2>${t('ui.discovery')}</h2>
+      <p class="muted">${t('ui.fragments')}: 🗺 ${state.mapFragments} · 📜 ${state.loreFragments} · ${t('ui.solved')}: ${state.discoveries.length}</p>
+      ${roomHtml}
+    </section>
+    <section class="panel"><h2>${t('ui.books')}</h2><ul>${books}</ul></section>
+    ${medHtml}
+  `;
+}
+
+function wireLore(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.readbook').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-book');
+      if (id) ACTIONS.onReadBook(id);
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#answer')?.addEventListener('click', () => {
+    const input = el.querySelector<HTMLInputElement>('#riddle');
+    if (input && input.value.trim()) ACTIONS.onAnswerRoom(input.value);
+  });
+}
+
 // ---- STATS (+ evolution) ---------------------------------------------------
 
 function statsTab(state: GameState): string {
@@ -438,6 +523,43 @@ function statsTab(state: GameState): string {
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${evoHtml}
     </section>
+    ${rulerPanel(state)}
+    ${rebirthPanel(state)}
+  `;
+}
+
+function rulerPanel(state: GameState): string {
+  const powers = CONTENT.ruler
+    .filter((r) => state.ruler.powers.includes(r.id))
+    .map((r) => `<li><b>${t(r.locKeyName)}</b> <span class="muted">${r.pole === 'sin' ? '🔥' : '☼'}</span> — ${t(r.locKeyDesc)}</li>`)
+    .join('');
+  const taboo = state.ruler.taboo > 0 ? ` · <b style="color:#a4506a">${t('ui.taboo')} ${state.ruler.taboo}</b>` : '';
+  const scar = state.scars > 0
+    ? `<div class="row"><span style="color:#c0626f">${t('ui.scars')}: ${state.scars}</span><button id="repair" class="ghost">${t('ui.repair')} (20 EP)</button></div>`
+    : '';
+  return `
+    <section class="panel">
+      <h2>${t('ui.ruler')}</h2>
+      <div class="row"><span>🔥 ${t('ui.sin')}</span><span>${Math.floor(state.ruler.sin)}</span></div>
+      <div class="row"><span>☼ ${t('ui.virtue')}</span><span>${Math.floor(state.ruler.virtue)}</span></div>
+      <p class="muted">${t('ui.ep')}: ${state.ep}${taboo}</p>
+      ${powers ? `<ul>${powers}</ul>` : `<p class="muted">${t('ui.no_ruler')}</p>`}
+      ${scar}
+    </section>
+  `;
+}
+
+function rebirthPanel(state: GameState): string {
+  const ready = canRebirth(state);
+  const info = `${t('ui.rebirths')}: ${state.rebirthCount}${state.rebirthBoon > 0 ? ` · +${state.rebirthBoon} ${t('ui.boon')}` : ''}`;
+  return `
+    <section class="panel">
+      <h2>${t('ui.rebirth')}</h2>
+      <p class="muted">${info}</p>
+      ${ready
+        ? `<p>${t('ui.rebirth_ready')}</p><button id="rebirth">${t('ui.rebirth_do')}</button>`
+        : `<p class="muted">${t('ui.rebirth_locked')}</p>`}
+    </section>
   `;
 }
 
@@ -451,6 +573,8 @@ function wireStats(el: HTMLElement): void {
       if (f) ACTIONS.onEvolve(f);
     });
   });
+  el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
+  el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
 }
 
 // ---- SETTINGS --------------------------------------------------------------
@@ -462,7 +586,17 @@ function settingsTab(state: GameState): string {
   const langs = (['tr', 'en'] as const)
     .map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${l === 'tr' ? 'Türkçe' : 'English'}</button>`)
     .join('');
+  const diffs = [...CONTENT.difficulties.values()]
+    .map((d) => `<button class="diff${state.difficulty === d.id ? ' active' : ''}" data-diff="${d.id}">${t(d.locKey)}</button>`)
+    .join('');
+  const cur = diffDef(state, CONTENT);
   return `
+    <section class="panel">
+      <div class="row"><span>${t('ui.difficulty')}</span><span class="muted">${t(cur.locKey)}</span></div>
+      <div class="controls">${diffs}</div>
+      <div class="row"><span>${t('ui.permadeath')}</span><button id="permadeath" class="${state.permadeath ? 'active' : 'ghost'}">${state.permadeath ? t('ui.on') : t('ui.off')}</button></div>
+      <p class="muted">${t('ui.permadeath_hint')}</p>
+    </section>
     <section class="panel">
       <div class="row"><span>${t('ui.language')}</span><span></span></div>
       <div class="controls">${langs}</div>
@@ -490,6 +624,10 @@ function wireSettings(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en'));
   });
+  el.querySelectorAll<HTMLButtonElement>('.diff').forEach((b) => {
+    b.addEventListener('click', () => ACTIONS.onSetDifficulty(b.getAttribute('data-diff') as Difficulty));
+  });
+  el.querySelector<HTMLButtonElement>('#permadeath')?.addEventListener('click', ACTIONS.onTogglePermadeath);
   el.querySelector<HTMLButtonElement>('#savenow')?.addEventListener('click', ACTIONS.onSaveNow);
   el.querySelector<HTMLButtonElement>('#exportsave')?.addEventListener('click', ACTIONS.onExportSave);
   el.querySelector<HTMLButtonElement>('#importsave')?.addEventListener('click', ACTIONS.onImportSave);

@@ -2,12 +2,16 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
+import { rebirth } from './game/rebirth';
+import { applyDifficultyStart } from './game/difficulty';
+import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { load, save, clear } from './game/save';
 import { mount, live, render, pushLog, setLastFusion, resetUi, type UiActions } from './ui';
+import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 1800;
 
@@ -80,6 +84,55 @@ async function init(): Promise<void> {
     },
     onDiscardFood: (i) => {
       state.inventory.splice(i, 1);
+      save(state);
+      render(state);
+    },
+    onMeditate: () => {
+      state.action = 'meditate';
+      state.autoResume = false;
+      state.enemy = null;
+      save(state);
+      render(state);
+    },
+    onSearch: () => {
+      search(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onCourtDeath: () => {
+      courtDeath(state, logFn);
+      save(state);
+      render(state);
+    },
+    onRebirth: () => {
+      if (rebirth(state, content, logFn)) {
+        resetUi();
+        save(state);
+        render(state);
+      }
+    },
+    onReadBook: (id) => {
+      readBook(state, content, id, logFn);
+      save(state);
+      render(state);
+    },
+    onAnswerRoom: (answer) => {
+      answerRoom(state, content, answer, logFn);
+      save(state);
+      render(state);
+    },
+    onRepairScar: () => {
+      repairScar(state, logFn);
+      save(state);
+      render(state);
+    },
+    onSetDifficulty: (d: Difficulty) => {
+      applyDifficultyStart(state, content, d);
+      save(state);
+      render(state);
+    },
+    onTogglePermadeath: () => {
+      state.permadeath = !state.permadeath;
       save(state);
       render(state);
     },
@@ -175,6 +228,24 @@ function migrate(s: GameState): void {
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;
   if (s.mp == null) s.mp = s.maxMp;
+  // v2 fields — difficulty, rebirth, ruler, meditation, discovery (GDD §C/§7.5/§7.6/§7.7/§8.5).
+  s.difficulty ??= d.difficulty;
+  s.permadeath ??= d.permadeath;
+  s.hellClears ??= [];
+  s.rebirthCount ??= 0;
+  s.unlocks ??= [];
+  s.kills ??= 0;
+  s.gatekeeperCleared ??= false;
+  s.rebirthBoon ??= 0;
+  s.ruler ??= { sin: 0, virtue: 0, taboo: 0, powers: [] };
+  s.meditation ??= 0;
+  s.meditationUnlocked ??= false;
+  s.booksFound ??= [];
+  s.discoveries ??= [];
+  s.mapFragments ??= 0;
+  s.loreFragments ??= 0;
+  s.pendingRoom ??= null;
+  s.scars ??= 0;
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
