@@ -158,6 +158,7 @@ async function init(): Promise<void> {
     onImportSave: () => importSave(),
     onBugReport: () => reportBug(state),
     onReset: () => {
+      if (!window.confirm(t('ui.reset_confirm'))) return; // guard against accidental wipe
       clear();
       state = newGame();
       resetUi();
@@ -225,6 +226,7 @@ function migrate(s: GameState): void {
   s.action ??= 'idle';
   s.autoResume ??= false;
   s.mpTransferUnlocked ??= false;
+  if (s.atkCd == null) s.atkCd = 0;
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;

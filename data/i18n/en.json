@@ -25,6 +25,7 @@
   "ui.language": "Language",
   "ui.train": "Train Stamina",
   "ui.reset": "Reset",
+  "ui.reset_confirm": "Reset everything? Your save will be permanently erased. This cannot be undone.",
   "ui.fusion": "Fusion Lab",
   "ui.fuse": "Fuse",
   "ui.telemetry": "Telemetry (outbox)",

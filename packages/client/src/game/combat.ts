@@ -193,6 +193,11 @@ export function courtDeath(state: GameState, log: Log): void {
 
 // ---- rounds ----------------------------------------------------------------
 
+/** Ticks between attacks — faster with higher AGI (our "slow", paced combat, not instant). */
+function attackInterval(state: GameState): number {
+  return Math.max(1, 3 - Math.floor(state.stats.AGI / 20));
+}
+
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
   if (!state.enemy) spawnEnemy(state, content, log);
   if (!state.enemy) return;
@@ -200,6 +205,11 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
   tryLearnRegen(state, log, false);
+  // Attack speed: regen/stamina tick every round, but blows are only exchanged when the
+  // AGI-scaled cooldown is ready — this is our deliberately slower, readable combat pace.
+  state.atkCd -= 1;
+  if (state.atkCd > 0) return;
+  state.atkCd = attackInterval(state);
   playerAttack(state, content, log, b);
   if (state.enemy.hp <= 0) {
     onKill(state, content, log, b);

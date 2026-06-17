@@ -25,6 +25,7 @@
   "ui.language": "Dil",
   "ui.train": "Stamina eğit",
   "ui.reset": "Sıfırla",
+  "ui.reset_confirm": "Her şey sıfırlansın mı? Kaydın kalıcı olarak silinecek. Bu geri alınamaz.",
   "ui.fusion": "Füzyon Lab",
   "ui.fuse": "Birleştir",
   "ui.telemetry": "Telemetri (outbox)",

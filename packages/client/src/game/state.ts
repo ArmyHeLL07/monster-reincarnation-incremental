@@ -103,6 +103,8 @@ export interface GameState {
   autoResume: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
   mpTransferUnlocked: boolean;
+  /** Attack cooldown counter (ticks until next attack exchange) — AGI-paced "slow" combat. */
+  atkCd: number;
   skills: SkillSlot[];
   resistances: ResistSlot[];
   enemy: EnemyInstance | null;
@@ -202,6 +204,7 @@ export function newGame(): GameState {
     action: 'idle',
     autoResume: false,
     mpTransferUnlocked: false,
+    atkCd: 0,
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
       { id: 'sharp_claw', level: 1, exp: 0 },
