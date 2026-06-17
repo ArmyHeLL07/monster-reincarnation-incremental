@@ -18,14 +18,19 @@ export function search(state: GameState, content: Content, log: Log): void {
   const roll = Math.random() * (1 + b.lootMult - 1);
   const baseFind = 0.25 + luck * 0.01 + roll;
 
-  // 1) Perceive a secret room — only with a strong enough "seeing eye" (~LV7+).
+  // 1) Perceive a secret room — the chance scales with the "seeing eye" level (GDD §5.0.7):
+  // ~0% when you first meet the Appraisal/Insight requirement, rising gradually each level.
   const room = [...content.rooms.values()].find(
     (r) => tier >= r.appraisalReq && state.pendingRoom !== r.id && !state.discoveries.includes(r.id),
   );
-  if (room && Math.random() < 0.35) {
-    state.pendingRoom = room.id;
-    log({ key: 'log.search_room', params: { room: room.locKey } });
-    return;
+  if (room) {
+    const over = tier - room.appraisalReq; // ≥ 0 (the find() gates it)
+    const perceiveChance = Math.min(0.45, 0.01 + over * 0.025 + luck * 0.003);
+    if (Math.random() < perceiveChance) {
+      state.pendingRoom = room.id;
+      log({ key: 'log.search_room', params: { room: room.locKey } });
+      return;
+    }
   }
 
   // 2) Find a sacrifice book (chronological series).

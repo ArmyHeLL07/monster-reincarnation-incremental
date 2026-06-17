@@ -124,7 +124,7 @@ export function live(state: GameState): void {
   if (top) top.innerHTML = topbarHtml(state);
   const log = document.querySelector<HTMLElement>('#log');
   if (log) log.innerHTML = logLines.map((l) => `<div>${l}</div>`).join('');
-  if (activeTab === 'combat') renderTab();
+  if (activeTab === 'combat' || activeTab === 'map') renderTab();
 }
 
 /** Full refresh of the active tab + chrome — after an action or tab switch. */
@@ -260,27 +260,76 @@ function wireCombat(el: HTMLElement): void {
 
 // ---- MAP -------------------------------------------------------------------
 
+/** Fog-of-war grid of one layer: floors are rows, rooms are cells; cleared rooms light up. */
+function dungeonGrid(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
+  const R = layer.roomsPerFloor;
+  const F = layer.floors;
+  const onLayer = state.pos.layer === layer.id;
+  const curLinear = (state.pos.floor - 1) * R + state.pos.room;
+  const reached = Math.max(state.exploredMax[layer.id] ?? 0, onLayer ? curLinear : 0);
+  let rows = '';
+  for (let f = 1; f <= F; f++) {
+    let cells = '';
+    for (let r = 1; r <= R; r++) {
+      const idx = (f - 1) * R + r;
+      const isBoss = r === R;
+      const isCurrent = onLayer && f === state.pos.floor && r === state.pos.room;
+      const revealed = idx <= reached || isCurrent;
+      let cls = 'dcell';
+      let glyph = '';
+      if (isCurrent) {
+        cls += ' current';
+        glyph = isBoss ? '☠' : '◈';
+      } else if (!revealed) {
+        cls += ' fog';
+        if (isBoss) cls += ' boss';
+      } else {
+        cls += ' lit';
+        if (isBoss) {
+          cls += ' boss';
+          glyph = '☠';
+        }
+      }
+      cells += `<div class="${cls}">${glyph}</div>`;
+    }
+    rows += `<div class="dmap-floor" style="--cols:${R}"><span class="flabel">${f}</span>${cells}</div>`;
+  }
+  return `<div class="dmap">${rows}</div>`;
+}
+
 function mapTab(state: GameState): string {
   const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const bossSoon = cur && state.pos.room >= cur.roomsPerFloor ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
+  const pending = state.pendingRoom ? `<p style="color:var(--ember)">⌑ ${t('ui.room_sensed')}: ${t(CONTENT.rooms.get(state.pendingRoom)?.locKey ?? '')}</p>` : '';
+  const legend = `
+    <div class="dlegend">
+      <span><i class="cur"></i>${t('ui.here')}</span>
+      <span><i class="lit"></i>${t('ui.cleared')}</span>
+      <span><i class="boss"></i>${t('ui.boss')}</span>
+      <span><i class="fog"></i>${t('ui.unknown_cell')}</span>
+    </div>`;
   const layers = CONTENT.dungeon.layers
     .map((l) => {
       const unlocked = state.tier >= l.tierReq;
       const current = state.pos.layer === l.id;
+      const max = state.exploredMax[l.id] ?? 0;
+      const total = l.floors * l.roomsPerFloor;
+      const prog = unlocked ? ` <span class="muted">${Math.floor((Math.min(max, total) / total) * 100)}%</span>` : '';
       const status = current
         ? `<span class="muted">${t('ui.current')}</span>`
         : !unlocked
           ? `<span class="muted">${t('ui.locked')} (T${l.tierReq})</span>`
           : `<button class="layerbtn" data-layer="${l.id}">${t('ui.enter')}</button>`;
-      return `<li><b>${t(l.locKey)}</b> — T${l.tierReq}+ ${status}</li>`;
+      return `<li><b>${t(l.locKey)}</b> — T${l.tierReq}+${prog} ${status}</li>`;
     })
     .join('');
   return `
     <section class="panel">
-      <h2>${t('tab.map')}</h2>
-      <p><b>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</b> — ${cur ? t(cur.locKey) : ''}</p>
+      <div class="row"><h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
       <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${cur?.roomsPerFloor ?? '?'}${bossSoon}</p>
-      ${cur ? bar(state.pos.room, cur.roomsPerFloor, '#8ab23f') : ''}
+      ${cur ? dungeonGrid(state, cur) : ''}
+      ${legend}
+      ${pending}
     </section>
     <section class="panel"><h2>${t('ui.layers')}</h2><ul>${layers}</ul></section>
   `;

@@ -412,6 +412,7 @@
   "fusion.effect.apex_soul": "Apex Soul", "fusion.effect.apex_soul.desc": "Full immunity to soul/system attacks.",
   "fusion.effect.perfect_predator": "Perfect Predator", "fusion.effect.perfect_predator.desc": "Peak hunter identity; surprise kills.",
 
+  "ui.here": "here", "ui.cleared": "cleared", "ui.unknown_cell": "unknown", "ui.room_sensed": "Secret room sensed",
   "tab.lore": "Lore", "act.meditate": "Meditating",
   "ui.meditate": "🧘 Meditate", "ui.search": "🔎 Search", "ui.court_death": "☠ Court Death",
   "ui.discovery": "Discovery", "ui.fragments": "Fragments", "ui.solved": "solved", "ui.books": "Sacrifice Books",

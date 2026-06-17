@@ -271,9 +271,16 @@ function currentLayer(state: GameState, content: Content) {
   return content.dungeon.layers.find((l) => l.id === state.pos.layer);
 }
 
+function recordExplored(state: GameState, roomsPerFloor: number): void {
+  const idx = (state.pos.floor - 1) * roomsPerFloor + state.pos.room;
+  const prev = state.exploredMax[state.pos.layer] ?? 0;
+  if (idx > prev) state.exploredMax[state.pos.layer] = idx;
+}
+
 function spawnEnemy(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
   if (!layer || layer.enemyPool.length === 0) return;
+  recordExplored(state, layer.roomsPerFloor); // light the room on the map as we enter it
   const isBoss = state.pos.room >= layer.roomsPerFloor;
   const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
   const def = content.enemies.get(archId);

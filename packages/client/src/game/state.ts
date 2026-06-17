@@ -149,6 +149,8 @@ export interface GameState {
   pendingRoom: string | null;
   /** Accumulated fusion "scar" penalty (GDD §5.0.4) — flat stat drain until repaired. */
   scars: number;
+  /** Furthest linear room index reached per layer id → drives the map's fog-of-war reveal. */
+  exploredMax: Record<number, number>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -235,6 +237,7 @@ export function newGame(): GameState {
     loreFragments: 0,
     pendingRoom: null,
     scars: 0,
+    exploredMax: {},
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

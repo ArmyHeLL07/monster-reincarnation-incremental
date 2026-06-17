@@ -246,6 +246,7 @@ function migrate(s: GameState): void {
   s.loreFragments ??= 0;
   s.pendingRoom ??= null;
   s.scars ??= 0;
+  s.exploredMax ??= {};
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
