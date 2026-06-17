@@ -5,7 +5,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots } from './game/combat';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -13,6 +13,9 @@ import { t, tmsg } from './i18n';
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
+  onUseSkill: (id: string) => void;
+  onToggleMode: () => void;
+  onToggleEquip: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
   onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
@@ -267,6 +270,7 @@ function combatTab(state: GameState): string {
       ${act('idle', t('ui.stop'))}
       <button id="meditate"${state.action === 'meditate' ? ' class="active"' : ''}>${t('ui.meditate')}</button>
     </div>
+    ${skillBar(state)}
     <div class="controls">
       <button id="deepread">${t('ui.deepread')}</button>
       <button id="search">${t('ui.search')}</button>
@@ -279,7 +283,33 @@ function combatTab(state: GameState): string {
   `;
 }
 
+/** Combat mode toggle + equipped skill cast buttons (with live cooldown). */
+function skillBar(state: GameState): string {
+  const slots = skillSlots(state);
+  const mode = state.combatMode === 'auto' ? t('ui.mode_auto') : t('ui.mode_manual');
+  const btns = state.equipped
+    .map((id) => {
+      const def = CONTENT.skills.get(id);
+      const cd = state.cooldowns[id] ?? 0;
+      const name = def ? t(def.locKeyName) : id;
+      return `<button class="castbtn" data-cast="${id}"${cd > 0 ? ' disabled' : ''}>${name}${cd > 0 ? ` <span class="cd">${cd}</span>` : ''}</button>`;
+    })
+    .join('');
+  return `
+    <section class="panel">
+      <div class="row"><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${slots}</span><button id="mode" class="ghost">${t('ui.mode')}: ${mode}</button></div>
+      <div class="controls">${btns || `<span class="muted">${t('ui.no_equipped')}</span>`}</div>
+    </section>`;
+}
+
 function wireCombat(el: HTMLElement): void {
+  el.querySelector<HTMLButtonElement>('#mode')?.addEventListener('click', ACTIONS.onToggleMode);
+  el.querySelectorAll<HTMLButtonElement>('.castbtn[data-cast]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-cast');
+      if (id) ACTIONS.onUseSkill(id);
+    });
+  });
   el.querySelectorAll<HTMLButtonElement>('.actbtn').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetAction(b.getAttribute('data-act') as 'idle' | 'combat' | 'rest'));
   });
@@ -414,7 +444,12 @@ function skillsTab(state: GameState): string {
       const def = CONTENT.skills.get(s.id);
       const name = def ? t(def.locKeyName) : s.id;
       const tierTag = (s.tier ?? 1) > 1 ? `<span class="muted">T${s.tier}</span> ` : '';
-      return `<li><b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</li>`;
+      const active = def?.damage !== undefined;
+      const eq = state.equipped.includes(s.id);
+      const equipBtn = active
+        ? `<button class="equipbtn${eq ? ' on' : ''}" data-equip="${s.id}">${eq ? t('ui.unequip') : t('ui.equip')}</button>`
+        : '';
+      return `<li><b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp ${equipBtn}</li>`;
     })
     .join('');
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
@@ -430,7 +465,7 @@ function skillsTab(state: GameState): string {
     ? `<p><b>${t(lastFusion.locKeyName)}</b> · ${t(`fusion.${lastFusion.cls}`)} · ${lastFusion.magnitude}</p><p class="muted">${t(`fusion.effect.${lastFusion.effectType}.desc`)}</p>`
     : '';
   return `
-    <section class="panel"><h2>${t('ui.skills')}</h2><ul>${skills}</ul></section>
+    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><ul>${skills}</ul></section>
     <section class="panel">
       <h2>${t('ui.fusion')}</h2>
       <div class="controls">
@@ -452,6 +487,12 @@ function wireSkills(el: HTMLElement): void {
   });
   el.querySelector<HTMLButtonElement>('#fuse')?.addEventListener('click', () => {
     if (selectedA && selectedB) ACTIONS.onFuse(selectedA, selectedB);
+  });
+  el.querySelectorAll<HTMLButtonElement>('.equipbtn[data-equip]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-equip');
+      if (id) ACTIONS.onToggleEquip(id);
+    });
   });
 }
 

@@ -1,4 +1,4 @@
-import type { DamageType, StatKey } from '@mri/shared';
+import type { DamageType, StatKey, Skill } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP } from './state';
@@ -23,6 +23,7 @@ const LARDER_DISCOVER_CHANCE = 0.04;
 const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
 const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player
+const ENEMY_ATK_INTERVAL = 2; // ticks between enemy strikes — paces combat in both auto & manual
 const DEPTH_HP = 0.05; // enemy HP growth per room of depth
 const DEPTH_ATK = 0.045;
 const BOSS_HP = 2.5;
@@ -194,11 +195,6 @@ export function courtDeath(state: GameState, log: Log): void {
 
 // ---- rounds ----------------------------------------------------------------
 
-/** Ticks between attacks — faster with higher AGI (our "slow", paced combat, not instant). */
-function attackInterval(state: GameState): number {
-  return Math.max(1, 3 - Math.floor(state.stats.AGI / 20));
-}
-
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
   if (!state.enemy) spawnEnemy(state, content, log);
   if (!state.enemy) return;
@@ -206,18 +202,37 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
   tryLearnRegen(state, log, false);
-  // Attack speed: regen/stamina tick every round, but blows are only exchanged when the
-  // AGI-scaled cooldown is ready — this is our deliberately slower, readable combat pace.
-  state.atkCd -= 1;
-  if (state.atkCd > 0) return;
-  state.atkCd = attackInterval(state);
-  playerAttack(state, content, log, b);
-  if (state.enemy.hp <= 0) {
-    onKill(state, content, log, b);
-  } else {
-    enemyAttack(state, content, log, b);
+  // Per-skill cooldowns pace attacks — no more "every skill every tick".
+  for (const id of state.equipped) {
+    const cd = state.cooldowns[id] ?? 0;
+    if (cd > 0) state.cooldowns[id] = cd - 1;
+  }
+  // AUTO: fire each equipped skill that's off cooldown. (MANUAL: player taps cast buttons instead.)
+  if (state.combatMode === 'auto') {
+    for (const id of state.equipped) {
+      if (!state.enemy) break;
+      if (castSkill(state, content, id, log, b) && state.enemy.hp <= 0) {
+        onKill(state, content, log, b);
+        break;
+      }
+    }
+  }
+  if (state.enemy) fireGaze(state, content, log);
+  if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b);
+  // Enemy strikes on its own cadence (paced in both modes).
+  if (state.enemy) {
+    state.enemy.atkCd -= 1;
+    if (state.enemy.atkCd <= 0) {
+      state.enemy.atkCd = ENEMY_ATK_INTERVAL;
+      enemyAttack(state, content, log, b);
+    }
   }
   if (state.hp <= 0) onDeath(state, content, log, b);
+}
+
+/** Ticks before a skill can fire again — lower with higher AGI; data `cooldown` sets the base. */
+function skillCooldown(def: Skill, state: GameState): number {
+  return Math.max(1, (def.cooldown ?? 3) - Math.floor(state.stats.AGI / 30));
 }
 
 function restRound(state: GameState, content: Content): void {
@@ -358,34 +373,20 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     ep: Math.round(def.ep * (isBoss ? 3 : 1)),
     satiety: Math.round(def.satiety * (isBoss ? 2 : 1)),
     isBoss,
+    atkCd: ENEMY_ATK_INTERVAL,
   };
   log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: def.locKey } });
 }
 
-/** Pick the strongest usable attack — magic scales with INT but needs affordable MP. */
-function chooseAttack(state: GameState, content: Content): SkillSlot | null {
-  let best: SkillSlot | null = null;
-  let bestScore = -1;
-  for (const slot of state.skills) {
-    const def = content.skills.get(slot.id);
-    if (def?.damage === undefined) continue;
-    if (def.kind === 'magic' && (def.mpCost ?? 0) > state.mp) continue; // can't afford the spell
-    const score = def.kind === 'magic' ? def.damage + state.stats.INT * 0.6 : def.damage + state.stats.STR / 3;
-    if (score > bestScore) {
-      best = slot;
-      bestScore = score;
-    }
-  }
-  return best;
-}
-
-function playerAttack(state: GameState, content: Content, log: Log, b: Bonuses): void {
+/** Cast one specific equipped skill at the current enemy (shared by auto & manual). True if it fired. */
+function castSkill(state: GameState, content: Content, id: string, log: Log, b: Bonuses): boolean {
   const enemy = state.enemy;
-  if (!enemy) return;
-  const slot = chooseAttack(state, content);
-  if (!slot) return;
-  const def = content.skills.get(slot.id);
-  if (!def) return;
+  if (!enemy) return false;
+  const slot = state.skills.find((s) => s.id === id);
+  const def = content.skills.get(id);
+  if (!slot || !def || def.damage === undefined) return false;
+  if ((state.cooldowns[id] ?? 0) > 0) return false;
+  if (def.kind === 'magic' && (def.mpCost ?? 0) > state.mp) return false;
   const diff = diffDef(state, content);
 
   let raw: number;
@@ -401,19 +402,62 @@ function playerAttack(state: GameState, content: Content, log: Log, b: Bonuses):
   const dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
+  state.cooldowns[id] = skillCooldown(def, state);
 
-  // Offensive gaze from slotted active eyes (Soul gaze ignores resistance).
+  const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
+  addSkillExp(content, slot, gain, log, b.xpMult);
+  return true;
+}
+
+/** Offensive eye gaze from slotted active eyes — independent of equipped skills. */
+function fireGaze(state: GameState, content: Content, log: Log): void {
+  const enemy = state.enemy;
+  if (!enemy) return;
   const gz = gazeAttack(state, content);
   if (gz.damage > 0 && state.mp >= gz.mpCost) {
     state.mp -= gz.mpCost;
     enemy.hp -= gz.damage;
     log({ key: 'log.gaze_hit', params: { dmg: gz.damage } });
   }
+}
 
-  const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
-  addSkillExp(content, slot, gain, log, b.xpMult);
+/** Skill-slot capacity — Parallel Minds grants an extra slot (the "act in parallel" idea). */
+export function skillSlots(state: GameState): number {
+  return 4 + (state.skills.some((s) => s.id === 'parallel_minds') ? 1 : 0);
+}
+
+/** Keep `equipped` valid: only owned active-damage skills, within capacity; auto-fill spare slots. */
+export function ensureEquipped(state: GameState, content: Content): void {
+  state.equipped = state.equipped.filter(
+    (id) => state.skills.some((s) => s.id === id) && content.skills.get(id)?.damage !== undefined,
+  );
+  const slots = skillSlots(state);
+  if (state.equipped.length > slots) state.equipped.length = slots;
   for (const s of state.skills) {
-    if (s !== slot) addSkillExp(content, s, 1, log, b.xpMult);
+    if (state.equipped.length >= slots) break;
+    const def = content.skills.get(s.id);
+    if (def?.damage !== undefined && !state.equipped.includes(s.id)) state.equipped.push(s.id);
+  }
+}
+
+/** Equip / unequip an active skill (manual loadout, capped by skillSlots). */
+export function toggleEquip(state: GameState, content: Content, id: string): void {
+  const def = content.skills.get(id);
+  if (!def || def.damage === undefined) return; // only active-damage skills go in slots
+  const i = state.equipped.indexOf(id);
+  if (i >= 0) {
+    state.equipped.splice(i, 1);
+  } else if (state.equipped.length < skillSlots(state)) {
+    state.equipped.push(id);
+  }
+}
+
+/** Manual cast from a tapped skill button (combat only, equipped only, respects cooldown). */
+export function useSkillManual(state: GameState, content: Content, id: string, log: Log): void {
+  if (state.action !== 'combat' || !state.enemy || !state.equipped.includes(id)) return;
+  const b = aggregateBonuses(state, content);
+  if (castSkill(state, content, id, log, b) && state.enemy && state.enemy.hp <= 0) {
+    onKill(state, content, log, b);
   }
 }
 

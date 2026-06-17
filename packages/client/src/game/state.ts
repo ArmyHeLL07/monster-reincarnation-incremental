@@ -57,6 +57,8 @@ export interface EnemyInstance {
   ep: number;
   satiety: number;
   isBoss: boolean;
+  /** Enemy attack cooldown (ticks) — paces incoming hits in both auto & manual combat. */
+  atkCd: number;
 }
 
 export const MAX_HUNGER = 100;
@@ -103,8 +105,14 @@ export interface GameState {
   autoResume: boolean;
   /** Discovered ability: when SP is empty, burn MP before HP. */
   mpTransferUnlocked: boolean;
-  /** Attack cooldown counter (ticks until next attack exchange) — AGI-paced "slow" combat. */
+  /** Attack cooldown counter (legacy; per-skill cooldowns now pace attacks). */
   atkCd: number;
+  /** Equipped active-skill ids — only these are used in combat (limited by skillSlots). */
+  equipped: string[];
+  /** Combat control: `auto` fires ready equipped skills; `manual` waits for taps. */
+  combatMode: 'auto' | 'manual';
+  /** Per-skill cooldown timers (ticks remaining), keyed by skill id. */
+  cooldowns: Record<string, number>;
   skills: SkillSlot[];
   resistances: ResistSlot[];
   enemy: EnemyInstance | null;
@@ -205,6 +213,9 @@ export function newGame(): GameState {
     autoResume: false,
     mpTransferUnlocked: false,
     atkCd: 0,
+    equipped: ['venom_bite', 'sharp_claw', 'silk_thread'],
+    combatMode: 'auto',
+    cooldowns: {},
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
       { id: 'sharp_claw', level: 1, exp: 0 },

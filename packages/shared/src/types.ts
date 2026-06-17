@@ -72,6 +72,8 @@ export interface Skill {
   /** Active damage skills: base damage per use. */
   damage?: number;
   damageType?: DamageType;
+  /** Attack cooldown in ticks (active skills). Lower = fires more often. Default ~3. */
+  cooldown?: number;
   /** Passive regen contributions. */
   hpRegen?: number;
   spRegen?: number;
