@@ -267,7 +267,7 @@ function wireCombat(el: HTMLElement): void {
 
 /** Fog-of-war grid of one layer: floors are rows, rooms are cells; cleared rooms light up. */
 function dungeonGrid(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
-  const R = layer.roomsPerFloor;
+  const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
   const F = layer.floors;
   const onLayer = state.pos.layer === layer.id;
   const curLinear = (state.pos.floor - 1) * R + state.pos.room;
@@ -304,7 +304,8 @@ function dungeonGrid(state: GameState, layer: { id: number; floors: number; room
 
 function mapTab(state: GameState): string {
   const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
-  const bossSoon = cur && state.pos.room >= cur.roomsPerFloor ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
+  const curRooms = cur ? (state.layerRooms[cur.id] ?? cur.roomsPerFloor) : 0;
+  const bossSoon = cur && state.pos.room >= curRooms ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
   const pending = state.pendingRoom ? `<p style="color:var(--ember)">⌑ ${t('ui.room_sensed')}: ${t(CONTENT.rooms.get(state.pendingRoom)?.locKey ?? '')}</p>` : '';
   const legend = `
     <div class="dlegend">
@@ -318,7 +319,7 @@ function mapTab(state: GameState): string {
       const unlocked = state.tier >= l.tierReq;
       const current = state.pos.layer === l.id;
       const max = state.exploredMax[l.id] ?? 0;
-      const total = l.floors * l.roomsPerFloor;
+      const total = l.floors * (state.layerRooms[l.id] ?? l.roomsPerFloor);
       const prog = unlocked ? ` <span class="muted">${Math.floor((Math.min(max, total) / total) * 100)}%</span>` : '';
       const status = current
         ? `<span class="muted">${t('ui.current')}</span>`
@@ -331,7 +332,7 @@ function mapTab(state: GameState): string {
   return `
     <section class="panel">
       <div class="row"><h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
-      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${cur?.roomsPerFloor ?? '?'}${bossSoon}</p>
+      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${curRooms || '?'}${bossSoon}</p>
       ${cur ? dungeonGrid(state, cur) : ''}
       ${legend}
       ${pending}

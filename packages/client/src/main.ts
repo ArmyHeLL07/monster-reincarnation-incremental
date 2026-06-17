@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -23,6 +23,7 @@ async function init(): Promise<void> {
   await loadI18n(base, lang);
   const content = await loadContent(base);
   recomputeMaxes(state);
+  ensureLayerRooms(state, content); // roll this player's random rooms-per-floor (10–22) once
   for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
 
   function logFn(e: LogEvent): void {
@@ -247,6 +248,7 @@ function migrate(s: GameState): void {
   s.pendingRoom ??= null;
   s.scars ??= 0;
   s.exploredMax ??= {};
+  s.layerRooms ??= {};
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

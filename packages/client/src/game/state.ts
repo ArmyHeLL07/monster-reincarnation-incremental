@@ -151,6 +151,8 @@ export interface GameState {
   scars: number;
   /** Furthest linear room index reached per layer id → drives the map's fog-of-war reveal. */
   exploredMax: Record<number, number>;
+  /** Per-player random rooms-per-floor per layer id (10–22), rolled once and saved. */
+  layerRooms: Record<number, number>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -238,6 +240,7 @@ export function newGame(): GameState {
     pendingRoom: null,
     scars: 0,
     exploredMax: {},
+    layerRooms: {},
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

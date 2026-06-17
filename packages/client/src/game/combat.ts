@@ -288,17 +288,46 @@ function currentLayer(state: GameState, content: Content) {
   return content.dungeon.layers.find((l) => l.id === state.pos.layer);
 }
 
+/** Per-player random rooms-per-floor for a layer (10–22), rolled once and saved. */
+export function roomsOf(state: GameState, layer: { id: number; roomsPerFloor: number }): number {
+  let r = state.layerRooms[layer.id];
+  if (r == null) {
+    r = 10 + Math.floor(Math.random() * 13); // 10..22 inclusive
+    state.layerRooms[layer.id] = r;
+  }
+  return r;
+}
+
+/** Roll every layer's room count up-front (called once at game start so the map is stable). */
+export function ensureLayerRooms(state: GameState, content: Content): void {
+  for (const l of content.dungeon.layers) roomsOf(state, l);
+}
+
 function recordExplored(state: GameState, roomsPerFloor: number): void {
   const idx = (state.pos.floor - 1) * roomsPerFloor + state.pos.room;
   const prev = state.exploredMax[state.pos.layer] ?? 0;
   if (idx > prev) state.exploredMax[state.pos.layer] = idx;
 }
 
+/** Luck-driven chance to sense a (gated) secret room when a floor is cleared (GDD §8.2). */
+function trySenseRoom(state: GameState, content: Content, log: Log): void {
+  if (state.pendingRoom) return;
+  const tier = appraisalTier(state);
+  const room = [...content.rooms.values()].find((r) => tier >= r.appraisalReq && !state.discoveries.includes(r.id));
+  if (!room) return;
+  const chance = Math.min(0.5, 0.04 + state.stats.LUCK * 0.01); // luck is the driver
+  if (Math.random() < chance) {
+    state.pendingRoom = room.id;
+    log({ key: 'log.search_room', params: { room: room.locKey } });
+  }
+}
+
 function spawnEnemy(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
   if (!layer || layer.enemyPool.length === 0) return;
-  recordExplored(state, layer.roomsPerFloor); // light the room on the map as we enter it
-  const isBoss = state.pos.room >= layer.roomsPerFloor;
+  const R = roomsOf(state, layer);
+  recordExplored(state, R); // light the room on the map as we enter it
+  const isBoss = state.pos.room >= R;
   const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
   const def = content.enemies.get(archId);
   if (!def) return;
@@ -482,6 +511,7 @@ function advancePosition(state: GameState, content: Content, log: Log, wasBoss: 
     state.pos.floor += 1;
     state.pos.room = 1;
     log({ key: 'log.floor_cleared', params: { pos: `${state.pos.layer}.${state.pos.floor}` } });
+    trySenseRoom(state, content, log); // luck-based secret room on a fresh floor
     return;
   }
   const next = content.dungeon.layers.find((l) => l.id === state.pos.layer + 1);
