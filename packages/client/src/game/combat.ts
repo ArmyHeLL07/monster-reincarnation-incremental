@@ -1,6 +1,6 @@
 import type { DamageType, StatKey } from '@mri/shared';
 import type { Content } from './content';
-import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
+import type { GameState, SkillSlot, ResistSlot, LogEvent, DungeonPos } from './state';
 import { recomputeMaxes, MAX_HUNGER, LEVEL_CAP } from './state';
 import { appraisalAssigned, appraisalTier, dreadChance } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
@@ -157,12 +157,25 @@ export function allocStat(state: GameState, stat: StatKey): void {
 
 // ---- rounds ----------------------------------------------------------------
 
+/** Ticks between attacks — faster with higher AGI (combat is paced, not instant). */
+export function attackInterval(state: GameState): number {
+  return Math.max(1, 3 - Math.floor(state.stats.AGI / 20));
+}
+
+function posEquals(a: DungeonPos, b: DungeonPos): boolean {
+  return a.layer === b.layer && a.floor === b.floor && a.room === b.room;
+}
+
 function combatRound(state: GameState, content: Content, log: Log): void {
   if (!state.enemy) spawnEnemy(state, content, log);
   if (!state.enemy) return;
   applyCombatRegen(state, content);
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN); // MP recovers mid-combat
   drainStamina(state, content);
+  // Attack speed: only exchange blows when the cooldown is ready (AGI-scaled).
+  state.atkCd -= 1;
+  if (state.atkCd > 0) return;
+  state.atkCd = attackInterval(state);
   playerAttack(state, content, log);
   if (state.enemy.hp <= 0) {
     onKill(state, content, log);
@@ -354,7 +367,8 @@ function onKill(state: GameState, content: Content, log: Log): void {
   log({ key: enemy.isBoss ? 'log.boss_kill' : 'log.kill', params: { enemy: enemy.locKey, ep: enemy.ep } });
   const wasBoss = enemy.isBoss;
   state.enemy = null;
-  advancePosition(state, content, log, wasBoss);
+  // Only fighting AT the frontier extends it (unlocks the next room). Farming earlier rooms does not.
+  if (posEquals(state.pos, state.furthest)) advanceFrontier(state, content, log, wasBoss);
 
   if (!state.mpTransferUnlocked && Math.random() < MP_TRANSFER_DISCOVER_CHANCE) {
     state.mpTransferUnlocked = true;
@@ -374,35 +388,47 @@ function onKill(state: GameState, content: Content, log: Log): void {
   }
 }
 
-/** Advance dungeon position after a kill: room++, floor boss → next floor, layer boss → next layer (tier-gated). */
-function advancePosition(state: GameState, content: Content, log: Log, wasBoss: boolean): void {
-  const layer = currentLayer(state, content);
+/** Extend the frontier (unlock next room/floor/layer). Player advances to it manually via the Map. */
+function advanceFrontier(state: GameState, content: Content, log: Log, wasBoss: boolean): void {
+  const f = state.furthest;
+  const layer = content.dungeon.layers.find((l) => l.id === f.layer);
   if (!layer) return;
   if (!wasBoss) {
-    state.pos.room += 1;
+    f.room += 1;
+    log({ key: 'log.unlocked', params: { pos: `${f.layer}.${f.floor}.${f.room}` } });
     return;
   }
-  if (state.pos.floor < layer.floors) {
-    state.pos.floor += 1;
-    state.pos.room = 1;
-    log({ key: 'log.floor_cleared', params: { pos: `${state.pos.layer}.${state.pos.floor}` } });
+  if (f.floor < layer.floors) {
+    f.floor += 1;
+    f.room = 1;
+    log({ key: 'log.floor_cleared', params: { pos: `${f.layer}.${f.floor}` } });
     return;
   }
-  const next = content.dungeon.layers.find((l) => l.id === state.pos.layer + 1);
+  const next = content.dungeon.layers.find((l) => l.id === f.layer + 1);
   if (next && state.tier >= next.tierReq) {
-    state.pos = { layer: next.id, floor: 1, room: 1 };
+    state.furthest = { layer: next.id, floor: 1, room: 1 };
     log({ key: 'log.layer_cleared', params: { layer: next.id } });
   } else if (next) {
-    state.pos.room = 1; // tier-gated → replay the final floor (farm) until tier is high enough
-    log({ key: 'log.layer_locked', params: { tier: next.tierReq } });
+    log({ key: 'log.layer_locked', params: { tier: next.tierReq } }); // frontier holds at the layer boss
   } else {
-    state.pos.room = 1;
     log({ key: 'log.dungeon_end' });
   }
 }
 
 function onDeath(state: GameState, log: Log): void {
-  log({ key: 'log.death' });
+  // Revive only if you have the ability; otherwise it's a real death.
+  if (state.skills.some((s) => s.id === 'undying_husk')) {
+    recomputeMaxes(state);
+    state.hp = state.maxHp;
+    state.sp = state.maxSp;
+    state.enemy = null;
+    log({ key: 'log.revive' });
+    return;
+  }
+  log({ key: 'log.died' });
+  state.action = 'idle'; // stop — death is a real setback
+  state.enemy = null;
+  state.pos = { layer: state.pos.layer, floor: 1, room: 1 }; // fall back to this layer's start
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.sp = state.maxSp;

@@ -107,6 +107,11 @@
       select { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); }
 
       .actbtn { flex: 1 1 auto; }
+      .floorlist { list-style: none; padding: 0; margin: 0; }
+      .floorlist > li { margin: 0.4rem 0; }
+      .floorbtn { min-width: 44px; min-height: 40px; padding: 0.3rem 0.6rem; flex: 0 0 auto; }
+      span.floorbtn { display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; }
+      span.floorbtn.current { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border: 1px solid var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
       .statadd, .discard { min-height: 30px; min-width: 36px; padding: 0.1rem 0.5rem; font-size: 1rem; }
       .ability.on { outline: 2px solid var(--venom); outline-offset: 1px; }
       .evoready { color: var(--ember); font-family: var(--disp); letter-spacing: 0.08em; animation: pulse 1.8s ease-in-out infinite; }

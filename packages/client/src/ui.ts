@@ -11,7 +11,8 @@ import { t, tmsg } from './i18n';
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
   onDeepRead: () => void;
-  onSelectLayer: (layerId: number) => void;
+  onGoFrontier: () => void;
+  onSetPos: (layer: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -73,10 +74,6 @@ function bar(value: number, max: number, color: string): string {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return `<div class="bar"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
 }
-function statBar(label: string, v: number, max: number, color: string): string {
-  return `<div class="statline"><div class="row"><span>${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div>${bar(v, max, color)}</div>`;
-}
-
 // ---- shell -----------------------------------------------------------------
 
 export function mount(state: GameState, content: Content, actions: UiActions): void {
@@ -101,18 +98,19 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       renderTab();
     });
   });
+  const top = document.querySelector<HTMLElement>('#topbar');
+  if (top) top.innerHTML = topbarShell(); // built once; values updated by refs in live()
   renderTab();
   live(state);
 }
 
-/** Per-tick light update: top bar, log, and the combat tab (no inputs to lose there). */
+/** Per-tick light update: bars/log via refs (so bars slide smoothly, not rebuilt). */
 export function live(state: GameState): void {
   CURSTATE = state;
-  const top = document.querySelector<HTMLElement>('#topbar');
-  if (top) top.innerHTML = topbarHtml(state);
+  updateTopbar(state);
   const log = document.querySelector<HTMLElement>('#log');
   if (log) log.innerHTML = logLines.map((l) => `<div>${l}</div>`).join('');
-  if (activeTab === 'combat') renderTab();
+  if (activeTab === 'combat') updateCombat(state);
 }
 
 /** Full refresh of the active tab + chrome — after an action or tab switch. */
@@ -122,22 +120,47 @@ export function render(state: GameState): void {
   live(state);
 }
 
-function topbarHtml(state: GameState): string {
-  const form = currentForm(state, CONTENT);
-  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
-  const posStr = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
-  const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
-  const stage = hungerStage(state.hunger);
+function barRow(id: string, label: string, color: string): string {
+  return `<div class="statline"><div class="row"><span>${label}</span><span id="${id}-txt"></span></div><div class="bar"><div class="bar-fill" id="${id}-fill" style="background:${color}"></div></div></div>`;
+}
+
+/** The top bar structure, built once; values are filled by updateTopbar via refs. */
+function topbarShell(): string {
   return `
     <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}</p>
+    <p class="sub" id="sub"></p>
     <div class="bars">
-      ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
-      ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
-      ${statBar(t('ui.sp'), state.sp, state.maxSp, '#d2a73a')}
-      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
+      ${barRow('hp', t('ui.hp'), '#6fae53')}
+      ${barRow('mp', t('ui.mp'), '#4f86c2')}
+      ${barRow('sp', t('ui.sp'), '#d2a73a')}
+      ${barRow('hunger', t('ui.hunger'), '#6fae53')}
     </div>
   `;
+}
+
+function setBar(id: string, value: number, max: number, text: string, color?: string): void {
+  const fill = document.querySelector<HTMLElement>(`#${id}-fill`);
+  const txt = document.querySelector<HTMLElement>(`#${id}-txt`);
+  if (fill) {
+    fill.style.width = `${max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0}%`;
+    if (color) fill.style.background = color;
+  }
+  if (txt) txt.textContent = text;
+}
+
+function updateTopbar(state: GameState): void {
+  const form = currentForm(state, CONTENT);
+  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
+  const stage = hungerStage(state.hunger);
+  const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
+  const sub = document.querySelector<HTMLElement>('#sub');
+  if (sub) {
+    sub.innerHTML = `${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${state.pos.layer}.${state.pos.floor}.${state.pos.room} · ${t(`act.${state.action}`)}${evo}`;
+  }
+  setBar('hp', state.hp, state.maxHp, `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setBar('mp', state.mp, state.maxMp, `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
+  setBar('sp', state.sp, state.maxSp, `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
+  setBar('hunger', state.hunger, MAX_HUNGER, t(`hunger.${stage}`), ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage]);
 }
 
 function hungerStage(h: number): number {
@@ -185,7 +208,8 @@ function renderTab(): void {
 
 // ---- COMBAT ----------------------------------------------------------------
 
-function enemyView(state: GameState): string {
+/** Build the enemy info line + HP bar text from the current appraisal tier. */
+function enemyInfoHtml(state: GameState): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   const tier = appraisalTier(state);
@@ -195,7 +219,19 @@ function enemyView(state: GameState): string {
   if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
   if (tier >= 3) bits.push(`ATK ${inst.attack}`);
   const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
-  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
+  return `<div>${bits.join(' · ')} ${hpText}</div>`;
+}
+
+/** Per-tick refresh of the enemy info + HP bar via refs, so the bar slides smoothly. */
+function updateCombat(state: GameState): void {
+  const info = document.querySelector<HTMLElement>('#enemy-info');
+  if (info) info.innerHTML = enemyInfoHtml(state);
+  const fill = document.querySelector<HTMLElement>('#enemy-fill');
+  if (fill) {
+    const inst = state.enemy;
+    const pct = inst && inst.maxHp > 0 ? Math.max(0, Math.min(100, (inst.hp / inst.maxHp) * 100)) : 0;
+    fill.style.width = `${pct}%`;
+  }
 }
 
 function combatTab(state: GameState): string {
@@ -212,7 +248,8 @@ function combatTab(state: GameState): string {
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
-      ${enemyView(state)}
+      <div id="enemy-info"></div>
+      <div class="bar"><div class="bar-fill" id="enemy-fill" style="background:#bb4140"></div></div>
     </section>
     <div class="controls">
       ${act('combat', t('ui.fight'))}
@@ -232,41 +269,73 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onSetAction(b.getAttribute('data-act') as 'idle' | 'combat' | 'rest'));
   });
   el.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', ACTIONS.onDeepRead);
+  updateCombat(CURSTATE); // fill immediately so the bar has a starting width to slide from
 }
 
 // ---- MAP -------------------------------------------------------------------
 
+/** True if (layer, floor) has been reached and is safe to farm (at/behind the frontier). */
+function floorUnlocked(state: GameState, layer: number, floor: number): boolean {
+  const f = state.furthest;
+  return layer < f.layer || (layer === f.layer && floor <= f.floor);
+}
+
 function mapTab(state: GameState): string {
   const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const bossSoon = cur && state.pos.room >= cur.roomsPerFloor ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
+  const atFrontier =
+    state.pos.layer === state.furthest.layer &&
+    state.pos.floor === state.furthest.floor &&
+    state.pos.room === state.furthest.room;
+  const frontierCtrl = atFrontier
+    ? `<p class="muted">${t('ui.at_frontier')}</p>`
+    : `<button id="gofrontier">${t('ui.frontier')} → ${state.furthest.layer}.${state.furthest.floor}.${state.furthest.room}</button>`;
+
   const layers = CONTENT.dungeon.layers
     .map((l) => {
-      const unlocked = state.tier >= l.tierReq;
-      const current = state.pos.layer === l.id;
-      const status = current
-        ? `<span class="muted">${t('ui.current')}</span>`
-        : !unlocked
-          ? `<span class="muted">${t('ui.locked')} (T${l.tierReq})</span>`
-          : `<button class="layerbtn" data-layer="${l.id}">${t('ui.enter')}</button>`;
-      return `<li><b>${t(l.locKey)}</b> — T${l.tierReq}+ ${status}</li>`;
+      const reached = l.id <= state.furthest.layer;
+      if (!reached) {
+        const why = state.tier >= l.tierReq ? t('ui.locked') : `${t('ui.locked')} (T${l.tierReq})`;
+        return `<li><b>${t(l.locKey)}</b> <span class="muted">${why}</span></li>`;
+      }
+      // Farm buttons for every unlocked floor of a reached layer.
+      const floors: string[] = [];
+      for (let f = 1; f <= l.floors; f++) {
+        if (!floorUnlocked(state, l.id, f)) break;
+        const here = state.pos.layer === l.id && state.pos.floor === f;
+        floors.push(
+          here
+            ? `<span class="floorbtn current">${f}</span>`
+            : `<button class="floorbtn" data-layer="${l.id}" data-floor="${f}">${f}</button>`,
+        );
+      }
+      return `<li><b>${t(l.locKey)}</b><div class="controls">${floors.join('')}</div></li>`;
     })
     .join('');
+
   return `
     <section class="panel">
       <h2>${t('tab.map')}</h2>
       <p><b>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</b> — ${cur ? t(cur.locKey) : ''}</p>
       <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${cur?.roomsPerFloor ?? '?'}${bossSoon}</p>
       ${cur ? bar(state.pos.room, cur.roomsPerFloor, '#8ab23f') : ''}
+      <div class="controls">${frontierCtrl}</div>
     </section>
-    <section class="panel"><h2>${t('ui.layers')}</h2><ul>${layers}</ul></section>
+    <section class="panel">
+      <h2>${t('ui.layers')}</h2>
+      <p class="muted">${t('ui.farm')}</p>
+      <ul class="floorlist">${layers}</ul>
+    </section>
   `;
 }
 
 function wireMap(el: HTMLElement): void {
-  el.querySelectorAll<HTMLButtonElement>('.layerbtn').forEach((b) => {
+  el.querySelector<HTMLButtonElement>('#gofrontier')?.addEventListener('click', ACTIONS.onGoFrontier);
+  el.querySelectorAll<HTMLButtonElement>('.floorbtn[data-layer]').forEach((b) => {
     b.addEventListener('click', () => {
-      const id = Number(b.getAttribute('data-layer'));
-      if (!Number.isNaN(id)) ACTIONS.onSelectLayer(id);
+      const layer = Number(b.getAttribute('data-layer'));
+      const floor = Number(b.getAttribute('data-floor'));
+      if (!Number.isNaN(layer) && !Number.isNaN(floor)) ACTIONS.onSetPos(layer, floor);
     });
   });
 }

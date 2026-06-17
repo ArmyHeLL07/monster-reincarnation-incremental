@@ -78,7 +78,12 @@ export interface GameState {
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
   inventory: FoodItem[];
   ep: number;
+  /** Where you're currently fighting (any unlocked spot — farm). */
   pos: DungeonPos;
+  /** Deepest unlocked room (the frontier). Progress only extends this at the frontier. */
+  furthest: DungeonPos;
+  /** Attack cooldown counter (ticks until next attack exchange). */
+  atkCd: number;
   raceId: string;
   formId: string;
   /** slotId → assigned eye ability + mode (or null/absent = empty). */
@@ -140,6 +145,8 @@ export function newGame(): GameState {
     inventory: [],
     ep: 0,
     pos: { layer: 1, floor: 1, room: 1 },
+    furthest: { layer: 1, floor: 1, room: 1 },
+    atkCd: 0,
     raceId: 'spider',
     formId: 'hatchling_spider',
     eyeAssignments: { e1: { abilityId: 'appraisal', mode: 'passive' } },

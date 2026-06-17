@@ -39,14 +39,20 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
-    onSelectLayer: (id) => {
-      const layer = content.dungeon.layers.find((l) => l.id === id);
-      if (layer && state.tier >= layer.tierReq) {
-        state.pos = { layer: id, floor: 1, room: 1 };
-        state.enemy = null;
-        save(state);
-        render(state);
-      }
+    onGoFrontier: () => {
+      state.pos = { ...state.furthest };
+      state.enemy = null;
+      save(state);
+      render(state);
+    },
+    onSetPos: (layer, floor) => {
+      const f = state.furthest;
+      const unlocked = layer < f.layer || (layer === f.layer && floor <= f.floor);
+      if (!unlocked) return;
+      state.pos = { layer, floor, room: 1 };
+      state.enemy = null;
+      save(state);
+      render(state);
     },
     onAllocStat: (stat) => {
       allocStat(state, stat);
@@ -156,6 +162,8 @@ function migrate(s: GameState): void {
   const d = newGame();
   s.raceId ??= d.raceId;
   s.pos ??= d.pos;
+  s.furthest ??= d.furthest;
+  if (s.atkCd == null) s.atkCd = 0;
   s.formId ??= d.formId;
   s.eyeAssignments ??= d.eyeAssignments;
   s.fusionCache ??= d.fusionCache;
