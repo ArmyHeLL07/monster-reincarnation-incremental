@@ -1,34 +1,9 @@
 {
   "layers": [
-    {
-      "id": 1,
-      "locKey": "layer.1.name",
-      "tierReq": 0,
-      "floors": 5,
-      "roomsPerFloor": 12,
-      "spDrainMult": 1,
-      "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"],
-      "boss": "cave_lurker"
-    },
-    {
-      "id": 2,
-      "locKey": "layer.2.name",
-      "tierReq": 3,
-      "floors": 5,
-      "roomsPerFloor": 12,
-      "spDrainMult": 2,
-      "enemyPool": ["cave_lurker", "flame_jaw"],
-      "boss": "venom_brute"
-    },
-    {
-      "id": 3,
-      "locKey": "layer.3.name",
-      "tierReq": 7,
-      "floors": 5,
-      "roomsPerFloor": 12,
-      "spDrainMult": 3,
-      "enemyPool": ["venom_brute", "bone_render"],
-      "boss": "bone_render"
-    }
+    { "id": 1, "locKey": "layer.1.name", "tierReq": 0, "floors": 5, "roomsPerFloor": 12, "spDrainMult": 1, "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"], "boss": "cave_lurker" },
+    { "id": 2, "locKey": "layer.2.name", "tierReq": 2, "floors": 5, "roomsPerFloor": 12, "spDrainMult": 2, "enemyPool": ["frost_mite", "acid_slug", "cave_lurker"], "boss": "flame_jaw" },
+    { "id": 3, "locKey": "layer.3.name", "tierReq": 4, "floors": 5, "roomsPerFloor": 12, "spDrainMult": 3, "enemyPool": ["spark_wisp", "flame_jaw", "venom_brute"], "boss": "bone_render" },
+    { "id": 4, "locKey": "layer.4.name", "tierReq": 6, "floors": 6, "roomsPerFloor": 12, "spDrainMult": 4, "enemyPool": ["shade_wraith", "magma_titan", "soul_eater"], "boss": "warden_gate" },
+    { "id": 5, "locKey": "layer.5.name", "tierReq": 8, "floors": 6, "roomsPerFloor": 12, "spDrainMult": 5, "enemyPool": ["soul_eater", "abyss_horror"], "boss": "first_devourer", "gatekeeper": true }
   ]
 }

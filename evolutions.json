@@ -12,7 +12,8 @@
     "locKey": "form.lesser_weaver.name",
     "evolvesTo": ["venom_weaver", "blade_weaver", "greater_weaver"],
     "levelReq": 10,
-    "statBonus": { "VIT": 2, "STR": 1, "AGI": 1 }
+    "statBonus": { "VIT": 2, "STR": 1, "AGI": 1 },
+    "grantSkills": ["carapace", "detect", "forage"]
   },
   {
     "id": "venom_weaver",
@@ -20,7 +21,8 @@
     "locKey": "form.venom_weaver.name",
     "evolvesTo": ["shade_stalker"],
     "levelReq": 10,
-    "statBonus": { "INT": 3, "STR": 2 }
+    "statBonus": { "INT": 3, "STR": 2 },
+    "grantSkills": ["acid_spit", "toxic_cloud", "mana_sense", "flame_bolt"]
   },
   {
     "id": "blade_weaver",
@@ -28,7 +30,8 @@
     "locKey": "form.blade_weaver.name",
     "evolvesTo": ["scythe_hunter"],
     "levelReq": 10,
-    "statBonus": { "STR": 3, "AGI": 2 }
+    "statBonus": { "STR": 3, "AGI": 2 },
+    "grantSkills": ["pounce", "rend", "overdraw"]
   },
   {
     "id": "greater_weaver",
@@ -36,22 +39,43 @@
     "locKey": "form.greater_weaver.name",
     "evolvesTo": [],
     "levelReq": 10,
-    "statBonus": { "VIT": 6, "STR": 2 }
+    "statBonus": { "VIT": 6, "STR": 2 },
+    "grantSkills": ["endurance", "carapace_lord", "mp_regen"]
   },
   {
     "id": "shade_stalker",
     "raceId": "spider",
     "locKey": "form.shade_stalker.name",
-    "evolvesTo": [],
+    "evolvesTo": ["undying_horror"],
     "levelReq": 10,
-    "statBonus": { "AGI": 4, "INT": 2 }
+    "statBonus": { "AGI": 4, "INT": 2 },
+    "grantSkills": ["stealth", "phase_body", "numbing_gaze", "web_trap"]
   },
   {
     "id": "scythe_hunter",
     "raceId": "spider",
     "locKey": "form.scythe_hunter.name",
+    "evolvesTo": ["undying_horror"],
+    "levelReq": 10,
+    "statBonus": { "AGI": 3, "STR": 3 },
+    "grantSkills": ["piercing_gaze", "silk_thread", "spark"]
+  },
+  {
+    "id": "undying_horror",
+    "raceId": "spider",
+    "locKey": "form.undying_horror.name",
+    "evolvesTo": ["arachnid_sovereign"],
+    "levelReq": 10,
+    "statBonus": { "VIT": 6, "STR": 3, "AGI": 2 },
+    "grantSkills": ["regeneration", "regenerative_core", "undying_husk"]
+  },
+  {
+    "id": "arachnid_sovereign",
+    "raceId": "spider",
+    "locKey": "form.arachnid_sovereign.name",
     "evolvesTo": [],
     "levelReq": 10,
-    "statBonus": { "AGI": 3, "STR": 3 }
+    "statBonus": { "STR": 5, "VIT": 5, "INT": 5, "AGI": 3, "WIS": 3, "LUCK": 2 },
+    "grantSkills": ["sovereign_form", "apex_predator", "soul_gaze", "spatial_rift"]
   }
 ]
