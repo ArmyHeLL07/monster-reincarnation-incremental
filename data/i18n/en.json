@@ -508,7 +508,7 @@
   "ui.taboo": "Taboo", "ui.no_ruler": "No ruler power yet. Hunt (sin) or meditate (virtue).",
   "ui.scars": "Scars", "ui.repair": "Repair", "ui.rebirth": "Rebirth", "ui.rebirths": "Rebirths",
   "ui.boon": "permanent boon", "ui.rebirth_ready": "The Gatekeeper has fallen — you may be reborn.",
-  "ui.rebirth_do": "♻ Rebirth", "ui.rebirth_locked": "Defeat the deepest gatekeeper boss (Layer 5).",
+  "ui.rebirth_do": "♻ Rebirth", "ui.rebirth_locked": "Defeat the deepest gatekeeper boss (Layer 3, final floor).",
   "ui.difficulty": "Difficulty", "ui.permadeath": "Permadeath", "ui.on": "On", "ui.off": "Off",
   "ui.permadeath_hint": "Permadeath is a true death only in Hell; clear it for a race-specific permanent reward.",
 

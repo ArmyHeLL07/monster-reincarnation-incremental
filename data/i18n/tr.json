@@ -508,7 +508,7 @@
   "ui.taboo": "Taboo", "ui.no_ruler": "Henüz ruler gücü yok. Avlan (günah) ya da meditasyon yap (erdem).",
   "ui.scars": "Yara izi", "ui.repair": "Onar", "ui.rebirth": "Yeniden Doğuş", "ui.rebirths": "Doğuş sayısı",
   "ui.boon": "kalıcı bonus", "ui.rebirth_ready": "Gatekeeper düştü — yeniden doğabilirsin.",
-  "ui.rebirth_do": "♻ Yeniden Doğ", "ui.rebirth_locked": "En derin gatekeeper boss'unu yen (Katman 5).",
+  "ui.rebirth_do": "♻ Yeniden Doğ", "ui.rebirth_locked": "En derin gatekeeper boss'unu yen (Katman 3, son kat).",
   "ui.difficulty": "Zorluk", "ui.permadeath": "Permadeath", "ui.on": "Açık", "ui.off": "Kapalı",
   "ui.permadeath_hint": "Permadeath yalnızca Cehennem'de gerçek ölümdür; geçersen ırka-özel kalıcı ödül.",
 

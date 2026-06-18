@@ -6,6 +6,15 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Düzeltildi (tüm-kod mantık/bug taraması)
+- **Gatekeeper/rebirth zamanlaması**: boss her katın sonunda spawn olduğundan Layer 3'ün
+  **ilk katı** öldürülünce rebirth açılıyordu. Artık **son kat** (floors=7) boss'u gerekiyor —
+  "son katman boss'u" mantığına uygun. Hell-clear ödülü de aynı şekilde son-kat şartına bağlandı.
+  (`combat.ts: onKill`.)
+- **Rebirth temiz sıfırlama**: yeniden doğuş artık `statusEffects` (eski zehir/yanma),
+  `roomCleared` (takılı "oda temiz") ve `cooldowns`'u sıfırlıyor. (`rebirth.ts`.)
+- **Metin**: `ui.rebirth_locked` "Katman 5" → "Katman 3, son kat" (zindan 3 katman).
+
 ### Eklendi (Sırada #2 — Düşman skin/texture)
 - **Düşman portreleri**: her düşmana emoji "skin" (`Enemy.icon`) + **element-renkli çerçeve**
   (boss'lar parıldar). Savaş panelinde portre + isim/bar yan yana — "isim+bar sıkıcı" giderildi.

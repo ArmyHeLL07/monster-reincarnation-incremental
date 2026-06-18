@@ -37,6 +37,9 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.kills = 0;
   state.scars = 0;
   state.pendingRoom = null;
+  state.statusEffects = []; // a fresh life carries no lingering poison/burn…
+  state.roomCleared = false; // …nor a stuck "cleared room" flag…
+  state.cooldowns = {}; // …nor old skill cooldowns.
 
   // --- base stats reset, then keep the permanent boon -----------------------
   state.stats = { ...fresh.stats };

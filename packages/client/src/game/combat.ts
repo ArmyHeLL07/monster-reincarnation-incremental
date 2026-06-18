@@ -714,8 +714,9 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   const layer = currentLayer(state, content);
   state.enemy = null;
 
-  // Gatekeeper down → Rebirth becomes available (and Hell-clear reward if applicable).
-  if (wasBoss && layer?.gatekeeper) {
+  // Gatekeeper down → Rebirth becomes available. Only the LAST floor's boss of the gatekeeper
+  // layer counts (the boss spawns on every floor, but clearing the whole layer is the real gate).
+  if (wasBoss && layer?.gatekeeper && state.pos.floor >= floorsOf(state, layer)) {
     state.gatekeeperCleared = true;
     log({ key: 'log.gatekeeper_down' });
     const diff = diffDef(state, content);
