@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
 import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom } from './game/combat';
-import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
+import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
@@ -119,6 +119,11 @@ async function init(): Promise<void> {
     },
     onClearEye: (slot) => {
       clearEye(state, slot);
+      save(state);
+      render(state);
+    },
+    onFuseEyes: (slotA, slotB) => {
+      fuseEyes(state, content, slotA, slotB, logFn);
       save(state);
       render(state);
     },

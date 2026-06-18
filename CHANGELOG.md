@@ -6,6 +6,13 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Madde 6 — Göz Füzyonu)
+- **Göz füzyonu / hibrit göz** (GDD §5.0.7): iki takılı göz → **tek slotta** hibrit
+  (diğer slot boşalır). Hibrit hem pasif aura hem aktif bakış sağlar. **Aynı mod**
+  iki göz (ikisi de sadece aktif ya da sadece pasif) → **körlük cezası** (appraisal
+  −2, etkiler ×0.6). Beden sekmesinde panel; **'gözler' lore'u (book_8) ile açılır**.
+  (`eyes.ts: fuseEyes`, `EyeAssignment.fusedId/blind`, `ui.ts`, `main.ts`, i18n TR+EN.)
+
 ### Düzeltildi
 - **Layer 3 ölü kapı bug'ı** (arkadaş raporu): Layer 3 `tierReq: 7` istiyordu ama
   evrim zinciri T5'te bitiyordu → katmana ulaşılamıyordu. Evrim ağacı **T10'a

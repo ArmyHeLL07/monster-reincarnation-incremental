@@ -26,6 +26,7 @@ export interface UiActions {
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
   onClearEye: (slotId: string) => void;
+  onFuseEyes: (slotA: string, slotB: string) => void;
   onDiscardFood: (index: number) => void;
   onEat: (index: number) => void;
   onToggleAutoEat: () => void;
@@ -71,6 +72,8 @@ let activeTab: Tab = 'combat';
 let selectedA: string | null = null;
 let selectedB: string | null = null;
 let selectedEye: string | null = null;
+let selectedEyeA: string | null = null;
+let selectedEyeB: string | null = null;
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot';
@@ -89,7 +92,7 @@ function logCategory(key: string): LogCat {
 const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
-  'log.evolve', 'log.evolve_form', 'log.fusion_death',
+  'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -580,7 +583,15 @@ function headSvg(state: GameState): string {
   const eyes = race.head.eyes
     .map((e) => {
       const a = state.eyeAssignments[e.id];
-      const color = a ? (a.mode === 'active' ? '#d98324' : '#c9a227') : '#3a3a48';
+      const color = a
+        ? a.fusedId
+          ? a.blind
+            ? '#c0626f'
+            : '#9a7fd0'
+          : a.mode === 'active'
+            ? '#d98324'
+            : '#c9a227'
+        : '#3a3a48';
       const ring = selectedEye === e.id ? `<circle cx="${e.x}" cy="${e.y}" r="${e.r + 5}" fill="none" stroke="#fff" stroke-width="2"/>` : '';
       return `<g class="eye" data-eye="${e.id}" style="cursor:pointer"><circle cx="${e.x}" cy="${e.y}" r="${e.r + 10}" fill="transparent"/><circle cx="${e.x}" cy="${e.y}" r="${e.r}" fill="${color}" stroke="#15151c" stroke-width="2"/>${ring}</g>`;
     })
@@ -600,8 +611,13 @@ function eyePanel(state: GameState): string {
       return `<button class="ability${here ? ' on' : ''}" data-ability="${s.id}">${def ? t(def.locKeyName) : s.id}${elsewhere ? ' ⟳' : ''}</button>`;
     })
     .join('');
-  const cur = a ? `${t(CONTENT.skills.get(a.abilityId)?.locKeyName ?? a.abilityId)} · ${t(`eyemode.${a.mode}`)}` : t('ui.empty_eye');
-  const modeBtn = a ? `<button id="mode" class="ghost">${t('ui.mode')}: ${t(`eyemode.${a.mode}`)}</button>` : '';
+  const eyeName = (id: string) => t(CONTENT.skills.get(id)?.locKeyName ?? id);
+  const cur = a
+    ? a.fusedId
+      ? `${eyeName(a.abilityId)} + ${eyeName(a.fusedId)} (${t('ui.hybrid_eye')})${a.blind ? ` ⚠ ${t('ui.eye_blind')}` : ''}`
+      : `${eyeName(a.abilityId)} · ${t(`eyemode.${a.mode}`)}`
+    : t('ui.empty_eye');
+  const modeBtn = a && !a.fusedId ? `<button id="mode" class="ghost">${t('ui.mode')}: ${t(`eyemode.${a.mode}`)}</button>` : '';
   const clearBtn = a ? `<button id="cleareye" class="ghost">${t('ui.clear')}</button>` : '';
   return `<div class="row"><span><b>${t('ui.eye')} ${selectedEye}</b></span><span>${cur}</span></div><div class="controls">${abilBtns || `<span class="muted">${t('ui.no_eye_abilities')}</span>`}</div><div class="controls">${modeBtn}${clearBtn}</div>`;
 }
@@ -623,8 +639,40 @@ function larderPanel(state: GameState): string {
   return `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.inventory')} (${state.inventory.length}/${maxFoodSlots(state)})${refrigerated(state) ? ' ❄' : ''}</h2>${autoBtn}</div><ul>${items}</ul></section>`;
 }
 
+/** Slots holding a plain (non-hybrid) eye — the candidates for fusion. */
+function plainEyeSlots(state: GameState): { slot: string; name: string }[] {
+  return Object.entries(state.eyeAssignments)
+    .filter(([, a]) => a && !a.fusedId)
+    .map(([slot, a]) => ({ slot, name: t(CONTENT.skills.get(a!.abilityId)?.locKeyName ?? a!.abilityId) }));
+}
+
+/** Eye Fusion panel (Body tab) — gated by the 'eyes' lore; fuse two slotted eyes into a hybrid. */
+function eyeFusionPanel(state: GameState): string {
+  if (!loreUnlocked(state, 'eyes')) {
+    return `<section class="panel"><h2>${t('ui.eyefusion')}</h2><p class="muted">${t('ui.eyefusion_locked')}</p></section>`;
+  }
+  const slots = plainEyeSlots(state);
+  if (slots.length < 2) {
+    return `<section class="panel"><h2>${t('ui.eyefusion')}</h2><p class="muted">${t('ui.eyefusion_need2')}</p></section>`;
+  }
+  if (!selectedEyeA || !slots.some((s) => s.slot === selectedEyeA)) selectedEyeA = slots[0].slot;
+  if (!selectedEyeB || !slots.some((s) => s.slot === selectedEyeB)) selectedEyeB = slots[1].slot;
+  const opts = (sel: string | null) =>
+    slots.map((s) => `<option value="${s.slot}"${s.slot === sel ? ' selected' : ''}>${s.name}</option>`).join('');
+  return `
+    <section class="panel">
+      <h2>${t('ui.eyefusion')}</h2>
+      <div class="controls">
+        <select id="efa">${opts(selectedEyeA)}</select>
+        <select id="efb">${opts(selectedEyeB)}</select>
+        <button id="efuse">${t('ui.eyefuse')}</button>
+      </div>
+      <p class="muted">${t('ui.eyefusion_hint')}</p>
+    </section>`;
+}
+
 function bodyTab(state: GameState): string {
-  return `<section class="panel"><h2>${t('ui.eyes')}</h2>${headSvg(state)}${eyePanel(state)}</section>${larderPanel(state)}`;
+  return `<section class="panel"><h2>${t('ui.eyes')}</h2>${headSvg(state)}${eyePanel(state)}</section>${eyeFusionPanel(state)}${larderPanel(state)}`;
 }
 
 function wireBody(el: HTMLElement): void {
@@ -648,6 +696,15 @@ function wireBody(el: HTMLElement): void {
   });
   el.querySelector<HTMLButtonElement>('#cleareye')?.addEventListener('click', () => {
     if (selectedEye) ACTIONS.onClearEye(selectedEye);
+  });
+  el.querySelector<HTMLSelectElement>('#efa')?.addEventListener('change', (e) => {
+    selectedEyeA = (e.target as HTMLSelectElement).value;
+  });
+  el.querySelector<HTMLSelectElement>('#efb')?.addEventListener('change', (e) => {
+    selectedEyeB = (e.target as HTMLSelectElement).value;
+  });
+  el.querySelector<HTMLButtonElement>('#efuse')?.addEventListener('click', () => {
+    if (selectedEyeA && selectedEyeB) ACTIONS.onFuseEyes(selectedEyeA, selectedEyeB);
   });
   el.querySelectorAll<HTMLButtonElement>('.discard').forEach((b) => {
     b.addEventListener('click', () => {

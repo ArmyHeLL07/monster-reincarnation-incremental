@@ -3,6 +3,10 @@ import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficul
 export interface EyeAssignment {
   abilityId: string;
   mode: EyeMode;
+  /** Eye fusion: a second ability fused into this slot — a hybrid eye (GDD §5.0.7). */
+  fusedId?: string;
+  /** True when the two fused eyes share one exclusive mode → "blindness" penalty. */
+  blind?: boolean;
 }
 
 /** Sin↔Virtue ruler axis + Taboo (GDD §C). Sin/virtue/taboo persist across rebirth. */

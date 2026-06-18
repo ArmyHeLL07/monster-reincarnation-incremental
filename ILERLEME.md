@@ -25,6 +25,8 @@
 - **Manuel harita ilerlemesi:** varsayılan manuel ("İlerle →" butonu); "Oto-ilerle"
   toggle ile otomatik. (Önceden her öldürmede otomatik ilerliyordu.)
 - **Random kat sayısı 12-20** (oda sayısı zaten random'dı). Boss her katın sonunda.
+- **Göz füzyonu (Madde 6):** iki takılı göz → tek slotta hibrit (hem pasif hem aktif);
+  aynı mod → körlük cezası; book_8 ('gözler' lore) ile açılır.
 
 > Tümü data-driven + TR/EN lokalize. typecheck + build geçti. Ayrıntı: `CHANGELOG.md`
 > ve `docs/superpowers/specs/2026-06-18-harita-element-kesif-ilerleme-design.md`.
@@ -63,15 +65,20 @@
 
 ## ⏳ Yapılacak (önerilen sırayla)
 
-5. **Lore bilmeceleri** — Araştır ile gizli oda; WIS şans, INT okuma kapısı; metin cevaplı bilmece; ödül skill/EP.
-6. **Göz füzyonu** — iki takılı göz → hibrit (pasif+aktif güçlü; aynı mod körlük cezası).
-7. **Yemek-evrim koşulu** — belirli canavarı yiyince evrim açılır (`requireEat`) + skill tohumu (`grantsSkill`).
-8. **Rebirth + Gatekeeper** — son katman boss'u → yeniden doğuş; kalıcı bonus + slot, günah/erdem/zen korunur.
-9. **Zorluk** — Kolay/Normal/Zor/Cehennem (×0.7–2.0); Cehennem = permadeath (koşu silinir, meta kalır).
+5. ~~**Lore bilmeceleri**~~ — ✅ Zaten yapılmış (discovery.ts, answerRoom, secret_rooms.json).
+6. ~~**Göz füzyonu**~~ — ✅ **Yapıldı 2026-06-18**: iki takılı göz → tek slotta hibrit
+   (pasif+aktif), aynı mod körlük cezası, book_8 ('eyes') ile açılır.
+7. **Yemek-evrim koşulu** — belirli canavarı yiyince evrim açılır (`requireEat`) + skill
+   tohumu (`grantsSkill`). ← **SIRADAKİ (tek gerçek kalan madde)**.
+8. ~~**Rebirth + Gatekeeper**~~ — ✅ Zaten yapılmış (rebirth.ts, gatekeeperCleared).
+9. ~~**Zorluk**~~ — ✅ Zaten yapılmış (difficulty.json + permadeath); 2026-06-18'de
+   `envMult` (çevresel direnç) eklendi.
+
+> Liste 2026-06-18'de denetlendi — 5/8/9 zaten koddaydı, 6 yapıldı. Geriye **Madde 7** kaldı.
 
 ---
 
 ## 📌 Notlar
 - Her özellik **önce plan → onay → uygulama** şeklinde ilerliyor; denge sayıları JSON'da (koda dokunmadan ayarlanır).
 - Bizim mimaride daha güçlü olanlar korunuyor: tam lokalizasyon (TR/EN), Layer.Floor.Room zindan, SP/Stamina, kademeli Appraisal, deterministik füzyon.
-- Sıradaki adım: **Özellik 5 (Lore bilmeceleri)**.
+- Sıradaki adım: **Madde 7 (Yemek-evrim koşulu)**.
