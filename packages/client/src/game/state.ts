@@ -49,6 +49,15 @@ export interface DungeonPos {
   room: number;
 }
 
+/** A lingering damage-over-time status on the player (poison/fire/acid/…) — GDD status effects. */
+export interface StatusEffect {
+  type: DamageType;
+  /** Remaining ticks (≈ seconds). */
+  ticksLeft: number;
+  /** HP lost per tick (already scaled by the inflicting hit and the player's resistance). */
+  dmgPerTick: number;
+}
+
 /** A spawned enemy — stats are snapshot here (scaled by dungeon depth) so combat is data-free. */
 export interface EnemyInstance {
   id: string;
@@ -130,6 +139,8 @@ export interface GameState {
   skills: SkillSlot[];
   resistances: ResistSlot[];
   enemy: EnemyInstance | null;
+  /** Active damage-over-time statuses on the player (poison/fire/…), ticking during combat. */
+  statusEffects: StatusEffect[];
   /** Global discovery pool skeleton — a combo is produced once (local for now). */
   fusionCache: Record<string, FusionResult>;
   /** Local telemetry outbox — session combo attempts, ready to send. */
@@ -256,6 +267,7 @@ export function newGame(): GameState {
       { id: 'fire_res', level: 0, exp: 0, nullified: false },
     ],
     enemy: null,
+    statusEffects: [],
     fusionCache: {},
     outbox: [],
     lastSeen: Date.now(),

@@ -35,6 +35,8 @@ const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
 const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
+const STATUS_CHANCE = 0.3; // base chance an elemental enemy hit also applies a lingering status
+const DOT_TYPES: DamageType[] = ['poison', 'fire', 'acid', 'lightning', 'frost']; // types that linger as DoT
 
 /** Effective level = how deep the mastery climb is (tier*10 + level); T2 Lv1 reads as "level 11". */
 export function effectiveLevel(state: GameState): number {
@@ -116,6 +118,8 @@ export function tick(state: GameState, content: Content, log: Log): void {
     const b = aggregateBonuses(state, content);
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
     combatRound(state, content, log, b);
+    processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
+    if (state.hp <= 0) onDeath(state, content, log, b);
     decayFood(state);
     if (state.autoEat) autoEat(state, content, log);
     if (hungerStage(state) >= 3) {
@@ -609,9 +613,42 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     totalTaken += taken;
     const resGain = Math.round(taken * resMult);
     if (resGain > 0) addResistExp(state, content, type, resGain, log);
+    // Elemental hits may leave a lingering status (poison/fire/…) — resistance shrinks duration & damage.
+    if (taken > 0 && DOT_TYPES.includes(type) && Math.random() < STATUS_CHANCE * (1 - reduction)) {
+      applyStatus(state, type, share, reduction, log);
+    }
   }
   state.hp = Math.max(0, state.hp - totalTaken);
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
+}
+
+/** Apply/refresh a lingering status: duration 1–10s and per-tick damage scale with the hit & resistance. */
+function applyStatus(state: GameState, type: DamageType, share: number, reduction: number, log: Log): void {
+  const dur = Math.min(10, Math.max(1, Math.round((2 + share / 5) * (1 - reduction))));
+  const dmgPerTick = Math.max(1, Math.round(share * 0.25 * (1 - reduction)));
+  const existing = state.statusEffects.find((s) => s.type === type);
+  if (existing) {
+    existing.ticksLeft = Math.max(existing.ticksLeft, dur);
+    existing.dmgPerTick = Math.max(existing.dmgPerTick, dmgPerTick);
+  } else {
+    state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
+    log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
+  }
+}
+
+/** Tick all active statuses: deal DoT, train the matching resistance, expire at 0. Returns damage dealt. */
+function processStatuses(state: GameState, content: Content, log: Log): void {
+  if (state.statusEffects.length === 0) return;
+  const resMult = diffDef(state, content).resistMult ?? 1;
+  let total = 0;
+  for (const s of state.statusEffects) {
+    total += s.dmgPerTick;
+    const resGain = Math.round(s.dmgPerTick * resMult);
+    if (resGain > 0) addResistExp(state, content, s.type, resGain, log); // suffering it builds resistance
+    s.ticksLeft -= 1;
+  }
+  state.statusEffects = state.statusEffects.filter((s) => s.ticksLeft > 0);
+  if (total > 0) state.hp = Math.max(0, state.hp - total);
 }
 
 function gainXp(state: GameState, amount: number, log: Log): void {
@@ -766,6 +803,7 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   }
   state.pos.room = 1;
   state.roomCleared = false;
+  state.statusEffects = []; // death clears all lingering statuses
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.sp = state.maxSp;

@@ -484,6 +484,8 @@
 
   "ui.here": "şu an", "ui.cleared": "geçildi", "ui.unknown_cell": "bilinmiyor", "ui.room_sensed": "Gizli oda sezildi",
   "ui.weak_to": "Zayıf olduğu",
+  "ui.status": "Durum etkileri",
+  "log.status_on": "{type} etkisi başladı! (~{sec}sn sürer)",
   "tab.lore": "Keşif", "act.meditate": "Meditasyon",
   "ui.meditate": "🧘 Meditasyon", "ui.search": "🔎 Ara", "ui.court_death": "☠ Eşiğe Git",
   "ui.eat": "Ye", "ui.autoeat": "Oto-ye",

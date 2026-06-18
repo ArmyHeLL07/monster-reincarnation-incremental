@@ -317,6 +317,7 @@ function migrate(s: GameState): void {
   s.layerFloors ??= {};
   s.autoAdvance ??= false;
   s.roomCleared ??= false;
+  s.statusEffects ??= [];
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

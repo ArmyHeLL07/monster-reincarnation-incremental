@@ -6,6 +6,13 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Backlog — Status efektleri)
+- **Status efektleri (DoT)**: düşmanın elementsel vuruşu (zehir/ateş/asit/yıldırım/buz)
+  **1-10 sn süreli** bir etki bırakabilir; süre ve hasar vuruş büyüklüğü ile artar,
+  **direnç ile azalır** (yüksek dirençte nadir/zayıf). Her tick HP götürür + o direnci
+  besler; ölümde temizlenir. Savaş panelinde aktif etkiler (tür · kalan sn · -hasar)
+  gösterilir. (`state.ts: StatusEffect`, `combat.ts: applyStatus/processStatuses`, `ui.ts`.)
+
 ### Değişti (Backlog — Meditasyon)
 - **Meditasyon erdem oranı** 0.5/tick → **+0.01/sn** (float; sabırlı aydınlık yol). Zaten
   bekleme-ile çalışıyordu (autoclicker yok).

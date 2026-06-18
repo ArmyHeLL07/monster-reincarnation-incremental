@@ -484,6 +484,8 @@
 
   "ui.here": "here", "ui.cleared": "cleared", "ui.unknown_cell": "unknown", "ui.room_sensed": "Secret room sensed",
   "ui.weak_to": "Weak to",
+  "ui.status": "Status",
+  "log.status_on": "{type} effect inflicted! (~{sec}s)",
   "tab.lore": "Lore", "act.meditate": "Meditating",
   "ui.meditate": "🧘 Meditate", "ui.search": "🔎 Search", "ui.court_death": "☠ Court Death",
   "ui.eat": "Eat", "ui.autoeat": "Auto-eat",

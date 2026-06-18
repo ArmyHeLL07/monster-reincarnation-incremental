@@ -338,10 +338,16 @@ function combatTab(state: GameState): string {
   const courtBtn = loreUnlocked(state, 'brink') ? `<button id="courtdeath" class="ghost">${t('ui.court_death')}</button>` : '';
   const searched = state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const searchBtn = `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>`;
+  const statusLine = state.statusEffects.length
+    ? `<p class="muted" style="margin:.4rem 0 0">⚠ ${t('ui.status')}: ${state.statusEffects
+        .map((s) => `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
+        .join(' · ')}</p>`
+    : '';
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
+      ${statusLine}
     </section>
     <div class="controls">
       ${act('combat', t('ui.fight'))}
