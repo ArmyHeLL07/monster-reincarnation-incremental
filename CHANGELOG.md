@@ -6,6 +6,11 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Backlog — Sol üstte küçük durum paneli)
+- **Mini durum HUD'u**: sol üst köşede sabit, her tick güncellenen küçük panel — form
+  adı · T/Lv · konum + HP/MP/SP (sayı + mini bar). Geniş ekranda sol boşlukta; ≤1100px
+  gizli (topbar zaten orada). (`index.html` CSS, `ui.ts: miniStatusHtml`.)
+
 ### Eklendi (Backlog — Skill ediniş yolları)
 - **Skill ediniş yolları**: `Skill.acquireKey` eklendi; özel/keşfedilen skiller
   (appraisal, dread_gaze, hp_regen, undying_husk, stillness, forbidden_knowledge, larder)

@@ -161,6 +161,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         <div class="logcol"><h3>${t('ui.log_loot')}</h3><div class="log" id="log-loot"></div></div>
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
+      <aside id="ministatus" class="ministatus" aria-hidden="true"></aside>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -178,6 +179,8 @@ export function live(state: GameState): void {
   CURSTATE = state;
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) top.innerHTML = topbarHtml(state);
+  const mini = document.querySelector<HTMLElement>('#ministatus');
+  if (mini) mini.innerHTML = miniStatusHtml(state);
   for (const cat of ['combat', 'discovery', 'loot'] as LogCat[]) {
     const el = document.querySelector<HTMLElement>(`#log-${cat}`);
     if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
@@ -208,6 +211,22 @@ function topbarHtml(state: GameState): string {
       <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
     </div>
   `;
+}
+
+/** Compact always-on status HUD pinned top-left (HP/MP/SP + form/tier/level/pos). */
+function miniStatusHtml(state: GameState): string {
+  const form = currentForm(state, CONTENT);
+  const fname = form ? t(form.locKey) : '';
+  const tlv = `${state.tier >= 1 ? `T${state.tier} ` : ''}${t('ui.lv')} ${state.level}`;
+  const line = (label: string, v: number, max: number, color: string): string => {
+    const pct = max > 0 ? Math.max(0, Math.min(100, (v / max) * 100)) : 0;
+    return `<div class="mr"><span style="color:${color}">${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div><div class="mbar"><i style="width:${pct}%;background:${color}"></i></div>`;
+  };
+  return `<div class="mf">${fname}</div>
+    <div class="mr"><span>${tlv}</span><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
+    ${line(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
+    ${line(t('ui.mp'), state.mp, state.maxMp, 'var(--mp)')}
+    ${line(t('ui.sp'), state.sp, state.maxSp, 'var(--sp)')}`;
 }
 
 function hungerStage(h: number): number {
