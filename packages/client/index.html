@@ -127,8 +127,15 @@
       .ministatus .mf { font-family: var(--disp); color: var(--bone); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.4rem; }
       .ministatus .mr { display: flex; justify-content: space-between; gap: 0.4rem; margin-top: 0.15rem; }
       .ministatus .mbar { height: 7px; border-radius: 4px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; margin: 2px 0 5px; }
-      .ministatus .mbar > i { display: block; height: 100%; }
+      .ministatus .mbar > i { display: block; height: 100%; transition: width 0.55s ease-out; }
       .skillgroup h3 { margin: 0.55rem 0 0.2rem; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+      /* Skills screen: list (left) + fusion lab (right); category sub-tabs above the list. */
+      .skillscols { display: grid; gap: 0.6rem; grid-template-columns: 1fr 300px; align-items: start; }
+      @media (max-width: 760px) { .skillscols { grid-template-columns: 1fr; } }
+      .skillscols .panel { margin: 0; }
+      .subtabs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.4rem 0 0.2rem; }
+      .subtab { min-height: 32px; padding: 0.25rem 0.6rem; font-size: 0.8rem; background: #191522; border: 1px solid var(--chitin); border-radius: 8px; color: var(--ash); cursor: pointer; }
+      .subtab.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
       /* HUD lives in the sidebar (desktop/tablet) → hide the duplicate top bars there.
          On mobile the sidebar is a horizontal row, so hide the HUD and use the top bars instead. */
       @media (min-width: 641px) { .topbar .bars { display: none; } }

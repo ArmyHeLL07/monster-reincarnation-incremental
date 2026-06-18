@@ -6,6 +6,18 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi / Değişti (skill ekranı, akıcı barlar, canlı açılış, lore)
+- **Skiller ekranı yeniden düzenlendi**: kategori **alt-sekmeleri** (Kol/Bacak/Vücut/Göz — tek
+  grup görünür, liste taranabilir) + **Fusion Lab sağ tarafa** (2 sütun; dar ekranda alt alta).
+- **Akıcı HP/MP/SP barları**: topbar + mini-HUD artık innerHTML yenilemiyor; mevcut bar
+  elemanlarının `width`'i güncelleniyor → CSS `transition` ile **yumuşak kayma** (tık-tık yok).
+- **Yeni özellik aynı sekmede anında**: skills/body/stats sekmesindeyken yapısal bir değişiklik
+  (yeni skill/fusion/evrim/stat puanı vb.) olunca sekme **otomatik tazeleniyor** — git-gel gerekmez.
+  (`structureSig` ile sadece gerçek değişimde.)
+- **Lore-kapı düzeltmesi (bug)**: özellikler kitabı **bulunca değil, derin katmanını OKUYUNCA**
+  (INT yeterliyse) açılıyor. `loreUnlocked` + Feda Et artık `discoveries` (derin-okuma) ister.
+- **Skill lore'u zenginleştirildi**: 8 başlangıç/temel skilin açıklaması atmosferik hâle getirildi (TR+EN).
+
 ### Eklendi (Geri bildirim: bug + öneri → GitHub)
 - **Öneri gönder** butonu (Ayarlar): bug report gibi GitHub issue açar ama `[öneri]` +
   `enhancement` etiketiyle ve hafif bağlam (sadece dil). Bug report `[bug]` + `bug` etiketi +

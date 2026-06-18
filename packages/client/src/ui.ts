@@ -77,6 +77,7 @@ let selectedB: string | null = null;
 let selectedEye: string | null = null;
 let selectedEyeA: string | null = null;
 let selectedEyeB: string | null = null;
+let activeSkillPart: 'arm' | 'leg' | 'body' | 'eye' = 'arm';
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot';
@@ -142,8 +143,17 @@ function bar(value: number, max: number, color: string): string {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return `<div class="bar"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
 }
-function statBar(label: string, v: number, max: number, color: string): string {
-  return `<div class="statline"><div class="row"><span>${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div>${bar(v, max, color)}</div>`;
+// --- live bar updates: mutate existing elements (so CSS `transition: width` slides smoothly) ---
+function pctOf(v: number, max: number): number {
+  return max > 0 ? Math.max(0, Math.min(100, (v / max) * 100)) : 0;
+}
+function setW(id: string, v: number, max: number): void {
+  const e = document.querySelector<HTMLElement>(`#${id}-f`);
+  if (e) e.style.width = `${pctOf(v, max)}%`;
+}
+function setTxt(id: string, txt: string): void {
+  const e = document.querySelector<HTMLElement>(`#${id}`);
+  if (e) e.textContent = txt;
 }
 
 // ---- shell -----------------------------------------------------------------
@@ -180,22 +190,55 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
   live(state);
 }
 
-/** Per-tick light update: top bar, log, and the combat tab (no inputs to lose there). */
+/** Signature of "structural" state — changes only on unlocks/level/evolution, not every tick. */
+let lastStructSig = '';
+function structureSig(state: GameState): string {
+  return [
+    state.skills.length,
+    state.equipped.length,
+    state.fusionUnlocked,
+    state.meditationUnlocked,
+    state.booksFound.length,
+    state.discoveries.length,
+    state.statPoints,
+    state.tier,
+    state.gatekeeperCleared,
+    state.ruler.powers.length,
+    Object.values(state.eyeAssignments).filter(Boolean).length,
+  ].join('|');
+}
+
+/** Per-tick light update: top bar + mini HUD (smooth bars), logs, and the active tab. */
 export function live(state: GameState): void {
   CURSTATE = state;
   const top = document.querySelector<HTMLElement>('#topbar');
-  if (top) top.innerHTML = topbarHtml(state);
+  if (top) {
+    if (!top.firstElementChild) top.innerHTML = topbarHtml(); // build skeleton once → bars keep their elements
+    updateTopbar(state);
+  }
   const mini = document.querySelector<HTMLElement>('#ministatus');
-  if (mini) mini.innerHTML = miniStatusHtml(state);
+  if (mini) {
+    if (!mini.firstElementChild) mini.innerHTML = miniStatusHtml();
+    updateMini(state);
+  }
   for (const cat of ['combat', 'discovery', 'loot'] as LogCat[]) {
     const el = document.querySelector<HTMLElement>(`#log-${cat}`);
     if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
   }
-  if (activeTab === 'combat' || activeTab === 'map') renderTab();
-  else if (activeTab === 'lore') {
+  if (activeTab === 'combat' || activeTab === 'map') {
+    renderTab();
+  } else if (activeTab === 'lore') {
     // Live-update just the meditation bar (full re-render would clobber the riddle input).
     const ml = document.querySelector<HTMLElement>('#medlive');
     if (ml) ml.innerHTML = medBarHtml(state);
+  } else {
+    // skills / body / stats: refresh only when something structural changed (a new unlock appears
+    // in the SAME tab without needing to switch away and back).
+    const sig = structureSig(state);
+    if (sig !== lastStructSig) {
+      lastStructSig = sig;
+      renderTab();
+    }
   }
 }
 
@@ -206,42 +249,79 @@ export function render(state: GameState): void {
   live(state);
 }
 
-function topbarHtml(state: GameState): string {
+const HUNGER_COLORS = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'];
+
+/** Top-bar sub-line (tier/level/form/layer/pos/action) — pure text, cheap to refresh. */
+function subLine(state: GameState): string {
   const form = currentForm(state, CONTENT);
   const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const posStr = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const evo = evolutionReady(state, CONTENT) ? ` · <span class="evoready">${t('ui.evolution_ready')}</span>` : '';
-  const stage = hungerStage(state.hunger);
+  return `${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}`;
+}
+
+/** One labelled bar with stable ids (`#id-v` value, `#id-f` fill) so live() can animate the width. */
+function statBarSkel(id: string, label: string, color: string): string {
+  return `<div class="statline"><div class="row"><span>${label}</span><span id="${id}-v"></span></div><div class="bar"><div class="bar-fill" id="${id}-f" style="width:0;background:${color}"></div></div></div>`;
+}
+
+/** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
+function topbarHtml(): string {
   return `
     <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-    <p class="sub">${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}</p>
+    <p class="sub" id="tb-sub"></p>
     <div class="bars">
-      ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
-      ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
-      ${statBar(t('ui.sp'), state.sp, state.maxSp, '#d2a73a')}
-      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>%${Math.round((state.hunger / MAX_HUNGER) * 100)} · ${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
+      ${statBarSkel('tb-hp', t('ui.hp'), '#6fae53')}
+      ${statBarSkel('tb-mp', t('ui.mp'), '#4f86c2')}
+      ${statBarSkel('tb-sp', t('ui.sp'), '#d2a73a')}
+      ${statBarSkel('tb-hunger', t('ui.hunger'), HUNGER_COLORS[0])}
     </div>
   `;
 }
 
-/** Compact always-on status HUD pinned top-left (HP/MP/SP + form/tier/level/pos). */
-function miniStatusHtml(state: GameState): string {
-  const form = currentForm(state, CONTENT);
-  const fname = form ? t(form.locKey) : '';
-  const tlv = `${state.tier >= 1 ? `T${state.tier} ` : ''}${t('ui.lv')} ${state.level}`;
-  const line = (label: string, v: number, max: number, color: string): string => {
-    const pct = max > 0 ? Math.max(0, Math.min(100, (v / max) * 100)) : 0;
-    return `<div class="mr"><span style="color:${color}">${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div><div class="mbar"><i style="width:${pct}%;background:${color}"></i></div>`;
-  };
+function updateTopbar(state: GameState): void {
+  const sub = document.querySelector<HTMLElement>('#tb-sub');
+  if (sub) sub.innerHTML = subLine(state);
+  setW('tb-hp', state.hp, state.maxHp); setTxt('tb-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setW('tb-mp', state.mp, state.maxMp); setTxt('tb-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
+  setW('tb-sp', state.sp, state.maxSp); setTxt('tb-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
   const hs = hungerStage(state.hunger);
-  const hc = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][hs];
-  const hungerRow = `<div class="mr"><span style="color:${hc}">${t('ui.hunger')}</span><span>%${Math.round((state.hunger / MAX_HUNGER) * 100)}</span></div><div class="mbar"><i style="width:${(state.hunger / MAX_HUNGER) * 100}%;background:${hc}"></i></div>`;
-  return `<div class="mf">${fname}</div>
-    <div class="mr"><span>${tlv}</span><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
-    ${line(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
-    ${line(t('ui.mp'), state.mp, state.maxMp, 'var(--mp)')}
-    ${line(t('ui.sp'), state.sp, state.maxSp, 'var(--sp)')}
-    ${hungerRow}`;
+  setW('tb-hunger', state.hunger, MAX_HUNGER);
+  const hf = document.querySelector<HTMLElement>('#tb-hunger-f');
+  if (hf) hf.style.background = HUNGER_COLORS[hs];
+  setTxt('tb-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)} · ${t(`hunger.${hs}`)}`);
+}
+
+/** Mini HUD row skeleton (stable `#id-f` fill for smooth slide). */
+function miniBarSkel(id: string, label: string, color: string): string {
+  return `<div class="mr"><span style="color:${color}">${label}</span><span id="${id}-v"></span></div><div class="mbar"><i id="${id}-f" style="width:0;background:${color}"></i></div>`;
+}
+
+/** Compact always-on status HUD (sidebar). Skeleton; values filled by updateMini → smooth bars. */
+function miniStatusHtml(): string {
+  return `<div class="mf" id="ms-form"></div>
+    <div class="mr"><span id="ms-tlv"></span><span id="ms-pos"></span></div>
+    ${miniBarSkel('ms-hp', t('ui.hp'), '#6fae53')}
+    ${miniBarSkel('ms-mp', t('ui.mp'), 'var(--mp)')}
+    ${miniBarSkel('ms-sp', t('ui.sp'), 'var(--sp)')}
+    <div class="mr"><span id="ms-hunger-l">${t('ui.hunger')}</span><span id="ms-hunger-v"></span></div><div class="mbar"><i id="ms-hunger-f" style="width:0"></i></div>`;
+}
+
+function updateMini(state: GameState): void {
+  const form = currentForm(state, CONTENT);
+  setTxt('ms-form', form ? t(form.locKey) : '');
+  setTxt('ms-tlv', `${state.tier >= 1 ? `T${state.tier} ` : ''}${t('ui.lv')} ${state.level}`);
+  setTxt('ms-pos', `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`);
+  setW('ms-hp', state.hp, state.maxHp); setTxt('ms-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setW('ms-mp', state.mp, state.maxMp); setTxt('ms-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
+  setW('ms-sp', state.sp, state.maxSp); setTxt('ms-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
+  const hs = hungerStage(state.hunger);
+  setW('ms-hunger', state.hunger, MAX_HUNGER);
+  const hf = document.querySelector<HTMLElement>('#ms-hunger-f');
+  if (hf) hf.style.background = HUNGER_COLORS[hs];
+  const hl = document.querySelector<HTMLElement>('#ms-hunger-l');
+  if (hl) hl.style.color = HUNGER_COLORS[hs];
+  setTxt('ms-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)}`);
 }
 
 function hungerStage(h: number): number {
@@ -296,9 +376,10 @@ function renderTab(): void {
 function ownsSkill(state: GameState, id: string): boolean {
   return state.skills.some((s) => s.id === id);
 }
-/** A feature is unlocked once the player has FOUND a lore book whose hint matches it. */
+/** A feature unlocks once the player has READ the deep layer (INT-gated) of a matching lore book —
+ *  merely FINDING the book is not enough (deep-read book ids live in state.discoveries). */
 function loreUnlocked(state: GameState, hint: string): boolean {
-  return state.booksFound.some((id) => CONTENT.books.get(id)?.hints === hint);
+  return state.discoveries.some((id) => CONTENT.books.get(id)?.hints === hint);
 }
 
 /** Element → portrait frame colour (visual flavour only). */
@@ -585,7 +666,7 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   const exp = expandedSkill === s.id;
   const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
   const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
-  const sacUnlocked = state.booksFound.length > 0; // a Sacrifice Journal taught you to give up power for power
+  const sacUnlocked = state.discoveries.some((id) => CONTENT.books.has(id)); // deep-read a Sacrifice Journal (INT)
   const sacBtn = sacUnlocked
     ? `<button class="sacskill ghost" data-sac="${s.id}">${t('ui.sacrifice')}</button>`
     : `<span class="muted" style="font-size:.78rem">${t('ui.sacrifice_locked')}</span>`;
@@ -597,12 +678,16 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
 }
 
 function skillsTab(state: GameState): string {
-  const skills = SKILL_PARTS.map((part) => {
-    const items = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === part);
-    if (items.length === 0) return '';
-    const rows = items.map((s) => skillRow(state, s)).join('');
-    return `<div class="skillgroup"><h3>${t(`ui.part_${part}`)} <span class="muted">(${items.length})</span></h3><ul>${rows}</ul></div>`;
-  }).join('');
+  // Category sub-tabs (Kol/Bacak/Vücut/Göz) — only one group shown at a time so the list stays scannable.
+  const counts: Record<string, number> = {};
+  for (const p of SKILL_PARTS) counts[p] = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === p).length;
+  if (counts[activeSkillPart] === 0) activeSkillPart = SKILL_PARTS.find((p) => counts[p] > 0) ?? 'arm';
+  const subtabs = SKILL_PARTS.map(
+    (p) => `<button class="subtab${p === activeSkillPart ? ' active' : ''}" data-part="${p}">${t(`ui.part_${p}`)} <span class="muted">${counts[p]}</span></button>`,
+  ).join('');
+  const partItems = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === activeSkillPart);
+  const rows = partItems.length ? partItems.map((s) => skillRow(state, s)).join('') : `<li class="muted">${t('ui.empty')}</li>`;
+  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul></section>`;
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
   if (!selectedB && fusableSkills(state)[1]) selectedB = fusableSkills(state)[1].id;
   const opts = (sel: string | null) =>
@@ -640,8 +725,7 @@ function skillsTab(state: GameState): string {
       </ul>
     </section>`;
   return `
-    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div>${skills}</section>
-    ${fusionPanel}
+    <div class="skillscols">${listPanel}${fusionPanel}</div>
     ${acquireGuide}
   `;
 }
@@ -660,6 +744,12 @@ function wireSkills(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-equip');
       if (id) ACTIONS.onToggleEquip(id);
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.subtab[data-part]').forEach((b) => {
+    b.addEventListener('click', () => {
+      activeSkillPart = (b.getAttribute('data-part') as 'arm' | 'leg' | 'body' | 'eye') ?? 'arm';
+      renderTab();
     });
   });
   el.querySelectorAll<HTMLButtonElement>('.delskill[data-del]').forEach((b) => {
