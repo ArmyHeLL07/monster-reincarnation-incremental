@@ -254,6 +254,14 @@ function renderTab(): void {
 
 // ---- COMBAT ----------------------------------------------------------------
 
+function ownsSkill(state: GameState, id: string): boolean {
+  return state.skills.some((s) => s.id === id);
+}
+/** A feature is unlocked once the player has FOUND a lore book whose hint matches it. */
+function loreUnlocked(state: GameState, hint: string): boolean {
+  return state.booksFound.some((id) => CONTENT.books.get(id)?.hints === hint);
+}
+
 function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
@@ -288,6 +296,15 @@ function combatTab(state: GameState): string {
     .join('');
   const act = (a: 'combat' | 'rest' | 'idle', label: string) =>
     `<button class="actbtn${state.action === a ? ' active' : ''}" data-act="${a}">${label}</button>`;
+  // Features unlock through knowledge: meditate/court-death from their lore, analyze(MP) from Insight.
+  const meditateBtn =
+    state.meditationUnlocked || loreUnlocked(state, 'meditation')
+      ? `<button id="meditate"${state.action === 'meditate' ? ' class="active"' : ''}>${t('ui.meditate')}</button>`
+      : '';
+  const deepBtn = ownsSkill(state, 'insight') ? `<button id="deepread">${t('ui.deepread')}</button>` : '';
+  const courtBtn = loreUnlocked(state, 'brink') ? `<button id="courtdeath" class="ghost">${t('ui.court_death')}</button>` : '';
+  const searched = state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
+  const searchBtn = `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>`;
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
@@ -297,13 +314,13 @@ function combatTab(state: GameState): string {
       ${act('combat', t('ui.fight'))}
       ${act('rest', t('ui.rest'))}
       ${act('idle', t('ui.stop'))}
-      <button id="meditate"${state.action === 'meditate' ? ' class="active"' : ''}>${t('ui.meditate')}</button>
+      ${meditateBtn}
     </div>
     ${skillBar(state)}
     <div class="controls">
-      <button id="deepread">${t('ui.deepread')}</button>
-      <button id="search">${t('ui.search')}</button>
-      <button id="courtdeath" class="ghost">${t('ui.court_death')}</button>
+      ${deepBtn}
+      ${searchBtn}
+      ${courtBtn}
     </div>
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>

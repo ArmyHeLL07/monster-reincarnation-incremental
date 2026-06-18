@@ -12,12 +12,20 @@ const SCAR_REPAIR_EP = 20;
 
 /** Knowledge-based exploration (GDD §8.2): roll for fragments, books, or perceiving a room. */
 export function search(state: GameState, content: Content, log: Log): void {
+  // One search per room — you already combed this spot. Move on (or come back later) to search again.
+  const posKey = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
+  if (state.lastSearchPos === posKey) {
+    log({ key: 'log.search_done' });
+    return;
+  }
+  state.lastSearchPos = posKey;
+
   const tier = appraisalTier(state);
   const luck = state.stats.LUCK;
   const b = aggregateBonuses(state, content);
-  // Only the loot *bonus* (lootMult above 1) helps — baseline adds nothing, so search isn't a sure thing.
+  // Tied to LUCK + the seeing eye (Appraisal/Insight) — low base so nothing is found easily.
   const roll = Math.random() * Math.max(0, b.lootMult - 1);
-  const baseFind = 0.25 + luck * 0.01 + roll;
+  const baseFind = 0.08 + luck * 0.01 + tier * 0.02 + roll;
 
   // 1) Perceive a secret room — the chance scales with the "seeing eye" level (GDD §5.0.7):
   // ~0% when you first meet the Appraisal/Insight requirement, rising gradually each level.
@@ -38,7 +46,7 @@ export function search(state: GameState, content: Content, log: Log): void {
   const book = [...content.books.values()]
     .sort((x, y) => x.order - y.order)
     .find((bk) => !state.booksFound.includes(bk.id));
-  if (book && Math.random() < 0.3 + luck * 0.005) {
+  if (book && Math.random() < 0.16 + luck * 0.005 + tier * 0.01) {
     state.booksFound.push(book.id);
     log({ key: 'log.search_book' });
     return;

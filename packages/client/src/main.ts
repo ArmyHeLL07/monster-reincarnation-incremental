@@ -270,6 +270,7 @@ function migrate(s: GameState): void {
   s.combatMode ??= 'auto';
   s.cooldowns ??= {};
   s.autoEat ??= true;
+  s.lastSearchPos ??= '';
   s.fusionUnlocked ??= false;
   s.badFusions ??= 0;
   if (s.maxSp == null) s.maxSp = d.maxSp;

@@ -115,6 +115,8 @@ export interface GameState {
   cooldowns: Record<string, number>;
   /** Auto-eat stored corpses when hungry. Off = eat manually (discover Gluttony at your own pace). */
   autoEat: boolean;
+  /** Pos key ("L.F.R") where the player last searched — one search per room until they move on. */
+  lastSearchPos: string;
   /** Fusion lab is a discovery — locked until found (no longer free from the start). */
   fusionUnlocked: boolean;
   /** Count of incompatible (backfire) fusions carried — the 4th overloads and kills the host. */
@@ -223,6 +225,7 @@ export function newGame(): GameState {
     combatMode: 'auto',
     cooldowns: {},
     autoEat: true,
+    lastSearchPos: '',
     fusionUnlocked: false,
     badFusions: 0,
     skills: [

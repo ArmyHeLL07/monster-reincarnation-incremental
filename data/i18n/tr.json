@@ -467,6 +467,7 @@
   "log.search_room": "Bir şey sezdin… gizli bir oda: {room}.", "log.search_book": "Bir kurban kitabı buldun.",
   "log.search_map": "Bir harita parçası buldun.", "log.search_lore": "Bir lore parçası buldun.",
   "log.search_empty": "Burada bir şey yok.",
+  "log.search_done": "Bu odayı zaten aradın — ilerle, sonra tekrar gelip arayabilirsin.",
   "log.book_lore": "{lore}", "log.book_deep": "↳ {deep}", "log.book_too_deep": "Derin katman kapalı — INT {int} gerekir.",
   "log.room_wrong": "Yanlış cevap. Oda kapalı kaldı.", "log.room_solved": "«Açıl susam açıl» — oda açıldı: {room}!",
   "log.scar_repaired": "Bir yara izi onarıldı. Kalan: {scars}.", "log.fuse_scar": "Geri tepme bir yara izi bıraktı. Toplam: {scars}."

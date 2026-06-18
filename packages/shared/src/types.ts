@@ -236,7 +236,7 @@ export interface Book {
   /** Order in the chronological series (each book continues the last). */
   order: number;
   /** Which hidden path the book hints at (for the Discovery panel). */
-  hints?: 'meditation' | 'brink' | 'taboo' | 'fusion' | 'regen';
+  hints?: 'meditation' | 'brink' | 'taboo' | 'fusion' | 'regen' | 'element' | 'eyes' | 'appraisal' | 'evolution';
 }
 
 /** A bilingual riddle-gated secret room (GDD §8.2 — "open sesame"). */
