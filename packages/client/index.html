@@ -114,6 +114,11 @@
       .castbtn:disabled { opacity: 0.45; }
       .equipbtn { min-height: 30px; padding: 0.1rem 0.55rem; font-size: 0.82rem; }
       .equipbtn.on { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
+      .skillrow { cursor: pointer; }
+      .skilldesc { margin: 0.2rem 0 0.4rem 1rem; padding: 0.4rem 0.6rem; font-size: 0.8rem; color: var(--ash); background: #0e0c14; border-left: 2px solid var(--venom-dim); border-radius: 6px; }
+      .toasts { position: fixed; top: 0.6rem; right: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; z-index: 60; max-width: 72vw; pointer-events: none; }
+      .toast { background: linear-gradient(180deg, #20300f, #16110f); border: 1px solid var(--venom); border-left: 3px solid var(--venom); color: var(--bone); padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); transition: opacity 0.4s ease, transform 0.4s ease; }
+      .toast.out { opacity: 0; transform: translateX(24px); }
       .floorbtn { min-width: 40px; min-height: 36px; padding: 0.2rem 0.5rem; flex: 0 0 auto; }
       span.floorbtn.current { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
       .statadd, .discard { min-height: 30px; min-width: 36px; padding: 0.1rem 0.5rem; font-size: 1rem; }

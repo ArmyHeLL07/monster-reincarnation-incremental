@@ -67,6 +67,7 @@ let activeTab: Tab = 'combat';
 let selectedA: string | null = null;
 let selectedB: string | null = null;
 let selectedEye: string | null = null;
+let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot';
 const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
@@ -80,10 +81,34 @@ function logCategory(key: string): LogCat {
   return 'combat';
 }
 
+/** Big-moment keys that also pop a toast (new discoveries) — so they aren't buried in the log. */
+const TOAST_KEYS = new Set([
+  'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
+  'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
+  'log.evolve', 'log.evolve_form', 'log.fusion_death',
+]);
+
 export function pushLog(key: string, params?: Record<string, string | number>): void {
   const cat = logCategory(key);
-  logs[cat].unshift(tmsg(key, params));
+  const text = tmsg(key, params);
+  logs[cat].unshift(text);
   if (logs[cat].length > LOG_CAP) logs[cat].length = LOG_CAP;
+  if (key.startsWith('log.discover') || TOAST_KEYS.has(key)) pushToast(text);
+}
+
+/** Transient top-right pop-up for a freshly discovered skill/feature. */
+function pushToast(text: string): void {
+  const host = document.querySelector<HTMLElement>('#toasts');
+  if (!host) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = text;
+  host.appendChild(el);
+  while (host.children.length > 4 && host.firstChild) host.removeChild(host.firstChild);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 400);
+  }, 4200);
 }
 export function setLastFusion(r: FusionResult): void {
   lastFusion = r;
@@ -93,6 +118,7 @@ export function resetUi(): void {
   selectedA = null;
   selectedB = null;
   lastFusion = null;
+  expandedSkill = null;
   activeTab = 'combat';
   logs.combat.length = 0;
   logs.discovery.length = 0;
@@ -127,6 +153,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         <div class="logcol"><h3>${t('ui.log_discovery')}</h3><div class="log" id="log-discovery"></div></div>
         <div class="logcol"><h3>${t('ui.log_loot')}</h3><div class="log" id="log-loot"></div></div>
       </section>
+      <div id="toasts" class="toasts" aria-live="polite"></div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -450,7 +477,10 @@ function skillsTab(state: GameState): string {
       const equipBtn = active
         ? `<button class="equipbtn${eq ? ' on' : ''}" data-equip="${s.id}">${eq ? t('ui.unequip') : t('ui.equip')}</button>`
         : '';
-      return `<li><b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp ${equipBtn}</li>`;
+      const exp = expandedSkill === s.id;
+      const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
+      const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>` : '';
+      return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
     })
     .join('');
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
@@ -497,6 +527,13 @@ function wireSkills(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-equip');
       if (id) ACTIONS.onToggleEquip(id);
+    });
+  });
+  el.querySelectorAll<HTMLElement>('.skillrow[data-skill]').forEach((row) => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-skill');
+      expandedSkill = expandedSkill === id ? null : id; // tap to read its description, tap again to close
+      renderTab();
     });
   });
 }
