@@ -259,6 +259,7 @@
   "ui.level": "Level",
   "ui.xp": "XP",
   "ui.statpoints": "Stat points",
+  "ui.auto_power": "Auto power",
   "ui.locked": "locked",
   "ui.enter": "Enter",
   "ui.current": "current",

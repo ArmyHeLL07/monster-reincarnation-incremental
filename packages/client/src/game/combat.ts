@@ -34,6 +34,17 @@ const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
 const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
+const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
+
+/** Effective level = how deep the mastery climb is (tier*10 + level); T2 Lv1 reads as "level 11". */
+export function effectiveLevel(state: GameState): number {
+  return state.tier * LEVEL_CAP + state.level;
+}
+
+/** Automatic outgoing-damage multiplier from levels alone (separate from spent stat points). */
+export function levelPower(state: GameState): number {
+  return 1 + (effectiveLevel(state) - 1) * AUTO_POWER_PER_LEVEL;
+}
 
 function skillExpToNext(level: number): number {
   return 15 + level * 10; // slower early (Lv1→2 = 25, was 10)
@@ -512,7 +523,7 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     raw = (def.damage ?? 0) + Math.floor(state.stats.STR / 3);
   }
   raw += b.overdrawFrac * (state.maxHp - state.hp); // Overdraw: missing HP → power (§6.1)
-  raw *= b.dmgMult * diff.playerMult;
+  raw *= b.dmgMult * diff.playerMult * levelPower(state); // auto power: each level adds a little punch
   raw *= elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType); // element type-chart
   const dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   enemy.hp -= dmg;
@@ -616,6 +627,7 @@ function gainXp(state: GameState, amount: number, log: Log): void {
     state.xp = 0;
     log({ key: 'log.cap', params: { lv: LEVEL_CAP } });
   }
+  recomputeMaxes(state); // levels nudge max HP/MP/SP up a little (auto growth)
 }
 
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void {

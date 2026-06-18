@@ -198,9 +198,10 @@ export interface GameEvents extends Record<string, unknown> {
 
 /** Recompute max HP/MP/SP from stats (+ stamina training) and clamp current values. */
 export function recomputeMaxes(state: GameState): void {
-  state.maxHp = 20 + state.stats.VIT * 4; // VIT → HP
-  state.maxMp = 10 + state.stats.INT * 3; // INT → MP (and magic power, later)
-  state.maxSp = 10 + state.stats.VIT * 2 + state.stats.AGI * 2; // small base, grows with VIT/AGI
+  const effLvl = state.tier * LEVEL_CAP + state.level; // auto growth: a small max bump per level
+  state.maxHp = 20 + state.stats.VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
+  state.maxMp = 10 + state.stats.INT * 3 + effLvl; // INT → MP (+1/level)
+  state.maxSp = 10 + state.stats.VIT * 2 + state.stats.AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
   state.hp = Math.min(state.hp, state.maxHp);
   state.mp = Math.min(state.mp, state.maxMp);
   state.sp = Math.min(state.sp, state.maxSp);

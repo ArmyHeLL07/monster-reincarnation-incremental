@@ -6,6 +6,12 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Backlog — Seviye atlayınca otomatik güç)
+- **Otomatik güç**: efektif seviye (tier×10+level) başına **+%1.5 hasar** (stat point'ten
+  ayrı) + her seviye **maks HP +2 / MP +1 / SP +1**. Statlar sekmesinde "Otomatik güç: +%X"
+  gösterilir; seviye atlayınca maks'lar anında büyür. (`combat.ts: levelPower/effectiveLevel`,
+  `state.ts: recomputeMaxes`, `ui.ts`.)
+
 ### Değişti (Sırada #1 — Analiz düşman üstünde)
 - **Analiz (deep-read) artık savaş log'unu doldurmuyor** — detay düşman panelinde
   gösteriliyor (zaten tier'e göre name/type/ATK/HP/zayıflık vardı). "Analiz et"
