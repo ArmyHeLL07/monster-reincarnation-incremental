@@ -7,7 +7,27 @@
 > **Canlı demo:** https://armyhell07.github.io/monster-reincarnation-incremental/
 > **Repo:** https://github.com/ArmyHeLL07/monster-reincarnation-incremental
 
-**Son güncelleme: 2026-06-17 13:00**
+**Son güncelleme: 2026-06-18**
+
+---
+
+## ✅ Yapıldı (2026-06-18) — harita & evrim revizyonu
+
+- **Bug fix (arkadaş raporu):** Layer 3'e geçilemiyordu — `tierReq: 7` istiyordu ama
+  evrim zinciri T5'te bitiyordu. Evrim ağacı **T10'a uzatıldı** (Layer 3 T7 kaldı,
+  oyun zor kaldı). 6 yeni form: colossal_weaver, revenant_horror, dread_weaver,
+  wraith_sovereign (T7 = Layer 3 açılır), elder_sovereign, abyssal_sovereign.
+  Apex `arachnid_sovereign` = T10. `greater_weaver` çıkmazı kapatıldı.
+- **Katman element teması + çevresel direnç:** L2 ateş, L3 ruh. Savaşta ortam yanması
+  (dirence göre azalır), eşleşen direnç ×2.5 hızlı birikir; difficulty `envMult`.
+- **Sakin keşif odaları:** her katın bir oranı (`explorationRate`) savaşsız —
+  EP + toparlanma + lore/gizli oda şansı.
+- **Manuel harita ilerlemesi:** varsayılan manuel ("İlerle →" butonu); "Oto-ilerle"
+  toggle ile otomatik. (Önceden her öldürmede otomatik ilerliyordu.)
+- **Random kat sayısı 12-20** (oda sayısı zaten random'dı). Boss her katın sonunda.
+
+> Tümü data-driven + TR/EN lokalize. typecheck + build geçti. Ayrıntı: `CHANGELOG.md`
+> ve `docs/superpowers/specs/2026-06-18-harita-element-kesif-ilerleme-design.md`.
 
 ---
 

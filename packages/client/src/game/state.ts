@@ -169,8 +169,14 @@ export interface GameState {
   scars: number;
   /** Furthest linear room index reached per layer id → drives the map's fog-of-war reveal. */
   exploredMax: Record<number, number>;
-  /** Per-player random rooms-per-floor per layer id (10–22), rolled once and saved. */
+  /** Per-player random rooms-per-floor per layer id (12–20), rolled once and saved. */
   layerRooms: Record<number, number>;
+  /** Per-player random floor count per layer id (12–20), rolled once and saved. */
+  layerFloors: Record<number, number>;
+  /** Manual map progression: when false, a cleared room waits for the "Advance" tap. */
+  autoAdvance: boolean;
+  /** True when the current room is cleared/explored and the player may advance. */
+  roomCleared: boolean;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -265,6 +271,9 @@ export function newGame(): GameState {
     scars: 0,
     exploredMax: {},
     layerRooms: {},
+    layerFloors: {},
+    autoAdvance: false,
+    roomCleared: false,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

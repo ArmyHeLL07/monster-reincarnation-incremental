@@ -1,6 +1,6 @@
 [
-  { "id": "easy",   "locKey": "diff.easy.name",   "startLayer": 1, "enemyMult": 0.6, "playerMult": 1.2, "deathPenalty": 0.1, "resistMult": 0.15, "rewardMult": 0.8 },
-  { "id": "normal", "locKey": "diff.normal.name", "startLayer": 1, "enemyMult": 1.0, "playerMult": 1.0, "deathPenalty": 0.3, "resistMult": 1.0,  "rewardMult": 1.0 },
-  { "id": "hard",   "locKey": "diff.hard.name",   "startLayer": 1, "enemyMult": 1.4, "playerMult": 0.9, "deathPenalty": 0.6, "resistMult": 1.15, "rewardMult": 1.25 },
-  { "id": "hell",   "locKey": "diff.hell.name",   "startLayer": 3, "enemyMult": 2.2, "playerMult": 0.8, "deathPenalty": 1.0, "resistMult": 1.0,  "rewardMult": 2.0, "brutal": true }
+  { "id": "easy",   "locKey": "diff.easy.name",   "startLayer": 1, "enemyMult": 0.6, "playerMult": 1.2, "deathPenalty": 0.1, "resistMult": 0.15, "rewardMult": 0.8, "envMult": 0.5 },
+  { "id": "normal", "locKey": "diff.normal.name", "startLayer": 1, "enemyMult": 1.0, "playerMult": 1.0, "deathPenalty": 0.3, "resistMult": 1.0,  "rewardMult": 1.0, "envMult": 1.0 },
+  { "id": "hard",   "locKey": "diff.hard.name",   "startLayer": 1, "enemyMult": 1.4, "playerMult": 0.9, "deathPenalty": 0.6, "resistMult": 1.15, "rewardMult": 1.25, "envMult": 1.4 },
+  { "id": "hell",   "locKey": "diff.hell.name",   "startLayer": 3, "enemyMult": 2.2, "playerMult": 0.8, "deathPenalty": 1.0, "resistMult": 1.0,  "rewardMult": 2.0, "envMult": 1.8, "brutal": true }
 ]

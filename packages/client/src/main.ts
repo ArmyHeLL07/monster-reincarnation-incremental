@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -54,6 +54,16 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onAdvance: () => {
+      advanceRoom(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onToggleAutoAdvance: () => {
+      state.autoAdvance = !state.autoAdvance;
+      save(state);
+      render(state);
+    },
     onToggleEquip: (id) => {
       toggleEquip(state, content, id);
       save(state);
@@ -64,6 +74,7 @@ async function init(): Promise<void> {
       if (layer && state.tier >= layer.tierReq) {
         state.pos = { layer: id, floor: 1, room: 1 };
         state.enemy = null;
+        state.roomCleared = false;
         save(state);
         render(state);
       }
@@ -75,6 +86,7 @@ async function init(): Promise<void> {
       if (state.pos.layer === layerId && floor >= 1 && floor <= Math.max(1, reachedFloors)) {
         state.pos = { layer: layerId, floor, room: 1 };
         state.enemy = null;
+        state.roomCleared = false;
         save(state);
         render(state);
       }
@@ -297,6 +309,9 @@ function migrate(s: GameState): void {
   s.scars ??= 0;
   s.exploredMax ??= {};
   s.layerRooms ??= {};
+  s.layerFloors ??= {};
+  s.autoAdvance ??= false;
+  s.roomCleared ??= false;
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

@@ -5,7 +5,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf } from './game/combat';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -15,6 +15,8 @@ export interface UiActions {
   onDeepRead: () => void;
   onUseSkill: (id: string) => void;
   onToggleMode: () => void;
+  onAdvance: () => void;
+  onToggleAutoAdvance: () => void;
   onToggleEquip: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
   onSetPos: (layerId: number, floor: number) => void;
@@ -264,7 +266,10 @@ function loreUnlocked(state: GameState, hint: string): boolean {
 
 function enemyView(state: GameState): string {
   const inst = state.enemy;
-  if (!inst) return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
+  if (!inst) {
+    if (state.action === 'combat' && state.roomCleared) return `<p class="muted">✓ ${t('ui.room_cleared')}</p>`;
+    return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
+  }
   const tier = appraisalTier(state);
   if (tier < 1) {
     // No "seeing eye" slotted — you only perceive a vague shape, never its true stats.
@@ -316,6 +321,7 @@ function combatTab(state: GameState): string {
       ${act('idle', t('ui.stop'))}
       ${meditateBtn}
     </div>
+    ${advanceControls(state)}
     ${skillBar(state)}
     <div class="controls">
       ${deepBtn}
@@ -327,6 +333,13 @@ function combatTab(state: GameState): string {
       <ul>${resists}</ul>
     </section>
   `;
+}
+
+/** Manual map progression: an "Advance" button when a room is cleared + the auto-advance toggle. */
+function advanceControls(state: GameState): string {
+  const advBtn = state.roomCleared ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
+  const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
+  return `<div class="controls">${advBtn}${autoBtn}</div>`;
 }
 
 /** Combat mode toggle + equipped skill cast buttons (with live cooldown). */
@@ -350,6 +363,8 @@ function skillBar(state: GameState): string {
 
 function wireCombat(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#mode')?.addEventListener('click', ACTIONS.onToggleMode);
+  el.querySelector<HTMLButtonElement>('#advance')?.addEventListener('click', ACTIONS.onAdvance);
+  el.querySelector<HTMLButtonElement>('#autoadvance')?.addEventListener('click', ACTIONS.onToggleAutoAdvance);
   el.querySelectorAll<HTMLButtonElement>('.castbtn[data-cast]').forEach((b) => {
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-cast');
@@ -370,7 +385,7 @@ function wireCombat(el: HTMLElement): void {
 /** Fog-of-war grid of one layer: floors are rows, rooms are cells; cleared rooms light up. */
 function dungeonGrid(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
   const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
-  const F = layer.floors;
+  const F = floorsOf(state, layer);
   const onLayer = state.pos.layer === layer.id;
   const curLinear = (state.pos.floor - 1) * R + state.pos.room;
   const reached = Math.max(state.exploredMax[layer.id] ?? 0, onLayer ? curLinear : 0);
@@ -421,7 +436,7 @@ function mapTab(state: GameState): string {
       const unlocked = state.tier >= l.tierReq;
       const current = state.pos.layer === l.id;
       const max = state.exploredMax[l.id] ?? 0;
-      const total = l.floors * (state.layerRooms[l.id] ?? l.roomsPerFloor);
+      const total = floorsOf(state, l) * (state.layerRooms[l.id] ?? l.roomsPerFloor);
       const prog = unlocked ? ` <span class="muted">${Math.floor((Math.min(max, total) / total) * 100)}%</span>` : '';
       const status = current
         ? `<span class="muted">${t('ui.current')}</span>`
@@ -434,7 +449,7 @@ function mapTab(state: GameState): string {
   return `
     <section class="panel">
       <div class="row"><h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
-      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur?.floors ?? '?'} · ${t('ui.room')} ${state.pos.room}/${curRooms || '?'}${bossSoon}</p>
+      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur ? floorsOf(state, cur) : '?'} · ${t('ui.room')} ${state.pos.room}/${curRooms || '?'}${bossSoon}</p>
       ${cur ? dungeonGrid(state, cur) : ''}
       ${legend}
       ${pending}
@@ -448,7 +463,7 @@ function mapTab(state: GameState): string {
 function farmControls(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
   const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
   const reached = state.exploredMax[layer.id] ?? 0;
-  const reachedFloors = Math.min(layer.floors, Math.max(1, Math.ceil(reached / R)));
+  const reachedFloors = Math.min(floorsOf(state, layer), Math.max(1, Math.ceil(reached / R)));
   if (reachedFloors <= 1 && state.pos.floor === 1) return ''; // nothing earlier to revisit yet
   const btns: string[] = [];
   for (let f = 1; f <= reachedFloors; f++) {

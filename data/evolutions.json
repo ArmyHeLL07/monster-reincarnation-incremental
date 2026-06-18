@@ -37,10 +37,19 @@
     "id": "greater_weaver",
     "raceId": "spider",
     "locKey": "form.greater_weaver.name",
-    "evolvesTo": [],
+    "evolvesTo": ["colossal_weaver"],
     "levelReq": 10,
     "statBonus": { "VIT": 6, "STR": 2 },
     "grantSkills": ["endurance", "carapace_lord", "mp_regen"]
+  },
+  {
+    "id": "colossal_weaver",
+    "raceId": "spider",
+    "locKey": "form.colossal_weaver.name",
+    "evolvesTo": ["undying_horror"],
+    "levelReq": 10,
+    "statBonus": { "VIT": 8, "STR": 3 },
+    "grantSkills": ["adamant_plating", "blood_engine", "toughness"]
   },
   {
     "id": "shade_stalker",
@@ -64,10 +73,55 @@
     "id": "undying_horror",
     "raceId": "spider",
     "locKey": "form.undying_horror.name",
-    "evolvesTo": ["arachnid_sovereign"],
+    "evolvesTo": ["revenant_horror"],
     "levelReq": 10,
     "statBonus": { "VIT": 6, "STR": 3, "AGI": 2 },
     "grantSkills": ["regeneration", "regenerative_core", "undying_husk"]
+  },
+  {
+    "id": "revenant_horror",
+    "raceId": "spider",
+    "locKey": "form.revenant_horror.name",
+    "evolvesTo": ["dread_weaver"],
+    "levelReq": 10,
+    "statBonus": { "VIT": 5, "STR": 4, "AGI": 2 },
+    "grantSkills": ["undying_vitality", "regenerative_core"]
+  },
+  {
+    "id": "dread_weaver",
+    "raceId": "spider",
+    "locKey": "form.dread_weaver.name",
+    "evolvesTo": ["wraith_sovereign"],
+    "levelReq": 10,
+    "statBonus": { "INT": 5, "AGI": 4, "WIS": 3 },
+    "grantSkills": ["phantom_presence", "plague_mist"]
+  },
+  {
+    "id": "wraith_sovereign",
+    "raceId": "spider",
+    "locKey": "form.wraith_sovereign.name",
+    "evolvesTo": ["elder_sovereign"],
+    "levelReq": 10,
+    "statBonus": { "STR": 5, "VIT": 5, "INT": 4 },
+    "grantSkills": ["spatial_web", "soul_gaze"]
+  },
+  {
+    "id": "elder_sovereign",
+    "raceId": "spider",
+    "locKey": "form.elder_sovereign.name",
+    "evolvesTo": ["abyssal_sovereign"],
+    "levelReq": 10,
+    "statBonus": { "INT": 6, "WIS": 5, "LUCK": 3 },
+    "grantSkills": ["all_sight", "precognition"]
+  },
+  {
+    "id": "abyssal_sovereign",
+    "raceId": "spider",
+    "locKey": "form.abyssal_sovereign.name",
+    "evolvesTo": ["arachnid_sovereign"],
+    "levelReq": 10,
+    "statBonus": { "STR": 7, "VIT": 6, "AGI": 5, "INT": 5 },
+    "grantSkills": ["reaper_edge", "domination_gaze", "endless_mana"]
   },
   {
     "id": "arachnid_sovereign",

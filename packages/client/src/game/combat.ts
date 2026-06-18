@@ -220,9 +220,30 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 
 // ---- rounds ----------------------------------------------------------------
 
+/** Finish the current room (kill or exploration): auto-advance, or wait for the manual "Advance" tap. */
+function clearRoom(state: GameState, content: Content, log: Log): void {
+  state.enemy = null;
+  if (state.autoAdvance) advancePosition(state, content, log);
+  else state.roomCleared = true; // manual: the room waits for the player's "Advance" tap
+}
+
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
-  if (!state.enemy) spawnEnemy(state, content, log);
-  if (!state.enemy) return;
+  // Manual progression: a cleared/explored room holds until the player advances.
+  if (state.roomCleared) return;
+  if (!state.enemy) {
+    if (isExplorationRoom(state, content)) {
+      resolveExploration(state, content, log); // calm room: no combat, small reward, then advance
+      clearRoom(state, content, log);
+      return;
+    }
+    spawnEnemy(state, content, log);
+  }
+  if (state.roomCleared || !state.enemy) return;
+  applyAmbient(state, content, log); // environmental burn (elemental layers only)
+  if (state.hp <= 0) {
+    onDeath(state, content, log, b);
+    return;
+  }
   applyCombatRegen(state, content, b);
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
@@ -345,8 +366,8 @@ function currentLayer(state: GameState, content: Content) {
   return content.dungeon.layers.find((l) => l.id === state.pos.layer);
 }
 
-/** Per-player random rooms-per-floor for a layer (10–22), rolled once and saved. */
-export function roomsOf(state: GameState, layer: { id: number; roomsPerFloor: number }): number {
+/** Per-player random rooms-per-floor for a layer (12–20), rolled once and saved. */
+export function roomsOf(state: GameState, layer: { id: number }): number {
   let r = state.layerRooms[layer.id];
   if (r == null) {
     r = 12 + Math.floor(Math.random() * 9); // 12..20 inclusive
@@ -355,9 +376,74 @@ export function roomsOf(state: GameState, layer: { id: number; roomsPerFloor: nu
   return r;
 }
 
-/** Roll every layer's room count up-front (called once at game start so the map is stable). */
+/** Per-player random floor count for a layer (12–20), rolled once and saved (Atıl's design). */
+export function floorsOf(state: GameState, layer: { id: number }): number {
+  let f = state.layerFloors[layer.id];
+  if (f == null) {
+    f = 12 + Math.floor(Math.random() * 9); // 12..20 inclusive
+    state.layerFloors[layer.id] = f;
+  }
+  return f;
+}
+
+/** Roll every layer's room + floor counts up-front (called once at game start so the map is stable). */
 export function ensureLayerRooms(state: GameState, content: Content): void {
-  for (const l of content.dungeon.layers) roomsOf(state, l);
+  for (const l of content.dungeon.layers) {
+    roomsOf(state, l);
+    floorsOf(state, l);
+  }
+}
+
+/** Deterministic [0,1) hash of a room coordinate — keeps exploration rooms stable per map. */
+function roomHash(a: number, b: number, c: number): number {
+  let n = (Math.imul(a, 73856093) ^ Math.imul(b, 19349663) ^ Math.imul(c, 83492791)) >>> 0;
+  n = (n ^ (n >>> 13)) >>> 0;
+  return (n % 100000) / 100000;
+}
+
+/** Is the player's current room a calm exploration room (no combat)? Never the entry or boss room. */
+function isExplorationRoom(state: GameState, content: Content): boolean {
+  const layer = currentLayer(state, content);
+  if (!layer) return false;
+  const rate = layer.explorationRate ?? 0;
+  if (rate <= 0) return false;
+  const R = roomsOf(state, layer);
+  const { floor, room } = state.pos;
+  if (room <= 1 || room >= R) return false; // entry room and boss room are always combat
+  return roomHash(layer.id, floor, room) < rate;
+}
+
+/** Resolve a calm exploration room: a little EP, a little recovery, a chance at lore/secret rooms. */
+function resolveExploration(state: GameState, content: Content, log: Log): void {
+  const R = roomsOf(state, currentLayer(state, content)!);
+  recordExplored(state, R); // light the room on the map
+  const reward = diffDef(state, content).rewardMult ?? 1;
+  const ep = Math.max(1, Math.round(3 * reward));
+  state.ep += ep;
+  state.hp = Math.min(state.maxHp, state.hp + Math.round(state.maxHp * 0.1)); // a calm, safe breather
+  state.sp = Math.min(state.maxSp, state.sp + Math.round(state.maxSp * 0.2));
+  log({ key: 'log.explore_room', params: { ep } });
+  if (Math.random() < 0.2 + state.stats.WIS * 0.005) {
+    state.loreFragments += 1;
+    log({ key: 'log.explore_lore' });
+  }
+  trySenseRoom(state, content, log); // luck-driven chance to perceive a gated secret room
+}
+
+/** Environmental ambient hazard of an elemental layer — heat/soul drain, eased by matching resistance. */
+function applyAmbient(state: GameState, content: Content, log: Log): void {
+  const layer = currentLayer(state, content);
+  if (!layer?.element || !layer.ambient) return;
+  const type = layer.element;
+  const envMult = diffDef(state, content).envMult ?? 1;
+  const reduction = resistReduction(state, content, type); // grows as you build the resistance
+  const dmg = Math.round(state.maxHp * layer.ambient.drainPct * (1 - reduction) * envMult);
+  if (dmg <= 0) return; // fully tempered against this element — the zone no longer burns you
+  state.hp = Math.max(0, state.hp - dmg);
+  // The matched zone trains its resistance faster — risk now buys survival later ("knowledge = survival").
+  const resMult = diffDef(state, content).resistMult ?? 1;
+  const resGain = Math.max(1, Math.round(dmg * layer.ambient.resistBoost * resMult));
+  addResistExp(state, content, type, resGain, log);
 }
 
 function recordExplored(state: GameState, roomsPerFloor: number): void {
@@ -569,7 +655,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
     }
   }
 
-  advancePosition(state, content, log, wasBoss);
+  clearRoom(state, content, log); // auto-advance, or hold for the manual "Advance" tap
 
   if (!state.mpTransferUnlocked && Math.random() < MP_TRANSFER_DISCOVER_CHANCE) {
     state.mpTransferUnlocked = true;
@@ -603,14 +689,24 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   }
 }
 
-function advancePosition(state: GameState, content: Content, log: Log, wasBoss: boolean): void {
+/** Player tapped "Advance" (manual progression) — leave a cleared/explored room for the next. */
+export function advanceRoom(state: GameState, content: Content, log: Log): void {
+  if (!state.roomCleared) return;
+  state.roomCleared = false;
+  state.enemy = null;
+  advancePosition(state, content, log);
+}
+
+function advancePosition(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
   if (!layer) return;
+  const R = roomsOf(state, layer);
+  const wasBoss = state.pos.room >= R; // the floor's last room is its boss
   if (!wasBoss) {
     state.pos.room += 1;
     return;
   }
-  if (state.pos.floor < layer.floors) {
+  if (state.pos.floor < floorsOf(state, layer)) {
     state.pos.floor += 1;
     state.pos.room = 1;
     log({ key: 'log.floor_cleared', params: { pos: `${state.pos.layer}.${state.pos.floor}` } });
@@ -659,6 +755,7 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
     state.pos.floor = 1;
   }
   state.pos.room = 1;
+  state.roomCleared = false;
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.sp = state.maxSp;

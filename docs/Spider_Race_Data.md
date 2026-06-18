@@ -58,28 +58,41 @@ Her skill LV1→LV10 ilerler, LV10'da üst forma dönüşür (eski skill kaybolu
 Evolution Point yeterince birikince + bazen koşul (belli skill/resistance) sağlanınca evrim açılır. Her düğümde dallanma var → kalıcı build kimliği.
 
 ```
-                    [Hatchling Spider]          ← başlangıç (zayıf)
+                    [Hatchling Spider]   T0      ← başlangıç (zayıf)
                           │
-                    [Lesser Weaver]             ← ilk evrim
+                    [Lesser Weaver]      T1      ← ilk evrim
                           │
             ┌─────────────┼─────────────┐
             ▼             ▼             ▼
-     [Venom Weaver]  [Blade Weaver]  [Greater Weaver]
-     (zehir dalı)    (fiziksel dal)  (büyüme/HP dalı)
-            │             │
-            ▼             ▼
-     [Shade Stalker]  [Scythe Hunter]
-     (gizli/suikast)  (hız/avcı)
-            │             │
-            └──────┬──────┘
-                   ▼
-            [Undying Horror]          ← nadir; "Çürüme" koşulu + LV50
-            (ölümsüzlük yetisi)        gerektirir, gizli/zor dal
+     [Venom Weaver]  [Blade Weaver]  [Greater Weaver]   T2  (build kimliği)
+            │             │             │
+            ▼             ▼             ▼
+     [Shade Stalker]  [Scythe Hunter] [Colossal Weaver] T3
+            │             │             │
+            └──────┬──────┴──────┬──────┘
+                   ▼                          ← tüm dallar burada birleşir
+            [Undying Horror]     T4      ← "Çürüme/ölümsüzlük" düğümü
+                   │
+                   ▼  (ortak yükseliş omurgası)
+            [Revenant Horror]    T5
+                   │
+            [Dread Weaver]       T6
+                   │
+            [Wraith Sovereign]   T7      ← ★ KATMAN 3 burada açılır (tierReq 7)
+                   │
+            [Elder Sovereign]    T8
+                   │
+            [Abyssal Sovereign]  T9
                    │
                    ▼
-            [Arachnid Sovereign]       ← endgame; yarı-insan form,
-            (konuşma + item kuşanma)    "Gurur" ruler skill + LV50 koşulu
+            [Arachnid Sovereign] T10     ← apex/endgame; yarı-insan form,
+            (konuşma + item kuşanma)       devasa stat
 ```
+
+> **Güncelleme (2026-06-18):** Zincir T5'ten **T10'a** uzatıldı (Layer 3 `tierReq: 7`
+> bug fix — bkz `docs/superpowers/specs/2026-06-18-...`). Tier = evrim sayısı; her
+> tier = 10 level. Sovereign artık apex değil "endgame T10". Ara/üst formlar mevcut
+> üst-tier skilleri verir.
 
 ### Evrim Düğümü Detayları
 | Form | Tema | Açılış Koşulu (öneri) | Evrimde Kazanım |
@@ -91,8 +104,14 @@ Evolution Point yeterince birikince + bazen koşul (belli skill/resistance) sağ
 | **Greater Weaver** | Tank/büyüme | HP/Endurance LV5+ | Büyük HP/DEF sıçraması |
 | **Shade Stalker** | Suikastçı | Stealth + zehir | Gizlilik, ani vuruş skilleri |
 | **Scythe Hunter** | Avcı | Hız + fiziksel | Yüksek SPD, çoklu saldırı |
-| **Undying Horror** | Ölümsüz (gizli) | "Çürüme" attribute + LV50 | **Immortality** pasifi (özel) |
-| **Arachnid Sovereign** | Endgame | "Gurur" ruler skill + LV50 | Konuşma, item kuşanma, dev stat |
+| **Colossal Weaver** (T3) | Tank zirvesi | Greater Weaver yolu | Çelik zırh, kan motoru, sertlik |
+| **Undying Horror** (T4) | Ölümsüz (birleşme) | tüm dallar buraya akar | **Immortality** pasifi (özel) |
+| **Revenant Horror** (T5) | Hortlak | Undying Horror sonrası | Ölümsüz canlılık, yenilenme çekirdeği |
+| **Dread Weaver** (T6) | Gölge/korku | — | Hayalet varlık, veba sisi |
+| **Wraith Sovereign** (T7) | Tayf hükümdar | ★ Katman 3 açılır | Uzaysal ağ, ruh bakışı |
+| **Elder Sovereign** (T8) | Kadim bilge | — | Her şeyi gören, kehanet |
+| **Abyssal Sovereign** (T9) | Uçurum hükümdar | — | Biçen kenar, hükmetme bakışı, sonsuz mana |
+| **Arachnid Sovereign** (T10) | Apex/endgame | "Gurur" ruler + zincir sonu | Konuşma, item kuşanma, dev stat |
 
 > **Not:** "Undying Horror" bilinçli olarak **zor/gizli** bir dal — sadece belirli yolu (gizlilik+çürüme) seçen oyuncu ulaşır. Senin keşif/easter-egg felsefene uygun.
 

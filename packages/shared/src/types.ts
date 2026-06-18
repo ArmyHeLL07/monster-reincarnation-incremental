@@ -158,11 +158,20 @@ export interface Zone {
   levelReq?: number;
 }
 
+/** Ambient environmental hazard of an elemental layer (Atıl's design — heat/soul drain). */
+export interface LayerAmbient {
+  /** Per-combat-tick HP loss as a fraction of maxHP, before resistance/difficulty scaling. */
+  drainPct: number;
+  /** Multiplier on resistance-XP gain for the layer's element (matched zone trains faster). */
+  resistBoost: number;
+}
+
 /** A dungeon layer (Katman): floors × rooms, last room = boss; gated by character tier. */
 export interface DungeonLayer {
   id: number;
   locKey: string;
   tierReq: number;
+  /** Legacy fixed floor count — superseded at runtime by a per-player random roll (12–20). */
   floors: number;
   roomsPerFloor: number;
   spDrainMult: number;
@@ -170,6 +179,12 @@ export interface DungeonLayer {
   boss: string;
   /** Clearing this layer's boss is a Gatekeeper kill — it enables Rebirth (GDD §7.5). */
   gatekeeper?: boolean;
+  /** Environmental element theme (ambient hazard + the resistance the zone trains). */
+  element?: DamageType;
+  /** Ambient hazard config while fighting in this layer (absent = no environmental drain). */
+  ambient?: LayerAmbient;
+  /** Fraction of non-boss, non-entry rooms that are calm exploration rooms (no combat). */
+  explorationRate?: number;
 }
 
 export interface Dungeon {
@@ -296,6 +311,8 @@ export interface DifficultyDef {
   resistMult?: number;
   /** Reward multiplier on EP / XP / loot (Hell pays more; default 1). */
   rewardMult?: number;
+  /** Environmental ambient-hazard multiplier (Easy is gentle, Hell sears; default 1). */
+  envMult?: number;
   /** Hell-only: enemies hunt actively, hunger/exp are harsher. */
   brutal?: boolean;
 }

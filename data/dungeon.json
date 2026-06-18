@@ -1,7 +1,7 @@
 {
   "layers": [
-    { "id": 1, "locKey": "layer.1.name", "tierReq": 0, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 1, "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"], "boss": "cave_lurker" },
-    { "id": 2, "locKey": "layer.2.name", "tierReq": 3, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 2, "enemyPool": ["frost_mite", "acid_slug", "venom_toad", "cave_lurker"], "boss": "flame_jaw" },
-    { "id": 3, "locKey": "layer.3.name", "tierReq": 7, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 3, "enemyPool": ["spark_wisp", "flame_jaw", "venom_brute", "shade_wraith"], "boss": "bone_render", "gatekeeper": true }
+    { "id": 1, "locKey": "layer.1.name", "tierReq": 0, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 1, "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"], "boss": "cave_lurker", "explorationRate": 0.15 },
+    { "id": 2, "locKey": "layer.2.name", "tierReq": 3, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 2, "enemyPool": ["frost_mite", "acid_slug", "venom_toad", "cave_lurker"], "boss": "flame_jaw", "element": "fire", "ambient": { "drainPct": 0.004, "resistBoost": 2.5 }, "explorationRate": 0.2 },
+    { "id": 3, "locKey": "layer.3.name", "tierReq": 7, "floors": 5, "roomsPerFloor": 16, "spDrainMult": 3, "enemyPool": ["spark_wisp", "flame_jaw", "venom_brute", "shade_wraith"], "boss": "bone_render", "gatekeeper": true, "element": "soul", "ambient": { "drainPct": 0.005, "resistBoost": 2.5 }, "explorationRate": 0.2 }
   ]
 }

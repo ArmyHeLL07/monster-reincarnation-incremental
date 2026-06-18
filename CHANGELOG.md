@@ -1,0 +1,34 @@
+# Değişiklik Günlüğü (Changelog)
+
+> Bu dosya her işlemden sonra güncellenir — ne, ne zaman değişti. Büyük resim ve
+> yapılacaklar listesi için `ILERLEME.md`'ye, tasarım gerekçeleri için
+> `docs/superpowers/specs/`'e bak. Format: [Keep a Changelog](https://keepachangelog.com) esinli.
+
+## [Yayınlanmadı] — 2026-06-18
+
+### Düzeltildi
+- **Layer 3 ölü kapı bug'ı** (arkadaş raporu): Layer 3 `tierReq: 7` istiyordu ama
+  evrim zinciri T5'te bitiyordu → katmana ulaşılamıyordu. Evrim ağacı **T10'a
+  uzatıldı** (Layer 3 `tierReq: 7` korundu, oyun zor kaldı).
+
+### Eklendi
+- **6 yeni evrim formu** (`data/evolutions.json`): colossal_weaver (T3),
+  revenant_horror (T5), dread_weaver (T6), wraith_sovereign (T7 — Layer 3 burada
+  açılır), elder_sovereign (T8), abyssal_sovereign (T9). Apex `arachnid_sovereign`
+  artık T10. `greater_weaver` çıkmazı kapatıldı. Formlar mevcut üst-tier skilleri verir.
+- **Katman element teması + çevresel direnç dinamiği**: L2 = ateş, L3 = ruh. Savaşta
+  ortam yanması `maxHP × drainPct × (1−direnç) × envMult`; eşleşen direnç ×2.5 hızlı
+  birikir; difficulty `envMult` (Kolay 0.5 / Normal 1 / Zor 1.4 / Cehennem 1.8).
+  (`data/dungeon.json`, `data/difficulty.json`, `combat.ts`)
+- **Sakin keşif odaları**: her katın bir oranı (`explorationRate`) savaşsız keşif
+  odası — küçük EP + toparlanma + lore/gizli oda şansı. 1. oda ve boss odası hariç.
+- **Manuel harita ilerlemesi**: varsayılan manuel; oda temizlenince "İlerle →"
+  butonu. "Oto-ilerle" toggle ile eski otomatik akış. (`state.autoAdvance`)
+- **Random kat sayısı 12-20** (`state.layerFloors`); oda sayısı zaten 12-20 random'dı.
+  Boss her katın sonunda (o katın ana boss'u).
+
+### Teknik
+- `shared/types.ts`: `DungeonLayer` (element/ambient/explorationRate), `DifficultyDef`
+  (envMult), `LayerAmbient` tipi.
+- `advancePosition` boss'u pozisyondan türetir; `clearRoom`/`advanceRoom`/`floorsOf`
+  eklendi. Tüm metinler TR+EN lokalize. `typecheck` + `build` ✓.
