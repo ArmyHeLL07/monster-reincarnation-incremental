@@ -6,6 +6,16 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi / Değişti (skill yönetimi + HUD yeri)
+- **Skiller gruplandı**: liste artık **Kol (saldırı) / Bacak (hareket) / Vücut (pasif) / Göz**
+  başlıkları altında derli toplu. `Skill.part` (opsiyonel) + koddan türetme (`skillPart`).
+- **Skill silme**: skill detayında **Sil** (onaylı; equipped/göz slotu temizlenir).
+- **Feda Et (sacrifice)**: bir Kurban Kitabı bulununca açılır; skili feda → yatırıma göre
+  **kalıcı stat puanı + EP** (eff=tier×10+lv; pts=1+eff/6, ep=eff×4). (`combat.ts: removeSkill/sacrificeSkill`.)
+- **Mini-HUD yeri düzeltildi**: sabit köşe overlay sekme butonlarının üstüne biniyordu →
+  artık **sol sidebar'ın üstünde, akış içinde** (ayırıcı çizgili), çakışma yok. Sidebar
+  200px'e genişledi. Mobilde HUD gizli, topbar barları görünür. (px-overlay kaldırıldı.)
+
 ### Eklendi / Değişti (geri bildirim turu 2)
 - **Evrim riski** (backlog): evrim seni savunmasız bırakır — evrimde **LUCK ile azalan**
   ambush şansı (~%35 − LUCK×1.5, min %5); olursa maks HP'nin ~%45'i kadar hasar (asla

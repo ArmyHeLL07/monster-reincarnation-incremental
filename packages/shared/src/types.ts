@@ -112,6 +112,8 @@ export interface Skill {
   hidden?: boolean;
   /** Localization key explaining HOW this skill is obtained (acquisition path), shown in the UI. */
   acquireKey?: string;
+  /** Body-part category for the tidy grouped skills list (else derived from kind/effects). */
+  part?: 'arm' | 'eye' | 'leg' | 'body';
   /** A slotted eye ability's combat effect, for gaze eyes (fear/charm/petrify…). */
   gaze?: GazeEffect;
 }

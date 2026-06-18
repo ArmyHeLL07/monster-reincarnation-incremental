@@ -573,6 +573,34 @@ export function toggleEquip(state: GameState, content: Content, id: string): voi
   }
 }
 
+/** Remove a skill entirely — also unequip it and clear any eye slot (incl. hybrid) using it. */
+export function removeSkill(state: GameState, content: Content, id: string): void {
+  state.skills = state.skills.filter((s) => s.id !== id);
+  state.equipped = state.equipped.filter((e) => e !== id);
+  for (const slotId of Object.keys(state.eyeAssignments)) {
+    const a = state.eyeAssignments[slotId];
+    if (!a) continue;
+    if (a.abilityId === id) state.eyeAssignments[slotId] = null;
+    else if (a.fusedId === id) state.eyeAssignments[slotId] = { abilityId: a.abilityId, mode: a.mode };
+  }
+  ensureEquipped(state, content);
+}
+
+/** Sacrifice a skill (lore-taught) for a permanent reward scaled by how invested it was. */
+export function sacrificeSkill(state: GameState, content: Content, id: string, log: Log): boolean {
+  const slot = state.skills.find((s) => s.id === id);
+  const def = content.skills.get(id);
+  if (!slot || !def) return false;
+  const eff = ((slot.tier ?? 1) - 1) * LEVEL_CAP + slot.level; // total investment (tier*10 + level)
+  const pts = 1 + Math.floor(eff / 6); // permanent stat points
+  const ep = eff * 4; // plus EP
+  removeSkill(state, content, id);
+  state.statPoints += pts;
+  state.ep += ep;
+  log({ key: 'log.skill_sacrificed', params: { skill: def.locKeyName, pts, ep } });
+  return true;
+}
+
 /** Manual cast from a tapped skill button (combat only, equipped only, respects cooldown). */
 export function useSkillManual(state: GameState, content: Content, id: string, log: Log): void {
   if (state.action !== 'combat' || !state.enemy || !state.equipped.includes(id)) return;

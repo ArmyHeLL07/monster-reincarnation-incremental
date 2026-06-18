@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -66,6 +66,20 @@ async function init(): Promise<void> {
     },
     onToggleEquip: (id) => {
       toggleEquip(state, content, id);
+      save(state);
+      render(state);
+    },
+    onDeleteSkill: (id) => {
+      if (!window.confirm(t('ui.delete_confirm'))) return;
+      const def = content.skills.get(id);
+      removeSkill(state, content, id);
+      if (def) logFn({ key: 'log.skill_deleted', params: { skill: def.locKeyName } });
+      save(state);
+      render(state);
+    },
+    onSacrificeSkill: (id) => {
+      if (!window.confirm(t('ui.sacrifice_confirm'))) return;
+      sacrificeSkill(state, content, id, logFn);
       save(state);
       render(state);
     },

@@ -1,4 +1,4 @@
-import type { FusionResult, StatKey, Difficulty } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty, Skill } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
@@ -18,6 +18,8 @@ export interface UiActions {
   onAdvance: () => void;
   onToggleAutoAdvance: () => void;
   onToggleEquip: (id: string) => void;
+  onDeleteSkill: (id: string) => void;
+  onSacrificeSkill: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
   onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
@@ -93,7 +95,7 @@ const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
-  'log.sin_kill', 'log.evolve_ambush',
+  'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -155,6 +157,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     <div class="game">
       <header id="topbar" class="topbar"></header>
       <nav id="sidebar" class="sidebar">
+        <aside id="ministatus" class="ministatus" aria-label="status"></aside>
         ${TABS.map((tb) => `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`).join('')}
       </nav>
       <main id="content" class="content"></main>
@@ -164,7 +167,6 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         <div class="logcol"><h3>${t('ui.log_loot')}</h3><div class="log" id="log-loot"></div></div>
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
-      <aside id="ministatus" class="ministatus" aria-hidden="true"></aside>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -543,25 +545,49 @@ function fusableSkills(state: GameState) {
   return state.skills.filter((s) => CONTENT.skills.get(s.id)?.damage !== undefined);
 }
 
+/** Body-part category for the tidy grouped list — explicit `part`, else derived from kind/effects. */
+const LEG_IDS = new Set(['stealth', 'silent_step', 'phantom_presence', 'climb', 'wall_master', 'many_legged_gait', 'void_step']);
+function skillPart(def?: Skill): 'arm' | 'eye' | 'leg' | 'body' {
+  if (!def) return 'body';
+  if (def.part) return def.part;
+  if (def.kind === 'eye') return 'eye';
+  if (def.damage !== undefined) return 'arm';
+  if (def.dodgeBonus !== undefined || LEG_IDS.has(def.id)) return 'leg';
+  return 'body';
+}
+
+const SKILL_PARTS: Array<'arm' | 'leg' | 'body' | 'eye'> = ['arm', 'leg', 'body', 'eye'];
+
+function skillRow(state: GameState, s: { id: string; level: number; exp: number; tier?: number }): string {
+  const def = CONTENT.skills.get(s.id);
+  const name = def ? t(def.locKeyName) : s.id;
+  const tierTag = (s.tier ?? 1) > 1 ? `<span class="muted">T${s.tier}</span> ` : '';
+  const active = def?.damage !== undefined;
+  const eq = state.equipped.includes(s.id);
+  const equipBtn = active
+    ? `<button class="equipbtn${eq ? ' on' : ''}" data-equip="${s.id}">${eq ? t('ui.unequip') : t('ui.equip')}</button>`
+    : '';
+  const exp = expandedSkill === s.id;
+  const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
+  const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
+  const sacUnlocked = state.booksFound.length > 0; // a Sacrifice Journal taught you to give up power for power
+  const sacBtn = sacUnlocked
+    ? `<button class="sacskill ghost" data-sac="${s.id}">${t('ui.sacrifice')}</button>`
+    : `<span class="muted" style="font-size:.78rem">${t('ui.sacrifice_locked')}</span>`;
+  const actions = exp
+    ? `<div class="controls" style="margin:.2rem 0 .5rem 1rem"><button class="delskill ghost" data-del="${s.id}">${t('ui.delete_skill')}</button>${sacBtn}</div>`
+    : '';
+  const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${acq}${actions}` : '';
+  return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
+}
+
 function skillsTab(state: GameState): string {
-  const skills = state.skills
-    .filter((s) => CONTENT.skills.get(s.id)?.kind !== 'eye')
-    .map((s) => {
-      const def = CONTENT.skills.get(s.id);
-      const name = def ? t(def.locKeyName) : s.id;
-      const tierTag = (s.tier ?? 1) > 1 ? `<span class="muted">T${s.tier}</span> ` : '';
-      const active = def?.damage !== undefined;
-      const eq = state.equipped.includes(s.id);
-      const equipBtn = active
-        ? `<button class="equipbtn${eq ? ' on' : ''}" data-equip="${s.id}">${eq ? t('ui.unequip') : t('ui.equip')}</button>`
-        : '';
-      const exp = expandedSkill === s.id;
-      const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
-      const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
-      const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${acq}` : '';
-      return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
-    })
-    .join('');
+  const skills = SKILL_PARTS.map((part) => {
+    const items = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === part);
+    if (items.length === 0) return '';
+    const rows = items.map((s) => skillRow(state, s)).join('');
+    return `<div class="skillgroup"><h3>${t(`ui.part_${part}`)} <span class="muted">(${items.length})</span></h3><ul>${rows}</ul></div>`;
+  }).join('');
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
   if (!selectedB && fusableSkills(state)[1]) selectedB = fusableSkills(state)[1].id;
   const opts = (sel: string | null) =>
@@ -599,7 +625,7 @@ function skillsTab(state: GameState): string {
       </ul>
     </section>`;
   return `
-    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><ul>${skills}</ul></section>
+    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div>${skills}</section>
     ${fusionPanel}
     ${acquireGuide}
   `;
@@ -619,6 +645,18 @@ function wireSkills(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-equip');
       if (id) ACTIONS.onToggleEquip(id);
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.delskill[data-del]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-del');
+      if (id) ACTIONS.onDeleteSkill(id);
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.sacskill[data-sac]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-sac');
+      if (id) ACTIONS.onSacrificeSkill(id);
     });
   });
   el.querySelectorAll<HTMLElement>('.skillrow[data-skill]').forEach((row) => {
