@@ -467,6 +467,7 @@
   "log.search_room": "You sense something… a secret room: {room}.", "log.search_book": "You found a sacrifice book.",
   "log.search_map": "You found a map fragment.", "log.search_lore": "You found a lore fragment.",
   "log.search_empty": "Nothing here.",
+  "log.search_done": "You've already searched this room — move on, then come back to search again.",
   "log.book_lore": "{lore}", "log.book_deep": "↳ {deep}", "log.book_too_deep": "Deep layer locked — needs INT {int}.",
   "log.room_wrong": "Wrong answer. The room stays shut.", "log.room_solved": "«Open sesame» — the room opens: {room}!",
   "log.scar_repaired": "A scar mended. Remaining: {scars}.", "log.fuse_scar": "The backfire left a scar. Total: {scars}."
