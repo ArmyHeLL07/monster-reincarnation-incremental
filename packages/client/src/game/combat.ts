@@ -34,7 +34,6 @@ const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
 const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
-const BRINK_MAX_CHANCE = 0.1; // regen-learning chance at death's door (GDD §6.1)
 
 function skillExpToNext(level: number): number {
   return 15 + level * 10; // slower early (Lv1→2 = 25, was 10)
@@ -216,7 +215,7 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
   }
   state.hp = Math.max(1, Math.floor(state.maxHp * 0.01)); // first push: 99% gone, on the edge
   log({ key: 'log.court_death' });
-  tryLearnRegen(state, log, true);
+  tryLearnRegen(state, content, log, true);
 }
 
 // ---- rounds ----------------------------------------------------------------
@@ -227,7 +226,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
   applyCombatRegen(state, content, b);
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
-  tryLearnRegen(state, log, false);
+  tryLearnRegen(state, content, log, false);
   // Per-skill cooldowns pace attacks — no more "every skill every tick".
   for (const id of state.equipped) {
     const cd = state.cooldowns[id] ?? 0;
@@ -270,12 +269,18 @@ function restRound(state: GameState, content: Content): void {
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
 }
 
-/** Low-HP regeneration learning (GDD §6.1) — chance rises as HP falls, peaks at the brink. */
-function tryLearnRegen(state: GameState, log: Log, forced: boolean): void {
+/**
+ * Learn HP Regen through play (GDD §6.1) — never locked, but easier the closer to death you are,
+ * and ~10× easier once you've FOUND the regen lore. Loresiz zor ama imkânsız değil.
+ *   no lore  → normal 1%, near-death 10%       (per combat tick)
+ *   w/ lore  → normal 10%, near-death 30%
+ */
+function tryLearnRegen(state: GameState, content: Content, log: Log, forced: boolean): void {
   if (state.skills.some((s) => s.id === 'hp_regen' || s.id === 'auto_heal' || s.id === 'regeneration')) return;
   const missing = 1 - state.hp / Math.max(1, state.maxHp);
-  if (!forced && missing < 0.5) return;
-  const chance = Math.min(BRINK_MAX_CHANCE, 0.001 + missing * missing * BRINK_MAX_CHANCE);
+  const nearDeath = forced || missing >= 0.6; // otherwise it's "normal" play — still possible, just rarer
+  const lore = state.booksFound.some((id) => content.books.get(id)?.hints === 'regen');
+  const chance = lore ? (nearDeath ? 0.3 : 0.1) : nearDeath ? 0.1 : 0.01;
   if (Math.random() < chance) {
     state.skills.push({ id: 'hp_regen', level: 1, exp: 0 });
     log({ key: 'log.learn_regen' });

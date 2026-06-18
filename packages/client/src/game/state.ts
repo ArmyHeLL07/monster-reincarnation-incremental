@@ -232,7 +232,6 @@ export function newGame(): GameState {
       { id: 'venom_bite', level: 1, exp: 0 },
       { id: 'sharp_claw', level: 1, exp: 0 },
       { id: 'silk_thread', level: 1, exp: 0 },
-      { id: 'hp_regen', level: 1, exp: 0 },
       { id: 'quick_thought', level: 1, exp: 0 },
       { id: 'chitin_hide', level: 1, exp: 0 },
       { id: 'many_legged_gait', level: 1, exp: 0 },
