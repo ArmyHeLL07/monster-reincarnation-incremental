@@ -173,6 +173,14 @@
       .log div:first-child { color: var(--bone); }
       .head { width: 100%; max-width: 300px; height: auto; display: block; margin: 0.3rem auto 0.7rem; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); }
       .eye:active circle { opacity: 0.8; }
+      .erow { display: flex; align-items: center; gap: 0.7rem; }
+      .eportrait {
+        flex: none; display: inline-flex; align-items: center; justify-content: center;
+        width: 64px; height: 64px; font-size: 2.2rem; line-height: 1;
+        border: 2px solid var(--chitin); border-radius: 12px;
+        background: radial-gradient(circle at 50% 38%, #23202e, #0e0c14);
+      }
+      .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; }
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {

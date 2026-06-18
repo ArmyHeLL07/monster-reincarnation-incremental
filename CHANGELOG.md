@@ -6,6 +6,11 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Sırada #2 — Düşman skin/texture)
+- **Düşman portreleri**: her düşmana emoji "skin" (`Enemy.icon`) + **element-renkli çerçeve**
+  (boss'lar parıldar). Savaş panelinde portre + isim/bar yan yana — "isim+bar sıkıcı" giderildi.
+  Gözsüzken bile yaratık şekli görünür (statlar gizli). (`enemies.json`, `ui.ts: enemyPortrait`.)
+
 ### Eklendi / Değişti (skill yönetimi + HUD yeri)
 - **Skiller gruplandı**: liste artık **Kol (saldırı) / Bacak (hareket) / Vücut (pasif) / Göz**
   başlıkları altında derli toplu. `Skill.part` (opsiyonel) + koddan türetme (`skillPart`).

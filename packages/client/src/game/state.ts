@@ -76,6 +76,8 @@ export interface EnemyInstance {
   analyzed?: boolean;
   /** Kin race id — killing your own race feeds Sin (carried from the Enemy archetype). */
   race?: string;
+  /** Visual skin (emoji/glyph) for the enemy portrait. */
+  icon?: string;
 }
 
 export const MAX_HUNGER = 100;

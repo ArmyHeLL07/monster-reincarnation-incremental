@@ -300,17 +300,31 @@ function loreUnlocked(state: GameState, hint: string): boolean {
   return state.booksFound.some((id) => CONTENT.books.get(id)?.hints === hint);
 }
 
+/** Element → portrait frame colour (visual flavour only). */
+const DMG_COLORS: Record<string, string> = {
+  physical: '#989384', pierce: '#c9c4b5', fire: '#e0902f', frost: '#4f86c2', poison: '#8ab23f',
+  acid: '#b6d33f', lightning: '#d2a73a', magic: '#9a7fd0', fear: '#a4506a', soul: '#c0626f',
+};
+
+/** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled. */
+function enemyPortrait(inst: NonNullable<GameState['enemy']>): string {
+  const color = DMG_COLORS[inst.damageType] ?? '#989384';
+  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : '';
+  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}" style="border-color:${color};${glow}">${inst.icon ?? '❓'}</div>`;
+}
+
 function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) {
     if (state.action === 'combat' && state.roomCleared) return `<p class="muted">✓ ${t('ui.room_cleared')}</p>`;
     return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   }
+  const portrait = enemyPortrait(inst);
   const tier = appraisalTier(state);
   if (tier < 1) {
-    // No "seeing eye" slotted — you only perceive a vague shape, never its true stats.
+    // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return `<div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
+    return `<div class="erow">${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
   }
   const baseName = tier >= 1 ? t(inst.locKey) : t('ui.unknown');
   const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
@@ -324,7 +338,7 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return `<div>${bits.join(' · ')} ${hpText}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}`;
+  return `<div class="erow">${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
 function combatTab(state: GameState): string {

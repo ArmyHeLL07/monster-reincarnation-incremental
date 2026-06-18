@@ -152,6 +152,8 @@ export interface Enemy {
   ep: number;
   /** Kin race id (e.g. "spider"). Killing your OWN race feeds Sin; others don't (GDD §C). */
   race?: string;
+  /** Visual "skin" — an emoji/glyph shown as the enemy portrait (framed by its element colour). */
+  icon?: string;
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */

@@ -495,6 +495,7 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     isBoss,
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
+    icon: def.icon,
   };
   log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: def.locKey } });
 }
