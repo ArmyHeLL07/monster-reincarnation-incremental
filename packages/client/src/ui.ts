@@ -38,6 +38,7 @@ export interface UiActions {
   onExportSave: () => void;
   onImportSave: () => void;
   onBugReport: () => void;
+  onSuggest: () => void;
   onReset: () => void;
   onMeditate: () => void;
   onSearch: () => void;
@@ -1013,6 +1014,7 @@ function settingsTab(state: GameState): string {
       </div>
       <div class="controls">
         <button id="bugreport">${t('ui.bug_report')}</button>
+        <button id="suggest">${t('ui.suggest')}</button>
         <button id="reset" class="ghost">${t('ui.reset')}</button>
       </div>
     </section>
@@ -1034,5 +1036,6 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#exportsave')?.addEventListener('click', ACTIONS.onExportSave);
   el.querySelector<HTMLButtonElement>('#importsave')?.addEventListener('click', ACTIONS.onImportSave);
   el.querySelector<HTMLButtonElement>('#bugreport')?.addEventListener('click', ACTIONS.onBugReport);
+  el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
 }

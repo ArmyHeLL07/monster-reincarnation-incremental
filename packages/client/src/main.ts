@@ -226,7 +226,8 @@ async function init(): Promise<void> {
     },
     onExportSave: () => download('save.json', JSON.stringify(state)),
     onImportSave: () => importSave(),
-    onBugReport: () => reportBug(state),
+    onBugReport: () => openIssue(state, 'bug'),
+    onSuggest: () => openIssue(state, 'suggestion'),
     onReset: () => {
       if (!window.confirm(t('ui.reset_confirm'))) return; // guard against accidental wipe
       clear();
@@ -357,18 +358,18 @@ function download(filename: string, text: string): void {
 
 const REPO = 'https://github.com/ArmyHeLL07/monster-reincarnation-incremental';
 
-/** Open a prefilled GitHub issue (public bug report). No private/email channel. */
-function reportBug(state: GameState): void {
-  const desc = window.prompt(t('ui.bug_prompt')) ?? '';
+/** Open a prefilled GitHub issue — bug reports carry debug context, suggestions stay light. */
+function openIssue(state: GameState, kind: 'bug' | 'suggestion'): void {
+  const desc = window.prompt(t(kind === 'bug' ? 'ui.bug_prompt' : 'ui.suggest_prompt')) ?? '';
   if (!desc.trim()) return;
-  const body = [
-    desc.trim(),
-    '',
-    '---',
-    `T${state.tier} Lv${state.level} · ${state.formId} · ${state.pos.layer}.${state.pos.floor}.${state.pos.room}`,
-    `${navigator.language} · ${navigator.userAgent}`,
-  ].join('\n');
-  const url = `${REPO}/issues/new?title=${encodeURIComponent('[bug] ' + desc.trim().slice(0, 50))}&body=${encodeURIComponent(body)}`;
+  const tag = kind === 'bug' ? '[bug]' : '[öneri]';
+  const label = kind === 'bug' ? 'bug' : 'enhancement';
+  const footer =
+    kind === 'bug'
+      ? ['---', `T${state.tier} Lv${state.level} · ${state.formId} · ${state.pos.layer}.${state.pos.floor}.${state.pos.room}`, `${navigator.language} · ${navigator.userAgent}`]
+      : ['---', navigator.language];
+  const body = [desc.trim(), '', ...footer].join('\n');
+  const url = `${REPO}/issues/new?title=${encodeURIComponent(`${tag} ${desc.trim().slice(0, 50)}`)}&labels=${encodeURIComponent(label)}&body=${encodeURIComponent(body)}`;
   window.open(url, '_blank', 'noopener');
 }
 

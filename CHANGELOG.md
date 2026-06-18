@@ -6,6 +6,11 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Geri bildirim: bug + öneri → GitHub)
+- **Öneri gönder** butonu (Ayarlar): bug report gibi GitHub issue açar ama `[öneri]` +
+  `enhancement` etiketiyle ve hafif bağlam (sadece dil). Bug report `[bug]` + `bug` etiketi +
+  tam debug bağlamı (tier/level/konum/UA). `reportBug` → genel `openIssue(kind)`. (Harici form yok.)
+
 ### Düzeltildi (tüm-kod mantık/bug taraması)
 - **Gatekeeper/rebirth zamanlaması**: boss her katın sonunda spawn olduğundan Layer 3'ün
   **ilk katı** öldürülünce rebirth açılıyordu. Artık **son kat** (floors=7) boss'u gerekiyor —

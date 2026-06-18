@@ -45,6 +45,8 @@
   "ui.settings": "Settings",
   "ui.bug_report": "Report a bug",
   "ui.bug_prompt": "Describe the bug or feedback:",
+  "ui.suggest": "Send a suggestion",
+  "ui.suggest_prompt": "Describe your suggestion (opens as a GitHub issue):",
   "ui.save": "Save",
   "ui.export_save": "Export save",
   "ui.import_save": "Import save",
