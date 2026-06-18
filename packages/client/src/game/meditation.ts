@@ -5,8 +5,8 @@ import { gainVirtue } from './ruler';
 
 type Log = (e: LogEvent) => void;
 
-/** Virtue gained per meditation tick (the light/zen axis — GDD §7.6). */
-const MEDITATION_VIRTUE = 0.5;
+/** Virtue gained per meditation tick/second — small float; the light path is patient (GDD §7.6). */
+const MEDITATION_VIRTUE = 0.01;
 /** WIS feeds meditation speed (the "inner stillness" stat). */
 function fillRate(state: GameState): number {
   return 1 + state.stats.WIS * 0.05;

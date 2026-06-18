@@ -6,6 +6,13 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Değişti (Backlog — Meditasyon)
+- **Meditasyon erdem oranı** 0.5/tick → **+0.01/sn** (float; sabırlı aydınlık yol). Zaten
+  bekleme-ile çalışıyordu (autoclicker yok).
+- **Canlı ilerleme**: meditasyon barı artık her tick güncelleniyor — Lore sekmesinde
+  `#medlive` (riddle input'una dokunmadan), ayrıca meditasyon yaparken Savaş sekmesinde
+  canlı gösterge (% + ☼ erdem). (`meditation.ts`, `ui.ts: medBarHtml + live`.)
+
 ### Eklendi (Backlog — Sol üstte küçük durum paneli)
 - **Mini durum HUD'u**: sol üst köşede sabit, her tick güncellenen küçük panel — form
   adı · T/Lv · konum + HP/MP/SP (sayı + mini bar). Geniş ekranda sol boşlukta; ≤1100px

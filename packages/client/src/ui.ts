@@ -186,6 +186,11 @@ export function live(state: GameState): void {
     if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
   }
   if (activeTab === 'combat' || activeTab === 'map') renderTab();
+  else if (activeTab === 'lore') {
+    // Live-update just the meditation bar (full re-render would clobber the riddle input).
+    const ml = document.querySelector<HTMLElement>('#medlive');
+    if (ml) ml.innerHTML = medBarHtml(state);
+  }
 }
 
 /** Full refresh of the active tab + chrome — after an action or tab switch. */
@@ -344,6 +349,7 @@ function combatTab(state: GameState): string {
       ${act('idle', t('ui.stop'))}
       ${meditateBtn}
     </div>
+    ${state.action === 'meditate' ? `<section class="panel">${medBarHtml(state)}</section>` : ''}
     ${advanceControls(state)}
     ${skillBar(state)}
     <div class="controls">
@@ -757,6 +763,13 @@ function wireBody(el: HTMLElement): void {
 
 // ---- LORE / DISCOVERY (books, rooms, fragments) ----------------------------
 
+/** Meditation progress bar inner (live-updatable without re-rendering the whole tab). */
+function medBarHtml(state: GameState): string {
+  const pct = Math.floor((state.meditation / MEDITATION_MAX) * 100);
+  const meditating = state.action === 'meditate' ? ` <span class="evoready">●</span>` : '';
+  return `<div class="row"><span>${t('ui.meditation')}${meditating}</span><span>${pct}% · ☼ ${state.ruler.virtue.toFixed(2)}</span></div>${bar(state.meditation, MEDITATION_MAX, '#9a7fd0')}`;
+}
+
 function loreTab(state: GameState): string {
   // Pending secret room: a riddle to type the answer to ("open sesame").
   let roomHtml = `<p class="muted">${t('ui.no_room')}</p>`;
@@ -789,7 +802,7 @@ function loreTab(state: GameState): string {
 
   const medUnlocked = state.meditationUnlocked || state.meditation > 0;
   const medHtml = medUnlocked
-    ? `<section class="panel"><div class="row"><span>${t('ui.meditation')}</span><span>${Math.floor((state.meditation / MEDITATION_MAX) * 100)}%</span></div>${bar(state.meditation, MEDITATION_MAX, '#9a7fd0')}</section>`
+    ? `<section class="panel"><div id="medlive">${medBarHtml(state)}</div></section>`
     : '';
 
   return `
