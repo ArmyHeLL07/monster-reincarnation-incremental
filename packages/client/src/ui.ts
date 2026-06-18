@@ -434,7 +434,8 @@ function wireMap(el: HTMLElement): void {
 // ---- SKILLS (+ fusion) -----------------------------------------------------
 
 function fusableSkills(state: GameState) {
-  return state.skills.filter((s) => s.id !== 'larder');
+  // Only active-damage skills can fuse — keeps results sensible (no eye/util "banespike").
+  return state.skills.filter((s) => CONTENT.skills.get(s.id)?.damage !== undefined);
 }
 
 function skillsTab(state: GameState): string {
@@ -464,8 +465,8 @@ function skillsTab(state: GameState): string {
   const fz = lastFusion
     ? `<p><b>${t(lastFusion.locKeyName)}</b> · ${t(`fusion.${lastFusion.cls}`)} · ${lastFusion.magnitude}</p><p class="muted">${t(`fusion.effect.${lastFusion.effectType}.desc`)}</p>`
     : '';
-  return `
-    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><ul>${skills}</ul></section>
+  const fusionPanel = state.fusionUnlocked
+    ? `
     <section class="panel">
       <h2>${t('ui.fusion')}</h2>
       <div class="controls">
@@ -474,7 +475,11 @@ function skillsTab(state: GameState): string {
         <button id="fuse">${t('ui.fuse')}</button>
       </div>
       ${fz}
-    </section>
+    </section>`
+    : `<section class="panel"><h2>${t('ui.fusion')}</h2><p class="muted">${t('ui.fusion_locked')}</p></section>`;
+  return `
+    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><ul>${skills}</ul></section>
+    ${fusionPanel}
   `;
 }
 

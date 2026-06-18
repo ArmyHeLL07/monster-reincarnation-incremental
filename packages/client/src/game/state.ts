@@ -113,6 +113,10 @@ export interface GameState {
   combatMode: 'auto' | 'manual';
   /** Per-skill cooldown timers (ticks remaining), keyed by skill id. */
   cooldowns: Record<string, number>;
+  /** Fusion lab is a discovery — locked until found (no longer free from the start). */
+  fusionUnlocked: boolean;
+  /** Count of incompatible (backfire) fusions carried — the 4th overloads and kills the host. */
+  badFusions: number;
   skills: SkillSlot[];
   resistances: ResistSlot[];
   enemy: EnemyInstance | null;
@@ -216,6 +220,8 @@ export function newGame(): GameState {
     equipped: ['venom_bite', 'sharp_claw', 'silk_thread'],
     combatMode: 'auto',
     cooldowns: {},
+    fusionUnlocked: false,
+    badFusions: 0,
     skills: [
       { id: 'venom_bite', level: 1, exp: 0 },
       { id: 'sharp_claw', level: 1, exp: 0 },

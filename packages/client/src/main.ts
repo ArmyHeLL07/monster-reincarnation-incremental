@@ -90,7 +90,8 @@ async function init(): Promise<void> {
       render(state);
     },
     onFuse: (a, b) => {
-      setLastFusion(fuse(state, content, a, b, logFn));
+      const r = fuse(state, content, a, b, logFn);
+      if (r) setLastFusion(r);
       save(state);
       render(state);
     },
@@ -258,6 +259,8 @@ function migrate(s: GameState): void {
   s.equipped ??= [];
   s.combatMode ??= 'auto';
   s.cooldowns ??= {};
+  s.fusionUnlocked ??= false;
+  s.badFusions ??= 0;
   if (s.maxSp == null) s.maxSp = d.maxSp;
   if (s.sp == null) s.sp = s.maxSp;
   if (s.maxMp == null) s.maxMp = d.maxMp;

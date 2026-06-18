@@ -71,15 +71,32 @@ export function readBook(state: GameState, content: Content, bookId: string, log
   }
 }
 
-/** Answer the pending room's riddle (language-aware). Correct → reward; wrong → it stays. */
+/** Fold a riddle answer for forgiving comparison: lowercase, Turkish→ASCII, strip non-alphanumerics. */
+function normalizeAnswer(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/i̇/g, 'i') // combining dot left by İ.toLowerCase()
+    .replace(/[ıî]/g, 'i')
+    .replace(/ş/g, 's')
+    .replace(/ç/g, 'c')
+    .replace(/ğ/g, 'g')
+    .replace(/[üû]/g, 'u')
+    .replace(/[öô]/g, 'o')
+    .replace(/â/g, 'a')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+/** Answer the pending room's riddle (forgiving match). Correct → reward; wrong → it stays. */
 export function answerRoom(state: GameState, content: Content, answer: string, log: Log): boolean {
   const id = state.pendingRoom;
   if (!id) return false;
   const room = content.rooms.get(id);
   if (!room) return false;
-  const lang = state.lang === 'tr' ? 'tr' : 'en';
-  const norm = answer.trim().toLocaleLowerCase(lang === 'tr' ? 'tr-TR' : 'en-US');
-  const ok = room.answers[lang].some((a) => a.toLocaleLowerCase(lang === 'tr' ? 'tr-TR' : 'en-US') === norm);
+  // Forgiving match: case-insensitive, Turkish letters folded, punctuation/space ignored —
+  // so "sessizlik", "Sessızlık", "SESSİZLİK" all pass.
+  const norm = normalizeAnswer(answer);
+  const all = [...(room.answers.tr ?? []), ...(room.answers.en ?? [])];
+  const ok = norm.length > 0 && all.some((a) => normalizeAnswer(a) === norm);
   if (!ok) {
     log({ key: 'log.room_wrong' });
     return false;

@@ -24,6 +24,7 @@ const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
 const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player
 const ENEMY_ATK_INTERVAL = 2; // ticks between enemy strikes — paces combat in both auto & manual
+const FUSION_DISCOVER_CHANCE = 0.04; // the fusion lab is found, not free — once you hold ≥2 attack skills
 const DEPTH_HP = 0.05; // enemy HP growth per room of depth
 const DEPTH_ATK = 0.045;
 const BOSS_HP = 2.5;
@@ -549,6 +550,15 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   if (!state.skills.some((s) => s.id === 'appraisal' || s.id === 'insight') && Math.random() < APPRAISAL_DISCOVER_CHANCE) {
     state.skills.push({ id: 'appraisal', level: 1, exp: 0 });
     log({ key: 'log.discover_appraisal' });
+  }
+  // Fusion lab is discovered (not free) — once you carry at least two attack skills.
+  if (
+    !state.fusionUnlocked &&
+    state.skills.filter((s) => content.skills.get(s.id)?.damage !== undefined).length >= 2 &&
+    Math.random() < FUSION_DISCOVER_CHANCE
+  ) {
+    state.fusionUnlocked = true;
+    log({ key: 'log.discover_fusion' });
   }
   if (
     state.level >= EYE_DISCOVER_LEVEL &&

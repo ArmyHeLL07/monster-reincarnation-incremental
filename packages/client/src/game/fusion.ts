@@ -2,8 +2,14 @@ import { comboKey, fnv1a } from '@mri/shared';
 import type { FusionClass, FusionResult, Skill } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
+import { recomputeMaxes } from './state';
 
 type Log = (e: LogEvent) => void;
+
+/** Only active-damage skills may fuse — fusing eyes/utilities made nonsense ("banespike"). */
+export function canFuse(content: Content, id: string): boolean {
+  return content.skills.get(id)?.damage !== undefined;
+}
 
 const CLASSES: FusionClass[] = ['synergy', 'quirk', 'backfire'];
 
@@ -93,7 +99,16 @@ export function fuse(
   aId: string,
   bId: string,
   log: Log,
-): FusionResult {
+): FusionResult | null {
+  if (!state.fusionUnlocked) {
+    log({ key: 'log.fuse_locked' });
+    return null;
+  }
+  // Sensible inputs only — fusing non-attack skills produced nonsense results.
+  if (aId === bId || !canFuse(content, aId) || !canFuse(content, bId)) {
+    log({ key: 'log.fuse_invalid' });
+    return null;
+  }
   const key = comboKey(aId, bId);
   const cached = state.fusionCache[key];
   const result = cached ?? resolveFusion(aId, bId, content);
@@ -110,10 +125,25 @@ export function fuse(
     key: discovered ? 'log.fuse_new' : 'log.fuse_cached',
     params: { cls: `fusion.${result.cls}`, mag: result.magnitude },
   });
-  // Backfire leaves a "scar" — a real, repairable penalty (GDD §5.0.4).
+  // Backfire = an incompatible combo. It scars, and stacking them is lethal.
   if (result.cls === 'backfire') {
     state.scars += 1;
+    state.badFusions += 1;
     log({ key: 'log.fuse_scar', params: { scars: state.scars } });
+    if (state.badFusions >= 4) {
+      // The 4th incompatible fusion overloads and tears the host apart — death.
+      state.skills = state.skills.filter((s) => !s.id.startsWith('fz_'));
+      state.equipped = state.equipped.filter((id) => !id.startsWith('fz_'));
+      state.badFusions = 0;
+      state.enemy = null;
+      state.pos = { layer: state.pos.layer, floor: 1, room: 1 };
+      recomputeMaxes(state);
+      state.hp = state.maxHp;
+      state.sp = state.maxSp;
+      log({ key: 'log.fusion_death' });
+    } else if (state.badFusions >= 3) {
+      log({ key: 'log.fusion_warn', params: { n: state.badFusions } });
+    }
   }
   return result;
 }
