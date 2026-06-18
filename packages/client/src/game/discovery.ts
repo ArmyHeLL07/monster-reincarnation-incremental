@@ -12,13 +12,15 @@ const SCAR_REPAIR_EP = 20;
 
 /** Knowledge-based exploration (GDD §8.2): roll for fragments, books, or perceiving a room. */
 export function search(state: GameState, content: Content, log: Log): void {
-  // One search per room — you already combed this spot. Move on (or come back later) to search again.
+  // One search per room in combat — but while RESTING you may comb the room repeatedly (you have time).
   const posKey = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
-  if (state.lastSearchPos === posKey) {
-    log({ key: 'log.search_done' });
-    return;
+  if (state.action !== 'rest') {
+    if (state.lastSearchPos === posKey) {
+      log({ key: 'log.search_done' });
+      return;
+    }
+    state.lastSearchPos = posKey;
   }
-  state.lastSearchPos = posKey;
 
   const tier = appraisalTier(state);
   const luck = state.stats.LUCK;

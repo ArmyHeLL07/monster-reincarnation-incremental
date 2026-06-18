@@ -122,6 +122,8 @@
   "log.import_failed": "Import failed (invalid file).",
   "log.flee": "{enemy} recoils in dread — its attack misses!",
   "log.evolve_form": "Evolved into {form}!",
+  "log.evolve_ambush": "The change left you exposed — you took {dmg} damage!",
+  "log.sin_kill": "You slew your own kind… sin seeps into your soul.",
 
   "skill.venom_bite.name": "Venom Bite",
   "skill.venom_bite.desc": "Inject venom with a bite; damage over time.",

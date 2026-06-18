@@ -6,6 +6,18 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi / Değişti (geri bildirim turu 2)
+- **Evrim riski** (backlog): evrim seni savunmasız bırakır — evrimde **LUCK ile azalan**
+  ambush şansı (~%35 − LUCK×1.5, min %5); olursa maks HP'nin ~%45'i kadar hasar (asla
+  öldürmez). Evrim artık bedava full-heal değil. (`evolution.ts`.)
+- **Açlık % olarak** (backlog): Tok/Aç etiketi yerine **yüzde** (mini-HUD + topbar).
+- **Rest + arama** (backlog): **dinlenirken oda tekrar tekrar aranabilir** (tek-arama
+  kilidi yalnızca savaşta). (`discovery.ts`.)
+- **Günah yeniden** (backlog): günah artık **sadece kendi ırkından (spider) düşman
+  öldürünce** artıyor (`Enemy.race`; cave_lurker & venom_brute kin) + belirgin
+  "günah işledin" log/toast. (`enemies.json`, `combat.ts: onKill`, `ruler` aynı kaldı.)
+- **Mini-HUD büyütüldü** (320px, daha büyük font/bar) — hâlâ küçük görünüyordu.
+
 ### Düzeltildi / Değişti (Atıl geri bildirim turu)
 - **Bug: savaşta can "durduk yere" iniyordu** — SP (stamina) tükenince her tick HP sızıyordu
   (düşman vurmasa da; farm-in-place ile savaş durmadığından sürekli). Artık **stamina tükenmesi

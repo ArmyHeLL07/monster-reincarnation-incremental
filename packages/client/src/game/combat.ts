@@ -494,6 +494,7 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     satiety: Math.round(def.satiety * (isBoss ? 2 : 1)),
     isBoss,
     atkCd: ENEMY_ATK_INTERVAL,
+    race: def.race,
   };
   log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: def.locKey } });
 }
@@ -665,7 +666,11 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   state.ep += ep;
   state.kills += 1;
   gainXp(state, ep * XP_PER_EP, log);
-  gainSin(state, content, SIN_PER_KILL * (enemy.isBoss ? 5 : 1), log); // killing feeds the dark axis
+  // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
+  if (enemy.race && enemy.race === state.raceId) {
+    gainSin(state, content, SIN_PER_KILL * (enemy.isBoss ? 5 : 1), log);
+    log({ key: 'log.sin_kill', params: { enemy: enemy.locKey } }); // a clear "you sinned" beat
+  }
 
   const satiety = Math.round(enemy.satiety * b.lootMult);
   if (state.inventory.length < maxFoodSlots(state)) {

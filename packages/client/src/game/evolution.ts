@@ -53,5 +53,12 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   state.mp = state.maxMp;
   state.sp = state.maxSp;
   log({ key: 'log.evolve_form', params: { form: form.locKey } });
+  // Evolution leaves you raw and vulnerable — a chance (lower with high LUCK) to be ambushed mid-change.
+  const ambushChance = Math.max(0.05, 0.35 - state.stats.LUCK * 0.015);
+  if (Math.random() < ambushChance) {
+    const dmg = Math.round(state.maxHp * 0.45);
+    state.hp = Math.max(1, state.hp - dmg); // a real bite, but never lethal during the change
+    log({ key: 'log.evolve_ambush', params: { dmg } });
+  }
   return true;
 }

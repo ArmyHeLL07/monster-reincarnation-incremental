@@ -148,6 +148,8 @@ export interface Enemy {
   satiety: number;
   /** Evolution points granted on kill. */
   ep: number;
+  /** Kin race id (e.g. "spider"). Killing your OWN race feeds Sin; others don't (GDD §C). */
+  race?: string;
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */

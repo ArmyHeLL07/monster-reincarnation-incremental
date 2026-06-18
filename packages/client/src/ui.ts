@@ -93,6 +93,7 @@ const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
+  'log.sin_kill', 'log.evolve_ambush',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -215,7 +216,7 @@ function topbarHtml(state: GameState): string {
       ${statBar(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
       ${statBar(t('ui.mp'), state.mp, state.maxMp, '#4f86c2')}
       ${statBar(t('ui.sp'), state.sp, state.maxSp, '#d2a73a')}
-      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
+      <div class="statline"><div class="row"><span>${t('ui.hunger')}</span><span>%${Math.round((state.hunger / MAX_HUNGER) * 100)} · ${t(`hunger.${stage}`)}</span></div>${bar(state.hunger, MAX_HUNGER, ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][stage])}</div>
     </div>
   `;
 }
@@ -231,7 +232,7 @@ function miniStatusHtml(state: GameState): string {
   };
   const hs = hungerStage(state.hunger);
   const hc = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][hs];
-  const hungerRow = `<div class="mr"><span style="color:${hc}">${t('ui.hunger')}</span><span>${t(`hunger.${hs}`)}</span></div><div class="mbar"><i style="width:${(state.hunger / MAX_HUNGER) * 100}%;background:${hc}"></i></div>`;
+  const hungerRow = `<div class="mr"><span style="color:${hc}">${t('ui.hunger')}</span><span>%${Math.round((state.hunger / MAX_HUNGER) * 100)}</span></div><div class="mbar"><i style="width:${(state.hunger / MAX_HUNGER) * 100}%;background:${hc}"></i></div>`;
   return `<div class="mf">${fname}</div>
     <div class="mr"><span>${tlv}</span><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
     ${line(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}

@@ -122,6 +122,8 @@
   "log.import_failed": "İçe aktarma başarısız (geçersiz dosya).",
   "log.flee": "{enemy} dehşetle irkildi — saldırısı boşa gitti!",
   "log.evolve_form": "{form} formuna evrimleştin!",
+  "log.evolve_ambush": "Evrim seni savunmasız yakaladı — {dmg} hasar aldın!",
+  "log.sin_kill": "Kendi türünden birini öldürdün… günah ruhuna işliyor.",
 
   "skill.venom_bite.name": "Zehirli Isırık",
   "skill.venom_bite.desc": "Isırıkla zehir enjekte eder; zamanla hasar verir.",

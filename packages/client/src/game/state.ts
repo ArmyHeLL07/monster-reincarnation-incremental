@@ -74,6 +74,8 @@ export interface EnemyInstance {
   atkCd: number;
   /** Set by a deep-read (Analyze) — reveals fuller detail on the enemy panel, one tier deeper. */
   analyzed?: boolean;
+  /** Kin race id — killing your own race feeds Sin (carried from the Enemy archetype). */
+  race?: string;
 }
 
 export const MAX_HUNGER = 100;
