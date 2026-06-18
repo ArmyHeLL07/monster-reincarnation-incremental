@@ -233,23 +233,24 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 
 // ---- rounds ----------------------------------------------------------------
 
-/** Finish the current room (kill or exploration): auto-advance, or wait for the manual "Advance" tap. */
+/** After a kill: auto-advance to the next room, or stay and FARM this room (manual). */
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   if (state.autoAdvance) advancePosition(state, content, log);
-  else state.roomCleared = true; // manual: the room waits for the player's "Advance" tap
+  // manual: don't advance — combatRound respawns an enemy in the same room (farm in place)
 }
 
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
-  // Manual progression: a cleared/explored room holds until the player advances.
+  // An explored (no-combat) room has nothing to farm — it holds until the player taps "Advance".
   if (state.roomCleared) return;
   if (!state.enemy) {
     if (isExplorationRoom(state, content)) {
-      resolveExploration(state, content, log); // calm room: no combat, small reward, then advance
-      clearRoom(state, content, log);
+      resolveExploration(state, content, log); // calm room: small reward
+      if (state.autoAdvance) advancePosition(state, content, log);
+      else state.roomCleared = true; // nothing to fight here — wait for "Advance"
       return;
     }
-    spawnEnemy(state, content, log);
+    spawnEnemy(state, content, log); // combat room: (re)spawn keeps farming when auto-advance is off
   }
   if (state.roomCleared || !state.enemy) return;
   applyAmbient(state, content, log); // environmental burn (elemental layers only)
@@ -347,13 +348,10 @@ function drainStamina(state: GameState, content: Content): void {
   }
   const deficit = -after;
   state.sp = 0;
+  // Stamina exhaustion no longer bleeds HP (that felt like "HP dropping for no reason"). It just
+  // weakens you via the fatigue damage penalty; MP cushions it first if the transfer is unlocked.
   if (state.mpTransferUnlocked && state.mp > 0) {
-    const fromMp = Math.min(state.mp, deficit);
-    state.mp -= fromMp;
-    const rem = deficit - fromMp;
-    if (rem > 0) state.hp = Math.max(0, state.hp - rem);
-  } else {
-    state.hp = Math.max(0, state.hp - deficit);
+    state.mp = Math.max(0, state.mp - deficit);
   }
 }
 
@@ -389,22 +387,14 @@ export function roomsOf(state: GameState, layer: { id: number }): number {
   return r;
 }
 
-/** Per-player random floor count for a layer (12–20), rolled once and saved (Atıl's design). */
-export function floorsOf(state: GameState, layer: { id: number }): number {
-  let f = state.layerFloors[layer.id];
-  if (f == null) {
-    f = 12 + Math.floor(Math.random() * 9); // 12..20 inclusive
-    state.layerFloors[layer.id] = f;
-  }
-  return f;
+/** Fixed floors-per-layer (set in dungeon.json, currently 7). Rooms-per-floor stays random (roomsOf). */
+export function floorsOf(_state: GameState, layer: { floors: number }): number {
+  return layer.floors;
 }
 
-/** Roll every layer's room + floor counts up-front (called once at game start so the map is stable). */
+/** Roll every layer's random rooms-per-floor up-front (called once at game start so the map is stable). */
 export function ensureLayerRooms(state: GameState, content: Content): void {
-  for (const l of content.dungeon.layers) {
-    roomsOf(state, l);
-    floorsOf(state, l);
-  }
+  for (const l of content.dungeon.layers) roomsOf(state, l);
 }
 
 /** Deterministic [0,1) hash of a room coordinate — keeps exploration rooms stable per map. */
@@ -736,11 +726,11 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   }
 }
 
-/** Player tapped "Advance" (manual progression) — leave a cleared/explored room for the next. */
+/** Player tapped "Advance" (manual progression) — move one room forward, abandoning the current foe. */
 export function advanceRoom(state: GameState, content: Content, log: Log): void {
-  if (!state.roomCleared) return;
+  if (state.action !== 'combat') return;
   state.roomCleared = false;
-  state.enemy = null;
+  state.enemy = null; // leave the current room (whether mid-fight or after clearing)
   advancePosition(state, content, log);
 }
 

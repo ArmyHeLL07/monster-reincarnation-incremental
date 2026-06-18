@@ -110,12 +110,14 @@ function pushToast(text: string): void {
   const el = document.createElement('div');
   el.className = 'toast';
   el.textContent = text;
-  host.appendChild(el);
-  while (host.children.length > 4 && host.firstChild) host.removeChild(host.firstChild);
-  setTimeout(() => {
+  const dismiss = (): void => {
     el.classList.add('out');
-    setTimeout(() => el.remove(), 400);
-  }, 4200);
+    setTimeout(() => el.remove(), 350);
+  };
+  el.addEventListener('click', dismiss); // click to close — toasts no longer flee on their own
+  host.appendChild(el);
+  while (host.children.length > 6 && host.firstChild) host.removeChild(host.firstChild);
+  setTimeout(dismiss, 30000); // long fallback so ignored toasts eventually clear
 }
 export function setLastFusion(r: FusionResult): void {
   lastFusion = r;
@@ -227,11 +229,15 @@ function miniStatusHtml(state: GameState): string {
     const pct = max > 0 ? Math.max(0, Math.min(100, (v / max) * 100)) : 0;
     return `<div class="mr"><span style="color:${color}">${label}</span><span>${Math.round(v)}/${Math.round(max)}</span></div><div class="mbar"><i style="width:${pct}%;background:${color}"></i></div>`;
   };
+  const hs = hungerStage(state.hunger);
+  const hc = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'][hs];
+  const hungerRow = `<div class="mr"><span style="color:${hc}">${t('ui.hunger')}</span><span>${t(`hunger.${hs}`)}</span></div><div class="mbar"><i style="width:${(state.hunger / MAX_HUNGER) * 100}%;background:${hc}"></i></div>`;
   return `<div class="mf">${fname}</div>
     <div class="mr"><span>${tlv}</span><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
     ${line(t('ui.hp'), state.hp, state.maxHp, '#6fae53')}
     ${line(t('ui.mp'), state.mp, state.maxMp, 'var(--mp)')}
-    ${line(t('ui.sp'), state.sp, state.maxSp, 'var(--sp)')}`;
+    ${line(t('ui.sp'), state.sp, state.maxSp, 'var(--sp)')}
+    ${hungerRow}`;
 }
 
 function hungerStage(h: number): number {
@@ -372,7 +378,9 @@ function combatTab(state: GameState): string {
 
 /** Manual map progression: an "Advance" button when a room is cleared + the auto-advance toggle. */
 function advanceControls(state: GameState): string {
-  const advBtn = state.roomCleared ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
+  // Manual mode farms in place; "Advance" is always available to step to the next room.
+  const advBtn =
+    state.action === 'combat' && !state.autoAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
   const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
   return `<div class="controls">${advBtn}${autoBtn}</div>`;
 }

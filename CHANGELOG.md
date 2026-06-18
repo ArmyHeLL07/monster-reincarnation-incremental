@@ -6,6 +6,21 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Düzeltildi / Değişti (Atıl geri bildirim turu)
+- **Bug: savaşta can "durduk yere" iniyordu** — SP (stamina) tükenince her tick HP sızıyordu
+  (düşman vurmasa da; farm-in-place ile savaş durmadığından sürekli). Artık **stamina tükenmesi
+  HP'ye sızdırmıyor**; sadece yorgunluk hasar cezası (×0.5) uygulanır, MP varsa önce o yastıklar.
+  (`combat.ts: drainStamina`.)
+- **Kat sayısı sabit 7** (önceki random 12-20 kaldırıldı); oda sayısı **floor başına random
+  12-20** olarak kalıyor. (`dungeon.json floors:7`, `combat.ts: floorsOf` artık sabit okur.)
+- **Toast'lar tıklamayla kapanıyor** (artık hızlıca kaçmıyor; 30sn uzun yedek + ✕ ipucu).
+  (`ui.ts: pushToast`, `index.html` CSS.)
+- **Mini durum HUD'u** biraz büyütüldü (172px) ve **açlık** eklendi; masaüstünde topbar'daki
+  HP/MP/SP/açlık barları gizlendi (mini-HUD üstleniyor; ≤1100px'de topbar barları geri gelir).
+- **Manuel ilerleme = sadece oda geçişi**: auto-advance kapalıyken oda **yerinde farmlanır**
+  (düşman aynı odada respawn olur, sürekli Fight'a basmaya gerek yok); "İlerle →" butonu
+  istendiğinde sonraki odaya geçirir. (`combat.ts: clearRoom/combatRound/advanceRoom`, `ui.ts`.)
+
 ### Eklendi (Backlog — Status efektleri)
 - **Status efektleri (DoT)**: düşmanın elementsel vuruşu (zehir/ateş/asit/yıldırım/buz)
   **1-10 sn süreli** bir etki bırakabilir; süre ve hasar vuruş büyüklüğü ile artar,
