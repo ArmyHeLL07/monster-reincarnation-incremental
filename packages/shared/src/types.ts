@@ -110,6 +110,8 @@ export interface Skill {
   surviveChance?: number;
   /** Marks a hidden/meta skill discovered off the normal path (Stillness, Forbidden Knowledge). */
   hidden?: boolean;
+  /** Localization key explaining HOW this skill is obtained (acquisition path), shown in the UI. */
+  acquireKey?: string;
   /** A slotted eye ability's combat effect, for gaze eyes (fear/charm/petrify…). */
   gaze?: GazeEffect;
 }

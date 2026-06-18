@@ -25,7 +25,7 @@
   { "id": "sticky_coat", "locKeyName": "skill.sticky_coat.name", "locKeyDesc": "skill.sticky_coat.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["adhesive_mastery"], "dodgeBonus": 0.02 },
   { "id": "adhesive_mastery", "locKeyName": "skill.adhesive_mastery.name", "locKeyDesc": "skill.adhesive_mastery.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.05 },
 
-  { "id": "appraisal", "locKeyName": "skill.appraisal.name", "locKeyDesc": "skill.appraisal.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["insight"], "eyeModes": ["passive", "active"] },
+  { "id": "appraisal", "locKeyName": "skill.appraisal.name", "locKeyDesc": "skill.appraisal.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["insight"], "eyeModes": ["passive", "active"], "acquireKey": "skill.appraisal.acq" },
   { "id": "insight", "locKeyName": "skill.insight.name", "locKeyDesc": "skill.insight.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["all_sight"], "eyeModes": ["passive", "active"] },
   { "id": "all_sight", "locKeyName": "skill.all_sight.name", "locKeyDesc": "skill.all_sight.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["passive", "active"] },
   { "id": "detect", "locKeyName": "skill.detect.name", "locKeyDesc": "skill.detect.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["foresight"], "dodgeBonus": 0.02 },
@@ -59,14 +59,14 @@
   { "id": "paralytic_gaze", "locKeyName": "skill.paralytic_gaze.name", "locKeyDesc": "skill.paralytic_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.22 } },
   { "id": "petrify_gaze", "locKeyName": "skill.petrify_gaze.name", "locKeyDesc": "skill.petrify_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["stone_gaze"], "eyeModes": ["active"], "gaze": { "negateChance": 0.15 } },
   { "id": "stone_gaze", "locKeyName": "skill.stone_gaze.name", "locKeyDesc": "skill.stone_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.3 } },
-  { "id": "dread_gaze", "locKeyName": "skill.dread_gaze.name", "locKeyDesc": "skill.dread_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["terror_gaze"], "eyeModes": ["passive"], "gaze": { "negateChance": 0.15 } },
+  { "id": "dread_gaze", "locKeyName": "skill.dread_gaze.name", "locKeyDesc": "skill.dread_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["terror_gaze"], "eyeModes": ["passive"], "gaze": { "negateChance": 0.15 }, "acquireKey": "skill.dread_gaze.acq" },
   { "id": "terror_gaze", "locKeyName": "skill.terror_gaze.name", "locKeyDesc": "skill.terror_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["passive"], "gaze": { "negateChance": 0.28 } },
   { "id": "soul_gaze", "locKeyName": "skill.soul_gaze.name", "locKeyDesc": "skill.soul_gaze.desc", "kind": "eye", "stats": ["WIS", "INT"], "lvMax": 10, "evolvesTo": ["rend_soul_gaze"], "eyeModes": ["active"], "gaze": { "damage": 4, "trueDamage": true } },
   { "id": "rend_soul_gaze", "locKeyName": "skill.rend_soul_gaze.name", "locKeyDesc": "skill.rend_soul_gaze.desc", "kind": "eye", "stats": ["WIS", "INT"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "damage": 9, "trueDamage": true } },
   { "id": "charm_gaze", "locKeyName": "skill.charm_gaze.name", "locKeyDesc": "skill.charm_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["domination_gaze"], "eyeModes": ["active"], "gaze": { "negateChance": 0.12 } },
   { "id": "domination_gaze", "locKeyName": "skill.domination_gaze.name", "locKeyDesc": "skill.domination_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.25 } },
 
-  { "id": "hp_regen", "locKeyName": "skill.hp_regen.name", "locKeyDesc": "skill.hp_regen.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["auto_heal"], "hpRegen": 1 },
+  { "id": "hp_regen", "locKeyName": "skill.hp_regen.name", "locKeyDesc": "skill.hp_regen.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["auto_heal"], "hpRegen": 1, "acquireKey": "skill.hp_regen.acq" },
   { "id": "auto_heal", "locKeyName": "skill.auto_heal.name", "locKeyDesc": "skill.auto_heal.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["regeneration"], "hpRegen": 3 },
   { "id": "regeneration", "locKeyName": "skill.regeneration.name", "locKeyDesc": "skill.regeneration.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["undying_vitality"], "hpRegen": 6 },
   { "id": "undying_vitality", "locKeyName": "skill.undying_vitality.name", "locKeyDesc": "skill.undying_vitality.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 10, "regenMult": 0.5 },
@@ -103,11 +103,11 @@
   { "id": "phase_body", "locKeyName": "skill.phase_body.name", "locKeyDesc": "skill.phase_body.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.1 },
   { "id": "regenerative_core", "locKeyName": "skill.regenerative_core.name", "locKeyDesc": "skill.regenerative_core.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 },
   { "id": "sovereign_form", "locKeyName": "skill.sovereign_form.name", "locKeyDesc": "skill.sovereign_form.desc", "kind": "passive", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "dmgMult": 0.25, "lootMult": 0.2 },
-  { "id": "undying_husk", "locKeyName": "skill.undying_husk.name", "locKeyDesc": "skill.undying_husk.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "surviveChance": 0.2 },
+  { "id": "undying_husk", "locKeyName": "skill.undying_husk.name", "locKeyDesc": "skill.undying_husk.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "surviveChance": 0.2, "acquireKey": "skill.undying_husk.acq" },
 
-  { "id": "stillness", "locKeyName": "skill.stillness.name", "locKeyDesc": "skill.stillness.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["inner_silence"], "hidden": true, "regenMult": 0.3 },
+  { "id": "stillness", "locKeyName": "skill.stillness.name", "locKeyDesc": "skill.stillness.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["inner_silence"], "hidden": true, "regenMult": 0.3, "acquireKey": "skill.stillness.acq" },
   { "id": "inner_silence", "locKeyName": "skill.inner_silence.name", "locKeyDesc": "skill.inner_silence.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "hidden": true, "regenMult": 0.5, "armor": 2 },
-  { "id": "forbidden_knowledge", "locKeyName": "skill.forbidden_knowledge.name", "locKeyDesc": "skill.forbidden_knowledge.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "hidden": true, "dmgMult": 0.15, "xpMult": 0.1 },
+  { "id": "forbidden_knowledge", "locKeyName": "skill.forbidden_knowledge.name", "locKeyDesc": "skill.forbidden_knowledge.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "hidden": true, "dmgMult": 0.15, "xpMult": 0.1, "acquireKey": "skill.forbidden_knowledge.acq" },
 
-  { "id": "larder", "locKeyName": "skill.larder.name", "locKeyDesc": "skill.larder.desc", "kind": "util", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [] }
+  { "id": "larder", "locKeyName": "skill.larder.name", "locKeyDesc": "skill.larder.desc", "kind": "util", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "acquireKey": "skill.larder.acq" }
 ]

@@ -6,6 +6,13 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Eklendi (Backlog — Skill ediniş yolları)
+- **Skill ediniş yolları**: `Skill.acquireKey` eklendi; özel/keşfedilen skiller
+  (appraisal, dread_gaze, hp_regen, undying_husk, stillness, forbidden_knowledge, larder)
+  "nasıl alınır" metni taşıyor → Skiller sekmesinde skill detayında gösteriliyor.
+  Ayrıca Skiller sekmesine genel **"Ediniş Yolları" rehber paneli** (evrim/keşif/göz/
+  füzyon/lore/ruler). TR+EN. (`shared/types.ts`, `data/skills.json`, `ui.ts`.)
+
 ### Eklendi (Backlog — Seviye atlayınca otomatik güç)
 - **Otomatik güç**: efektif seviye (tier×10+level) başına **+%1.5 hasar** (stat point'ten
   ayrı) + her seviye **maks HP +2 / MP +1 / SP +1**. Statlar sekmesinde "Otomatik güç: +%X"

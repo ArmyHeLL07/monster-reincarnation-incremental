@@ -517,7 +517,8 @@ function skillsTab(state: GameState): string {
         : '';
       const exp = expandedSkill === s.id;
       const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
-      const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>` : '';
+      const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
+      const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${acq}` : '';
       return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
     })
     .join('');
@@ -545,9 +546,22 @@ function skillsTab(state: GameState): string {
       ${fz}
     </section>`
     : `<section class="panel"><h2>${t('ui.fusion')}</h2><p class="muted">${t('ui.fusion_locked')}</p></section>`;
+  const acquireGuide = `
+    <section class="panel">
+      <h2>${t('ui.acquire_title')}</h2>
+      <ul class="muted">
+        <li>${t('ui.acquire_evolution')}</li>
+        <li>${t('ui.acquire_discovery')}</li>
+        <li>${t('ui.acquire_eyes')}</li>
+        <li>${t('ui.acquire_fusion')}</li>
+        <li>${t('ui.acquire_lore')}</li>
+        <li>${t('ui.acquire_ruler')}</li>
+      </ul>
+    </section>`;
   return `
     <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><ul>${skills}</ul></section>
     ${fusionPanel}
+    ${acquireGuide}
   `;
 }
 
