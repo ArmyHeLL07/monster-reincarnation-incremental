@@ -99,6 +99,7 @@
   "log.appraise_type": "  damage type: {type}.",
   "log.appraise_atk": "  attack: {atk}.",
   "log.appraise_hp": "  HP: {hp}/{maxhp}.",
+  "log.analyzed": "{enemy} analyzed — detail shown on the enemy panel (🔍).",
   "log.discover_dread": "Discovery: a new eye ability — Dread Gaze!",
   "log.train_stamina": "Stamina trained (max {max}).",
   "log.discover_mp_transfer": "Discovery: MP→Stamina transfer unlocked!",

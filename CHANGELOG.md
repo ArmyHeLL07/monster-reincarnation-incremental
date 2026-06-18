@@ -6,6 +6,12 @@
 
 ## [Yayınlanmadı] — 2026-06-18
 
+### Değişti (Sırada #1 — Analiz düşman üstünde)
+- **Analiz (deep-read) artık savaş log'unu doldurmuyor** — detay düşman panelinde
+  gösteriliyor (zaten tier'e göre name/type/ATK/HP/zayıflık vardı). "Analiz et"
+  düşmanı `analyzed` işaretler → panelde **bir tier daha derin** detay + 🔍 işareti,
+  tek satır onay log'u. (`combat.ts: deepRead`, `EnemyInstance.analyzed`, `ui.ts: enemyView`.)
+
 ### Eklendi (Madde 6 — Göz Füzyonu)
 - **Göz füzyonu / hibrit göz** (GDD §5.0.7): iki takılı göz → **tek slotta** hibrit
   (diğer slot boşalır). Hibrit hem pasif aura hem aktif bakış sağlar. **Aynı mod**

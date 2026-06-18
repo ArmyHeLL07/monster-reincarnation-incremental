@@ -183,13 +183,11 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
     return;
   }
   state.mp -= DEEP_READ_MP_COST;
-  const tier = appraisalTier(state);
-  log({ key: 'log.appraise_name', params: { enemy: enemy.locKey } });
-  if (tier >= 2) log({ key: 'log.appraise_type', params: { type: dmgTypeKey(enemy.damageType) } });
-  if (tier >= 3) log({ key: 'log.appraise_atk', params: { atk: enemy.attack } });
-  if (tier >= 4) log({ key: 'log.appraise_hp', params: { hp: Math.round(enemy.hp), maxhp: enemy.maxHp } });
+  // Detail is shown ON the enemy panel (not dumped to the action log): mark this foe as analyzed.
+  enemy.analyzed = true;
   const slot = state.skills.find((s) => s.id === 'appraisal' || s.id === 'insight' || s.id === 'all_sight');
   if (slot) addSkillExp(content, slot, DEEP_READ_XP, log, 1);
+  log({ key: 'log.analyzed', params: { enemy: enemy.locKey } }); // single, concise confirmation
 }
 
 /** Spend a stat point (STR power, VIT HP+stamina, INT MP, AGI dodge+stamina, …). */

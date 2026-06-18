@@ -99,6 +99,7 @@
   "log.appraise_type": "  hasar tipi: {type}.",
   "log.appraise_atk": "  saldırı: {atk}.",
   "log.appraise_hp": "  Can: {hp}/{maxhp}.",
+  "log.analyzed": "{enemy} analiz edildi — detay düşman panelinde (🔍).",
   "log.discover_dread": "Keşif: yeni bir göz yeteneği — Dehşet Bakışı!",
   "log.train_stamina": "Stamina eğitildi (maks {max}).",
   "log.discover_mp_transfer": "Keşif: MP→Stamina aktarımı açıldı!",

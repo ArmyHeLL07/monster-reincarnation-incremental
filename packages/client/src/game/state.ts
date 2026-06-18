@@ -63,6 +63,8 @@ export interface EnemyInstance {
   isBoss: boolean;
   /** Enemy attack cooldown (ticks) — paces incoming hits in both auto & manual combat. */
   atkCd: number;
+  /** Set by a deep-read (Analyze) — reveals fuller detail on the enemy panel, one tier deeper. */
+  analyzed?: boolean;
 }
 
 export const MAX_HUNGER = 100;

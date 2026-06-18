@@ -280,13 +280,14 @@ function enemyView(state: GameState): string {
     return `<div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}`;
   }
   const baseName = tier >= 1 ? t(inst.locKey) : t('ui.unknown');
-  const name = inst.isBoss ? `☠ ${baseName}` : baseName;
+  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
+  const et = tier + (inst.analyzed ? 1 : 0); // a deep-read (Analyze) reveals one tier deeper, on the enemy
   const bits: string[] = [`<b>${name}</b>`];
-  if (tier >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
-  if (tier >= 3) bits.push(`ATK ${inst.attack}`);
-  const hpText = tier >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
+  if (et >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
+  if (et >= 3) bits.push(`ATK ${inst.attack}`);
+  const hpText = et >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
   let weak = '';
-  if (tier >= 5) {
+  if (et >= 5) {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
