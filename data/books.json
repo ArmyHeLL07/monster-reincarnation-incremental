@@ -4,5 +4,9 @@
   { "id": "book_3", "locKeyLore": "book.book_3.lore", "locKeyDeep": "book.book_3.deep", "intReq": 16, "order": 3, "hints": "meditation" },
   { "id": "book_4", "locKeyLore": "book.book_4.lore", "locKeyDeep": "book.book_4.deep", "intReq": 20, "order": 4, "hints": "fusion" },
   { "id": "book_5", "locKeyLore": "book.book_5.lore", "locKeyDeep": "book.book_5.deep", "intReq": 26, "order": 5, "hints": "taboo" },
-  { "id": "book_6", "locKeyLore": "book.book_6.lore", "locKeyDeep": "book.book_6.deep", "intReq": 32, "order": 6, "hints": "taboo" }
+  { "id": "book_6", "locKeyLore": "book.book_6.lore", "locKeyDeep": "book.book_6.deep", "intReq": 32, "order": 6, "hints": "taboo" },
+  { "id": "book_7", "locKeyLore": "book.book_7.lore", "locKeyDeep": "book.book_7.deep", "intReq": 10, "order": 7, "hints": "element" },
+  { "id": "book_8", "locKeyLore": "book.book_8.lore", "locKeyDeep": "book.book_8.deep", "intReq": 6,  "order": 8, "hints": "eyes" },
+  { "id": "book_9", "locKeyLore": "book.book_9.lore", "locKeyDeep": "book.book_9.deep", "intReq": 14, "order": 9, "hints": "appraisal" },
+  { "id": "book_10", "locKeyLore": "book.book_10.lore", "locKeyDeep": "book.book_10.deep", "intReq": 22, "order": 10, "hints": "evolution" }
 ]

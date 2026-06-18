@@ -107,7 +107,7 @@ export function tick(state: GameState, content: Content, log: Log): void {
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
     combatRound(state, content, log, b);
     decayFood(state);
-    autoEat(state, content, log);
+    if (state.autoEat) autoEat(state, content, log);
     if (hungerStage(state) >= 3) {
       state.hp = Math.max(0, state.hp - 1); // starvation
       if (state.hp <= 0) onDeath(state, content, log, b);
@@ -144,6 +144,21 @@ function autoEat(state: GameState, content: Content, log: Log): void {
   if (rotten) {
     addResistExp(state, content, 'poison', 3, log);
     log({ key: 'log.ate_rotten' });
+  }
+}
+
+/** Manually eat one stored corpse (player-driven; Gluttony is discovered by choosing to feed). */
+export function eatFood(state: GameState, content: Content, index: number, log: Log): void {
+  const it = state.inventory[index];
+  if (!it) return;
+  state.inventory.splice(index, 1);
+  if (isRotten(it)) {
+    addResistExp(state, content, 'poison', 3, log); // rotten meat = passive poison resistance
+    log({ key: 'log.ate_rotten' });
+  } else {
+    state.hunger = Math.max(0, state.hunger - it.satiety);
+    gainSin(state, content, 0.25, log); // feeding feeds the dark axis (Gluttony)
+    log({ key: 'log.ate', params: { sat: it.satiety } });
   }
 }
 
@@ -186,10 +201,20 @@ export function allocStat(state: GameState, stat: StatKey): void {
   recomputeMaxes(state);
 }
 
-/** Deliberate risk action — "Push to the Brink" (GDD §6.1): drop HP to open the regen window. */
-export function courtDeath(state: GameState, log: Log): void {
-  if (state.action !== 'combat') return;
-  state.hp = Math.max(1, Math.floor(state.maxHp * 0.1));
+/**
+ * "Push to the Brink" (GDD §6.1) — usable any time, not just in combat.
+ * 1st push: HP drops to ~1% (99% gone) but you survive. 2nd push at the brink: instant death.
+ */
+export function courtDeath(state: GameState, content: Content, log: Log): void {
+  if (state.hp <= 0) return;
+  const brinkLine = Math.max(1, Math.floor(state.maxHp * 0.1));
+  if (state.hp <= brinkLine) {
+    log({ key: 'log.court_death_fatal' });
+    state.hp = 0;
+    onDeath(state, content, log, aggregateBonuses(state, content)); // a second push is fatal
+    return;
+  }
+  state.hp = Math.max(1, Math.floor(state.maxHp * 0.01)); // first push: 99% gone, on the edge
   log({ key: 'log.court_death' });
   tryLearnRegen(state, log, true);
 }
@@ -473,6 +498,7 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     log({ key: 'log.dodge', params: { enemy: enemy.locKey } });
     return;
   }
+  const resMult = diffDef(state, content).resistMult ?? 1; // Easy trains resistances very slowly
   const types = enemy.damageType2 ? [enemy.damageType, enemy.damageType2] : [enemy.damageType];
   const share = enemy.attack / types.length;
   let totalTaken = 0;
@@ -481,7 +507,8 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     const armorCut = b.armor / types.length;
     const taken = Math.max(0, Math.round(share * (1 - reduction) - armorCut));
     totalTaken += taken;
-    if (taken > 0) addResistExp(state, content, type, taken, log);
+    const resGain = Math.round(taken * resMult);
+    if (resGain > 0) addResistExp(state, content, type, resGain, log);
   }
   state.hp = Math.max(0, state.hp - totalTaken);
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
@@ -505,7 +532,8 @@ function gainXp(state: GameState, amount: number, log: Log): void {
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void {
   const enemy = state.enemy;
   if (!enemy) return;
-  const ep = Math.round(enemy.ep * b.lootMult);
+  const reward = diffDef(state, content).rewardMult ?? 1; // Hell pays more, Easy less
+  const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward));
   state.ep += ep;
   state.kills += 1;
   gainXp(state, ep * XP_PER_EP, log);

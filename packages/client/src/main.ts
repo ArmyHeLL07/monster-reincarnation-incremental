@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -115,6 +115,16 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onEat: (i) => {
+      eatFood(state, content, i, logFn);
+      save(state);
+      render(state);
+    },
+    onToggleAutoEat: () => {
+      state.autoEat = !state.autoEat;
+      save(state);
+      render(state);
+    },
     onMeditate: () => {
       state.action = 'meditate';
       state.autoResume = false;
@@ -128,7 +138,7 @@ async function init(): Promise<void> {
       render(state);
     },
     onCourtDeath: () => {
-      courtDeath(state, logFn);
+      courtDeath(state, content, logFn);
       save(state);
       render(state);
     },
@@ -259,6 +269,7 @@ function migrate(s: GameState): void {
   s.equipped ??= [];
   s.combatMode ??= 'auto';
   s.cooldowns ??= {};
+  s.autoEat ??= true;
   s.fusionUnlocked ??= false;
   s.badFusions ??= 0;
   if (s.maxSp == null) s.maxSp = d.maxSp;

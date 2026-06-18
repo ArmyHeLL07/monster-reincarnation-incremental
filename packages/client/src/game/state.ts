@@ -113,6 +113,8 @@ export interface GameState {
   combatMode: 'auto' | 'manual';
   /** Per-skill cooldown timers (ticks remaining), keyed by skill id. */
   cooldowns: Record<string, number>;
+  /** Auto-eat stored corpses when hungry. Off = eat manually (discover Gluttony at your own pace). */
+  autoEat: boolean;
   /** Fusion lab is a discovery — locked until found (no longer free from the start). */
   fusionUnlocked: boolean;
   /** Count of incompatible (backfire) fusions carried — the 4th overloads and kills the host. */
@@ -220,6 +222,7 @@ export function newGame(): GameState {
     equipped: ['venom_bite', 'sharp_claw', 'silk_thread'],
     combatMode: 'auto',
     cooldowns: {},
+    autoEat: true,
     fusionUnlocked: false,
     badFusions: 0,
     skills: [

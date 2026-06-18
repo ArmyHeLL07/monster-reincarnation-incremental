@@ -25,6 +25,8 @@ export interface UiActions {
   onCycleMode: (slotId: string) => void;
   onClearEye: (slotId: string) => void;
   onDiscardFood: (index: number) => void;
+  onEat: (index: number) => void;
+  onToggleAutoEat: () => void;
   onSetAutosave: (min: number) => void;
   onSetLang: (lang: 'tr' | 'en') => void;
   onSaveNow: () => void;
@@ -582,10 +584,11 @@ function larderPanel(state: GameState): string {
       const name = def ? t(def.locKey) : it.enemyId;
       const fresh = Math.max(0, Math.round((1 - it.decay / SPOIL_THRESHOLD) * 100));
       const status = isRotten(it) ? `<span style="color:#c0444f">${t('ui.rotten')}</span>` : `${t('ui.fresh')} ${fresh}%`;
-      return `<li>${name} — ${status} <button class="discard" data-idx="${i}">✕</button></li>`;
+      return `<li>${name} — ${status} <button class="eatbtn" data-eat="${i}">${t('ui.eat')}</button> <button class="discard" data-idx="${i}">✕</button></li>`;
     })
     .join('') || `<span class="muted">${t('ui.empty')}</span>`;
-  return `<section class="panel"><h2>${t('ui.inventory')} (${state.inventory.length}/${maxFoodSlots(state)})${refrigerated(state) ? ' ❄' : ''}</h2><ul>${items}</ul></section>`;
+  const autoBtn = `<button id="autoeat" class="${state.autoEat ? 'active' : 'ghost'}">${t('ui.autoeat')}: ${state.autoEat ? t('ui.on') : t('ui.off')}</button>`;
+  return `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.inventory')} (${state.inventory.length}/${maxFoodSlots(state)})${refrigerated(state) ? ' ❄' : ''}</h2>${autoBtn}</div><ul>${items}</ul></section>`;
 }
 
 function bodyTab(state: GameState): string {
@@ -620,6 +623,13 @@ function wireBody(el: HTMLElement): void {
       if (!Number.isNaN(i)) ACTIONS.onDiscardFood(i);
     });
   });
+  el.querySelectorAll<HTMLButtonElement>('.eatbtn[data-eat]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const i = Number(b.getAttribute('data-eat'));
+      if (!Number.isNaN(i)) ACTIONS.onEat(i);
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#autoeat')?.addEventListener('click', ACTIONS.onToggleAutoEat);
 }
 
 // ---- LORE / DISCOVERY (books, rooms, fragments) ----------------------------

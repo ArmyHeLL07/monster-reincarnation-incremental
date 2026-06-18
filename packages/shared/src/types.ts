@@ -292,6 +292,10 @@ export interface DifficultyDef {
   playerMult: number;
   /** Fraction of dungeon progress lost on death (0 = none, 1 = back to layer start). */
   deathPenalty: number;
+  /** Resistance-XP gain multiplier (Easy trains resistances very slowly; default 1). */
+  resistMult?: number;
+  /** Reward multiplier on EP / XP / loot (Hell pays more; default 1). */
+  rewardMult?: number;
   /** Hell-only: enemies hunt actively, hunger/exp are harsher. */
   brutal?: boolean;
 }
