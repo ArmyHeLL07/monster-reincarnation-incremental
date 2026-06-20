@@ -924,9 +924,13 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   const satiety = Math.round(enemy.satiety * b.lootMult);
   if (state.inventory.length < maxFoodSlots(state)) {
     state.inventory.push({ enemyId: enemy.id, satiety, decay: 0 });
+    state.larderFullNotified = false;
   } else {
     state.hunger = Math.max(0, state.hunger - satiety);
-    log({ key: 'log.larder_full' });
+    if (!state.larderFullNotified) {
+      log({ key: 'log.larder_full' });
+      state.larderFullNotified = true;
+    }
   }
   log({ key: enemy.isBoss ? 'log.boss_kill' : 'log.kill', params: { enemy: enemy.locKey, ep } });
 

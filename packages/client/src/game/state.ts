@@ -224,6 +224,8 @@ export interface GameState {
   // --- race selection ---------------------------------------------------------
   /** False on a fresh game — shows the race selection screen before play begins. */
   raceConfirmed: boolean;
+  /** Suppresses repeated "larder full" log spam — set when first notified, cleared when inventory drops below cap. */
+  larderFullNotified?: boolean;
 }
 
 /** lvLabel localization key reused across log lines. */
