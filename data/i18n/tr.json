@@ -694,7 +694,6 @@
   "skill.undead_vigor.name": "Ölümsüz Canlılık", "skill.undead_vigor.desc": "İskeletin kalıcı yeniden doğuş enerjisi — kemikler arasında akan garip güç, canı ve stamina'yı sürekli onarır.",
   "skill.draconic_blood.name": "Ejderha Kanı", "skill.draconic_blood.desc": "Ejderha soyunun öğrenme hızı. Savaşın her anından ders çıkarır; deneyim kazanımı belirgin şekilde artar.",
   "skill.stone_nature.name": "Taş Doğası", "skill.stone_nature.desc": "Golem'in taş bedeni neredeyse hiç beslenmez — açlık çok daha yavaş ilerler.",
-  "skill.carapace.name": "Kabuk", "skill.carapace.desc": "Orta düzey sert kabuk; gelen hasarı kısmen azaltır.",
 
   "ui.race_select": "Irk Seç",
   "ui.race_select_info": "Savaşa girmeden önce ırkını seç (ilk öldürmeye kadar değiştirebilirsin).",

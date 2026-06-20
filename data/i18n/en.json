@@ -694,7 +694,6 @@
   "skill.undead_vigor.name": "Undead Vigor", "skill.undead_vigor.desc": "The skeleton's perpetual rebound energy — the strange power flowing between bones constantly mends HP and stamina.",
   "skill.draconic_blood.name": "Draconic Blood", "skill.draconic_blood.desc": "The wyrmling's lineage learns from every exchange. Experience gained is noticeably increased.",
   "skill.stone_nature.name": "Stone Nature", "skill.stone_nature.desc": "A golem's stone body barely needs sustenance — hunger rises much more slowly.",
-  "skill.carapace.name": "Carapace", "skill.carapace.desc": "Mid-tier hardened shell; reduces incoming damage.",
 
   "ui.race_select": "Choose Race",
   "ui.race_select_info": "Select your race before combat (can change until your first kill).",
