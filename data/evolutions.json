@@ -1,113 +1,1922 @@
 [
-  {"id":"hatchling_spider","raceId":"spider","locKey":"form.hatchling_spider.name","evolvesTo":["lesser_weaver"],"levelReq":1},
-  {"id":"lesser_weaver","raceId":"spider","locKey":"form.lesser_weaver.name","evolvesTo":["venom_weaver","blade_weaver","greater_weaver"],"levelReq":10,"statBonus":{"VIT":2,"STR":1,"AGI":1},"grantSkills":["carapace","detect","forage"]},
-  {"id":"venom_weaver","raceId":"spider","locKey":"form.venom_weaver.name","evolvesTo":["shade_stalker"],"levelReq":10,"statBonus":{"INT":3,"STR":2},"grantSkills":["acid_spit","toxic_cloud","mana_sense","flame_bolt"]},
-  {"id":"blade_weaver","raceId":"spider","locKey":"form.blade_weaver.name","evolvesTo":["scythe_hunter"],"levelReq":10,"statBonus":{"STR":3,"AGI":2},"grantSkills":["pounce","rend","overdraw"]},
-  {"id":"greater_weaver","raceId":"spider","locKey":"form.greater_weaver.name","evolvesTo":["colossal_weaver"],"levelReq":10,"statBonus":{"VIT":6,"STR":2},"grantSkills":["endurance","carapace_lord","mp_regen"]},
-  {"id":"colossal_weaver","raceId":"spider","locKey":"form.colossal_weaver.name","evolvesTo":["undying_horror"],"levelReq":10,"statBonus":{"VIT":8,"STR":3},"grantSkills":["adamant_plating","blood_engine","toughness"]},
-  {"id":"shade_stalker","raceId":"spider","locKey":"form.shade_stalker.name","evolvesTo":["undying_horror"],"levelReq":10,"statBonus":{"AGI":4,"INT":2},"grantSkills":["stealth","phase_body","numbing_gaze","web_trap"]},
-  {"id":"scythe_hunter","raceId":"spider","locKey":"form.scythe_hunter.name","evolvesTo":["undying_horror"],"levelReq":10,"statBonus":{"AGI":3,"STR":3},"grantSkills":["piercing_gaze","silk_thread","spark"]},
-  {"id":"undying_horror","raceId":"spider","locKey":"form.undying_horror.name","evolvesTo":["revenant_horror"],"levelReq":10,"statBonus":{"VIT":6,"STR":3,"AGI":2},"grantSkills":["regeneration","regenerative_core","undying_husk"]},
-  {"id":"revenant_horror","raceId":"spider","locKey":"form.revenant_horror.name","evolvesTo":["dread_weaver"],"levelReq":10,"statBonus":{"VIT":5,"STR":4,"AGI":2},"grantSkills":["undying_vitality","regenerative_core"]},
-  {"id":"dread_weaver","raceId":"spider","locKey":"form.dread_weaver.name","evolvesTo":["wraith_sovereign"],"levelReq":10,"statBonus":{"INT":5,"AGI":4,"WIS":3},"grantSkills":["phantom_presence","plague_mist"]},
-  {"id":"wraith_sovereign","raceId":"spider","locKey":"form.wraith_sovereign.name","evolvesTo":["elder_sovereign"],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":4},"grantSkills":["spatial_web","soul_gaze"]},
-  {"id":"elder_sovereign","raceId":"spider","locKey":"form.elder_sovereign.name","evolvesTo":["abyssal_sovereign"],"levelReq":10,"statBonus":{"INT":6,"WIS":5,"LUCK":3},"grantSkills":["all_sight","precognition"]},
-  {"id":"abyssal_sovereign","raceId":"spider","locKey":"form.abyssal_sovereign.name","evolvesTo":["arachnid_sovereign"],"levelReq":10,"statBonus":{"STR":7,"VIT":6,"AGI":5,"INT":5},"grantSkills":["reaper_edge","domination_gaze","endless_mana"]},
-  {"id":"arachnid_sovereign","raceId":"spider","locKey":"form.arachnid_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"AGI":3,"WIS":3,"LUCK":2},"grantSkills":["sovereign_form","apex_predator","soul_gaze","spatial_rift"]},
-
-  {"id":"novice_human","raceId":"human","locKey":"form.novice_human.name","evolvesTo":["fighter_apprentice"],"levelReq":1},
-  {"id":"fighter_apprentice","raceId":"human","locKey":"form.fighter_apprentice.name","evolvesTo":["swordmaster","battle_mage","guardian"],"levelReq":10,"statBonus":{"STR":1,"VIT":2,"AGI":1},"grantSkills":["endurance","hp_regen","sword_slash","weapon_mastery"]},
-  {"id":"swordmaster","raceId":"human","locKey":"form.swordmaster.name","evolvesTo":["crusader"],"levelReq":10,"statBonus":{"STR":3,"AGI":2},"grantSkills":["blade_dance","overdraw","piercing_gaze","parry"]},
-  {"id":"battle_mage","raceId":"human","locKey":"form.battle_mage.name","evolvesTo":["arcane_knight"],"levelReq":10,"statBonus":{"INT":3,"WIS":2},"grantSkills":["flame_bolt","mana_sense","mp_regen","mana_shield"]},
-  {"id":"guardian","raceId":"human","locKey":"form.guardian.name","evolvesTo":["stalwart"],"levelReq":10,"statBonus":{"VIT":3,"WIS":2},"grantSkills":["shield_guard","hp_regen","toughness","iron_will"]},
-  {"id":"crusader","raceId":"human","locKey":"form.crusader.name","evolvesTo":["champion_human"],"levelReq":10,"statBonus":{"STR":4,"VIT":2},"grantSkills":["holy_strike","righteous_strike","blade_mastery","battle_cry"]},
-  {"id":"arcane_knight","raceId":"human","locKey":"form.arcane_knight.name","evolvesTo":["arcane_lord"],"levelReq":10,"statBonus":{"INT":4,"STR":2},"grantSkills":["soul_gaze","spark","mana_shield"]},
-  {"id":"stalwart","raceId":"human","locKey":"form.stalwart.name","evolvesTo":["iron_guardian"],"levelReq":10,"statBonus":{"VIT":4,"AGI":2},"grantSkills":["undying_will","regeneration","iron_will"]},
-  {"id":"champion_human","raceId":"human","locKey":"form.champion_human.name","evolvesTo":["warlord"],"levelReq":10,"statBonus":{"STR":4,"VIT":4,"INT":2},"grantSkills":["shield_wall","overdraw","bastion"]},
-  {"id":"warlord","raceId":"human","locKey":"form.warlord.name","evolvesTo":["conqueror"],"levelReq":10,"statBonus":{"STR":5,"VIT":3},"grantSkills":["apex_predator","battle_cry"]},
-  {"id":"conqueror","raceId":"human","locKey":"form.conqueror.name","evolvesTo":["war_incarnate"],"levelReq":10,"statBonus":{"STR":5,"AGI":4},"grantSkills":["domination_gaze"]},
-  {"id":"war_incarnate","raceId":"human","locKey":"form.war_incarnate.name","evolvesTo":["divine_warrior"],"levelReq":10,"statBonus":{"STR":6,"VIT":5,"AGI":3},"grantSkills":["all_sight"]},
-  {"id":"divine_warrior","raceId":"human","locKey":"form.divine_warrior.name","evolvesTo":["sovereign_knight"],"levelReq":10,"statBonus":{"STR":6,"VIT":5,"INT":4},"grantSkills":["divine_recovery"]},
-  {"id":"sovereign_knight","raceId":"human","locKey":"form.sovereign_knight.name","evolvesTo":["human_sovereign"],"levelReq":10,"statBonus":{"STR":7,"VIT":6,"AGI":5,"INT":4},"grantSkills":["spatial_rift"]},
-  {"id":"human_sovereign","raceId":"human","locKey":"form.human_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"AGI":3,"WIS":3,"LUCK":2},"grantSkills":["sovereign_form","apex_predator","soul_gaze"]},
-
-  {"id":"arcane_lord","raceId":"human","locKey":"form.arcane_lord.name","evolvesTo":["spell_binder"],"levelReq":10,"statBonus":{"INT":5,"WIS":3},"grantSkills":["lightning_strike","mp_regen"]},
-  {"id":"spell_binder","raceId":"human","locKey":"form.spell_binder.name","evolvesTo":["arcane_warlord"],"levelReq":10,"statBonus":{"INT":5,"WIS":4},"grantSkills":["mana_shield","memory_palace"]},
-  {"id":"arcane_warlord","raceId":"human","locKey":"form.arcane_warlord.name","evolvesTo":["war_mage"],"levelReq":10,"statBonus":{"INT":6,"STR":4,"WIS":3},"grantSkills":["all_sight","battle_cry"]},
-  {"id":"war_mage","raceId":"human","locKey":"form.war_mage.name","evolvesTo":["divine_mage"],"levelReq":10,"statBonus":{"INT":6,"WIS":5,"STR":3},"grantSkills":["domination_gaze"]},
-  {"id":"divine_mage","raceId":"human","locKey":"form.divine_mage.name","evolvesTo":["arcane_sage"],"levelReq":10,"statBonus":{"INT":7,"WIS":6,"VIT":3},"grantSkills":["divine_recovery"]},
-  {"id":"arcane_sage","raceId":"human","locKey":"form.arcane_sage.name","evolvesTo":["arcane_sovereign"],"levelReq":10,"statBonus":{"INT":7,"WIS":6,"AGI":4,"LUCK":3},"grantSkills":["spatial_rift","parallel_minds"]},
-  {"id":"arcane_sovereign","raceId":"human","locKey":"form.arcane_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"INT":6,"WIS":5,"STR":4,"AGI":3,"VIT":3,"LUCK":3},"grantSkills":["sovereign_form","soul_gaze"]},
-
-  {"id":"iron_guardian","raceId":"human","locKey":"form.iron_guardian.name","evolvesTo":["fortress_knight"],"levelReq":10,"statBonus":{"VIT":5,"STR":3},"grantSkills":["shield_wall","endurance"]},
-  {"id":"fortress_knight","raceId":"human","locKey":"form.fortress_knight.name","evolvesTo":["bulwark"],"levelReq":10,"statBonus":{"VIT":5,"WIS":4},"grantSkills":["iron_will","toughness"]},
-  {"id":"bulwark","raceId":"human","locKey":"form.bulwark.name","evolvesTo":["eternal_guardian"],"levelReq":10,"statBonus":{"VIT":6,"STR":3,"WIS":4},"grantSkills":["bastion","battle_cry"]},
-  {"id":"eternal_guardian","raceId":"human","locKey":"form.eternal_guardian.name","evolvesTo":["divine_shield"],"levelReq":10,"statBonus":{"VIT":7,"WIS":5,"STR":3},"grantSkills":["overdraw","all_sight"]},
-  {"id":"divine_shield","raceId":"human","locKey":"form.divine_shield.name","evolvesTo":["guardian_sovereign"],"levelReq":10,"statBonus":{"VIT":7,"WIS":6,"STR":4},"grantSkills":["divine_recovery"]},
-  {"id":"guardian_sovereign","raceId":"human","locKey":"form.guardian_sovereign.name","evolvesTo":["iron_sovereign"],"levelReq":10,"statBonus":{"VIT":8,"WIS":6,"STR":5,"INT":3},"grantSkills":["spatial_rift"]},
-  {"id":"iron_sovereign","raceId":"human","locKey":"form.iron_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"VIT":6,"WIS":5,"STR":5,"INT":4,"AGI":3,"LUCK":2},"grantSkills":["sovereign_form","all_sight"]},
-
-  {"id":"slime_larva","raceId":"slime","locKey":"form.slime_larva.name","evolvesTo":["ooze_spawn"],"levelReq":1},
-  {"id":"ooze_spawn","raceId":"slime","locKey":"form.ooze_spawn.name","evolvesTo":["acid_ooze","blob_slime","crystalline_ooze"],"levelReq":10,"statBonus":{"VIT":2,"INT":1,"AGI":1},"grantSkills":["caustic_spray","gelatinous_body"]},
-  {"id":"acid_ooze","raceId":"slime","locKey":"form.acid_ooze.name","evolvesTo":["toxic_sovereign"],"levelReq":10,"statBonus":{"INT":3,"AGI":2},"grantSkills":["toxic_cloud","mana_sense"]},
-  {"id":"blob_slime","raceId":"slime","locKey":"form.blob_slime.name","evolvesTo":["elder_ooze"],"levelReq":10,"statBonus":{"VIT":4,"STR":2},"grantSkills":["endurance","hp_regen"]},
-  {"id":"crystalline_ooze","raceId":"slime","locKey":"form.crystalline_ooze.name","evolvesTo":["mirror_ooze"],"levelReq":10,"statBonus":{"INT":3,"WIS":2},"grantSkills":["parallel_minds","stealth"]},
-  {"id":"toxic_sovereign","raceId":"slime","locKey":"form.toxic_sovereign.name","evolvesTo":["primordial_ooze"],"levelReq":10,"statBonus":{"INT":5,"AGI":3,"LUCK":2},"grantSkills":["plague_mist","necro_toxin"]},
-  {"id":"elder_ooze","raceId":"slime","locKey":"form.elder_ooze.name","evolvesTo":["primordial_ooze"],"levelReq":10,"statBonus":{"VIT":7,"STR":3},"grantSkills":["regeneration","elastic_shield"]},
-  {"id":"mirror_ooze","raceId":"slime","locKey":"form.mirror_ooze.name","evolvesTo":["primordial_ooze"],"levelReq":10,"statBonus":{"WIS":4,"INT":3,"AGI":2},"grantSkills":["phantom_presence","numbing_gaze"]},
-  {"id":"primordial_ooze","raceId":"slime","locKey":"form.primordial_ooze.name","evolvesTo":["ancient_slime"],"levelReq":10,"statBonus":{"STR":4,"VIT":4,"INT":4,"AGI":2},"grantSkills":["predator_instinct","primordial_ooze_shield"]},
-  {"id":"ancient_slime","raceId":"slime","locKey":"form.ancient_slime.name","evolvesTo":["devourer_slime"],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":3},"grantSkills":["apex_predator"]},
-  {"id":"devourer_slime","raceId":"slime","locKey":"form.devourer_slime.name","evolvesTo":["void_ooze"],"levelReq":10,"statBonus":{"STR":5,"VIT":4,"AGI":4},"grantSkills":["domination_gaze"]},
-  {"id":"void_ooze","raceId":"slime","locKey":"form.void_ooze.name","evolvesTo":["eternal_slime"],"levelReq":10,"statBonus":{"INT":6,"WIS":4,"VIT":4},"grantSkills":["soul_gaze","dissolving_touch"]},
-  {"id":"eternal_slime","raceId":"slime","locKey":"form.eternal_slime.name","evolvesTo":["slime_ascendant"],"levelReq":10,"statBonus":{"STR":6,"VIT":6,"INT":5,"AGI":3},"grantSkills":["all_sight"]},
-  {"id":"slime_ascendant","raceId":"slime","locKey":"form.slime_ascendant.name","evolvesTo":["slime_sovereign"],"levelReq":10,"statBonus":{"STR":7,"VIT":7,"INT":6,"AGI":4},"grantSkills":["spatial_rift","regenerative_core"]},
-  {"id":"slime_sovereign","raceId":"slime","locKey":"form.slime_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"AGI":3,"WIS":3,"LUCK":2},"grantSkills":["sovereign_form","apex_predator","soul_gaze"]},
-
-  {"id":"bone_rattle","raceId":"skeleton","locKey":"form.bone_rattle.name","evolvesTo":["risen_skeleton"],"levelReq":1},
-  {"id":"risen_skeleton","raceId":"skeleton","locKey":"form.risen_skeleton.name","evolvesTo":["skeleton_warrior","skeleton_sorcerer","bone_archer"],"levelReq":10,"statBonus":{"STR":2,"VIT":2,"INT":1},"grantSkills":["hp_regen","endurance","bone_armor"]},
-  {"id":"skeleton_warrior","raceId":"skeleton","locKey":"form.skeleton_warrior.name","evolvesTo":["bone_lord"],"levelReq":10,"statBonus":{"STR":3,"VIT":3},"grantSkills":["bone_arrow","bone_armor","toughness"]},
-  {"id":"skeleton_sorcerer","raceId":"skeleton","locKey":"form.skeleton_sorcerer.name","evolvesTo":["lich"],"levelReq":10,"statBonus":{"INT":4,"WIS":2},"grantSkills":["shadow_bolt","mana_sense","parallel_minds"]},
-  {"id":"bone_archer","raceId":"skeleton","locKey":"form.bone_archer.name","evolvesTo":["shade_knight"],"levelReq":10,"statBonus":{"AGI":3,"STR":2},"grantSkills":["bone_arrow","arrow_barrage"]},
-  {"id":"bone_lord","raceId":"skeleton","locKey":"form.bone_lord.name","evolvesTo":["death_sovereign"],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"AGI":2},"grantSkills":["arrow_barrage","bone_fortress"]},
-  {"id":"lich","raceId":"skeleton","locKey":"form.lich.name","evolvesTo":["death_sovereign"],"levelReq":10,"statBonus":{"INT":6,"WIS":4,"VIT":2},"grantSkills":["soul_gaze","decay_curse"]},
-  {"id":"shade_knight","raceId":"skeleton","locKey":"form.shade_knight.name","evolvesTo":["death_sovereign"],"levelReq":10,"statBonus":{"AGI":5,"STR":3,"INT":2},"grantSkills":["stealth","phase_body","numbing_gaze"]},
-  {"id":"death_sovereign","raceId":"skeleton","locKey":"form.death_sovereign.name","evolvesTo":["ancient_lich"],"levelReq":10,"statBonus":{"STR":4,"VIT":4,"INT":4,"WIS":3},"grantSkills":["unyielding_core","undying_vitality"]},
-  {"id":"ancient_lich","raceId":"skeleton","locKey":"form.ancient_lich.name","evolvesTo":["revenant_king"],"levelReq":10,"statBonus":{"INT":5,"WIS":5,"VIT":3},"grantSkills":["phantom_presence"]},
-  {"id":"revenant_king","raceId":"skeleton","locKey":"form.revenant_king.name","evolvesTo":["bone_titan"],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":4},"grantSkills":["domination_gaze"]},
-  {"id":"bone_titan","raceId":"skeleton","locKey":"form.bone_titan.name","evolvesTo":["undead_sovereign"],"levelReq":10,"statBonus":{"STR":6,"VIT":6,"AGI":3},"grantSkills":["all_sight"]},
-  {"id":"undead_sovereign","raceId":"skeleton","locKey":"form.undead_sovereign.name","evolvesTo":["death_incarnate"],"levelReq":10,"statBonus":{"INT":6,"WIS":5,"VIT":5},"grantSkills":["unholy_heart"]},
-  {"id":"death_incarnate","raceId":"skeleton","locKey":"form.death_incarnate.name","evolvesTo":["skeleton_sovereign"],"levelReq":10,"statBonus":{"STR":7,"VIT":6,"INT":6,"AGI":4},"grantSkills":["spatial_rift"]},
-  {"id":"skeleton_sovereign","raceId":"skeleton","locKey":"form.skeleton_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"WIS":4,"AGI":3,"LUCK":2},"grantSkills":["sovereign_form","apex_predator","soul_gaze"]},
-
-  {"id":"wyrmling_hatch","raceId":"wyrmling","locKey":"form.wyrmling_hatch.name","evolvesTo":["young_drake"],"levelReq":1},
-  {"id":"young_drake","raceId":"wyrmling","locKey":"form.young_drake.name","evolvesTo":["fire_wyrm","shadow_drake","storm_drake"],"levelReq":10,"statBonus":{"STR":2,"INT":2,"AGI":1},"grantSkills":["dragon_claw","mana_sense","hp_regen"]},
-  {"id":"fire_wyrm","raceId":"wyrmling","locKey":"form.fire_wyrm.name","evolvesTo":["elder_drake"],"levelReq":10,"statBonus":{"STR":3,"INT":3},"grantSkills":["fire_breath","overdraw","dragon_slash"]},
-  {"id":"shadow_drake","raceId":"wyrmling","locKey":"form.shadow_drake.name","evolvesTo":["void_dragon"],"levelReq":10,"statBonus":{"AGI":3,"INT":2,"WIS":2},"grantSkills":["stealth","dread_gaze","phase_body"]},
-  {"id":"storm_drake","raceId":"wyrmling","locKey":"form.storm_drake.name","evolvesTo":["lightning_wyrm"],"levelReq":10,"statBonus":{"INT":3,"AGI":3},"grantSkills":["spark","piercing_gaze"]},
-  {"id":"elder_drake","raceId":"wyrmling","locKey":"form.elder_drake.name","evolvesTo":["dragon_sovereign"],"levelReq":10,"statBonus":{"STR":5,"INT":4,"VIT":3},"grantSkills":["dragon_slash","overdraw","apex_predator"]},
-  {"id":"void_dragon","raceId":"wyrmling","locKey":"form.void_dragon.name","evolvesTo":["dragon_sovereign"],"levelReq":10,"statBonus":{"INT":6,"WIS":4,"AGI":3},"grantSkills":["phantom_presence","soul_gaze"]},
-  {"id":"lightning_wyrm","raceId":"wyrmling","locKey":"form.lightning_wyrm.name","evolvesTo":["dragon_sovereign"],"levelReq":10,"statBonus":{"INT":5,"AGI":5,"STR":2},"grantSkills":["parallel_minds","numbing_gaze"]},
-  {"id":"dragon_sovereign","raceId":"wyrmling","locKey":"form.dragon_sovereign.name","evolvesTo":["elder_dragon"],"levelReq":10,"statBonus":{"STR":4,"VIT":3,"INT":5,"AGI":3,"WIS":3},"grantSkills":["draconic_blood","dragon_scale"]},
-  {"id":"elder_dragon","raceId":"wyrmling","locKey":"form.elder_dragon.name","evolvesTo":["ancient_wyrm"],"levelReq":10,"statBonus":{"STR":5,"INT":5,"VIT":4},"grantSkills":["apex_predator"]},
-  {"id":"ancient_wyrm","raceId":"wyrmling","locKey":"form.ancient_wyrm.name","evolvesTo":["world_serpent"],"levelReq":10,"statBonus":{"STR":6,"INT":5,"AGI":4},"grantSkills":["domination_gaze"]},
-  {"id":"world_serpent","raceId":"wyrmling","locKey":"form.world_serpent.name","evolvesTo":["void_leviathan"],"levelReq":10,"statBonus":{"STR":6,"VIT":5,"INT":5,"WIS":3},"grantSkills":["all_sight"]},
-  {"id":"void_leviathan","raceId":"wyrmling","locKey":"form.void_leviathan.name","evolvesTo":["cosmic_dragon"],"levelReq":10,"statBonus":{"INT":7,"STR":5,"WIS":5},"grantSkills":["spatial_rift"]},
-  {"id":"cosmic_dragon","raceId":"wyrmling","locKey":"form.cosmic_dragon.name","evolvesTo":["dragon_god"],"levelReq":10,"statBonus":{"STR":7,"INT":7,"VIT":6,"AGI":4},"grantSkills":["dragon_heart","void_barrier"]},
-  {"id":"dragon_god","raceId":"wyrmling","locKey":"form.dragon_god.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"AGI":3,"WIS":5,"LUCK":2},"grantSkills":["sovereign_form","apex_predator","soul_gaze"]},
-
-  {"id":"pebble_golem","raceId":"golem","locKey":"form.pebble_golem.name","evolvesTo":["stone_golem"],"levelReq":1},
-  {"id":"stone_golem","raceId":"golem","locKey":"form.stone_golem.name","evolvesTo":["iron_golem","crystal_golem","lava_golem"],"levelReq":10,"statBonus":{"VIT":3,"STR":2},"grantSkills":["toughness","endurance","stone_skin"]},
-  {"id":"iron_golem","raceId":"golem","locKey":"form.iron_golem.name","evolvesTo":["titan_golem"],"levelReq":10,"statBonus":{"VIT":5,"STR":3},"grantSkills":["iron_plating","hp_regen"]},
-  {"id":"crystal_golem","raceId":"golem","locKey":"form.crystal_golem.name","evolvesTo":["arcane_golem"],"levelReq":10,"statBonus":{"INT":4,"VIT":2,"WIS":2},"grantSkills":["mana_sense","mp_regen"]},
-  {"id":"lava_golem","raceId":"golem","locKey":"form.lava_golem.name","evolvesTo":["magma_colossus"],"levelReq":10,"statBonus":{"STR":4,"VIT":3},"grantSkills":["heavy_slam","magma_fist"]},
-  {"id":"titan_golem","raceId":"golem","locKey":"form.titan_golem.name","evolvesTo":["colossus_prime"],"levelReq":10,"statBonus":{"STR":5,"VIT":6,"INT":2},"grantSkills":["obsidian_carapace","steam_engine"]},
-  {"id":"arcane_golem","raceId":"golem","locKey":"form.arcane_golem.name","evolvesTo":["colossus_prime"],"levelReq":10,"statBonus":{"INT":5,"VIT":3,"WIS":3},"grantSkills":["parallel_minds","soul_gaze"]},
-  {"id":"magma_colossus","raceId":"golem","locKey":"form.magma_colossus.name","evolvesTo":["colossus_prime"],"levelReq":10,"statBonus":{"STR":6,"VIT":4,"AGI":2},"grantSkills":["magma_fist","piercing_gaze"]},
-  {"id":"colossus_prime","raceId":"golem","locKey":"form.colossus_prime.name","evolvesTo":["ancient_golem"],"levelReq":10,"statBonus":{"STR":5,"VIT":6,"INT":3},"grantSkills":["stone_nature","unyielding_core"]},
-  {"id":"ancient_golem","raceId":"golem","locKey":"form.ancient_golem.name","evolvesTo":["void_golem"],"levelReq":10,"statBonus":{"STR":6,"VIT":6,"INT":4},"grantSkills":["apex_predator"]},
-  {"id":"void_golem","raceId":"golem","locKey":"form.void_golem.name","evolvesTo":["eternal_colossus"],"levelReq":10,"statBonus":{"STR":6,"VIT":5,"INT":5},"grantSkills":["domination_gaze"]},
-  {"id":"eternal_colossus","raceId":"golem","locKey":"form.eternal_colossus.name","evolvesTo":["golem_ascendant"],"levelReq":10,"statBonus":{"STR":7,"VIT":7,"AGI":3},"grantSkills":["all_sight"]},
-  {"id":"golem_ascendant","raceId":"golem","locKey":"form.golem_ascendant.name","evolvesTo":["stone_sovereign"],"levelReq":10,"statBonus":{"STR":7,"VIT":7,"INT":5,"WIS":3},"grantSkills":["crystal_heart"]},
-  {"id":"stone_sovereign","raceId":"golem","locKey":"form.stone_sovereign.name","evolvesTo":["golem_sovereign"],"levelReq":10,"statBonus":{"STR":8,"VIT":8,"INT":5,"AGI":3},"grantSkills":["spatial_rift"]},
-  {"id":"golem_sovereign","raceId":"golem","locKey":"form.golem_sovereign.name","evolvesTo":[],"levelReq":10,"statBonus":{"STR":5,"VIT":5,"INT":5,"AGI":3,"WIS":3,"LUCK":2},"grantSkills":["sovereign_form","stone_nature","apex_predator"]}
+  {
+    "id": "hatchling_spider",
+    "raceId": "spider",
+    "locKey": "form.hatchling_spider.name",
+    "evolvesTo": [
+      "lesser_weaver"
+    ],
+    "levelReq": 1
+  },
+  {
+    "id": "lesser_weaver",
+    "raceId": "spider",
+    "locKey": "form.lesser_weaver.name",
+    "evolvesTo": [
+      "venom_weaver",
+      "blade_weaver",
+      "greater_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 2,
+      "STR": 1,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "carapace",
+      "detect",
+      "forage"
+    ]
+  },
+  {
+    "id": "venom_weaver",
+    "raceId": "spider",
+    "locKey": "form.venom_weaver.name",
+    "evolvesTo": [
+      "shade_stalker"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "acid_spit",
+      "toxic_cloud",
+      "mana_sense",
+      "flame_bolt"
+    ]
+  },
+  {
+    "id": "blade_weaver",
+    "raceId": "spider",
+    "locKey": "form.blade_weaver.name",
+    "evolvesTo": [
+      "scythe_hunter"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "pounce",
+      "rend",
+      "overdraw"
+    ]
+  },
+  {
+    "id": "greater_weaver",
+    "raceId": "spider",
+    "locKey": "form.greater_weaver.name",
+    "evolvesTo": [
+      "colossal_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 6,
+      "STR": 2
+    },
+    "grantSkills": [
+      "endurance",
+      "carapace_lord",
+      "mp_regen"
+    ]
+  },
+  {
+    "id": "colossal_weaver",
+    "raceId": "spider",
+    "locKey": "form.colossal_weaver.name",
+    "evolvesTo": [
+      "undying_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "STR": 3
+    },
+    "grantSkills": [
+      "adamant_plating",
+      "blood_engine",
+      "toughness"
+    ]
+  },
+  {
+    "id": "shade_stalker",
+    "raceId": "spider",
+    "locKey": "form.shade_stalker.name",
+    "evolvesTo": [
+      "undying_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 4,
+      "INT": 2
+    },
+    "grantSkills": [
+      "stealth",
+      "phase_body",
+      "numbing_gaze",
+      "web_trap"
+    ]
+  },
+  {
+    "id": "scythe_hunter",
+    "raceId": "spider",
+    "locKey": "form.scythe_hunter.name",
+    "evolvesTo": [
+      "undying_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 3,
+      "STR": 3
+    },
+    "grantSkills": [
+      "piercing_gaze",
+      "silk_thread",
+      "spark"
+    ]
+  },
+  {
+    "id": "undying_horror",
+    "raceId": "spider",
+    "locKey": "form.undying_horror.name",
+    "evolvesTo": [
+      "revenant_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 6,
+      "STR": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "regeneration",
+      "regenerative_core",
+      "undying_husk"
+    ]
+  },
+  {
+    "id": "revenant_horror",
+    "raceId": "spider",
+    "locKey": "form.revenant_horror.name",
+    "evolvesTo": [
+      "dread_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "STR": 4,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "undying_vitality",
+      "regenerative_core"
+    ]
+  },
+  {
+    "id": "dread_weaver",
+    "raceId": "spider",
+    "locKey": "form.dread_weaver.name",
+    "evolvesTo": [
+      "wraith_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "AGI": 4,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "phantom_presence",
+      "plague_mist"
+    ]
+  },
+  {
+    "id": "wraith_sovereign",
+    "raceId": "spider",
+    "locKey": "form.wraith_sovereign.name",
+    "evolvesTo": [
+      "elder_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 4
+    },
+    "grantSkills": [
+      "spatial_web",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "elder_sovereign",
+    "raceId": "spider",
+    "locKey": "form.elder_sovereign.name",
+    "evolvesTo": [
+      "abyssal_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 5,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "all_sight",
+      "precognition"
+    ]
+  },
+  {
+    "id": "abyssal_sovereign",
+    "raceId": "spider",
+    "locKey": "form.abyssal_sovereign.name",
+    "evolvesTo": [
+      "arachnid_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 6,
+      "AGI": 5,
+      "INT": 5
+    },
+    "grantSkills": [
+      "reaper_edge",
+      "domination_gaze",
+      "endless_mana"
+    ]
+  },
+  {
+    "id": "arachnid_sovereign",
+    "raceId": "spider",
+    "locKey": "form.arachnid_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 5,
+      "AGI": 3,
+      "WIS": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_predator",
+      "soul_gaze",
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "slime_larva",
+    "raceId": "slime",
+    "locKey": "form.slime_larva.name",
+    "evolvesTo": [
+      "ooze_spawn"
+    ],
+    "levelReq": 1
+  },
+  {
+    "id": "ooze_spawn",
+    "raceId": "slime",
+    "locKey": "form.ooze_spawn.name",
+    "evolvesTo": [
+      "acid_ooze",
+      "blob_slime",
+      "crystalline_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 2,
+      "INT": 1,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "caustic_spray",
+      "gelatinous_body"
+    ]
+  },
+  {
+    "id": "acid_ooze",
+    "raceId": "slime",
+    "locKey": "form.acid_ooze.name",
+    "evolvesTo": [
+      "toxic_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "toxic_cloud",
+      "mana_sense"
+    ]
+  },
+  {
+    "id": "blob_slime",
+    "raceId": "slime",
+    "locKey": "form.blob_slime.name",
+    "evolvesTo": [
+      "elder_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 4,
+      "STR": 2
+    },
+    "grantSkills": [
+      "endurance",
+      "hp_regen"
+    ]
+  },
+  {
+    "id": "crystalline_ooze",
+    "raceId": "slime",
+    "locKey": "form.crystalline_ooze.name",
+    "evolvesTo": [
+      "mirror_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "parallel_minds",
+      "stealth"
+    ]
+  },
+  {
+    "id": "toxic_sovereign",
+    "raceId": "slime",
+    "locKey": "form.toxic_sovereign.name",
+    "evolvesTo": [
+      "primordial_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "AGI": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "plague_mist",
+      "necro_toxin"
+    ]
+  },
+  {
+    "id": "elder_ooze",
+    "raceId": "slime",
+    "locKey": "form.elder_ooze.name",
+    "evolvesTo": [
+      "primordial_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 7,
+      "STR": 3
+    },
+    "grantSkills": [
+      "regeneration",
+      "elastic_shield"
+    ]
+  },
+  {
+    "id": "mirror_ooze",
+    "raceId": "slime",
+    "locKey": "form.mirror_ooze.name",
+    "evolvesTo": [
+      "primordial_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 4,
+      "INT": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "phantom_presence",
+      "numbing_gaze"
+    ]
+  },
+  {
+    "id": "primordial_ooze",
+    "raceId": "slime",
+    "locKey": "form.primordial_ooze.name",
+    "evolvesTo": [
+      "ancient_slime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 4,
+      "INT": 4,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "predator_instinct",
+      "primordial_ooze_shield"
+    ]
+  },
+  {
+    "id": "ancient_slime",
+    "raceId": "slime",
+    "locKey": "form.ancient_slime.name",
+    "evolvesTo": [
+      "devourer_slime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 3
+    },
+    "grantSkills": [
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "devourer_slime",
+    "raceId": "slime",
+    "locKey": "form.devourer_slime.name",
+    "evolvesTo": [
+      "void_ooze"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 4,
+      "AGI": 4
+    },
+    "grantSkills": [
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "void_ooze",
+    "raceId": "slime",
+    "locKey": "form.void_ooze.name",
+    "evolvesTo": [
+      "eternal_slime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 4,
+      "VIT": 4
+    },
+    "grantSkills": [
+      "soul_gaze",
+      "dissolving_touch"
+    ]
+  },
+  {
+    "id": "eternal_slime",
+    "raceId": "slime",
+    "locKey": "form.eternal_slime.name",
+    "evolvesTo": [
+      "slime_ascendant"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 6,
+      "INT": 5,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "all_sight"
+    ]
+  },
+  {
+    "id": "slime_ascendant",
+    "raceId": "slime",
+    "locKey": "form.slime_ascendant.name",
+    "evolvesTo": [
+      "slime_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 7,
+      "INT": 6,
+      "AGI": 4
+    },
+    "grantSkills": [
+      "spatial_rift",
+      "regenerative_core"
+    ]
+  },
+  {
+    "id": "slime_sovereign",
+    "raceId": "slime",
+    "locKey": "form.slime_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 5,
+      "AGI": 3,
+      "WIS": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_predator",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "bone_rattle",
+    "raceId": "skeleton",
+    "locKey": "form.bone_rattle.name",
+    "evolvesTo": [
+      "risen_skeleton"
+    ],
+    "levelReq": 1
+  },
+  {
+    "id": "risen_skeleton",
+    "raceId": "skeleton",
+    "locKey": "form.risen_skeleton.name",
+    "evolvesTo": [
+      "skeleton_warrior",
+      "skeleton_sorcerer",
+      "bone_archer"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 2,
+      "VIT": 2,
+      "INT": 1
+    },
+    "grantSkills": [
+      "hp_regen",
+      "endurance",
+      "bone_armor"
+    ]
+  },
+  {
+    "id": "skeleton_warrior",
+    "raceId": "skeleton",
+    "locKey": "form.skeleton_warrior.name",
+    "evolvesTo": [
+      "bone_lord"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "bone_arrow",
+      "bone_armor",
+      "toughness"
+    ]
+  },
+  {
+    "id": "skeleton_sorcerer",
+    "raceId": "skeleton",
+    "locKey": "form.skeleton_sorcerer.name",
+    "evolvesTo": [
+      "lich"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "shadow_bolt",
+      "mana_sense",
+      "parallel_minds"
+    ]
+  },
+  {
+    "id": "bone_archer",
+    "raceId": "skeleton",
+    "locKey": "form.bone_archer.name",
+    "evolvesTo": [
+      "shade_knight"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "bone_arrow",
+      "arrow_barrage"
+    ]
+  },
+  {
+    "id": "bone_lord",
+    "raceId": "skeleton",
+    "locKey": "form.bone_lord.name",
+    "evolvesTo": [
+      "death_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "arrow_barrage",
+      "bone_fortress"
+    ]
+  },
+  {
+    "id": "lich",
+    "raceId": "skeleton",
+    "locKey": "form.lich.name",
+    "evolvesTo": [
+      "death_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 4,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "soul_gaze",
+      "decay_curse"
+    ]
+  },
+  {
+    "id": "shade_knight",
+    "raceId": "skeleton",
+    "locKey": "form.shade_knight.name",
+    "evolvesTo": [
+      "death_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 5,
+      "STR": 3,
+      "INT": 2
+    },
+    "grantSkills": [
+      "stealth",
+      "phase_body",
+      "numbing_gaze"
+    ]
+  },
+  {
+    "id": "death_sovereign",
+    "raceId": "skeleton",
+    "locKey": "form.death_sovereign.name",
+    "evolvesTo": [
+      "ancient_lich"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 4,
+      "INT": 4,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "unyielding_core",
+      "undying_vitality"
+    ]
+  },
+  {
+    "id": "ancient_lich",
+    "raceId": "skeleton",
+    "locKey": "form.ancient_lich.name",
+    "evolvesTo": [
+      "revenant_king"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 5,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "phantom_presence"
+    ]
+  },
+  {
+    "id": "revenant_king",
+    "raceId": "skeleton",
+    "locKey": "form.revenant_king.name",
+    "evolvesTo": [
+      "bone_titan"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 4
+    },
+    "grantSkills": [
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "bone_titan",
+    "raceId": "skeleton",
+    "locKey": "form.bone_titan.name",
+    "evolvesTo": [
+      "undead_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 6,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "all_sight"
+    ]
+  },
+  {
+    "id": "undead_sovereign",
+    "raceId": "skeleton",
+    "locKey": "form.undead_sovereign.name",
+    "evolvesTo": [
+      "death_incarnate"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 5,
+      "VIT": 5
+    },
+    "grantSkills": [
+      "unholy_heart"
+    ]
+  },
+  {
+    "id": "death_incarnate",
+    "raceId": "skeleton",
+    "locKey": "form.death_incarnate.name",
+    "evolvesTo": [
+      "skeleton_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 6,
+      "INT": 6,
+      "AGI": 4
+    },
+    "grantSkills": [
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "skeleton_sovereign",
+    "raceId": "skeleton",
+    "locKey": "form.skeleton_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 5,
+      "WIS": 4,
+      "AGI": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_predator",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "wyrmling_hatch",
+    "raceId": "wyrmling",
+    "locKey": "form.wyrmling_hatch.name",
+    "evolvesTo": [
+      "young_drake"
+    ],
+    "levelReq": 1
+  },
+  {
+    "id": "young_drake",
+    "raceId": "wyrmling",
+    "locKey": "form.young_drake.name",
+    "evolvesTo": [
+      "fire_wyrm",
+      "shadow_drake",
+      "storm_drake"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 2,
+      "INT": 2,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "dragon_claw",
+      "mana_sense",
+      "hp_regen"
+    ]
+  },
+  {
+    "id": "fire_wyrm",
+    "raceId": "wyrmling",
+    "locKey": "form.fire_wyrm.name",
+    "evolvesTo": [
+      "elder_drake"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "INT": 3
+    },
+    "grantSkills": [
+      "fire_breath",
+      "overdraw",
+      "dragon_slash"
+    ]
+  },
+  {
+    "id": "shadow_drake",
+    "raceId": "wyrmling",
+    "locKey": "form.shadow_drake.name",
+    "evolvesTo": [
+      "void_dragon"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 3,
+      "INT": 2,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "stealth",
+      "dread_gaze",
+      "phase_body"
+    ]
+  },
+  {
+    "id": "storm_drake",
+    "raceId": "wyrmling",
+    "locKey": "form.storm_drake.name",
+    "evolvesTo": [
+      "lightning_wyrm"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "spark",
+      "piercing_gaze"
+    ]
+  },
+  {
+    "id": "elder_drake",
+    "raceId": "wyrmling",
+    "locKey": "form.elder_drake.name",
+    "evolvesTo": [
+      "dragon_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "INT": 4,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "dragon_slash",
+      "overdraw",
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "void_dragon",
+    "raceId": "wyrmling",
+    "locKey": "form.void_dragon.name",
+    "evolvesTo": [
+      "dragon_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 4,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "phantom_presence",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "lightning_wyrm",
+    "raceId": "wyrmling",
+    "locKey": "form.lightning_wyrm.name",
+    "evolvesTo": [
+      "dragon_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "AGI": 5,
+      "STR": 2
+    },
+    "grantSkills": [
+      "parallel_minds",
+      "numbing_gaze"
+    ]
+  },
+  {
+    "id": "dragon_sovereign",
+    "raceId": "wyrmling",
+    "locKey": "form.dragon_sovereign.name",
+    "evolvesTo": [
+      "elder_dragon"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 3,
+      "INT": 5,
+      "AGI": 3,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "draconic_blood",
+      "dragon_scale"
+    ]
+  },
+  {
+    "id": "elder_dragon",
+    "raceId": "wyrmling",
+    "locKey": "form.elder_dragon.name",
+    "evolvesTo": [
+      "ancient_wyrm"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "INT": 5,
+      "VIT": 4
+    },
+    "grantSkills": [
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "ancient_wyrm",
+    "raceId": "wyrmling",
+    "locKey": "form.ancient_wyrm.name",
+    "evolvesTo": [
+      "world_serpent"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "INT": 5,
+      "AGI": 4
+    },
+    "grantSkills": [
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "world_serpent",
+    "raceId": "wyrmling",
+    "locKey": "form.world_serpent.name",
+    "evolvesTo": [
+      "void_leviathan"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 5,
+      "INT": 5,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "all_sight"
+    ]
+  },
+  {
+    "id": "void_leviathan",
+    "raceId": "wyrmling",
+    "locKey": "form.void_leviathan.name",
+    "evolvesTo": [
+      "cosmic_dragon"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "STR": 5,
+      "WIS": 5
+    },
+    "grantSkills": [
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "cosmic_dragon",
+    "raceId": "wyrmling",
+    "locKey": "form.cosmic_dragon.name",
+    "evolvesTo": [
+      "dragon_god"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "INT": 7,
+      "VIT": 6,
+      "AGI": 4
+    },
+    "grantSkills": [
+      "dragon_heart",
+      "void_barrier"
+    ]
+  },
+  {
+    "id": "dragon_god",
+    "raceId": "wyrmling",
+    "locKey": "form.dragon_god.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 5,
+      "AGI": 3,
+      "WIS": 5,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_predator",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "pebble_golem",
+    "raceId": "golem",
+    "locKey": "form.pebble_golem.name",
+    "evolvesTo": [
+      "stone_golem"
+    ],
+    "levelReq": 1
+  },
+  {
+    "id": "stone_golem",
+    "raceId": "golem",
+    "locKey": "form.stone_golem.name",
+    "evolvesTo": [
+      "iron_golem",
+      "crystal_golem",
+      "lava_golem"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "toughness",
+      "endurance",
+      "stone_skin"
+    ]
+  },
+  {
+    "id": "iron_golem",
+    "raceId": "golem",
+    "locKey": "form.iron_golem.name",
+    "evolvesTo": [
+      "titan_golem"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "STR": 3
+    },
+    "grantSkills": [
+      "iron_plating",
+      "hp_regen"
+    ]
+  },
+  {
+    "id": "crystal_golem",
+    "raceId": "golem",
+    "locKey": "form.crystal_golem.name",
+    "evolvesTo": [
+      "arcane_golem"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 4,
+      "VIT": 2,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "mana_sense",
+      "mp_regen"
+    ]
+  },
+  {
+    "id": "lava_golem",
+    "raceId": "golem",
+    "locKey": "form.lava_golem.name",
+    "evolvesTo": [
+      "magma_colossus"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "heavy_slam",
+      "magma_fist"
+    ]
+  },
+  {
+    "id": "titan_golem",
+    "raceId": "golem",
+    "locKey": "form.titan_golem.name",
+    "evolvesTo": [
+      "colossus_prime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 6,
+      "INT": 2
+    },
+    "grantSkills": [
+      "obsidian_carapace",
+      "steam_engine"
+    ]
+  },
+  {
+    "id": "arcane_golem",
+    "raceId": "golem",
+    "locKey": "form.arcane_golem.name",
+    "evolvesTo": [
+      "colossus_prime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "VIT": 3,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "parallel_minds",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "magma_colossus",
+    "raceId": "golem",
+    "locKey": "form.magma_colossus.name",
+    "evolvesTo": [
+      "colossus_prime"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 4,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "magma_fist",
+      "piercing_gaze"
+    ]
+  },
+  {
+    "id": "colossus_prime",
+    "raceId": "golem",
+    "locKey": "form.colossus_prime.name",
+    "evolvesTo": [
+      "ancient_golem"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 6,
+      "INT": 3
+    },
+    "grantSkills": [
+      "stone_nature",
+      "unyielding_core"
+    ]
+  },
+  {
+    "id": "ancient_golem",
+    "raceId": "golem",
+    "locKey": "form.ancient_golem.name",
+    "evolvesTo": [
+      "void_golem"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 6,
+      "INT": 4
+    },
+    "grantSkills": [
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "void_golem",
+    "raceId": "golem",
+    "locKey": "form.void_golem.name",
+    "evolvesTo": [
+      "eternal_colossus"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 5,
+      "INT": 5
+    },
+    "grantSkills": [
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "eternal_colossus",
+    "raceId": "golem",
+    "locKey": "form.eternal_colossus.name",
+    "evolvesTo": [
+      "golem_ascendant"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 7,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "all_sight"
+    ]
+  },
+  {
+    "id": "golem_ascendant",
+    "raceId": "golem",
+    "locKey": "form.golem_ascendant.name",
+    "evolvesTo": [
+      "stone_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 7,
+      "INT": 5,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "crystal_heart"
+    ]
+  },
+  {
+    "id": "stone_sovereign",
+    "raceId": "golem",
+    "locKey": "form.stone_sovereign.name",
+    "evolvesTo": [
+      "golem_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "VIT": 8,
+      "INT": 5,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "golem_sovereign",
+    "raceId": "golem",
+    "locKey": "form.golem_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 5,
+      "INT": 5,
+      "AGI": 3,
+      "WIS": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "stone_nature",
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "novice_human",
+    "raceId": "human",
+    "locKey": "form.novice_human.name",
+    "evolvesTo": [
+      "fighter_apprentice"
+    ],
+    "levelReq": 1,
+    "statBonus": {},
+    "grantSkills": []
+  },
+  {
+    "id": "fighter_apprentice",
+    "raceId": "human",
+    "locKey": "form.fighter_apprentice.name",
+    "evolvesTo": [
+      "warrior_path",
+      "scholar_path"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 1,
+      "VIT": 2,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "endurance",
+      "hp_regen",
+      "sword_slash",
+      "weapon_mastery"
+    ]
+  },
+  {
+    "id": "warrior_path",
+    "raceId": "human",
+    "locKey": "form.warrior_path.name",
+    "evolvesTo": [
+      "crusader",
+      "shadow_warrior"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "blade_dance",
+      "parry"
+    ]
+  },
+  {
+    "id": "scholar_path",
+    "raceId": "human",
+    "locKey": "form.scholar_path.name",
+    "evolvesTo": [
+      "elemental_mage",
+      "dark_scholar"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "mp_regen",
+      "mana_sense"
+    ]
+  },
+  {
+    "id": "crusader",
+    "raceId": "human",
+    "locKey": "form.crusader.name",
+    "evolvesTo": [
+      "paladin",
+      "champion_human"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "holy_strike",
+      "righteous_strike"
+    ]
+  },
+  {
+    "id": "shadow_warrior",
+    "raceId": "human",
+    "locKey": "form.shadow_warrior.name",
+    "evolvesTo": [
+      "assassin_human",
+      "berserker_human"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 4,
+      "STR": 3
+    },
+    "grantSkills": [
+      "piercing_gaze",
+      "overdraw"
+    ]
+  },
+  {
+    "id": "elemental_mage",
+    "raceId": "human",
+    "locKey": "form.elemental_mage.name",
+    "evolvesTo": [
+      "pyromancer",
+      "cryomancer"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "flame_bolt",
+      "spark"
+    ]
+  },
+  {
+    "id": "dark_scholar",
+    "raceId": "human",
+    "locKey": "form.dark_scholar.name",
+    "evolvesTo": [
+      "necromancer_human",
+      "void_seeker"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 2,
+      "VIT": 1
+    },
+    "grantSkills": [
+      "soul_gaze",
+      "mana_sense"
+    ]
+  },
+  {
+    "id": "paladin",
+    "raceId": "human",
+    "locKey": "form.paladin.name",
+    "evolvesTo": [
+      "divine_champion",
+      "holy_crusader"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "STR": 3,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "shield_guard",
+      "divine_recovery"
+    ]
+  },
+  {
+    "id": "champion_human",
+    "raceId": "human",
+    "locKey": "form.champion_human.name",
+    "evolvesTo": [
+      "grand_champion",
+      "blade_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "blade_mastery",
+      "battle_cry"
+    ]
+  },
+  {
+    "id": "assassin_human",
+    "raceId": "human",
+    "locKey": "form.assassin_human.name",
+    "evolvesTo": [
+      "shadow_lord",
+      "phantom_lord"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 6,
+      "STR": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "piercing_gaze",
+      "blade_dance"
+    ]
+  },
+  {
+    "id": "berserker_human",
+    "raceId": "human",
+    "locKey": "form.berserker_human.name",
+    "evolvesTo": [
+      "blood_warlord",
+      "war_deity"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 2,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "overdraw",
+      "battle_cry"
+    ]
+  },
+  {
+    "id": "pyromancer",
+    "raceId": "human",
+    "locKey": "form.pyromancer.name",
+    "evolvesTo": [
+      "flame_sovereign",
+      "volcano_lord"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "flame_bolt",
+      "lightning_strike"
+    ]
+  },
+  {
+    "id": "cryomancer",
+    "raceId": "human",
+    "locKey": "form.cryomancer.name",
+    "evolvesTo": [
+      "blizzard_sovereign",
+      "frost_archmage"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 5,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "mana_shield",
+      "mp_regen"
+    ]
+  },
+  {
+    "id": "necromancer_human",
+    "raceId": "human",
+    "locKey": "form.necromancer_human.name",
+    "evolvesTo": [
+      "lich_master",
+      "death_ascendant"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "soul_gaze",
+      "memory_palace"
+    ]
+  },
+  {
+    "id": "void_seeker",
+    "raceId": "human",
+    "locKey": "form.void_seeker.name",
+    "evolvesTo": [
+      "void_herald",
+      "chaos_archmage"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "mana_shield",
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "divine_champion",
+    "raceId": "human",
+    "locKey": "form.divine_champion.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 6,
+      "STR": 5,
+      "WIS": 5,
+      "INT": 3,
+      "AGI": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "divine_recovery",
+      "sovereign_form",
+      "all_sight"
+    ]
+  },
+  {
+    "id": "holy_crusader",
+    "raceId": "human",
+    "locKey": "form.holy_crusader.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 5,
+      "WIS": 4,
+      "INT": 3,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "holy_strike",
+      "battle_cry"
+    ]
+  },
+  {
+    "id": "grand_champion",
+    "raceId": "human",
+    "locKey": "form.grand_champion.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "VIT": 5,
+      "AGI": 4,
+      "LUCK": 2,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_predator",
+      "battle_cry"
+    ]
+  },
+  {
+    "id": "blade_sovereign",
+    "raceId": "human",
+    "locKey": "form.blade_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "AGI": 6,
+      "LUCK": 4,
+      "VIT": 3,
+      "INT": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "blade_mastery",
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "shadow_lord",
+    "raceId": "human",
+    "locKey": "form.shadow_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "LUCK": 6,
+      "STR": 4,
+      "INT": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "piercing_gaze",
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "phantom_lord",
+    "raceId": "human",
+    "locKey": "form.phantom_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 7,
+      "INT": 5,
+      "LUCK": 5,
+      "STR": 3,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "domination_gaze",
+      "soul_gaze"
+    ]
+  },
+  {
+    "id": "blood_warlord",
+    "raceId": "human",
+    "locKey": "form.blood_warlord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 9,
+      "VIT": 5,
+      "AGI": 3,
+      "LUCK": 2,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "overdraw",
+      "apex_predator"
+    ]
+  },
+  {
+    "id": "war_deity",
+    "raceId": "human",
+    "locKey": "form.war_deity.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "VIT": 6,
+      "AGI": 4,
+      "INT": 2,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "battle_cry",
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "flame_sovereign",
+    "raceId": "human",
+    "locKey": "form.flame_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 5,
+      "STR": 4,
+      "VIT": 2,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "flame_bolt",
+      "all_sight"
+    ]
+  },
+  {
+    "id": "volcano_lord",
+    "raceId": "human",
+    "locKey": "form.volcano_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 6,
+      "STR": 5,
+      "VIT": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "lightning_strike",
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "blizzard_sovereign",
+    "raceId": "human",
+    "locKey": "form.blizzard_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 7,
+      "AGI": 4,
+      "VIT": 3,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "mana_shield",
+      "parallel_minds"
+    ]
+  },
+  {
+    "id": "frost_archmage",
+    "raceId": "human",
+    "locKey": "form.frost_archmage.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 6,
+      "AGI": 3,
+      "LUCK": 4,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "mp_regen",
+      "spatial_rift"
+    ]
+  },
+  {
+    "id": "lich_master",
+    "raceId": "human",
+    "locKey": "form.lich_master.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 6,
+      "VIT": 4,
+      "LUCK": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "soul_gaze",
+      "memory_palace"
+    ]
+  },
+  {
+    "id": "death_ascendant",
+    "raceId": "human",
+    "locKey": "form.death_ascendant.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 5,
+      "VIT": 5,
+      "AGI": 3,
+      "LUCK": 4
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "all_sight",
+      "divine_recovery"
+    ]
+  },
+  {
+    "id": "void_herald",
+    "raceId": "human",
+    "locKey": "form.void_herald.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 9,
+      "WIS": 5,
+      "LUCK": 5,
+      "AGI": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "spatial_rift",
+      "domination_gaze"
+    ]
+  },
+  {
+    "id": "chaos_archmage",
+    "raceId": "human",
+    "locKey": "form.chaos_archmage.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 6,
+      "LUCK": 4,
+      "STR": 3,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "parallel_minds",
+      "all_sight"
+    ]
+  }
 ]

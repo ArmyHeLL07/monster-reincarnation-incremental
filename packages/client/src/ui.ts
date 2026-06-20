@@ -1261,8 +1261,11 @@ function evolutionTree(state: GameState): string {
   // Detect fully diverging branches (no form has 2+ in-tree parents → no reconvergence).
   const nodeSet = new Set(nodes.map(n => n.id));
   const hasConvergence = nodes.some(n => n.parents.filter(p => nodeSet.has(p)).length > 1);
-  const hasBranch = nodes.some(n => n.children.filter(c => nodeSet.has(c)).length > 1);
-  if (hasBranch && !hasConvergence) return evolutionTreePhylo(nodes);
+  const branchNodeCount = nodes.filter(n => n.children.filter(c => nodeSet.has(c)).length > 1).length;
+  const hasBranch = branchNodeCount > 0;
+  // Phylo layout only fits a SINGLE branch point (one trunk splits into parallel tracks).
+  // A binary tree has many branch nodes — use tier-row layout instead.
+  if (hasBranch && !hasConvergence && branchNodeCount === 1) return evolutionTreePhylo(nodes);
 
   // Default: tier-row layout (converging branches, linear chains)
   const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => b - a);
