@@ -11,6 +11,17 @@
 
 ---
 
+## ✅ Yapıldı (2026-06-20) — harita random olayları
+
+- **Seçim-tabanlı oda olayları:** yeni olay-odası tipi (hash-kararlı), metin+seçenek paneli, seçene
+  kadar savaş/ilerleme kilitli, bir kez çözülür. **Bilgi=Hayatta Kalma:** önsezi (sonuç önizleme) +
+  kapı (koşullu seçenek, gereksinim gösterilir). Risk yelpazesi lezzet→ölümcül (telgraflı). Data-driven
+  `events.json` **20 olay** (sistem-bağlı: ağ/açlık/ruler/element/lore/gaze/scar), tüm metin tr+en.
+  Yeni `roomevents.ts` (saf mantık) + combat kavşakları + UI paneli.
+- **Sistemler-arası mantık denetimi (Atıl isteği) — 6 hata bulundu & düzeltildi:** döngüsel import,
+  dosya-adı çakışması, **rebirth'te formHistory sıfırlanmıyordu (evrim ağacı bug'ı)**, boss odası olay
+  olabiliyordu, spawn metni gösterilmiyordu, farm-zıplamada stale event. typecheck+build ✓. *(Push/deploy beklemede.)*
+
 ## ✅ Yapıldı (2026-06-20) — evrim ağacı görseli
 
 - **Evrim ağacı görseli (Statlar sekmesi):** düz liste yerine **dikey dallanan ağaç** (tier T0→T10,

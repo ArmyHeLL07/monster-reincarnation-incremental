@@ -4,6 +4,7 @@ import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView } from './game/evolution';
+import { condMet, foresee, reqText } from './game/roomevents';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower } from './game/combat';
 import { canRebirth } from './game/rebirth';
@@ -46,6 +47,7 @@ export interface UiActions {
   onRebirth: () => void;
   onReadBook: (id: string) => void;
   onAnswerRoom: (answer: string) => void;
+  onChooseEvent: (i: number) => void;
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
@@ -423,7 +425,32 @@ function enemyView(state: GameState): string {
   return `<div class="erow">${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
+/** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */
+function eventPanel(state: GameState): string {
+  const pe = state.pendingEvent;
+  if (!pe) return '';
+  const def = CONTENT.events.get(pe.id);
+  if (!def) return '';
+  const reveal = foresee(state, def);
+  const choices = def.choices
+    .map((c, i) => {
+      const ok = condMet(state, c.requires);
+      const allOut = [...(c.outcomes ?? []), ...(c.random?.flatMap((b) => b.outcomes) ?? [])];
+      const preview =
+        reveal && allOut.length
+          ? `<div class="muted ev-foresee">↳ ${allOut.map((o) => t(o.locKeyResult)).join(' / ')}</div>`
+          : '';
+      const lock = !ok ? ` <span class="muted">(${t('ui.ev_requires')}: ${reqText(c.requires)})</span>` : '';
+      return `<button class="evchoice" data-evchoice="${i}"${ok ? '' : ' disabled'}>${t(c.locKey)}${lock}</button>${preview}`;
+    })
+    .join('');
+  return `<section class="panel evpanel"><div class="ev-head">${def.icon ?? '❗'} <b>${t('ui.ev_title')}</b></div>
+    <p>${t(def.locKey)}</p><div class="ev-choices">${choices}</div></section>`;
+}
+
 function combatTab(state: GameState): string {
+  // An open map event takes over the dungeon view — no combat until a choice is made.
+  if (state.pendingEvent) return eventPanel(state);
   const resists = state.resistances
     .map((r) => {
       const def = CONTENT.resistances.get(r.id);
@@ -520,6 +547,9 @@ function wireCombat(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#meditate')?.addEventListener('click', ACTIONS.onMeditate);
   el.querySelector<HTMLButtonElement>('#search')?.addEventListener('click', ACTIONS.onSearch);
   el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
+  el.querySelectorAll<HTMLButtonElement>('.evchoice').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onChooseEvent(Number(b.dataset.evchoice))),
+  );
 }
 
 // ---- MAP -------------------------------------------------------------------

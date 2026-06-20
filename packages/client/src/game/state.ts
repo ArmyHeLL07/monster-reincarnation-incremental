@@ -202,6 +202,10 @@ export interface GameState {
   autoAdvance: boolean;
   /** True when the current room is cleared/explored and the player may advance. */
   roomCleared: boolean;
+  /** Unresolved map event (blocks combat/advance until a choice is made). */
+  pendingEvent: { id: string; roomKey: string } | null;
+  /** Room keys (layer.floor.room) of resolved events — won't re-trigger when farming. */
+  resolvedEvents: string[];
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -303,6 +307,8 @@ export function newGame(): GameState {
     formHistory: ['hatchling_spider'],
     autoAdvance: false,
     roomCleared: false,
+    pendingEvent: null,
+    resolvedEvents: [],
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

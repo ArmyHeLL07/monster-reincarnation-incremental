@@ -6,6 +6,7 @@ import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from '
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
 import { gainSin } from './ruler';
+import { rollRoomEvent, outcomesFor, applyOutcome, condMet, roomKeyOf } from './roomevents';
 import { meditateTick } from './meditation';
 import { diffDef } from './difficulty';
 
@@ -241,9 +242,20 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
 }
 
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
+  if (state.pendingEvent) return; // an event panel is open — no combat until the player chooses
   // An explored (no-combat) room has nothing to farm — it holds until the player taps "Advance".
   if (state.roomCleared) return;
   if (!state.enemy) {
+    // Event rooms never replace the entry room or the floor's boss room.
+    const evLayer = currentLayer(state, content);
+    const atBossRoom = !!evLayer && state.pos.room >= roomsOf(state, evLayer, state.pos.floor);
+    if (!atBossRoom) {
+      const evId = rollRoomEvent(state, content);
+      if (evId) {
+        state.pendingEvent = { id: evId, roomKey: roomKeyOf(state) };
+        return; // event set up; the UI shows its panel
+      }
+    }
     if (isExplorationRoom(state, content)) {
       resolveExploration(state, content, log); // calm room: small reward
       if (state.autoAdvance) advancePosition(state, content, log);
@@ -477,21 +489,16 @@ function trySenseRoom(state: GameState, content: Content, log: Log): void {
   }
 }
 
-function spawnEnemy(state: GameState, content: Content, log: Log): void {
-  const layer = currentLayer(state, content);
-  if (!layer || layer.enemyPool.length === 0) return;
-  const R = roomsOf(state, layer, state.pos.floor);
-  recordExplored(state); // light the room on the map as we enter it
-  const isBoss = state.pos.room >= R;
-  const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+/** Build a depth-scaled enemy instance for the current position (shared by combat & event spawns). */
+function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean): GameState['enemy'] {
   const def = content.enemies.get(archId);
-  if (!def) return;
+  if (!def) return null;
   const diff = diffDef(state, content);
   const depth = (state.pos.layer - 1) * 100 + (state.pos.floor - 1) * 15 + state.pos.room;
   const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult;
   const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult;
   const hp = Math.round(def.hp * hpMult);
-  state.enemy = {
+  return {
     id: archId,
     locKey: def.locKey,
     hp,
@@ -506,7 +513,67 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     race: def.race,
     icon: def.icon,
   };
-  log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: def.locKey } });
+}
+
+function spawnEnemy(state: GameState, content: Content, log: Log): void {
+  const layer = currentLayer(state, content);
+  if (!layer || layer.enemyPool.length === 0) return;
+  const R = roomsOf(state, layer, state.pos.floor);
+  recordExplored(state); // light the room on the map as we enter it
+  const isBoss = state.pos.room >= R;
+  const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+  const enemy = makeEnemy(state, content, archId, isBoss);
+  if (!enemy) return;
+  state.enemy = enemy;
+  log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
+}
+
+/** Event outcome: start a specific (non-boss) enemy in this room. */
+export function spawnEventEnemy(state: GameState, content: Content, enemyId: string, log: Log): void {
+  const enemy = makeEnemy(state, content, enemyId, false);
+  if (!enemy) return;
+  state.enemy = enemy;
+  log({ key: 'log.ev_spawn', params: { enemy: enemy.locKey } });
+}
+
+/**
+ * Resolve the player's choice on the pending event. Lives in combat.ts because some outcomes
+ * spawn an enemy or kill the player (combat concerns). Returns false if invalid/locked.
+ */
+export function chooseEvent(state: GameState, content: Content, choiceIndex: number, log: Log, b?: Bonuses): boolean {
+  const pe = state.pendingEvent;
+  if (!pe) return false;
+  const def = content.events.get(pe.id);
+  const choice = def?.choices[choiceIndex];
+  if (!def || !choice) return false;
+  if (!condMet(state, choice.requires)) {
+    log({ key: 'log.ev_locked' });
+    return false;
+  }
+  const outcomes = outcomesFor(choice);
+  let spawned = false;
+  for (const o of outcomes) {
+    if (o.kind === 'spawn' && typeof o.value === 'string') {
+      log({ key: o.locKeyResult }); // event's own flavor text…
+      spawnEventEnemy(state, content, o.value, log); // …then the generic "X appears" + the enemy
+      spawned = true;
+    } else {
+      applyOutcome(state, content, o, log);
+    }
+  }
+  recordExplored(state); // an event room counts as explored — light it on the map
+  state.resolvedEvents.push(pe.roomKey);
+  state.pendingEvent = null;
+  if (state.hp <= 0) {
+    onDeath(state, content, log, b ?? aggregateBonuses(state, content));
+    return true;
+  }
+  // No spawn → the room is now a resolved calm room: hold for "Advance" (or auto-advance).
+  if (!spawned) {
+    if (state.autoAdvance) advancePosition(state, content, log);
+    else state.roomCleared = true;
+  }
+  return true;
 }
 
 /** Cast one specific equipped skill at the current enemy (shared by auto & manual). True if it fired. */
@@ -773,6 +840,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
 /** Player tapped "Advance" (manual progression) — move one room forward, abandoning the current foe. */
 export function advanceRoom(state: GameState, content: Content, log: Log): void {
   if (state.action !== 'combat') return;
+  if (state.pendingEvent) return; // can't advance past an unresolved event
   state.roomCleared = false;
   state.enemy = null; // leave the current room (whether mid-fight or after clearing)
   advancePosition(state, content, log);
@@ -837,6 +905,7 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   }
   state.pos.room = 1;
   state.roomCleared = false;
+  state.pendingEvent = null; // death clears any open event
   state.statusEffects = []; // death clears all lingering statuses
   recomputeMaxes(state);
   state.hp = state.maxHp;

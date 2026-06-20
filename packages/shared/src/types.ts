@@ -279,6 +279,49 @@ export interface SecretRoom {
   reward: { kind: 'skill' | 'stat' | 'unlock' | 'ep'; value: string | number };
 }
 
+/** Knowledge condition gating an event choice (also drives foresight). */
+export interface EventCond {
+  appraisalTier?: number;
+  int?: number;
+  stat?: Partial<Record<StatKey, number>>;
+  skill?: { id: string; level: number };
+  unlock?: string;
+}
+
+export type EventOutcomeKind =
+  | 'ep' | 'stat' | 'skill' | 'unlock' | 'fragment'
+  | 'hp' | 'status' | 'scar' | 'hunger'
+  | 'food' | 'sin' | 'virtue' | 'spawn' | 'none';
+
+/** One effect applied when a choice is taken. `hp` with a negative amount deals damage. */
+export interface EventOutcome {
+  kind: EventOutcomeKind;
+  value?: string | number;
+  amount?: number;
+  locKeyResult: string;
+}
+
+export interface EventChoice {
+  locKey: string;
+  /** Gate: choice is locked (disabled) until met. */
+  requires?: EventCond;
+  /** Fixed outcome(s), OR a weighted random branch (one is rolled). */
+  outcomes?: EventOutcome[];
+  random?: { weight: number; outcomes: EventOutcome[] }[];
+}
+
+/** A choice-based map event (GDD §8.2 — knowledge-gated room events). */
+export interface EventDef {
+  id: string;
+  locKey: string;
+  icon?: string;
+  layers?: number[];
+  weight?: number;
+  /** Foresight: outcomes are previewed when appraisalTier/INT meets this. */
+  revealReq?: { appraisalTier?: number; int?: number };
+  choices: EventChoice[];
+}
+
 /** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */
 export interface RulerDef {
   id: string;

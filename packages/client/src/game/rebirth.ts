@@ -40,6 +40,9 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.statusEffects = []; // a fresh life carries no lingering poison/burn…
   state.roomCleared = false; // …nor a stuck "cleared room" flag…
   state.cooldowns = {}; // …nor old skill cooldowns.
+  state.pendingEvent = null; // …nor an open map event…
+  state.resolvedEvents = []; // …and the fresh map's events re-trigger.
+  state.formHistory = [fresh.formId]; // lineage resets to the new weak start (seenForms = knowledge, preserved)
 
   // --- base stats reset, then keep the permanent boon -----------------------
   state.stats = { ...fresh.stats };

@@ -23,6 +23,22 @@
 - 6 ana statın (STR/VIT/AGI/INT/WIS/LUCK) **lore ağırlıklı açıklaması** (TR+EN, `stat.X.desc` anahtarları);
   Stats sekmesinde her statın altında muted satır olarak görünüyor. Stat etiketleri tam isimle güncellendi.
 
+### Eklendi (harita random olayları)
+- **Seçim-tabanlı oda olayları:** yeni "olay odası" tipi (koordinat-hash ile kararlı). Girince
+  metin + seçenek paneli çıkar, **seçim yapana kadar savaş/ilerleme kilitli**; bir kez çözülür.
+- **Bilgi = Hayatta Kalma:** önsezi (yüksek Appraisal/INT → sonuç/tehlike önizleme) + kapı (koşullu
+  özel seçenekler, gereksinim gösterilir). Risk yelpazesi: lezzet → risk/ödül → ölümcül (telgraflı).
+- **Data-driven** `events.json` — **20 olay** (çatal/tuzak/leş/sunak/yumurta/geçit/ağ/koza/yaralı yaratık/
+  yavru/reenkarne/element/günlük/lore taşı/bakan göz/boşluk yarığı/hükümdar izi/tıkırtı/yansıma/kiler);
+  outcome: ep/stat/skill/unlock/fragment/hp/status/scar/hunger/food/sin/virtue/spawn. Tüm metin tr+en.
+- **Yeni dosya** `roomevents.ts` (saf mantık); `combat.ts` kavşakları; `ui.ts` olay paneli.
+- **Mantık denetimi (sistemler-arası) — bulunan & düzeltilen 6 hata:** (1) `events.ts`↔`combat.ts`
+  döngüsel import (mantık ayrıştırıldı), (2) `events.ts` dosya-adı çakışması (mevcut emitter) →
+  `roomevents.ts`, (3) **rebirth `formHistory`'yi sıfırlamıyordu** (evrim ağacı kavşak bug'ı — soy eski
+  kalıyordu) + event durumu reset, (4) **boss odası olay olabiliyordu** (boss savaşı bloklanırdı) →
+  boss-oda guard'ı, (5) spawn olaylarının authored metni gösterilmiyordu, (6) farm zıplamada stale
+  `pendingEvent` (onSetPos/onSelectLayer'da temizlenir). Ölümde event reset; olay odası keşif sayılır.
+
 ### Eklendi (evrim ağacı görseli)
 - Statlar sekmesindeki düz "evrim listesi" yerine **dikey dallanan evrim ağacı görseli**: tier satırları
   (T0→T10), durum-stilli düğümler (geçmiş/şu an/seçilebilir/kilitli/kaçırılan/gizli).

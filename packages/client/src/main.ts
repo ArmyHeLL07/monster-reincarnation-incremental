@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent } from './game/combat';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -89,6 +89,7 @@ async function init(): Promise<void> {
         state.pos = { layer: id, floor: 1, room: 1 };
         state.enemy = null;
         state.roomCleared = false;
+        state.pendingEvent = null; // abandon any open event when jumping elsewhere
         save(state);
         render(state);
       }
@@ -102,6 +103,7 @@ async function init(): Promise<void> {
         state.pos = { layer: layerId, floor, room: 1 };
         state.enemy = null;
         state.roomCleared = false;
+        state.pendingEvent = null; // abandon any open event when jumping to another floor
         save(state);
         render(state);
       }
@@ -188,6 +190,11 @@ async function init(): Promise<void> {
     },
     onAnswerRoom: (answer) => {
       answerRoom(state, content, answer, logFn);
+      save(state);
+      render(state);
+    },
+    onChooseEvent: (i) => {
+      chooseEvent(state, content, i, logFn);
       save(state);
       render(state);
     },
@@ -344,6 +351,8 @@ function migrate(s: GameState): void {
   for (const k of Object.keys(expl)) if (!Array.isArray(expl[k])) delete expl[k];
   s.autoAdvance ??= false;
   s.roomCleared ??= false;
+  s.pendingEvent ??= null;
+  s.resolvedEvents ??= [];
   s.statusEffects ??= [];
 }
 
