@@ -23,6 +23,16 @@
 - 6 ana statın (STR/VIT/AGI/INT/WIS/LUCK) **lore ağırlıklı açıklaması** (TR+EN, `stat.X.desc` anahtarları);
   Stats sekmesinde her statın altında muted satır olarak görünüyor. Stat etiketleri tam isimle güncellendi.
 
+### Eklendi (evrim ağacı görseli)
+- Statlar sekmesindeki düz "evrim listesi" yerine **dikey dallanan evrim ağacı görseli**: tier satırları
+  (T0→T10), durum-stilli düğümler (geçmiş/şu an/seçilebilir/kilitli/kaçırılan/gizli).
+- **Karma reveal:** mevcut formdan ≤1 adım + soyun açık; ileri formlar silik `???` (isim gizli, dallanma
+  şekli görünür); yaklaştıkça kalıcı açılır. `state.seenForms` + `state.formHistory` ile kalıcı/deterministik.
+- Mevcut topoloji çizilir (3-dal + 3→1 birleşme); **denge/yeni yol yok**. Çapraz dallar + stat-koşullu
+  (ırka özel) evrim **ertelendi** (ayrı plan — bkz `docs/superpowers/specs/2026-06-20-evrim-agaci-gorseli-design.md` §10).
+- Dosyalar: `evolution.ts` (`evolutionTreeView`/`formTier`/`markSeen`), `state.ts` + `main.ts` (migrate),
+  `ui.ts` + `index.html` (CSS), i18n tr/en. `types.ts`/`evolutions.json` değişmedi.
+
 ## [Yayınlanmadı] — 2026-06-18
 
 ### Eklendi / Değişti (skill ekranı, akıcı barlar, canlı açılış, lore)

@@ -331,6 +331,11 @@ function migrate(s: GameState): void {
   s.exploredMax ??= {};
   s.layerRooms ??= {};
   s.layerFloors ??= {};
+  s.seenForms ??= [];
+  s.formHistory ??= [];
+  // Eski kayıt: formHistory boşsa en az mevcut formu koy (geçmiş ara formlar kaybolmuş olabilir;
+  // ağaç patlamaz, mevcut form doğru "current" görünür).
+  if (s.formHistory.length === 0 && s.formId) s.formHistory.push(s.formId);
   // v3 map model: rooms are now per-floor arrays. Drop any old per-layer single-number entries
   // so each floor re-rolls its own random width on next access (fog re-reveals as you move).
   const rooms = s.layerRooms as Record<string, unknown>;

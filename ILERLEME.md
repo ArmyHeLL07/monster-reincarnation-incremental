@@ -11,6 +11,14 @@
 
 ---
 
+## ✅ Yapıldı (2026-06-20) — evrim ağacı görseli
+
+- **Evrim ağacı görseli (Statlar sekmesi):** düz liste yerine **dikey dallanan ağaç** (tier T0→T10,
+  durum-stilli düğümler). **Karma reveal:** yolun + bir sonraki kademe net, ileri formlar silik `???`
+  (isim gizli, dallanma şekli görünür), yaklaştıkça kalıcı açılır (`seenForms`+`formHistory`). Mevcut
+  topoloji çizilir, denge/yeni yol yok. **Ertelendi:** çapraz dallar + stat-koşullu (ırka özel) evrim —
+  ayrı plan (spec §10). Brainstorm→spec→plan→uygulama (typecheck+build ✓). *(Push/deploy beklemede.)*
+
 ## ✅ Yapıldı (2026-06-20) — kat-bazlı random oda + stat lore
 
 - **Oda sayısı artık gerçekten kat-bazlı random (12–20).** Eskiden oda sayısı **katman başına**

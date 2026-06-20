@@ -3,7 +3,7 @@ import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower } from './game/combat';
 import { canRebirth } from './game/rebirth';
@@ -998,20 +998,51 @@ function wireLore(el: HTMLElement): void {
 
 // ---- STATS (+ evolution) ---------------------------------------------------
 
+/** Dikey dallanan evrim ağacı: tier satırları, durum-stilli düğümler, available'da [Evrimleş]. */
+function evolutionTree(state: GameState): string {
+  const nodes = evolutionTreeView(state, CONTENT);
+  if (!nodes.length) return '';
+  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
+  const rows = tiers
+    .map((tier) => {
+      const cells = nodes
+        .filter((n) => n.tier === tier)
+        .map((n) => {
+          const name = n.name ? t(n.name) : '???';
+          const bonus = n.statBonus
+            ? Object.entries(n.statBonus)
+                .map(([k, v]) => `+${v}${k}`)
+                .join(' ')
+            : '';
+          const skills = n.grantSkills?.length ? ` · ${n.grantSkills.length} skill` : '';
+          let detail = '';
+          if (n.status === 'available') {
+            detail = `<div class="muted evo-d">${bonus}${skills}</div><button class="evo" data-form="${n.id}">${t('ui.evolve')}</button>`;
+          } else if (n.status === 'locked') {
+            detail = `<div class="muted evo-d">${t('ui.evo_locked', { lv: n.levelReq })}</div>`;
+          } else if (n.status === 'missed') {
+            detail = `<div class="muted evo-d">✕ ${t('ui.evo_missed')}</div>`;
+          } else if (n.status === 'hidden') {
+            detail = `<div class="muted evo-d">${t('ui.evo_hidden')}</div>`;
+          } else if ((n.status === 'past' || n.status === 'current') && bonus) {
+            detail = `<div class="muted evo-d">${bonus}${skills}</div>`;
+          }
+          const mark = n.status === 'current' ? '◉ ' : n.status === 'past' ? '✓ ' : '';
+          return `<div class="evo-node ${n.status}"><div class="evo-name">${mark}${name}</div>${detail}</div>`;
+        })
+        .join('');
+      return `<div class="evo-tier"><span class="evo-tlabel">T${tier}</span><div class="evo-cells">${cells}</div></div>`;
+    })
+    .join('');
+  return `<div class="evotree">${rows}</div>`;
+}
+
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
       `<li><div class="row"><b>${t(`stat.${k}`)}</b><span>${state.stats[k]} ${state.statPoints > 0 ? `<button class="statadd" data-stat="${k}">+</button>` : ''}</span></div><p class="muted statdesc">${t(`stat.${k}.desc`)}</p></li>`,
   ).join('');
-  const evos = availableEvolutions(state, CONTENT);
-  const evoHtml = evos.length
-    ? evos
-        .map(
-          (f) =>
-            `<div class="panel"><div class="row"><b>${t(f.locKey)}</b><span>${t('ui.lv')} ${f.levelReq}+</span></div><p class="muted">${t(`${f.locKey}.desc`)}</p><button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t('ui.evolve')}</button></div>`,
-        )
-        .join('')
-    : `<span class="muted">${t('ui.final_form')}</span>`;
+  const treeHtml = evolutionTree(state);
   const form = currentForm(state, CONTENT);
   return `
     <section class="panel">
@@ -1023,7 +1054,7 @@ function statsTab(state: GameState): string {
     <section class="panel">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
-      ${evoHtml}
+      ${treeHtml}
     </section>
     ${rulerPanel(state)}
     ${rebirthPanel(state)}

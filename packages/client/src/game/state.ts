@@ -194,6 +194,10 @@ export interface GameState {
   layerRooms: Record<number, number[]>;
   /** Per-player random floor count per layer id (12–20), rolled once and saved. */
   layerFloors: Record<number, number>;
+  /** Görülen evrim formları (ağaç reveal kalıcılığı) — bir kez görülen isim gizlenmez. */
+  seenForms: string[];
+  /** Geçilen formların sırası (lineage) — past/missed ayrımı için. İlk eleman = başlangıç formu. */
+  formHistory: string[];
   /** Manual map progression: when false, a cleared room waits for the "Advance" tap. */
   autoAdvance: boolean;
   /** True when the current room is cleared/explored and the player may advance. */
@@ -295,6 +299,8 @@ export function newGame(): GameState {
     exploredMax: {},
     layerRooms: {},
     layerFloors: {},
+    seenForms: [],
+    formHistory: ['hatchling_spider'],
     autoAdvance: false,
     roomCleared: false,
   };

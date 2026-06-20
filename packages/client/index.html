@@ -172,6 +172,26 @@
       .dlegend i.fog { background: #0b0a10; }
       .dlegend i.boss { background: #2a2016; border-color: var(--ember); }
 
+      .evotree { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.4rem; }
+      .evo-tier { display: flex; align-items: flex-start; gap: 0.4rem; }
+      .evo-tlabel { font-family: var(--mono); font-size: 0.62rem; color: var(--ash); width: 1.8rem; flex: none; padding-top: 0.35rem; opacity: 0.7; }
+      .evo-cells { display: flex; flex-wrap: wrap; gap: 0.4rem; flex: 1; }
+      .evo-node {
+        border: 1px solid #2a2536; border-radius: 6px; padding: 0.35rem 0.5rem; min-width: 6.5rem; background: #14121b;
+        transition: border-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+      }
+      .evo-node .evo-name { font-weight: 600; font-size: 0.82rem; color: var(--bone); }
+      .evo-node .evo-d { font-size: 0.7rem; margin-top: 0.12rem; }
+      .evo-node .evo { margin-top: 0.3rem; }
+      .evo-node.current { border-color: #6d44d9; box-shadow: 0 0 9px rgba(109, 68, 217, 0.6); }
+      .evo-node.past { opacity: 0.65; }
+      .evo-node.available { border-color: var(--venom-dim); }
+      .evo-node.available .evo-name { color: var(--venom); }
+      .evo-node.locked { opacity: 0.85; }
+      .evo-node.missed { opacity: 0.4; border-style: dashed; }
+      .evo-node.hidden { opacity: 0.42; border-style: dashed; }
+      .evo-node.hidden .evo-name { color: var(--ash); }
+
       .log {
         max-height: 180px; overflow-y: auto; font-family: var(--mono); font-size: 0.76rem; color: var(--ash);
         background: #0e0c14; border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.5rem 0.65rem;
