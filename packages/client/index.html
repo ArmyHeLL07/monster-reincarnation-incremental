@@ -223,12 +223,29 @@
       }
       .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; }
 
+      .fs-btn {
+        background: linear-gradient(180deg, #1d1928, #161320); color: var(--ash);
+        border: 1px solid var(--chitin); border-radius: 8px; cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+        font-family: var(--disp); font-weight: 600; letter-spacing: 0.05em;
+      }
+      .fs-btn:hover { color: var(--bone); border-color: var(--venom-dim); }
+      .fs-btn.active { color: var(--abyss); background: linear-gradient(180deg, var(--venom), var(--venom-dim)); border-color: var(--venom); box-shadow: 0 0 10px rgba(138, 178, 63, 0.25); }
+
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
-        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; }
+        body { padding: 0.4rem; }
+        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
         .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; }
-        .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; }
-        .topbar .bars { grid-template-columns: 1fr; }
+        .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; min-height: 40px; font-size: 0.75rem; }
+        .tabbtn svg { width: 15px; height: 15px; }
+        .topbar .bars { grid-template-columns: 1fr; gap: 0.2rem; }
+        .topbar { padding: 0.5rem 0.7rem; }
+        .topbar .sub { font-size: 0.75rem; }
+        .panel { padding: 0.6rem 0.75rem; margin: 0 0 0.5rem; }
+        .head { max-width: 160px; margin: 0.2rem auto 0.5rem; }
+        .log { max-height: 110px; }
+        .controls button { flex: 1 1 45%; min-height: 48px; font-size: 0.88rem; padding: 0.4rem 0.6rem; }
       }
       @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 

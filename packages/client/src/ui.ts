@@ -219,7 +219,17 @@ export function live(state: GameState): void {
   CURSTATE = state;
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) {
-    if (!top.firstElementChild) top.innerHTML = topbarHtml(); // build skeleton once → bars keep their elements
+    if (!top.firstElementChild) {
+      top.innerHTML = topbarHtml();
+      const fsBtn = top.querySelector('#fs-toggle');
+      if (fsBtn) {
+        if (!document.documentElement.requestFullscreen) {
+          (fsBtn as HTMLElement).style.display = 'none';
+        } else {
+          fsBtn.addEventListener('click', toggleFullscreen);
+        }
+      }
+    }
     updateTopbar(state);
   }
   const mini = document.querySelector<HTMLElement>('#ministatus');
@@ -266,6 +276,31 @@ function subLine(state: GameState): string {
   return `${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level} · ${form ? t(form.locKey) : ''} · ${layer ? t(layer.locKey) : ''} ${posStr} · ${t(`act.${state.action}`)}${evo}`;
 }
 
+function toggleFullscreen(): void {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.error(`Error enabling fullscreen: ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen().catch((err) => {
+      console.error(`Error exiting fullscreen: ${err.message}`);
+    });
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  const fsBtn = document.querySelector('#fs-toggle');
+  if (fsBtn) {
+    if (document.fullscreenElement) {
+      fsBtn.innerHTML = `<span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.exit_fullscreen')}</span>`;
+      fsBtn.classList.add('active');
+    } else {
+      fsBtn.innerHTML = `<span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.fullscreen')}</span>`;
+      fsBtn.classList.remove('active');
+    }
+  }
+});
+
 /** One labelled bar with stable ids (`#id-v` value, `#id-f` fill) so live() can animate the width. */
 function statBarSkel(id: string, label: string, color: string): string {
   return `<div class="statline"><div class="row"><span>${label}</span><span id="${id}-v"></span></div><div class="bar"><div class="bar-fill" id="${id}-f" style="width:0;background:${color}"></div></div></div>`;
@@ -274,7 +309,12 @@ function statBarSkel(id: string, label: string, color: string): string {
 /** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
 function topbarHtml(): string {
   return `
-    <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
+    <div class="brand-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
+      <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
+      <button id="fs-toggle" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.6rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
+        <span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.fullscreen')}</span>
+      </button>
+    </div>
     <p class="sub" id="tb-sub"></p>
     <div class="bars">
       ${statBarSkel('tb-hp', t('ui.hp'), '#6fae53')}

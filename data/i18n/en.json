@@ -787,5 +787,7 @@
   "skill.iron_will.name": "Iron Will",
   "skill.iron_will.desc": "Unbending mental focus that increases stamina recovery and gives a chance to survive fatal blows.",
   "skill.mana_shield.name": "Mana Shield",
-  "skill.mana_shield.desc": "Envelop yourself in protective mana, allowing you to absorb damage using your MP."
+  "skill.mana_shield.desc": "Envelop yourself in protective mana, allowing you to absorb damage using your MP.",
+  "ui.fullscreen": "Fullscreen",
+  "ui.exit_fullscreen": "Exit Fullscreen"
 }
