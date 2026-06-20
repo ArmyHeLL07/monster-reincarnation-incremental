@@ -1184,7 +1184,7 @@ function evolutionTree(state: GameState): string {
   const rows = tiers
     .map((tier, i) => {
       const tierNodes = nodes.filter((n) => n.tier === tier);
-      const branch = tierNodes.length > 1 ? ' branch' : '';
+      const branchClass = tierNodes.length > 1 ? ` branch branch-${tierNodes.length}` : '';
       const first = i === 0 ? ' top' : '';
       const cells = tierNodes
         .map((n) => {
@@ -1211,7 +1211,7 @@ function evolutionTree(state: GameState): string {
           return `<div class="evo-cell ${n.status}"><div class="evo-name">${mark}${name}</div>${detail}</div>`;
         })
         .join('');
-      return `<div class="evo-row${branch}${first}"><span class="evo-tlabel">T${tier}</span><div class="evo-cellwrap">${cells}</div></div>`;
+      return `<div class="evo-row${branchClass}${first}"><span class="evo-tlabel">T${tier}</span><div class="evo-cellwrap">${cells}</div></div>`;
     })
     .join('');
   return `<div class="evotree">${rows}</div>`;

@@ -176,12 +176,13 @@
       .dlegend i.boss { background: #2a2016; border-color: var(--ember); }
 
       /* Evrim ağacı — dikey, alttan-yukarı dallanan: spine + branch bar + available glow. */
-      .evotree { display: flex; flex-direction: column; align-items: center; padding: 0.3rem 0 0.5rem; overflow-x: auto; }
+      .evotree { display: flex; flex-direction: column; align-items: center; padding: 0.3rem 0 0.5rem; overflow-x: auto; width: 100%; }
       .evo-row { position: relative; display: flex; justify-content: center; padding-top: 18px; }
       .evo-row.top { padding-top: 0; }
       .evo-row:not(.top)::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 18px; background: #3a3550; transform: translateX(-50%); }
-      .evo-row.branch::before { content: ''; position: absolute; top: 18px; left: 20%; right: 20%; height: 2px; background: #3a3550; }
-      .evo-cellwrap { display: flex; gap: 0.7rem; justify-content: center; }
+      .evo-row.branch-2::before { content: ''; position: absolute; top: 18px; left: 20%; right: 20%; height: 2px; background: #3a3550; }
+      .evo-row.branch-3::before { content: ''; position: absolute; top: 18px; left: 8%; right: 8%; height: 2px; background: #3a3550; }
+      .evo-cellwrap { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: nowrap; }
       .evo-tlabel { position: absolute; left: 2px; top: 22px; font-family: var(--mono); font-size: 0.58rem; color: var(--ash); opacity: 0.55; }
       .evo-cell {
         position: relative; border: 1px solid #2a2536; border-radius: 7px; padding: 0.35rem 0.6rem; min-width: 6.2rem;
@@ -199,6 +200,13 @@
       .evo-cell.hidden { opacity: 0.4; border-style: dashed; }
       .evo-cell.hidden .evo-name { color: var(--ash); }
       @keyframes evoglow { 0%, 100% { box-shadow: 0 0 4px var(--venom-dim); } 50% { box-shadow: 0 0 14px var(--venom); } }
+      @media (max-width: 520px) {
+        .evo-cell { min-width: 5rem; padding: 0.25rem 0.4rem; }
+        .evo-cell .evo-name { font-size: 0.75rem; }
+        .evo-cell .evo-d { font-size: 0.62rem; }
+        .evo-cellwrap { gap: 0.35rem; }
+        .evo-tlabel { font-size: 0.5rem; }
+      }
 
       .evpanel .ev-head { font-size: 0.95rem; margin-bottom: 0.3rem; }
       .ev-choices { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.5rem; }
