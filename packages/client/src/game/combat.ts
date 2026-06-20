@@ -597,6 +597,24 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   raw += b.overdrawFrac * (state.maxHp - state.hp); // Overdraw: missing HP → power (§6.1)
   raw *= b.dmgMult * diff.playerMult * levelPower(state); // auto power: each level adds a little punch
   raw *= elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType); // element type-chart
+
+  // Adaptive resistance: spamming the same element lets the enemy adapt (GDD "Bilgi = Hayatta Kalma").
+  const atkElem = def.damageType ?? 'physical';
+  if (state.dmgStreakType === atkElem) {
+    state.dmgStreak = (state.dmgStreak ?? 0) + 1;
+  } else {
+    state.dmgStreakType = atkElem;
+    state.dmgStreak = 1;
+  }
+  const ADAPT_THRESHOLD = 5;
+  const streakPenalty = (state.dmgStreak ?? 0) >= ADAPT_THRESHOLD
+    ? Math.min(0.6, ((state.dmgStreak ?? 0) - ADAPT_THRESHOLD + 1) * 0.1)
+    : 0;
+  if (streakPenalty > 0) {
+    raw *= (1 - streakPenalty);
+    if (state.dmgStreak === ADAPT_THRESHOLD) log({ key: 'log.enemy_adapts', params: { type: dmgTypeKey(atkElem) } });
+  }
+
   const dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
@@ -715,6 +733,7 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     }
   }
   state.hp = Math.max(0, state.hp - totalTaken);
+  state.lastHit = { enemyKey: enemy.locKey, type: enemy.damageType };
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
 }
 
@@ -899,6 +918,16 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   }
 
   log({ key: 'log.death' });
+  // Death analysis: what killed you and what resistance would help (GDD "Bilgi = Hayatta Kalma").
+  if (state.lastHit) {
+    log({ key: 'log.death_analysis', params: { enemy: state.lastHit.enemyKey, type: dmgTypeKey(state.lastHit.type) } });
+    const killerType = state.lastHit.type;
+    const hasRes = state.resistances.some((r) => {
+      const def = content.resistances.get(r.id);
+      return def?.damageType === killerType;
+    });
+    if (!hasRes) log({ key: 'log.death_resist_hint', params: { type: dmgTypeKey(killerType) } });
+  }
   // Difficulty death penalty: lose dungeon progress (GDD §8.5).
   if (diff.deathPenalty >= 0.5) {
     state.pos.floor = 1;

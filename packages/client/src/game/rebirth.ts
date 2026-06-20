@@ -2,6 +2,7 @@ import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
 import { newGame, recomputeMaxes } from './state';
 import { applyDifficultyStart } from './difficulty';
+import { applyRace } from './race';
 
 type Log = (e: LogEvent) => void;
 
@@ -20,6 +21,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
 
   const fresh = newGame();
   const boon = state.rebirthBoon + 1;
+  const savedRaceId = state.raceId; // race persists through rebirth (upper hierarchy)
 
   // --- lower hierarchy: reset to a fresh weak start --------------------------
   state.skills = fresh.skills.map((s) => ({ ...s }));
@@ -59,10 +61,8 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.unlocks.push(`rebirth_${state.rebirthCount}`);
 
   applyDifficultyStart(state, content, state.difficulty);
-  recomputeMaxes(state);
-  state.hp = state.maxHp;
-  state.mp = state.maxMp;
-  state.sp = state.maxSp;
+  // Re-apply race-specific starting config so rebirths start with the correct race skills/form.
+  applyRace(state, savedRaceId, content);
 
   log({ key: 'log.rebirth_msg' });
   log({ key: 'log.rebirth_done', params: { n: state.rebirthCount } });

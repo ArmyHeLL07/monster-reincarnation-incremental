@@ -51,6 +51,7 @@ export interface UiActions {
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
+  onSelectRace: (raceId: string) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'lore' | 'stats' | 'settings';
@@ -1086,9 +1087,30 @@ function statsTab(state: GameState): string {
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${treeHtml}
     </section>
+    ${racePanel(state)}
     ${rulerPanel(state)}
     ${rebirthPanel(state)}
   `;
+}
+
+function racePanel(state: GameState): string {
+  const currentRace = CONTENT.races.get(state.raceId);
+  const raceName = currentRace ? t(currentRace.locKey) : state.raceId;
+  const canChange = state.kills === 0 && state.tier === 0 && state.level === 1;
+  const raceButtons = canChange
+    ? [...CONTENT.races.values()]
+        .map((r) => {
+          const active = r.id === state.raceId;
+          return `<button class="racepick${active ? ' active' : ''}" data-race="${r.id}">${t(r.locKey)}</button>`;
+        })
+        .join('')
+    : '';
+  return `
+    <section class="panel">
+      <h2>${t('ui.race_select')}</h2>
+      <p class="muted">${t('ui.form')}: <b>${raceName}</b></p>
+      ${canChange ? `<p class="muted">${t('ui.race_select_info')}</p><div class="controls">${raceButtons}</div>` : ''}
+    </section>`;
 }
 
 function rulerPanel(state: GameState): string {
@@ -1138,6 +1160,12 @@ function wireStats(el: HTMLElement): void {
   });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
   el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
+  el.querySelectorAll<HTMLButtonElement>('.racepick').forEach((b) => {
+    b.addEventListener('click', () => {
+      const r = b.getAttribute('data-race');
+      if (r) ACTIONS.onSelectRace(r);
+    });
+  });
 }
 
 // ---- SETTINGS --------------------------------------------------------------

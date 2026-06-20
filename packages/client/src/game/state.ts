@@ -206,6 +206,14 @@ export interface GameState {
   pendingEvent: { id: string; roomKey: string } | null;
   /** Room keys (layer.floor.room) of resolved events — won't re-trigger when farming. */
   resolvedEvents: string[];
+
+  // --- adaptive resistance + death report (Bilgi = Hayatta Kalma) -------------
+  /** The damage element you've been attacking with in a row (enemies adapt to it). */
+  dmgStreakType?: DamageType;
+  /** How many consecutive hits with the same element — drives the adaptation penalty. */
+  dmgStreak?: number;
+  /** What last damaged the player — used to write the death-analysis report. */
+  lastHit?: { enemyKey: string; type: DamageType };
 }
 
 /** lvLabel localization key reused across log lines. */

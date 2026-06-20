@@ -131,5 +131,31 @@
     "levelReq": 10,
     "statBonus": { "STR": 5, "VIT": 5, "INT": 5, "AGI": 3, "WIS": 3, "LUCK": 2 },
     "grantSkills": ["sovereign_form", "apex_predator", "soul_gaze", "spatial_rift"]
-  }
+  },
+
+  { "id": "slime_larva", "raceId": "slime", "locKey": "form.slime_larva.name", "evolvesTo": ["acid_ooze", "blob_slime"], "levelReq": 1 },
+  { "id": "acid_ooze", "raceId": "slime", "locKey": "form.acid_ooze.name", "evolvesTo": ["toxic_sovereign"], "levelReq": 10, "statBonus": { "INT": 3, "AGI": 2 }, "grantSkills": ["caustic_spray", "mana_sense", "toxic_cloud"] },
+  { "id": "blob_slime", "raceId": "slime", "locKey": "form.blob_slime.name", "evolvesTo": ["elder_ooze"], "levelReq": 10, "statBonus": { "VIT": 4, "STR": 2 }, "grantSkills": ["endurance", "hp_regen", "forage"] },
+  { "id": "toxic_sovereign", "raceId": "slime", "locKey": "form.toxic_sovereign.name", "evolvesTo": ["primordial_ooze"], "levelReq": 10, "statBonus": { "INT": 5, "AGI": 3, "LUCK": 2 }, "grantSkills": ["plague_mist", "necro_toxin", "void_step"] },
+  { "id": "elder_ooze", "raceId": "slime", "locKey": "form.elder_ooze.name", "evolvesTo": ["primordial_ooze"], "levelReq": 10, "statBonus": { "VIT": 7, "STR": 3, "INT": 2 }, "grantSkills": ["regeneration", "carapace_lord", "apex_predator"] },
+  { "id": "primordial_ooze", "raceId": "slime", "locKey": "form.primordial_ooze.name", "evolvesTo": [], "levelReq": 10, "statBonus": { "STR": 6, "VIT": 6, "INT": 6, "AGI": 4, "LUCK": 3 }, "grantSkills": ["sovereign_form", "predator_instinct", "soul_gaze"] },
+
+  { "id": "bone_rattle", "raceId": "skeleton", "locKey": "form.bone_rattle.name", "evolvesTo": ["skeleton_warrior", "skeleton_sorcerer"], "levelReq": 1 },
+  { "id": "skeleton_warrior", "raceId": "skeleton", "locKey": "form.skeleton_warrior.name", "evolvesTo": ["bone_lord"], "levelReq": 10, "statBonus": { "STR": 3, "VIT": 3 }, "grantSkills": ["scythe_limb", "endurance", "carapace"] },
+  { "id": "skeleton_sorcerer", "raceId": "skeleton", "locKey": "form.skeleton_sorcerer.name", "evolvesTo": ["lich"], "levelReq": 10, "statBonus": { "INT": 4, "WIS": 2 }, "grantSkills": ["flame_bolt", "mana_sense", "quick_thought"] },
+  { "id": "bone_lord", "raceId": "skeleton", "locKey": "form.bone_lord.name", "evolvesTo": ["death_sovereign"], "levelReq": 10, "statBonus": { "STR": 5, "VIT": 5, "AGI": 2 }, "grantSkills": ["reaper_edge", "carapace_lord", "regeneration"] },
+  { "id": "lich", "raceId": "skeleton", "locKey": "form.lich.name", "evolvesTo": ["death_sovereign"], "levelReq": 10, "statBonus": { "INT": 6, "WIS": 4, "VIT": 2 }, "grantSkills": ["soul_gaze", "plague_mist", "mana_mastery"] },
+  { "id": "death_sovereign", "raceId": "skeleton", "locKey": "form.death_sovereign.name", "evolvesTo": [], "levelReq": 10, "statBonus": { "STR": 5, "VIT": 5, "INT": 5, "WIS": 4, "AGI": 2 }, "grantSkills": ["undying_vitality", "rend_soul_gaze", "forbidden_knowledge"] },
+
+  { "id": "wyrmling_hatch", "raceId": "wyrmling", "locKey": "form.wyrmling_hatch.name", "evolvesTo": ["fire_wyrm", "shadow_drake"], "levelReq": 1 },
+  { "id": "fire_wyrm", "raceId": "wyrmling", "locKey": "form.fire_wyrm.name", "evolvesTo": ["elder_drake"], "levelReq": 10, "statBonus": { "STR": 3, "INT": 3 }, "grantSkills": ["fire_lance", "mana_sense", "rend"] },
+  { "id": "shadow_drake", "raceId": "wyrmling", "locKey": "form.shadow_drake.name", "evolvesTo": ["void_dragon"], "levelReq": 10, "statBonus": { "AGI": 3, "INT": 2, "WIS": 2 }, "grantSkills": ["dread_gaze", "stealth", "void_step"] },
+  { "id": "elder_drake", "raceId": "wyrmling", "locKey": "form.elder_drake.name", "evolvesTo": ["dragon_sovereign"], "levelReq": 10, "statBonus": { "STR": 5, "INT": 4, "VIT": 3 }, "grantSkills": ["lightning_strike", "overdraw", "apex_predator"] },
+  { "id": "void_dragon", "raceId": "wyrmling", "locKey": "form.void_dragon.name", "evolvesTo": ["dragon_sovereign"], "levelReq": 10, "statBonus": { "INT": 6, "WIS": 4, "AGI": 3 }, "grantSkills": ["spatial_rift", "terror_gaze", "mana_mastery"] },
+  { "id": "dragon_sovereign", "raceId": "wyrmling", "locKey": "form.dragon_sovereign.name", "evolvesTo": [], "levelReq": 10, "statBonus": { "STR": 6, "VIT": 5, "INT": 6, "AGI": 3, "WIS": 3 }, "grantSkills": ["sovereign_form", "draconic_blood", "soul_gaze"] },
+
+  { "id": "pebble_golem", "raceId": "golem", "locKey": "form.pebble_golem.name", "evolvesTo": ["iron_golem", "crystal_golem"], "levelReq": 1 },
+  { "id": "iron_golem", "raceId": "golem", "locKey": "form.iron_golem.name", "evolvesTo": ["titan_golem"], "levelReq": 10, "statBonus": { "VIT": 5, "STR": 3 }, "grantSkills": ["earth_pillar", "endurance", "carapace_lord"] },
+  { "id": "crystal_golem", "raceId": "golem", "locKey": "form.crystal_golem.name", "evolvesTo": ["titan_golem"], "levelReq": 10, "statBonus": { "INT": 4, "VIT": 2, "WIS": 2 }, "grantSkills": ["frost_shard", "mana_sense", "detect"] },
+  { "id": "titan_golem", "raceId": "golem", "locKey": "form.titan_golem.name", "evolvesTo": [], "levelReq": 10, "statBonus": { "STR": 7, "VIT": 8, "INT": 3, "WIS": 2 }, "grantSkills": ["sovereign_form", "stone_nature", "regenerative_core"] }
 ]

@@ -109,5 +109,11 @@
   { "id": "inner_silence", "locKeyName": "skill.inner_silence.name", "locKeyDesc": "skill.inner_silence.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "hidden": true, "regenMult": 0.5, "armor": 2 },
   { "id": "forbidden_knowledge", "locKeyName": "skill.forbidden_knowledge.name", "locKeyDesc": "skill.forbidden_knowledge.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "hidden": true, "dmgMult": 0.15, "xpMult": 0.1, "acquireKey": "skill.forbidden_knowledge.acq" },
 
-  { "id": "larder", "locKeyName": "skill.larder.name", "locKeyDesc": "skill.larder.desc", "kind": "util", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "acquireKey": "skill.larder.acq" }
+  { "id": "larder", "locKeyName": "skill.larder.name", "locKeyDesc": "skill.larder.desc", "kind": "util", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "acquireKey": "skill.larder.acq" },
+
+  { "id": "predator_instinct", "locKeyName": "skill.predator_instinct.name", "locKeyDesc": "skill.predator_instinct.desc", "kind": "passive", "stats": ["STR", "LUCK"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.15, "part": "body" },
+  { "id": "undead_vigor", "locKeyName": "skill.undead_vigor.name", "locKeyDesc": "skill.undead_vigor.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["regenerative_core"], "hpRegen": 2, "spRegen": 1 },
+  { "id": "draconic_blood", "locKeyName": "skill.draconic_blood.name", "locKeyDesc": "skill.draconic_blood.desc", "kind": "passive", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "xpMult": 0.25 },
+  { "id": "stone_nature", "locKeyName": "skill.stone_nature.name", "locKeyDesc": "skill.stone_nature.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hungerMult": 0.35 },
+  { "id": "carapace", "locKeyName": "skill.carapace.name", "locKeyDesc": "skill.carapace.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["carapace_lord"], "armor": 2 }
 ]

@@ -3,6 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
 import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent } from './game/combat';
+import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -203,6 +204,12 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onSelectRace: (raceId) => {
+      if (state.kills > 0 || state.tier > 0 || state.level > 1) return; // race locked after first kill
+      applyRace(state, raceId, content);
+      save(state);
+      render(state);
+    },
     onSetDifficulty: (d: Difficulty) => {
       // Only change the difficulty knobs — never teleport the player or bypass layer/skill progression.
       // (The "start at a deeper layer" behaviour applies on a fresh start / rebirth, not on a live toggle.)
@@ -354,6 +361,10 @@ function migrate(s: GameState): void {
   s.pendingEvent ??= null;
   s.resolvedEvents ??= [];
   s.statusEffects ??= [];
+  // v4 fields — adaptive resistance, death analysis
+  s.dmgStreakType ??= undefined;
+  if (s.dmgStreak == null) s.dmgStreak = 0;
+  s.lastHit ??= undefined;
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

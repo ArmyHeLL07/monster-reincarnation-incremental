@@ -46,6 +46,10 @@ export interface Race {
   id: string;
   locKey: string;
   head: HeadDef;
+  /** Starting skill ids (active + passive) granted at the start of a fresh run. */
+  startSkills?: string[];
+  /** Starting resistance ids granted at the start of a fresh run. */
+  startResistances?: string[];
 }
 
 /** A node in a race's (branching) evolution tree. Choosing a branch is permanent. */

@@ -624,5 +624,50 @@
   "log.search_done": "Bu odayı zaten aradın — ilerle, sonra tekrar gelip arayabilirsin.",
   "log.book_lore": "{lore}", "log.book_deep": "↳ {deep}", "log.book_too_deep": "Derin katman kapalı — INT {int} gerekir.",
   "log.room_wrong": "Yanlış cevap. Oda kapalı kaldı.", "log.room_solved": "«Açıl susam açıl» — oda açıldı: {room}!",
-  "log.scar_repaired": "Bir yara izi onarıldı. Kalan: {scars}.", "log.fuse_scar": "Geri tepme bir yara izi bıraktı. Toplam: {scars}."
+  "log.scar_repaired": "Bir yara izi onarıldı. Kalan: {scars}.", "log.fuse_scar": "Geri tepme bir yara izi bıraktı. Toplam: {scars}.",
+
+  "log.enemy_adapts": "Düşman {type} hasarına adapte oldu — farklı bir element dene!",
+  "log.death_analysis": "☠ Seni {enemy} öldürdü ({type} hasarıyla).",
+  "log.death_resist_hint": "  İpucu: {type} direncin yok — bu direnci geliştirirsen hayatta kalırsın.",
+
+  "race.slime.name": "Sümüklü",
+  "race.skeleton.name": "İskelet",
+  "race.wyrmling.name": "Ejderha Yavrusu",
+  "race.golem.name": "Golem",
+
+  "form.slime_larva.name": "Sümüklü Larva",
+  "form.acid_ooze.name": "Asit Balçığı",
+  "form.blob_slime.name": "Blob Sümüklü",
+  "form.toxic_sovereign.name": "Toksik Hükümdar",
+  "form.elder_ooze.name": "Kadim Balçık",
+  "form.primordial_ooze.name": "İlksel Balçık",
+
+  "form.bone_rattle.name": "Kemik Çıngırak",
+  "form.skeleton_warrior.name": "İskelet Savaşçı",
+  "form.skeleton_sorcerer.name": "İskelet Büyücü",
+  "form.bone_lord.name": "Kemik Lordu",
+  "form.lich.name": "Lich",
+  "form.death_sovereign.name": "Ölüm Hükümdarı",
+
+  "form.wyrmling_hatch.name": "Yavru Ejderha",
+  "form.fire_wyrm.name": "Ateş Ejderi",
+  "form.shadow_drake.name": "Gölge Drago",
+  "form.elder_drake.name": "Kadim Drago",
+  "form.void_dragon.name": "Boşluk Ejderhası",
+  "form.dragon_sovereign.name": "Ejderha Hükümdarı",
+
+  "form.pebble_golem.name": "Çakıl Golem",
+  "form.iron_golem.name": "Demir Golem",
+  "form.crystal_golem.name": "Kristal Golem",
+  "form.titan_golem.name": "Titan Golem",
+
+  "skill.predator_instinct.name": "Avcı İçgüdüsü", "skill.predator_instinct.desc": "Sümüklülerin evrimsel dehası: yedikçe öğrenir, öğrendikçe daha fazla kazanır. Loot miktarı artar.",
+  "skill.undead_vigor.name": "Ölümsüz Canlılık", "skill.undead_vigor.desc": "İskeletin kalıcı yeniden doğuş enerjisi — kemikler arasında akan garip güç, canı ve stamina'yı sürekli onarır.",
+  "skill.draconic_blood.name": "Ejderha Kanı", "skill.draconic_blood.desc": "Ejderha soyunun öğrenme hızı. Savaşın her anından ders çıkarır; deneyim kazanımı belirgin şekilde artar.",
+  "skill.stone_nature.name": "Taş Doğası", "skill.stone_nature.desc": "Golem'in taş bedeni neredeyse hiç beslenmez — açlık çok daha yavaş ilerler.",
+  "skill.carapace.name": "Kabuk", "skill.carapace.desc": "Orta düzey sert kabuk; gelen hasarı kısmen azaltır.",
+
+  "ui.race_select": "Irk Seç",
+  "ui.race_select_info": "Savaşa girmeden önce ırkını seç (ilk öldürmeye kadar değiştirebilirsin).",
+  "ui.pick_race": "Bu ırkla başla"
 }

@@ -624,5 +624,50 @@
   "log.search_done": "You've already searched this room — move on, then come back to search again.",
   "log.book_lore": "{lore}", "log.book_deep": "↳ {deep}", "log.book_too_deep": "Deep layer locked — needs INT {int}.",
   "log.room_wrong": "Wrong answer. The room stays shut.", "log.room_solved": "«Open sesame» — the room opens: {room}!",
-  "log.scar_repaired": "A scar mended. Remaining: {scars}.", "log.fuse_scar": "The backfire left a scar. Total: {scars}."
+  "log.scar_repaired": "A scar mended. Remaining: {scars}.", "log.fuse_scar": "The backfire left a scar. Total: {scars}.",
+
+  "log.enemy_adapts": "The enemy adapted to {type} damage — try a different element!",
+  "log.death_analysis": "☠ {enemy} killed you ({type} damage).",
+  "log.death_resist_hint": "  Hint: you have no {type} resistance — build it up and you'll survive longer.",
+
+  "race.slime.name": "Slime",
+  "race.skeleton.name": "Skeleton",
+  "race.wyrmling.name": "Wyrmling",
+  "race.golem.name": "Golem",
+
+  "form.slime_larva.name": "Slime Larva",
+  "form.acid_ooze.name": "Acid Ooze",
+  "form.blob_slime.name": "Blob Slime",
+  "form.toxic_sovereign.name": "Toxic Sovereign",
+  "form.elder_ooze.name": "Elder Ooze",
+  "form.primordial_ooze.name": "Primordial Ooze",
+
+  "form.bone_rattle.name": "Bone Rattle",
+  "form.skeleton_warrior.name": "Skeleton Warrior",
+  "form.skeleton_sorcerer.name": "Skeleton Sorcerer",
+  "form.bone_lord.name": "Bone Lord",
+  "form.lich.name": "Lich",
+  "form.death_sovereign.name": "Death Sovereign",
+
+  "form.wyrmling_hatch.name": "Wyrmling Hatchling",
+  "form.fire_wyrm.name": "Fire Wyrm",
+  "form.shadow_drake.name": "Shadow Drake",
+  "form.elder_drake.name": "Elder Drake",
+  "form.void_dragon.name": "Void Dragon",
+  "form.dragon_sovereign.name": "Dragon Sovereign",
+
+  "form.pebble_golem.name": "Pebble Golem",
+  "form.iron_golem.name": "Iron Golem",
+  "form.crystal_golem.name": "Crystal Golem",
+  "form.titan_golem.name": "Titan Golem",
+
+  "skill.predator_instinct.name": "Predator Instinct", "skill.predator_instinct.desc": "The slime's evolutionary genius: learns from every meal, earns more from every kill. Loot multiplier increased.",
+  "skill.undead_vigor.name": "Undead Vigor", "skill.undead_vigor.desc": "The skeleton's perpetual rebound energy — the strange power flowing between bones constantly mends HP and stamina.",
+  "skill.draconic_blood.name": "Draconic Blood", "skill.draconic_blood.desc": "The wyrmling's lineage learns from every exchange. Experience gained is noticeably increased.",
+  "skill.stone_nature.name": "Stone Nature", "skill.stone_nature.desc": "A golem's stone body barely needs sustenance — hunger rises much more slowly.",
+  "skill.carapace.name": "Carapace", "skill.carapace.desc": "Mid-tier hardened shell; reduces incoming damage.",
+
+  "ui.race_select": "Choose Race",
+  "ui.race_select_info": "Select your race before combat (can change until your first kill).",
+  "ui.pick_race": "Start as this race"
 }
