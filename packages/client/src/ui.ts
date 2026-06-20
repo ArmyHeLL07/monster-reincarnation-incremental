@@ -345,6 +345,11 @@ function renderTab(): void {
   document.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
     b.classList.toggle('active', b.getAttribute('data-tab') === activeTab);
   });
+  if (!CURSTATE.raceConfirmed) {
+    el.innerHTML = raceSelectScreen(CURSTATE);
+    wireRaceSelect(el);
+    return;
+  }
   switch (activeTab) {
     case 'combat':
       el.innerHTML = combatTab(CURSTATE);
@@ -1138,6 +1143,53 @@ function statsTab(state: GameState): string {
     ${rulerPanel(state)}
     ${rebirthPanel(state)}
   `;
+}
+
+/** Full-screen race selector — shown until the player confirms a race on a fresh save. */
+function raceSelectScreen(state: GameState): string {
+  const raceCards = [...CONTENT.races.values()]
+    .map((r) => {
+      const active = r.id === state.raceId;
+      const eyeCount = r.head.eyes.length;
+      const startSkillNames = (r.startSkills ?? [])
+        .map((id) => {
+          const s = CONTENT.skills.get(id);
+          return s ? t(s.locKeyName) : id;
+        })
+        .join(', ');
+      return `
+        <button class="race-card${active ? ' race-card-active' : ''}" data-race="${r.id}">
+          <div class="race-card-name">${t(r.locKey)}</div>
+          <div class="muted">${t('ui.eyes')}: ${eyeCount}</div>
+          ${startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
+        </button>`;
+    })
+    .join('');
+  const curRace = CONTENT.races.get(state.raceId);
+  return `
+    <section class="panel" style="max-width:560px;margin:2rem auto">
+      <h2>${t('ui.race_select')}</h2>
+      <p class="muted">${t('ui.race_select_info')}</p>
+      <div class="race-grid">${raceCards}</div>
+      <div style="margin-top:1.2rem">
+        <button id="confirm-race" class="actbtn active">
+          ${t('ui.pick_race')}: ${curRace ? t(curRace.locKey) : state.raceId}
+        </button>
+      </div>
+    </section>
+  `;
+}
+
+function wireRaceSelect(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.race-card').forEach((b) => {
+    b.addEventListener('click', () => {
+      const r = b.getAttribute('data-race');
+      if (r) ACTIONS.onSelectRace(r); // onSelectRace also sets raceConfirmed=true and re-renders
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#confirm-race')?.addEventListener('click', () => {
+    ACTIONS.onSelectRace(CURSTATE.raceId); // confirm current selection
+  });
 }
 
 function racePanel(state: GameState): string {

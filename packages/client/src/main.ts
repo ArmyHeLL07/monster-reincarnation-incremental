@@ -219,6 +219,7 @@ async function init(): Promise<void> {
     onSelectRace: (raceId) => {
       if (state.kills > 0 || state.tier > 0 || state.level > 1) return; // race locked after first kill
       applyRace(state, raceId, content);
+      state.raceConfirmed = true;
       save(state);
       render(state);
     },
@@ -379,6 +380,8 @@ function migrate(s: GameState): void {
   s.dmgStreakType ??= undefined;
   if (s.dmgStreak == null) s.dmgStreak = 0;
   s.lastHit ??= undefined;
+  // v5 fields — race selection confirmation
+  s.raceConfirmed ??= s.kills > 0 || s.tier > 0 || s.level > 1;
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

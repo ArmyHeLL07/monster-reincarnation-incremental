@@ -220,6 +220,10 @@ export interface GameState {
   bossRiddle: { roomKey: string; riddleId: string; attempts: number } | null;
   /** Secret-room riddle attempt limits: roomId → counter/lock. */
   riddleLimits: Record<string, { attempts: number; lockUntil: number; lockTier: number }>;
+
+  // --- race selection ---------------------------------------------------------
+  /** False on a fresh game — shows the race selection screen before play begins. */
+  raceConfirmed: boolean;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -325,6 +329,7 @@ export function newGame(): GameState {
     resolvedEvents: [],
     bossRiddle: null,
     riddleLimits: {},
+    raceConfirmed: false,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
