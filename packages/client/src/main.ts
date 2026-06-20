@@ -331,7 +331,7 @@ function migrate(s: GameState): void {
   s.layerRooms ??= {};
   s.layerFloors ??= {};
   s.autoAdvance ??= false;
-  s.roomCleared ??= false;
+  s.roomCleared = false; // always reset — exploration rooms now auto-advance, so true is a stuck state
   s.statusEffects ??= [];
   s.eatenEnemies ??= [];
 }

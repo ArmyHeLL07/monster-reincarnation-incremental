@@ -7,7 +7,40 @@
 > **Canlı demo:** https://armyhell07.github.io/monster-reincarnation-incremental/
 > **Repo:** https://github.com/ArmyHeLL07/monster-reincarnation-incremental
 
-**Son güncelleme: 2026-06-18**
+**Son güncelleme: 2026-06-20**
+
+---
+
+## ✅ Yapıldı (2026-06-20) — Açlık deadlock bug fix
+
+**Bug raporu:** AFK sonrası envanter boşsa ve açlık doluysa oyuncu savaşmıyor,
+can kaybediyor ve yemek toplayamıyor (mahsur kalıyor).
+
+**Kök neden:** Keşif odaları (`isExplorationRoom`) `autoAdvance = false`'ta
+`roomCleared = true` set ediyordu. Bu durum:
+1. `combatRound()` erken return → savaş yok, düşman spawn yok
+2. Açlık her tick birikmeye devam ediyor (action = 'combat')
+3. Açlık stage 3 → starvation hasarı → ama yemek almak için savaş lazım → deadlock
+
+**Düzeltme:**
+- `combat.ts`: Keşif odaları artık her zaman `advancePosition()` çağırıyor
+  (`autoAdvance` koşulu kaldırıldı — keşif odalarında farmlanacak düşman olmadığı için
+  burada durmak mantıklı değil)
+- `main.ts` → `migrate()`: `roomCleared = false` unconditional reset (eski kayıt desteği)
+
+`typecheck` ✅ · `build` ✅
+
+---
+
+## ✅ Yapıldı (2026-06-20) — Madde 7: Yemek-Evrim Koşulu
+
+- `requireEat` + `eatGrantSkill` alanları `EvolutionForm`'a eklendi (`types.ts`)
+- `eatenEnemies: string[]` state'e eklendi; rebirth sıfırlıyor, migrate uyumlu
+- `canEvolve()` artık `requireEat` kontrol ediyor (`evolution.ts`)
+- `recordEat()` helper: ilk yemede skill tohumu + evrim yolu açılışı (`combat.ts`)
+- UI: evrim panelinde `requireEat` koşulu gösteriliyor
+- `data/evolutions.json`: venom_weaver, blade_weaver, greater_weaver'a koşul eklendi
+- TR/EN: `log.eat_seed`, `ui.evo_eat_req` anahtarları
 
 ---
 
@@ -68,8 +101,7 @@
 5. ~~**Lore bilmeceleri**~~ — ✅ Zaten yapılmış (discovery.ts, answerRoom, secret_rooms.json).
 6. ~~**Göz füzyonu**~~ — ✅ **Yapıldı 2026-06-18**: iki takılı göz → tek slotta hibrit
    (pasif+aktif), aynı mod körlük cezası, book_8 ('eyes') ile açılır.
-7. **Yemek-evrim koşulu** — belirli canavarı yiyince evrim açılır (`requireEat`) + skill
-   tohumu (`grantsSkill`). ← **SIRADAKİ (tek gerçek kalan madde)**.
+7. ~~**Yemek-evrim koşulu**~~ — ✅ **Yapıldı 2026-06-20**: `requireEat` + `eatGrantSkill`.
 8. ~~**Rebirth + Gatekeeper**~~ — ✅ Zaten yapılmış (rebirth.ts, gatekeeperCleared).
 9. ~~**Zorluk**~~ — ✅ Zaten yapılmış (difficulty.json + permadeath); 2026-06-18'de
    `envMult` (çevresel direnç) eklendi.

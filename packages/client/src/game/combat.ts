@@ -266,8 +266,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
   if (!state.enemy) {
     if (isExplorationRoom(state, content)) {
       resolveExploration(state, content, log); // calm room: small reward
-      if (state.autoAdvance) advancePosition(state, content, log);
-      else state.roomCleared = true; // nothing to fight here — wait for "Advance"
+      advancePosition(state, content, log); // always advance — no enemy to farm, waiting here causes starvation deadlock
       return;
     }
     spawnEnemy(state, content, log); // combat room: (re)spawn keeps farming when auto-advance is off
