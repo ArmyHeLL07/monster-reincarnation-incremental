@@ -55,6 +55,7 @@ export interface UiActions {
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
   onSelectRace: (raceId: string) => void;
+  onSetRoom: (floor: number, room: number) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'lore' | 'stats' | 'settings';
@@ -669,7 +670,12 @@ function dungeonGrid(state: GameState, layer: DungeonLayer): string {
           glyph = '☠';
         }
       }
-      cells += `<div class="${cls}">${glyph}</div>`;
+      let attrs = '';
+      if (revealed && !isCurrent) {
+        cls += ' clickable';
+        attrs = `data-floor="${f}" data-room="${r}"`;
+      }
+      cells += `<div class="${cls}" ${attrs}>${glyph}</div>`;
     }
     rows += `<div class="dmap-floor" style="--cols:${R}"><span class="flabel">${f}</span>${cells}</div>`;
   }
@@ -681,6 +687,14 @@ function mapTab(state: GameState): string {
   const curRooms = cur ? roomsOf(state, cur, state.pos.floor) : 0;
   const bossSoon = cur && state.pos.room >= curRooms ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
   const pending = state.pendingRoom ? `<p style="color:var(--ember)">⌑ ${t('ui.room_sensed')}: ${t(CONTENT.rooms.get(state.pendingRoom)?.locKey ?? '')}</p>` : '';
+  
+  let reachedFloors = 1;
+  if (cur) {
+    const explored = state.exploredMax[cur.id] ?? [];
+    for (let f = 1; f <= floorsOf(state, cur); f++) if ((explored[f - 1] ?? 0) > 0) reachedFloors = f;
+    if (state.pos.layer === cur.id) reachedFloors = Math.max(reachedFloors, state.pos.floor);
+  }
+
   const legend = `
     <div class="dlegend">
       <span><i class="cur"></i>${t('ui.here')}</span>
@@ -714,8 +728,23 @@ function mapTab(state: GameState): string {
     .join('');
   return `
     <section class="panel">
-      <div class="row"><h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2><span>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span></div>
-      <p class="muted">${t('ui.floor')} ${state.pos.floor}/${cur ? floorsOf(state, cur) : '?'} · ${t('ui.room')} ${state.pos.room}/${curRooms || '?'}${bossSoon}</p>
+      <div class="row" style="align-items: center; justify-content: space-between;">
+        <h2 style="margin:0">${cur ? t(cur.locKey) : t('tab.map')}</h2>
+        <span class="muted" style="font-family: var(--mono);">${state.pos.layer}.${state.pos.floor}.${state.pos.room}</span>
+      </div>
+      
+      <div class="row" style="margin: 0.6rem 0; align-items: center; justify-content: space-between; background: #13111a; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #201b2b;">
+        <span class="muted" style="font-size: 0.86rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+          🗺️ ${t('ui.floor')} <b style="color: var(--bone); font-size: 1rem;">${state.pos.floor}/${cur ? floorsOf(state, cur) : '?'}</b> 
+          · ${t('ui.room')} <b style="color: var(--bone); font-size: 1rem;">${state.pos.room}/${curRooms || '?'}</b>
+          ${bossSoon}
+        </span>
+        <div class="floor-nav" style="display: flex; gap: 0.3rem;">
+          <button class="floor-nav-btn" data-dir="down" ${state.pos.floor <= 1 ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_down')}">▼</button>
+          <button class="floor-nav-btn" data-dir="up" ${state.pos.floor >= reachedFloors ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_up')}">▲</button>
+        </div>
+      </div>
+
       ${cur ? dungeonGrid(state, cur) : ''}
       ${legend}
       ${pending}
@@ -737,7 +766,7 @@ function farmControls(state: GameState, layer: DungeonLayer): string {
     const here = state.pos.layer === layer.id && state.pos.floor === f;
     btns.push(
       here
-        ? `<span class="floorbtn current">${f}</span>`
+         ? `<span class="floorbtn current">${f}</span>`
         : `<button class="floorbtn" data-floor="${f}">${f}</button>`,
     );
   }
@@ -755,6 +784,34 @@ function wireMap(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const f = Number(b.getAttribute('data-floor'));
       if (!Number.isNaN(f)) ACTIONS.onSetPos(CURSTATE.pos.layer, f);
+    });
+  });
+
+  const cur = CONTENT.dungeon.layers.find((l) => l.id === CURSTATE.pos.layer);
+  let reachedFloors = 1;
+  if (cur) {
+    const explored = CURSTATE.exploredMax[cur.id] ?? [];
+    for (let f = 1; f <= floorsOf(CURSTATE, cur); f++) if ((explored[f - 1] ?? 0) > 0) reachedFloors = f;
+    if (CURSTATE.pos.layer === cur.id) reachedFloors = Math.max(reachedFloors, CURSTATE.pos.floor);
+  }
+
+  el.querySelectorAll<HTMLButtonElement>('.floor-nav-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      const dir = b.getAttribute('data-dir');
+      const curFloor = CURSTATE.pos.floor;
+      if (dir === 'down' && curFloor > 1) {
+        ACTIONS.onSetPos(CURSTATE.pos.layer, curFloor - 1);
+      } else if (dir === 'up' && curFloor < reachedFloors) {
+        ACTIONS.onSetPos(CURSTATE.pos.layer, curFloor + 1);
+      }
+    });
+  });
+
+  el.querySelectorAll<HTMLElement>('.dcell.clickable').forEach((b) => {
+    b.addEventListener('click', () => {
+      const f = Number(b.getAttribute('data-floor'));
+      const r = Number(b.getAttribute('data-room'));
+      if (!Number.isNaN(f) && !Number.isNaN(r)) ACTIONS.onSetRoom(f, r);
     });
   });
 }

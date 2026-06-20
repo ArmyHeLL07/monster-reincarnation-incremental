@@ -790,6 +790,8 @@
   "skill.mana_shield.desc": "Kendini koruyucu bir mana tabakasıyla sararak MP kullanarak hasarı emmene olanak tanır.",
   "ui.fullscreen": "Tam Ekran",
   "ui.exit_fullscreen": "Tam Ekrandan Çık",
+  "ui.go_down": "Kat İn",
+  "ui.go_up": "Kat Çık",
   "skill.gelatinous_body.name": "Jelatin Beden",
   "skill.gelatinous_body.desc": "Akışkan balçık bedeniniz darbeleri doğal olarak sönümleyerek sabit fiziksel zırh koruması sağlar.",
   "skill.elastic_shield.name": "Esnek Kalkan",

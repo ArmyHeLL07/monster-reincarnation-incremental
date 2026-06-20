@@ -790,6 +790,8 @@
   "skill.mana_shield.desc": "Envelop yourself in protective mana, allowing you to absorb damage using your MP.",
   "ui.fullscreen": "Fullscreen",
   "ui.exit_fullscreen": "Exit Fullscreen",
+  "ui.go_down": "Go Down",
+  "ui.go_up": "Go Up",
   "skill.gelatinous_body.name": "Gelatinous Body",
   "skill.gelatinous_body.desc": "Your fluid slime body naturally dampens impacts, granting flat physical armor protection.",
   "skill.elastic_shield.name": "Elastic Shield",

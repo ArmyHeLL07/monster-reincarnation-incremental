@@ -112,6 +112,22 @@ async function init(): Promise<void> {
         render(state);
       }
     },
+    onSetRoom: (floor, room) => {
+      const cur = content.dungeon.layers.find((l) => l.id === state.pos.layer);
+      if (!cur) return;
+      const explored = state.exploredMax[cur.id] ?? [];
+      const reachedRoom = Math.max(explored[floor - 1] ?? 0, (state.pos.floor === floor) ? state.pos.room : 0);
+      if (room >= 1 && room <= reachedRoom) {
+        state.pos.floor = floor;
+        state.pos.room = room;
+        state.enemy = null;
+        state.roomCleared = false;
+        state.pendingEvent = null;
+        state.bossRiddle = null;
+        save(state);
+        render(state);
+      }
+    },
     onAllocStat: (stat) => {
       allocStat(state, stat);
       save(state);
