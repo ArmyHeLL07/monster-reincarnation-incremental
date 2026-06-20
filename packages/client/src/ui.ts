@@ -5,6 +5,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
+import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower } from './game/combat';
 import { canRebirth } from './game/rebirth';
@@ -48,6 +49,8 @@ export interface UiActions {
   onReadBook: (id: string) => void;
   onAnswerRoom: (answer: string) => void;
   onChooseEvent: (i: number) => void;
+  onAnswerBossRiddle: (answer: string) => void;
+  onBossChoice: (mode: 'skip' | 'fight', difficulty: string) => void;
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
@@ -449,9 +452,38 @@ function eventPanel(state: GameState): string {
     <p>${t(def.locKey)}</p><div class="ev-choices">${choices}</div></section>`;
 }
 
+/** A boss-riddle challenge: type the answer; once solved, choose skip or fight (3 difficulties). */
+function bossRiddlePanel(state: GameState): string {
+  const br = state.bossRiddle;
+  if (!br) return '';
+  const riddle = CONTENT.bossRiddles.get(br.riddleId);
+  if (!riddle) return '';
+  if (br.attempts === -1) {
+    return `<section class="panel brpanel"><div class="ev-head">🗝️ <b>${t('ui.br_solved_title')}</b></div>
+      <p>${t('ui.br_choose')}</p>
+      <div class="ev-choices">
+        <button class="evchoice br-skip">🛡️ ${t('ui.boss_skip')}</button>
+        <div class="br-fights"><span class="muted">⚔️ ${t('ui.boss_fight')}:</span>
+          <button class="br-fight" data-diff="normal">${t('ui.diff_normal')}</button>
+          <button class="br-fight" data-diff="hard">${t('ui.diff_hard')}</button>
+          <button class="br-fight" data-diff="brutal">${t('ui.diff_brutal')}</button>
+        </div>
+      </div></section>`;
+  }
+  return `<section class="panel brpanel"><div class="ev-head">🧩 <b>${t('ui.br_title')}</b> <span class="muted">${t('ui.br_attempts', { left: 3 - br.attempts })}</span></div>
+    <p>${t(riddle.locKey)}</p>
+    <p class="muted" style="font-size:0.8rem">↪ ${t(riddle.locKeyClue)}</p>
+    <div class="controls">
+      <input id="br-input" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
+      <button id="br-answer">${t('ui.solve')}</button>
+    </div></section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
+  // An unanswered boss riddle (no guard fighting) takes over too.
+  if (state.bossRiddle && !state.enemy) return bossRiddlePanel(state);
   const resists = state.resistances
     .map((r) => {
       const def = CONTENT.resistances.get(r.id);
@@ -550,6 +582,14 @@ function wireCombat(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
   el.querySelectorAll<HTMLButtonElement>('.evchoice').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onChooseEvent(Number(b.dataset.evchoice))),
+  );
+  el.querySelector<HTMLButtonElement>('#br-answer')?.addEventListener('click', () => {
+    const input = el.querySelector<HTMLInputElement>('#br-input');
+    if (input && input.value.trim()) ACTIONS.onAnswerBossRiddle(input.value);
+  });
+  el.querySelector<HTMLButtonElement>('.br-skip')?.addEventListener('click', () => ACTIONS.onBossChoice('skip', ''));
+  el.querySelectorAll<HTMLButtonElement>('.br-fight').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onBossChoice('fight', b.dataset.diff ?? 'normal')),
   );
 }
 
@@ -974,13 +1014,17 @@ function loreTab(state: GameState): string {
   if (state.pendingRoom) {
     const room = CONTENT.rooms.get(state.pendingRoom);
     if (room) {
-      roomHtml = `
-        <div class="row"><b>${t(room.locKey)}</b></div>
-        <p class="muted">${t(room.locKeyClue)}</p>
-        <div class="controls">
+      const locked = isRiddleLocked(state, state.pendingRoom);
+      const input = locked
+        ? `<p style="color:var(--ember)">🔒 ${t('ui.riddle_locked', { min: lockRemainingMin(state, state.pendingRoom) })}</p>`
+        : `<div class="controls">
           <input id="riddle" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
           <button id="answer">${t('ui.solve')}</button>
         </div>`;
+      roomHtml = `
+        <div class="row"><b>${t(room.locKey)}</b></div>
+        <p class="muted">${t(room.locKeyClue)}</p>
+        ${input}`;
     }
   }
 

@@ -7,6 +7,15 @@ import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
 import { gainSin } from './ruler';
 import { rollRoomEvent, outcomesFor, applyOutcome, condMet, roomKeyOf } from './roomevents';
+import {
+  bossRiddleChance,
+  pickBossRiddle,
+  checkBossAnswer,
+  applyRiddleReward,
+  RIDDLE_GUARD_MULT,
+  RIDDLE_FAILBOSS_MULT,
+  RIDDLE_FIGHT_MULTS,
+} from './riddles';
 import { meditateTick } from './meditation';
 import { diffDef } from './difficulty';
 
@@ -243,6 +252,7 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
 
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
   if (state.pendingEvent) return; // an event panel is open — no combat until the player chooses
+  if (state.bossRiddle && !state.enemy) return; // boss riddle awaiting an answer (no guard fighting now)
   // An explored (no-combat) room has nothing to farm — it holds until the player taps "Advance".
   if (state.roomCleared) return;
   if (!state.enemy) {
@@ -254,6 +264,15 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
       if (evId) {
         state.pendingEvent = { id: evId, roomKey: roomKeyOf(state) };
         return; // event set up; the UI shows its panel
+      }
+    }
+    // Boss room: a luck-rolled chance to become a riddle challenge instead of a straight fight.
+    if (atBossRoom && evLayer && !state.resolvedEvents.includes(roomKeyOf(state))) {
+      const riddle = pickBossRiddle(content, evLayer.boss);
+      if (riddle && Math.random() < bossRiddleChance(state)) {
+        state.bossRiddle = { roomKey: roomKeyOf(state), riddleId: riddle.id, attempts: 0 };
+        recordExplored(state);
+        return; // the UI shows the boss-riddle panel
       }
     }
     if (isExplorationRoom(state, content)) {
@@ -489,14 +508,14 @@ function trySenseRoom(state: GameState, content: Content, log: Log): void {
   }
 }
 
-/** Build a depth-scaled enemy instance for the current position (shared by combat & event spawns). */
-function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean): GameState['enemy'] {
+/** Build a depth-scaled enemy instance for the current position (shared by combat, event & riddle spawns). */
+function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean, mult = 1): GameState['enemy'] {
   const def = content.enemies.get(archId);
   if (!def) return null;
   const diff = diffDef(state, content);
   const depth = (state.pos.layer - 1) * 100 + (state.pos.floor - 1) * 15 + state.pos.room;
-  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult;
-  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult;
+  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult;
+  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult;
   const hp = Math.round(def.hp * hpMult);
   return {
     id: archId,
@@ -506,8 +525,8 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
     attack: Math.max(1, Math.round(def.attack * atkMult)),
     damageType: def.damageType,
     damageType2: def.damageType2,
-    ep: Math.round(def.ep * (isBoss ? 3 : 1)),
-    satiety: Math.round(def.satiety * (isBoss ? 2 : 1)),
+    ep: Math.round(def.ep * (isBoss ? 3 : 1) * mult), // reward scales with the chosen/fail difficulty
+    satiety: Math.round(def.satiety * (isBoss ? 2 : 1) * mult),
     isBoss,
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
@@ -782,6 +801,81 @@ function gainXp(state: GameState, amount: number, log: Log): void {
   recomputeMaxes(state); // levels nudge max HP/MP/SP up a little (auto growth)
 }
 
+/** Boss-cleared consequences (gatekeeper → rebirth, Hell-clear reward). Caller ensures it was a boss. */
+export function applyBossClear(state: GameState, content: Content, log: Log): void {
+  const layer = currentLayer(state, content);
+  // Only the LAST floor's boss of the gatekeeper layer counts (boss spawns every floor).
+  if (layer?.gatekeeper && state.pos.floor >= floorsOf(state, layer)) {
+    state.gatekeeperCleared = true;
+    log({ key: 'log.gatekeeper_down' });
+    const diff = diffDef(state, content);
+    if (diff.brutal && state.permadeath && !state.hellClears.includes(state.raceId)) {
+      state.hellClears.push(state.raceId);
+      state.statPoints += 15; // race-specific permanent reward (§8.5.2)
+      log({ key: 'log.hell_clear', params: { race: `race.${state.raceId}.name` } });
+    }
+  }
+}
+
+/** Type the answer to the active boss riddle. Correct → mark solved (UI offers skip/fight). Wrong → escalate. */
+export function answerBossRiddle(state: GameState, content: Content, answer: string, log: Log): boolean {
+  const br = state.bossRiddle;
+  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
+  const layer = currentLayer(state, content);
+  if (!br || !riddle || !layer || br.attempts < 0) return false;
+  if (checkBossAnswer(riddle, answer)) {
+    br.attempts = -1; // solved → UI shows Skip / Fight
+    log({ key: 'log.br_solved' });
+    return true;
+  }
+  br.attempts += 1;
+  if (br.attempts >= 3) {
+    // 3rd wrong → the real boss, strengthened, good reward.
+    state.bossRiddle = null;
+    state.enemy = makeEnemy(state, content, layer.boss, true, RIDDLE_FAILBOSS_MULT);
+    log({ key: 'log.br_fail_boss' });
+  } else {
+    // 1st/2nd wrong → a slightly strengthened guard; killing it returns to the riddle.
+    const archId = layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+    const guard = makeEnemy(state, content, archId, false, RIDDLE_GUARD_MULT);
+    if (guard) {
+      guard.riddleGuard = true;
+      state.enemy = guard;
+    }
+    log({ key: 'log.br_wrong', params: { left: 3 - br.attempts } });
+  }
+  return false;
+}
+
+/** After solving a boss riddle: skip the boss (small reward) or fight it at a chosen difficulty. */
+export function chooseBossOption(
+  state: GameState,
+  content: Content,
+  mode: 'skip' | 'fight',
+  difficulty: string,
+  log: Log,
+): void {
+  const br = state.bossRiddle;
+  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
+  const layer = currentLayer(state, content);
+  if (!br || br.attempts !== -1 || !riddle || !layer) return; // only on a solved riddle
+  if (mode === 'skip') {
+    applyRiddleReward(state, riddle.reward, log); // small guaranteed reward
+    state.resolvedEvents.push(br.roomKey);
+    state.bossRiddle = null;
+    applyBossClear(state, content, log); // bypassing counts as clearing it (gatekeeper → rebirth)
+    log({ key: 'log.br_skip' });
+    if (state.autoAdvance) advancePosition(state, content, log);
+    else state.roomCleared = true;
+  } else {
+    const mult = RIDDLE_FIGHT_MULTS[difficulty] ?? 1;
+    state.resolvedEvents.push(br.roomKey);
+    state.bossRiddle = null;
+    state.enemy = makeEnemy(state, content, layer.boss, true, mult); // beat it → normal onKill → applyBossClear
+    log({ key: 'log.br_fight' });
+  }
+}
+
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void {
   const enemy = state.enemy;
   if (!enemy) return;
@@ -806,21 +900,14 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   log({ key: enemy.isBoss ? 'log.boss_kill' : 'log.kill', params: { enemy: enemy.locKey, ep } });
 
   const wasBoss = enemy.isBoss;
-  const layer = currentLayer(state, content);
+  const wasRiddleGuard = enemy.riddleGuard;
   state.enemy = null;
 
-  // Gatekeeper down → Rebirth becomes available. Only the LAST floor's boss of the gatekeeper
-  // layer counts (the boss spawns on every floor, but clearing the whole layer is the real gate).
-  if (wasBoss && layer?.gatekeeper && state.pos.floor >= floorsOf(state, layer)) {
-    state.gatekeeperCleared = true;
-    log({ key: 'log.gatekeeper_down' });
-    const diff = diffDef(state, content);
-    if (diff.brutal && state.permadeath && !state.hellClears.includes(state.raceId)) {
-      state.hellClears.push(state.raceId);
-      state.statPoints += 15; // race-specific permanent reward (§8.5.2)
-      log({ key: 'log.hell_clear', params: { race: `race.${state.raceId}.name` } });
-    }
-  }
+  // A guard from a wrong boss-riddle guess: rewards above stand, but it does NOT advance —
+  // the riddle panel returns for the next attempt.
+  if (wasRiddleGuard && state.bossRiddle) return;
+
+  if (wasBoss) applyBossClear(state, content, log); // gatekeeper → rebirth (last gatekeeper floor only)
 
   clearRoom(state, content, log); // auto-advance, or hold for the manual "Advance" tap
 
@@ -935,6 +1022,7 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   state.pos.room = 1;
   state.roomCleared = false;
   state.pendingEvent = null; // death clears any open event
+  state.bossRiddle = null; // …and any open boss riddle
   state.statusEffects = []; // death clears all lingering statuses
   recomputeMaxes(state);
   state.hp = state.maxHp;

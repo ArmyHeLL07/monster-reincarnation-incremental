@@ -78,6 +78,8 @@ export interface EnemyInstance {
   race?: string;
   /** Visual skin (emoji/glyph) for the enemy portrait. */
   icon?: string;
+  /** Spawned by a wrong boss-riddle guess — its death returns to the riddle, doesn't advance. */
+  riddleGuard?: boolean;
 }
 
 export const MAX_HUNGER = 100;
@@ -214,6 +216,10 @@ export interface GameState {
   dmgStreak?: number;
   /** What last damaged the player — used to write the death-analysis report. */
   lastHit?: { enemyKey: string; type: DamageType };
+  /** Active boss riddle (attempts: 0-2 wrong so far; -1 = solved, awaiting skip/fight choice). */
+  bossRiddle: { roomKey: string; riddleId: string; attempts: number } | null;
+  /** Secret-room riddle attempt limits: roomId → counter/lock. */
+  riddleLimits: Record<string, { attempts: number; lockUntil: number; lockTier: number }>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -317,6 +323,8 @@ export function newGame(): GameState {
     roomCleared: false,
     pendingEvent: null,
     resolvedEvents: [],
+    bossRiddle: null,
+    riddleLimits: {},
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

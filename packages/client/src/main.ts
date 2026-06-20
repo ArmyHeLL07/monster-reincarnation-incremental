@@ -2,7 +2,7 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve } from './game/evolution';
@@ -90,7 +90,8 @@ async function init(): Promise<void> {
         state.pos = { layer: id, floor: 1, room: 1 };
         state.enemy = null;
         state.roomCleared = false;
-        state.pendingEvent = null; // abandon any open event when jumping elsewhere
+        state.pendingEvent = null; // abandon any open event/riddle when jumping elsewhere
+        state.bossRiddle = null;
         save(state);
         render(state);
       }
@@ -104,7 +105,8 @@ async function init(): Promise<void> {
         state.pos = { layer: layerId, floor, room: 1 };
         state.enemy = null;
         state.roomCleared = false;
-        state.pendingEvent = null; // abandon any open event when jumping to another floor
+        state.pendingEvent = null; // abandon any open event/riddle when jumping to another floor
+        state.bossRiddle = null;
         save(state);
         render(state);
       }
@@ -196,6 +198,16 @@ async function init(): Promise<void> {
     },
     onChooseEvent: (i) => {
       chooseEvent(state, content, i, logFn);
+      save(state);
+      render(state);
+    },
+    onAnswerBossRiddle: (a) => {
+      answerBossRiddle(state, content, a, logFn);
+      save(state);
+      render(state);
+    },
+    onBossChoice: (mode, difficulty) => {
+      chooseBossOption(state, content, mode, difficulty, logFn);
       save(state);
       render(state);
     },
@@ -360,6 +372,8 @@ function migrate(s: GameState): void {
   s.roomCleared ??= false;
   s.pendingEvent ??= null;
   s.resolvedEvents ??= [];
+  s.bossRiddle ??= null;
+  s.riddleLimits ??= {};
   s.statusEffects ??= [];
   // v4 fields — adaptive resistance, death analysis
   s.dmgStreakType ??= undefined;

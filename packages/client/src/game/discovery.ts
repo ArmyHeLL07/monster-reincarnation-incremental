@@ -1,9 +1,8 @@
-import type { StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { recomputeMaxes } from './state';
 import { appraisalTier } from './eyes';
 import { aggregateBonuses } from './effects';
+import { normalizeAnswer, isRiddleLocked, recordRiddleWrong, applyRiddleReward } from './riddles';
 
 type Log = (e: LogEvent) => void;
 
@@ -81,48 +80,29 @@ export function readBook(state: GameState, content: Content, bookId: string, log
   }
 }
 
-/** Fold a riddle answer for forgiving comparison: lowercase, Turkish→ASCII, strip non-alphanumerics. */
-function normalizeAnswer(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/i̇/g, 'i') // combining dot left by İ.toLowerCase()
-    .replace(/[ıî]/g, 'i')
-    .replace(/ş/g, 's')
-    .replace(/ç/g, 'c')
-    .replace(/ğ/g, 'g')
-    .replace(/[üû]/g, 'u')
-    .replace(/[öô]/g, 'o')
-    .replace(/â/g, 'a')
-    .replace(/[^a-z0-9]/g, '');
-}
-
-/** Answer the pending room's riddle (forgiving match). Correct → reward; wrong → it stays. */
+/** Answer the pending room's riddle (forgiving match). Correct → reward; wrong → it stays (3-try limit). */
 export function answerRoom(state: GameState, content: Content, answer: string, log: Log): boolean {
   const id = state.pendingRoom;
   if (!id) return false;
   const room = content.rooms.get(id);
   if (!room) return false;
+  if (isRiddleLocked(state, id)) {
+    log({ key: 'log.riddle_locked' }); // too many wrong tries — wait out the cooldown
+    return false;
+  }
   // Forgiving match: case-insensitive, Turkish letters folded, punctuation/space ignored —
   // so "sessizlik", "Sessızlık", "SESSİZLİK" all pass.
   const norm = normalizeAnswer(answer);
   const all = [...(room.answers.tr ?? []), ...(room.answers.en ?? [])];
   const ok = norm.length > 0 && all.some((a) => normalizeAnswer(a) === norm);
   if (!ok) {
-    log({ key: 'log.room_wrong' });
+    const locked = recordRiddleWrong(state, id);
+    log({ key: locked ? 'log.riddle_locked_now' : 'log.room_wrong' });
     return false;
   }
-  // Correct — apply the reward.
-  const r = room.reward;
-  if (r.kind === 'skill' && typeof r.value === 'string') {
-    if (!state.skills.some((s) => s.id === r.value)) state.skills.push({ id: r.value, level: 1, exp: 0 });
-  } else if (r.kind === 'stat' && typeof r.value === 'string') {
-    state.stats[r.value as StatKey] += 3;
-    recomputeMaxes(state);
-  } else if (r.kind === 'ep' && typeof r.value === 'number') {
-    state.ep += r.value;
-  } else if (r.kind === 'unlock' && typeof r.value === 'string') {
-    if (!state.unlocks.includes(r.value)) state.unlocks.push(r.value);
-  }
+  // Correct — apply the reward (shared helper) and clear this room's attempt limit.
+  applyRiddleReward(state, room.reward, log);
+  delete state.riddleLimits[id];
   state.discoveries.push(id);
   state.pendingRoom = null;
   log({ key: 'log.room_solved', params: { room: room.locKey } });

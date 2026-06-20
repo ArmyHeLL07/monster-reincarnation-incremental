@@ -12,6 +12,7 @@ import type {
   DifficultyDef,
   ElementChart,
   EventDef,
+  BossRiddle,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -29,10 +30,12 @@ export interface Content {
   difficulties: Map<string, DifficultyDef>;
   elements: ElementChart;
   events: Map<string, EventDef>;
+  /** Boss riddles keyed by the boss enemy id they gate. */
+  bossRiddles: Map<string, BossRiddle>;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -47,6 +50,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<DifficultyDef[]>(`${base}difficulty.json`),
       fetchJson<ElementChart>(`${base}elements.json`),
       fetchJson<EventDef[]>(`${base}events.json`),
+      fetchJson<BossRiddle[]>(`${base}boss_riddles.json`),
     ]);
   return {
     skills: byId(skills),
@@ -62,6 +66,7 @@ export async function loadContent(base: string): Promise<Content> {
     difficulties: byId(difficulties),
     elements,
     events: byId(events),
+    bossRiddles: new Map(bossRiddles.map((r) => [r.bossId, r])),
   };
 }
 

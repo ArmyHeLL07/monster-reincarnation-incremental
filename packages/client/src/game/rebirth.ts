@@ -44,6 +44,8 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.cooldowns = {}; // …nor old skill cooldowns.
   state.pendingEvent = null; // …nor an open map event…
   state.resolvedEvents = []; // …and the fresh map's events re-trigger.
+  state.bossRiddle = null; // …nor an open boss riddle…
+  state.riddleLimits = {}; // …and riddle attempt-locks reset for the fresh run.
   state.formHistory = [fresh.formId]; // lineage resets to the new weak start (seenForms = knowledge, preserved)
 
   // --- base stats reset, then keep the permanent boon -----------------------

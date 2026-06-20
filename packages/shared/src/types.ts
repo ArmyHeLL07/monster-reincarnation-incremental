@@ -326,6 +326,18 @@ export interface EventDef {
   choices: EventChoice[];
 }
 
+/** A hard riddle that may gate a boss room (GDD §8.2 — "knowledge defeats the boss"). */
+export interface BossRiddle {
+  id: string;
+  /** Enemy archetype id of the boss this riddle gates (matched per layer). */
+  bossId: string;
+  locKey: string;
+  locKeyClue: string;
+  answers: { tr: string[]; en: string[] };
+  /** Small guaranteed reward for the "skip" path after solving. */
+  reward: { kind: 'skill' | 'stat' | 'unlock' | 'ep' | 'fragment'; value: string | number; amount?: number };
+}
+
 /** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */
 export interface RulerDef {
   id: string;

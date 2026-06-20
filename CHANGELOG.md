@@ -23,6 +23,17 @@
 - 6 ana statın (STR/VIT/AGI/INT/WIS/LUCK) **lore ağırlıklı açıklaması** (TR+EN, `stat.X.desc` anahtarları);
   Stats sekmesinde her statın altında muted satır olarak görünüyor. Stat etiketleri tam isimle güncellendi.
 
+### Eklendi (bilmece-boss odaları + bilmece deneme limitleri)
+- **Boss → bilmece:** boss odası şansla (**%10 + LUCK×0.5%**, cap %40) zor bir **bilmece sınavına** döner
+  (`boss_riddles.json`, 3 zor bilmece). Doğru çözünce **2 seçim:** 🛡️ Atla (güvenli + küçük ödül, gatekeeper'sa
+  rebirth açılır) ya da ⚔️ Savaş → **3 zorluk** (Normal ×1 / Güçlü ×1.5 / Acımasız ×2, ödül ölçekli).
+- **Yanlış cevap (3 hak):** 1-2 → güçlenmiş muhafız (×1.3, öldür → bilmece döner); 3 → güçlü boss (×1.5) + iyi ödül.
+- **Normal bilmeceler:** 3 yanlış → süreli kilit (30dk → 1sa, canavar yok, geri-sayım gösterilir).
+- Yeni `riddles.ts` (saf mantık, `normalizeAnswer` buraya taşındı → döngü yok); **`applyBossClear`** +
+  **`applyRiddleReward`** DRY helper'lar (onKill/Atla, secret-room/boss-bilmece tek kaynak).
+- **Mantık denetimi:** döngüsel import kırıldı (normalizeAnswer→riddles), riddleGuard ölümü ilerletmez,
+  boss-oda öncelik sırası, ölüm/rebirth/farm-zıpla `bossRiddle` reset, eski kayıt göçü.
+
 ### Eklendi (harita random olayları)
 - **Seçim-tabanlı oda olayları:** yeni "olay odası" tipi (koordinat-hash ile kararlı). Girince
   metin + seçenek paneli çıkar, **seçim yapana kadar savaş/ilerleme kilitli**; bir kez çözülür.
