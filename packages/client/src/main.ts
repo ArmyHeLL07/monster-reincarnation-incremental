@@ -13,7 +13,8 @@ import { load, save, clear } from './game/save';
 import { mount, live, render, pushLog, setLastFusion, resetUi, type UiActions } from './ui';
 import type { Difficulty } from '@mri/shared';
 
-const OFFLINE_TICK_CAP = 1800;
+const OFFLINE_TICK_CAP = 28800; // 8 hours cap
+
 
 async function init(): Promise<void> {
   const base = import.meta.env.BASE_URL;
@@ -391,7 +392,7 @@ function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => 
   const ticks = Math.min(elapsedSec, OFFLINE_TICK_CAP);
   const beforeEp = state.ep;
   const silent: (e: LogEvent) => void = () => {};
-  for (let i = 0; i < ticks; i++) tick(state, content, silent);
+  for (let i = 0; i < ticks; i++) tick(state, content, silent, true);
   log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - beforeEp } });
 }
 

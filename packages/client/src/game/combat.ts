@@ -112,7 +112,7 @@ function dodgeChance(state: GameState, b: Bonuses): number {
 // ---- main tick -------------------------------------------------------------
 
 /** One real-time tick. `idle` freezes the world; `meditate` runs the zen path; combat/rest advance. */
-export function tick(state: GameState, content: Content, log: Log): void {
+export function tick(state: GameState, content: Content, log: Log, isOffline: boolean = false): void {
   if (state.action === 'idle') {
     state.lastSeen = Date.now();
     return; // frozen — no hunger, no regen, nothing happens
@@ -127,7 +127,7 @@ export function tick(state: GameState, content: Content, log: Log): void {
   if (state.action === 'combat') {
     const b = aggregateBonuses(state, content);
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
-    combatRound(state, content, log, b);
+    combatRound(state, content, log, b, isOffline);
     processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
     if (state.hp <= 0) onDeath(state, content, log, b);
     decayFood(state);
@@ -273,7 +273,7 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
   // manual: don't advance — combatRound respawns an enemy in the same room (farm in place)
 }
 
-function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): void {
+function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, isOffline: boolean = false): void {
   if (state.pendingEvent) return; // an event panel is open — no combat until the player chooses
   if (state.bossRiddle && !state.enemy) return; // boss riddle awaiting an answer (no guard fighting now)
   // An explored (no-combat) room has nothing to farm — it holds until the player taps "Advance".
@@ -282,7 +282,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
     // Event rooms never replace the entry room or the floor's boss room.
     const evLayer = currentLayer(state, content);
     const atBossRoom = !!evLayer && state.pos.room >= roomsOf(state, evLayer, state.pos.floor);
-    if (!atBossRoom) {
+    if (!atBossRoom && !isOffline) {
       const evId = rollRoomEvent(state, content);
       if (evId) {
         state.pendingEvent = { id: evId, roomKey: roomKeyOf(state) };
@@ -290,7 +290,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses): 
       }
     }
     // Boss room: a luck-rolled chance to become a riddle challenge instead of a straight fight.
-    if (atBossRoom && evLayer && !state.resolvedEvents.includes(roomKeyOf(state))) {
+    if (atBossRoom && evLayer && !state.resolvedEvents.includes(roomKeyOf(state)) && !isOffline) {
       const riddle = pickBossRiddle(content, evLayer.boss);
       if (riddle && Math.random() < bossRiddleChance(state)) {
         state.bossRiddle = { roomKey: roomKeyOf(state), riddleId: riddle.id, attempts: 0 };
