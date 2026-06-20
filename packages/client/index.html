@@ -151,8 +151,9 @@
       .evoready { color: var(--ember); font-family: var(--disp); letter-spacing: 0.08em; animation: pulse 1.8s ease-in-out infinite; }
 
       /* --- dungeon map (fog-of-war grid) --- */
-      .dmap { display: flex; flex-direction: column; gap: 5px; margin: 0.4rem 0; }
-      .dmap-floor { display: grid; grid-template-columns: 16px repeat(var(--cols), 1fr); gap: 4px; align-items: center; }
+      /* Natural cell size + horizontal scroll — don't squeeze a 20-room floor into the panel width. */
+      .dmap { display: flex; flex-direction: column; gap: 5px; margin: 0.4rem 0; overflow-x: auto; align-items: flex-start; padding-bottom: 4px; }
+      .dmap-floor { display: grid; grid-template-columns: 18px repeat(var(--cols), 24px); gap: 4px; align-items: center; }
       .dmap-floor .flabel { font-family: var(--mono); font-size: 0.6rem; color: var(--ash); text-align: right; opacity: 0.65; }
       .dcell {
         aspect-ratio: 1 / 1; border-radius: 4px; display: flex; align-items: center; justify-content: center;
