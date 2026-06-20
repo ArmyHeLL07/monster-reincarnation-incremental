@@ -333,6 +333,7 @@ function migrate(s: GameState): void {
   s.autoAdvance ??= false;
   s.roomCleared ??= false;
   s.statusEffects ??= [];
+  s.eatenEnemies ??= [];
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */

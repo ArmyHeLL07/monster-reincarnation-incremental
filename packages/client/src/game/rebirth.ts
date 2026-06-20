@@ -40,6 +40,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.statusEffects = []; // a fresh life carries no lingering poison/burn…
   state.roomCleared = false; // …nor a stuck "cleared room" flag…
   state.cooldowns = {}; // …nor old skill cooldowns.
+  state.eatenEnemies = []; // eating history resets with evolution chain
 
   // --- base stats reset, then keep the permanent boon -----------------------
   state.stats = { ...fresh.stats };

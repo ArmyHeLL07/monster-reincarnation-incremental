@@ -22,7 +22,9 @@
     "evolvesTo": ["shade_stalker"],
     "levelReq": 10,
     "statBonus": { "INT": 3, "STR": 2 },
-    "grantSkills": ["acid_spit", "toxic_cloud", "mana_sense", "flame_bolt"]
+    "grantSkills": ["acid_spit", "toxic_cloud", "mana_sense", "flame_bolt"],
+    "requireEat": "venom_toad",
+    "eatGrantSkill": "acid_spit"
   },
   {
     "id": "blade_weaver",
@@ -31,7 +33,9 @@
     "evolvesTo": ["scythe_hunter"],
     "levelReq": 10,
     "statBonus": { "STR": 3, "AGI": 2 },
-    "grantSkills": ["pounce", "rend", "overdraw"]
+    "grantSkills": ["pounce", "rend", "overdraw"],
+    "requireEat": "cave_lurker",
+    "eatGrantSkill": "pounce"
   },
   {
     "id": "greater_weaver",
@@ -40,7 +44,9 @@
     "evolvesTo": ["colossal_weaver"],
     "levelReq": 10,
     "statBonus": { "VIT": 6, "STR": 2 },
-    "grantSkills": ["endurance", "carapace_lord", "mp_regen"]
+    "grantSkills": ["endurance", "carapace_lord", "mp_regen"],
+    "requireEat": "acid_slug",
+    "eatGrantSkill": "endurance"
   },
   {
     "id": "colossal_weaver",

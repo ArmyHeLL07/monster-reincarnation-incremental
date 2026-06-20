@@ -152,11 +152,13 @@ function autoEat(state: GameState, content: Content, log: Log): void {
     state.hunger = Math.max(0, state.hunger - eaten.satiety);
     // Gluttony: feeding feeds the dark axis (GDD §7.4.5).
     gainSin(state, content, 0.25, log);
+    recordEat(state, content, eaten.enemyId, log);
     return;
   }
   const rotten = state.inventory.shift();
   if (rotten) {
     addResistExp(state, content, 'poison', 3, log);
+    recordEat(state, content, rotten.enemyId, log);
     log({ key: 'log.ate_rotten' });
   }
 }
@@ -168,10 +170,12 @@ export function eatFood(state: GameState, content: Content, index: number, log: 
   state.inventory.splice(index, 1);
   if (isRotten(it)) {
     addResistExp(state, content, 'poison', 3, log); // rotten meat = passive poison resistance
+    recordEat(state, content, it.enemyId, log);
     log({ key: 'log.ate_rotten' });
   } else {
     state.hunger = Math.max(0, state.hunger - it.satiety);
     gainSin(state, content, 0.25, log); // feeding feeds the dark axis (Gluttony)
+    recordEat(state, content, it.enemyId, log);
     log({ key: 'log.ate', params: { sat: it.satiety } });
   }
 }
@@ -179,6 +183,22 @@ export function eatFood(state: GameState, content: Content, index: number, log: 
 function decayFood(state: GameState): void {
   if (refrigerated(state)) return;
   for (const item of state.inventory) item.decay += 1;
+}
+
+/** First-time eat of an enemy type: record it and grant any evolution skill seeds. */
+function recordEat(state: GameState, content: Content, enemyId: string, log: Log): void {
+  if (!state.eatenEnemies) state.eatenEnemies = [];
+  if (state.eatenEnemies.includes(enemyId)) return;
+  state.eatenEnemies.push(enemyId);
+  for (const form of content.forms.values()) {
+    if (form.requireEat !== enemyId || !form.eatGrantSkill) continue;
+    const skillId = form.eatGrantSkill;
+    if (state.skills.some((s) => s.id === skillId)) continue;
+    const def = content.skills.get(skillId);
+    if (!def) continue;
+    state.skills.push({ id: skillId, level: 1, exp: 0 });
+    log({ key: 'log.eat_seed', params: { enemy: content.enemies.get(enemyId)?.locKey ?? enemyId, skill: def.locKeyName } });
+  }
 }
 
 function growStaminaRegen(state: GameState): void {

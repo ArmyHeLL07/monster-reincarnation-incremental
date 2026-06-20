@@ -58,6 +58,10 @@ export interface EvolutionForm {
   levelReq: number;
   statBonus?: Partial<Record<StatKey, number>>;
   grantSkills?: string[];
+  /** Enemy id that must have been eaten at least once before this branch unlocks. */
+  requireEat?: string;
+  /** Skill seed granted immediately when the required enemy is first eaten (a taste of the path). */
+  eatGrantSkill?: string;
 }
 
 /** A data-driven skill. Player-facing text is referenced by localization key, never inlined. */

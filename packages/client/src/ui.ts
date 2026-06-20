@@ -86,7 +86,7 @@ const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
 /** Route a log line to its stream so combat spam never buries loot/discovery. */
 function logCategory(key: string): LogCat {
   if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
-  if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity/.test(key)) {
+  if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity|eat_seed/.test(key)) {
     return 'discovery';
   }
   return 'combat';
@@ -97,7 +97,7 @@ const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
-  'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
+  'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed', 'log.eat_seed',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -997,10 +997,13 @@ function statsTab(state: GameState): string {
   const evos = availableEvolutions(state, CONTENT);
   const evoHtml = evos.length
     ? evos
-        .map(
-          (f) =>
-            `<div class="panel"><div class="row"><b>${t(f.locKey)}</b><span>${t('ui.lv')} ${f.levelReq}+</span></div><p class="muted">${t(`${f.locKey}.desc`)}</p><button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t('ui.evolve')}</button></div>`,
-        )
+        .map((f) => {
+          const needEat = f.requireEat && !(state.eatenEnemies ?? []).includes(f.requireEat);
+          const eatHint = needEat
+            ? `<p class="muted">${t('ui.evo_eat_req')}: <b>${t(CONTENT.enemies.get(f.requireEat!)?.locKey ?? f.requireEat!)}</b></p>`
+            : '';
+          return `<div class="panel"><div class="row"><b>${t(f.locKey)}</b><span>${t('ui.lv')} ${f.levelReq}+</span></div><p class="muted">${t(`${f.locKey}.desc`)}</p>${eatHint}<button class="evo" data-form="${f.id}"${canEvolve(state, f) ? '' : ' disabled'}>${t('ui.evolve')}</button></div>`;
+        })
         .join('')
     : `<span class="muted">${t('ui.final_form')}</span>`;
   const form = currentForm(state, CONTENT);

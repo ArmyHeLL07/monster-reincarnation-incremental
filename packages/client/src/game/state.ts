@@ -112,6 +112,8 @@ export interface GameState {
   hunger: number;
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */
   inventory: FoodItem[];
+  /** Enemy type ids eaten at least once — gates requireEat evolution paths. */
+  eatenEnemies: string[];
   ep: number;
   pos: DungeonPos;
   raceId: string;
@@ -240,6 +242,7 @@ export function newGame(): GameState {
     autosaveMin: 5,
     hunger: 0,
     inventory: [],
+    eatenEnemies: [],
     ep: 0,
     pos: { layer: 1, floor: 1, room: 1 },
     raceId: 'spider',

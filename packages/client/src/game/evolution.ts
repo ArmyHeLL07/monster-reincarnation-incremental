@@ -19,6 +19,7 @@ export function availableEvolutions(state: GameState, content: Content): Evoluti
 }
 
 export function canEvolve(state: GameState, form: EvolutionForm): boolean {
+  if (form.requireEat && !(state.eatenEnemies ?? []).includes(form.requireEat)) return false;
   return state.level >= form.levelReq;
 }
 
