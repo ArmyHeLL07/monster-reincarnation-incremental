@@ -162,8 +162,20 @@ function autoEat(state: GameState, content: Content, log: Log): void {
     state.hunger = Math.max(0, state.hunger - eaten.satiety);
     // Gluttony: feeding feeds the dark axis (GDD §7.4.5).
     gainSin(state, content, 0.25, log);
+
+    // Devouring mechanic: chance to learn a skill from the eaten enemy
+    const enemyDef = content.enemies.get(eaten.enemyId);
+    if (enemyDef && enemyDef.grantSkills && enemyDef.grantSkills.length > 0) {
+      const learnable = enemyDef.grantSkills.filter(sid => !state.skills.some(s => s.id === sid));
+      if (learnable.length > 0 && Math.random() < 0.20) {
+        const chosen = learnable[Math.floor(Math.random() * learnable.length)];
+        state.skills.push({ id: chosen, level: 1, exp: 0 });
+        log({ key: 'log.devour_skill', params: { enemy: enemyDef.locKey, skill: `skill.${chosen}.name` } });
+      }
+    }
     return;
   }
+
   const rotten = state.inventory.shift();
   if (rotten) {
     addResistExp(state, content, 'poison', 3, log);
@@ -183,6 +195,17 @@ export function eatFood(state: GameState, content: Content, index: number, log: 
     state.hunger = Math.max(0, state.hunger - it.satiety);
     gainSin(state, content, 0.25, log); // feeding feeds the dark axis (Gluttony)
     log({ key: 'log.ate', params: { sat: it.satiety } });
+
+    // Devouring mechanic: chance to learn a skill from the eaten enemy
+    const enemyDef = content.enemies.get(it.enemyId);
+    if (enemyDef && enemyDef.grantSkills && enemyDef.grantSkills.length > 0) {
+      const learnable = enemyDef.grantSkills.filter(sid => !state.skills.some(s => s.id === sid));
+      if (learnable.length > 0 && Math.random() < 0.20) {
+        const chosen = learnable[Math.floor(Math.random() * learnable.length)];
+        state.skills.push({ id: chosen, level: 1, exp: 0 });
+        log({ key: 'log.devour_skill', params: { enemy: enemyDef.locKey, skill: `skill.${chosen}.name` } });
+      }
+    }
   }
 }
 

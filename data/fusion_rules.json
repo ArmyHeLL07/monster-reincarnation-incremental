@@ -29,6 +29,7 @@
   "special": [
     { "a": "sharp_claw", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
     { "a": "fist_strike", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
+    { "a": "sword_slash", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
     { "a": "hp_regen", "b": "venom_bite", "effect": "toxic_blood", "cls": "quirk" },
     { "a": "all_sight", "b": "precognition", "effect": "omniscience", "cls": "synergy" },
     { "a": "endless_mana", "b": "mana_mastery", "effect": "mana_singularity", "cls": "synergy" },

@@ -158,6 +158,8 @@ export interface Enemy {
   race?: string;
   /** Visual "skin" — an emoji/glyph shown as the enemy portrait (framed by its element colour). */
   icon?: string;
+  /** Skills that can be devoured/absorbed from this enemy. */
+  grantSkills?: string[];
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */
