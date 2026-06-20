@@ -907,6 +907,14 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   state.ep += ep;
   state.kills += 1;
   gainXp(state, ep * XP_PER_EP, log);
+  // Passive and eye skills gain XP upon defeating enemies (since they cannot be actively cast).
+  for (const slot of state.skills) {
+    const def = content.skills.get(slot.id);
+    if (def && (def.kind === 'passive' || def.kind === 'eye')) {
+      const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.15)) * b.xpMult * 0.5));
+      addSkillExp(content, slot, gain, log, b.xpMult);
+    }
+  }
   // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
   if (enemy.race && enemy.race === state.raceId) {
     gainSin(state, content, SIN_PER_KILL * (enemy.isBoss ? 5 : 1), log);
