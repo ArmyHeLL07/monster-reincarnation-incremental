@@ -942,7 +942,11 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   // the riddle panel returns for the next attempt.
   if (wasRiddleGuard && state.bossRiddle) return;
 
-  if (wasBoss) applyBossClear(state, content, log); // gatekeeper → rebirth (last gatekeeper floor only)
+  if (wasBoss) {
+    applyBossClear(state, content, log); // gatekeeper → rebirth (last gatekeeper floor only)
+    // Prevent the riddle from re-triggering on the next tick (enemy is null again in the boss room).
+    if (!state.resolvedEvents.includes(roomKeyOf(state))) state.resolvedEvents.push(roomKeyOf(state));
+  }
 
   clearRoom(state, content, log); // auto-advance, or hold for the manual "Advance" tap
 

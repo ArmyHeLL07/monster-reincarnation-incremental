@@ -243,7 +243,8 @@ export function live(state: GameState): void {
     if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
   }
   if (activeTab === 'combat' || activeTab === 'map') {
-    renderTab();
+    // Don't wipe the boss-riddle input while the player is typing in it.
+    if (document.activeElement?.id !== 'br-input') renderTab();
   } else if (activeTab === 'lore') {
     // Live-update just the meditation bar (full re-render would clobber the riddle input).
     const ml = document.querySelector<HTMLElement>('#medlive');
