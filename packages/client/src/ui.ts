@@ -1176,41 +1176,101 @@ function wireLore(el: HTMLElement): void {
 // ---- STATS (+ evolution) ---------------------------------------------------
 
 /** Dikey dallanan evrim ağacı (alttan-yukarı): bağlayıcı çizgiler + branch bar, available glow. */
+function renderEvoCell(n: EvoNode, tierTag = false): string {
+  const name = n.name ? t(n.name) : '???';
+  const bonus = n.statBonus ? Object.entries(n.statBonus).map(([k, v]) => `+${v}${k}`).join(' ') : '';
+  const skills = n.grantSkills?.length ? ` · ${n.grantSkills.length} skill` : '';
+  let detail = '';
+  if (n.status === 'available') {
+    detail = `<div class="muted evo-d">${bonus}${skills}</div><button class="evo" data-form="${n.id}">${t('ui.evolve')}</button>`;
+  } else if (n.status === 'locked') {
+    detail = `<div class="muted evo-d">${t('ui.evo_locked', { lv: n.levelReq })}</div>`;
+  } else if (n.status === 'missed') {
+    detail = `<div class="muted evo-d">✕ ${t('ui.evo_missed')}</div>`;
+  } else if (n.status === 'hidden') {
+    detail = `<div class="muted evo-d">${t('ui.evo_hidden')}</div>`;
+  } else if ((n.status === 'past' || n.status === 'current') && bonus) {
+    detail = `<div class="muted evo-d">${bonus}${skills}</div>`;
+  }
+  const mark = n.status === 'current' ? '◉ ' : n.status === 'past' ? '✓ ' : '';
+  const tLabel = tierTag ? `<div class="evo-tier-tag">T${n.tier}</div>` : '';
+  return `<div class="evo-cell ${n.status}">${tLabel}<div class="evo-name">${mark}${name}</div>${detail}</div>`;
+}
+
+/** Phylogeny-style renderer for races with fully diverging paths (no reconvergence). */
+function evolutionTreePhylo(nodes: EvoNode[]): string {
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+  const inTreeKids = (n: EvoNode) => n.children.filter(c => nodeMap.has(c)).map(c => nodeMap.get(c)!);
+
+  const root = nodes.find(n => n.parents.every(p => !nodeMap.has(p)));
+  if (!root) return '';
+
+  // Walk the single-child trunk until we hit the branch point
+  const trunk: EvoNode[] = [];
+  let cur: EvoNode | undefined = root;
+  while (cur) {
+    trunk.push(cur);
+    const kids = inTreeKids(cur);
+    if (kids.length !== 1) break;
+    cur = kids[0];
+  }
+
+  const branchNode = trunk[trunk.length - 1];
+  const trackRoots = inTreeKids(branchNode);
+  if (trackRoots.length < 2) return '';
+
+  // Follow each branch to its leaf
+  const buildTrack = (start: EvoNode): EvoNode[] => {
+    const track: EvoNode[] = [];
+    let n: EvoNode | undefined = start;
+    while (n) { track.push(n); const k = inTreeKids(n); n = k[0]; }
+    return track;
+  };
+  const tracks = trackRoots.map(buildTrack);
+
+  // Render parallel columns (T-high at top, T-low at bottom within each column)
+  const tracksHtml = tracks.map(track => {
+    const isActive = track.some(n => n.status === 'current' || n.status === 'past' || n.status === 'available');
+    const cells = [...track].reverse().map((n, i) =>
+      `<div class="phylo-cell${i === 0 ? ' phylo-cell-top' : ''}">${renderEvoCell(n, true)}</div>`
+    ).join('');
+    return `<div class="phylo-track${isActive ? ' phylo-active' : ''}">${cells}</div>`;
+  }).join('');
+
+  // Trunk prefix: everything above branchNode (i.e., trunk without branchNode)
+  // branchNode itself is shown as the connector between trunk and tracks
+  const prefixNodes = trunk.slice(0, -1); // exclude branchNode
+  const branchHtml = `<div class="phylo-common-row phylo-common-top">${renderEvoCell(branchNode, true)}</div>`;
+  const prefixHtml = prefixNodes.slice().reverse().map(n =>
+    `<div class="phylo-common-row">${renderEvoCell(n, true)}</div>`
+  ).join('');
+
+  return `<div class="evotree-phylo-wrap"><div class="evotree-phylo">
+    <div class="phylo-tracks">${tracksHtml}</div>
+    <div class="phylo-fork"></div>
+    ${branchHtml}
+    ${prefixHtml}
+  </div></div>`;
+}
+
 function evolutionTree(state: GameState): string {
   const nodes = evolutionTreeView(state, CONTENT);
   if (!nodes.length) return '';
-  // High tier at top, T0 (start/current) at the bottom — the tree grows upward.
+
+  // Detect fully diverging branches (no form has 2+ in-tree parents → no reconvergence).
+  const nodeSet = new Set(nodes.map(n => n.id));
+  const hasConvergence = nodes.some(n => n.parents.filter(p => nodeSet.has(p)).length > 1);
+  const hasBranch = nodes.some(n => n.children.filter(c => nodeSet.has(c)).length > 1);
+  if (hasBranch && !hasConvergence) return evolutionTreePhylo(nodes);
+
+  // Default: tier-row layout (converging branches, linear chains)
   const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => b - a);
   const rows = tiers
     .map((tier, i) => {
       const tierNodes = nodes.filter((n) => n.tier === tier);
       const branchClass = tierNodes.length > 1 ? ` branch branch-${tierNodes.length}` : '';
       const first = i === 0 ? ' top' : '';
-      const cells = tierNodes
-        .map((n) => {
-          const name = n.name ? t(n.name) : '???';
-          const bonus = n.statBonus
-            ? Object.entries(n.statBonus)
-                .map(([k, v]) => `+${v}${k}`)
-                .join(' ')
-            : '';
-          const skills = n.grantSkills?.length ? ` · ${n.grantSkills.length} skill` : '';
-          let detail = '';
-          if (n.status === 'available') {
-            detail = `<div class="muted evo-d">${bonus}${skills}</div><button class="evo" data-form="${n.id}">${t('ui.evolve')}</button>`;
-          } else if (n.status === 'locked') {
-            detail = `<div class="muted evo-d">${t('ui.evo_locked', { lv: n.levelReq })}</div>`;
-          } else if (n.status === 'missed') {
-            detail = `<div class="muted evo-d">✕ ${t('ui.evo_missed')}</div>`;
-          } else if (n.status === 'hidden') {
-            detail = `<div class="muted evo-d">${t('ui.evo_hidden')}</div>`;
-          } else if ((n.status === 'past' || n.status === 'current') && bonus) {
-            detail = `<div class="muted evo-d">${bonus}${skills}</div>`;
-          }
-          const mark = n.status === 'current' ? '◉ ' : n.status === 'past' ? '✓ ' : '';
-          return `<div class="evo-cell ${n.status}"><div class="evo-name">${mark}${name}</div>${detail}</div>`;
-        })
-        .join('');
+      const cells = tierNodes.map(n => renderEvoCell(n)).join('');
       return `<div class="evo-row${branchClass}${first}"><span class="evo-tlabel">T${tier}</span><div class="evo-cellwrap">${cells}</div></div>`;
     })
     .join('');

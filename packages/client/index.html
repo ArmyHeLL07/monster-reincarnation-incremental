@@ -200,6 +200,33 @@
       .evo-cell.hidden { opacity: 0.4; border-style: dashed; }
       .evo-cell.hidden .evo-name { color: var(--ash); }
       @keyframes evoglow { 0%, 100% { box-shadow: 0 0 4px var(--venom-dim); } 50% { box-shadow: 0 0 14px var(--venom); } }
+
+      /* --- Phylogeny tree layout (diverging branches, e.g. human race) --- */
+      .evotree-phylo-wrap { display: flex; justify-content: center; overflow-x: auto; width: 100%; padding: 0.3rem 0 0.5rem; }
+      .evotree-phylo { display: inline-flex; flex-direction: column; align-items: stretch; }
+      .phylo-tracks { display: flex; flex-direction: row; align-items: flex-start; gap: 0.55rem; }
+      .phylo-track { display: flex; flex-direction: column; align-items: center; position: relative; }
+      /* Vertical trunk line per track — connects cells top to bottom */
+      .phylo-cell { position: relative; padding-top: 16px; }
+      .phylo-cell::before { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 16px; background: #3a3550; transform: translateX(-50%); }
+      .phylo-cell-top { padding-top: 0; }
+      .phylo-cell-top::before { display: none; }
+      /* Connector stub from each track bottom down to fork */
+      .phylo-track::after { content: ''; position: absolute; bottom: -20px; left: 50%; width: 2px; height: 20px; background: #3a3550; transform: translateX(-50%); }
+      /* Active track (chosen path) gets a subtle highlight */
+      .phylo-active .evo-cell:not(.hidden):not(.missed) { border-color: #3a3060; }
+      /* Fork: horizontal crossbar + vertical connector down to branchNode */
+      .phylo-fork { position: relative; height: 20px; }
+      .phylo-fork::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 2px; background: #3a3550; }
+      .phylo-fork::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 20px; background: #3a3550; transform: translateX(-50%); }
+      /* Common trunk cells */
+      .phylo-common-row { position: relative; padding-top: 16px; display: flex; justify-content: center; }
+      .phylo-common-row::before { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 16px; background: #3a3550; transform: translateX(-50%); }
+      .phylo-common-top { padding-top: 0; }
+      .phylo-common-top::before { display: none; }
+      /* Tier tag inside phylo cells */
+      .evo-tier-tag { font-family: var(--mono); font-size: 0.5rem; color: var(--ash); opacity: 0.55; margin-bottom: 0.08rem; }
+
       @media (max-width: 520px) {
         .evo-cell { min-width: 5rem; padding: 0.25rem 0.4rem; }
         .evo-cell .evo-name { font-size: 0.75rem; }
