@@ -1073,15 +1073,18 @@ function wireLore(el: HTMLElement): void {
 
 // ---- STATS (+ evolution) ---------------------------------------------------
 
-/** Dikey dallanan evrim ağacı: tier satırları, durum-stilli düğümler, available'da [Evrimleş]. */
+/** Dikey dallanan evrim ağacı (alttan-yukarı): bağlayıcı çizgiler + branch bar, available glow. */
 function evolutionTree(state: GameState): string {
   const nodes = evolutionTreeView(state, CONTENT);
   if (!nodes.length) return '';
-  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
+  // High tier at top, T0 (start/current) at the bottom — the tree grows upward.
+  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => b - a);
   const rows = tiers
-    .map((tier) => {
-      const cells = nodes
-        .filter((n) => n.tier === tier)
+    .map((tier, i) => {
+      const tierNodes = nodes.filter((n) => n.tier === tier);
+      const branch = tierNodes.length > 1 ? ' branch' : '';
+      const first = i === 0 ? ' top' : '';
+      const cells = tierNodes
         .map((n) => {
           const name = n.name ? t(n.name) : '???';
           const bonus = n.statBonus
@@ -1103,10 +1106,10 @@ function evolutionTree(state: GameState): string {
             detail = `<div class="muted evo-d">${bonus}${skills}</div>`;
           }
           const mark = n.status === 'current' ? '◉ ' : n.status === 'past' ? '✓ ' : '';
-          return `<div class="evo-node ${n.status}"><div class="evo-name">${mark}${name}</div>${detail}</div>`;
+          return `<div class="evo-cell ${n.status}"><div class="evo-name">${mark}${name}</div>${detail}</div>`;
         })
         .join('');
-      return `<div class="evo-tier"><span class="evo-tlabel">T${tier}</span><div class="evo-cells">${cells}</div></div>`;
+      return `<div class="evo-row${branch}${first}"><span class="evo-tlabel">T${tier}</span><div class="evo-cellwrap">${cells}</div></div>`;
     })
     .join('');
   return `<div class="evotree">${rows}</div>`;
