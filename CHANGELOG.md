@@ -4,6 +4,25 @@
 > yapılacaklar listesi için `ILERLEME.md`'ye, tasarım gerekçeleri için
 > `docs/superpowers/specs/`'e bak. Format: [Keep a Changelog](https://keepachangelog.com) esinli.
 
+## [Yayınlanmadı] — 2026-06-20
+
+### Düzeltildi (kat-bazlı random oda — kökten)
+- **Her kat artık kendi oda sayısını yuvarlıyor (12–20, bağımsız).** Önceki model oda sayısını
+  **katman başına tek sefer** yuvarlayıp o katmanın tüm katlarına aynı değeri veriyordu → "random
+  olsa bile katlar hep aynı genişlikte" sorunu. Kök neden tek satır değildi: tüm harita/ilerleme
+  matematiği "kat başına sabit R" varsayımına (tek lineer indeks) gömülüydü; yarım yamalar bu
+  yüzden hep eskiye sarıyordu.
+  - Veri modeli kat-bazlı diziye geçti: `layerRooms[layer][kat]` ve `exploredMax[layer][kat]`.
+  - `roomsOf(state, layer, floor)` artık kata özgü; `recordExplored`, harita gridi (her kat kendi
+    genişliğinde), farm butonları ve ilerleme yüzdesi tamamen kat-bazlı. (`combat.ts`, `ui.ts`, `main.ts`)
+  - Aralık data-driven: `dungeon.json`'a katman başına `minRooms`/`maxRooms` (varsayılan 12–20).
+  - Eski kayıt göçü: eski tek-sayı `layerRooms`/`exploredMax` girdileri düşürülür → kat-bazlı yeniden
+    yuvarlanır (fog ilerledikçe yeniden açılır). (`main.ts: migrate`)
+
+### Eklendi (stat lore açıklamaları)
+- 6 ana statın (STR/VIT/AGI/INT/WIS/LUCK) **lore ağırlıklı açıklaması** (TR+EN, `stat.X.desc` anahtarları);
+  Stats sekmesinde her statın altında muted satır olarak görünüyor. Stat etiketleri tam isimle güncellendi.
+
 ## [Yayınlanmadı] — 2026-06-18
 
 ### Eklendi / Değişti (skill ekranı, akıcı barlar, canlı açılış, lore)

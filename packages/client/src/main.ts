@@ -95,8 +95,9 @@ async function init(): Promise<void> {
     },
     onSetPos: (layerId, floor) => {
       // Revisit an already-cleared floor of this layer to farm it.
-      const R = state.layerRooms[layerId] ?? content.dungeon.layers.find((l) => l.id === layerId)?.roomsPerFloor ?? 1;
-      const reachedFloors = Math.ceil((state.exploredMax[layerId] ?? 0) / R);
+      const explored = state.exploredMax[layerId] ?? [];
+      let reachedFloors = 1;
+      for (let f = 1; f <= explored.length; f++) if ((explored[f - 1] ?? 0) > 0) reachedFloors = f;
       if (state.pos.layer === layerId && floor >= 1 && floor <= Math.max(1, reachedFloors)) {
         state.pos = { layer: layerId, floor, room: 1 };
         state.enemy = null;
@@ -330,6 +331,12 @@ function migrate(s: GameState): void {
   s.exploredMax ??= {};
   s.layerRooms ??= {};
   s.layerFloors ??= {};
+  // v3 map model: rooms are now per-floor arrays. Drop any old per-layer single-number entries
+  // so each floor re-rolls its own random width on next access (fog re-reveals as you move).
+  const rooms = s.layerRooms as Record<string, unknown>;
+  for (const k of Object.keys(rooms)) if (!Array.isArray(rooms[k])) delete rooms[k];
+  const expl = s.exploredMax as Record<string, unknown>;
+  for (const k of Object.keys(expl)) if (!Array.isArray(expl[k])) delete expl[k];
   s.autoAdvance ??= false;
   s.roomCleared ??= false;
   s.statusEffects ??= [];

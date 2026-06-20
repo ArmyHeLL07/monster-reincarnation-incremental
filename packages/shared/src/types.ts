@@ -181,7 +181,11 @@ export interface DungeonLayer {
   tierReq: number;
   /** Legacy fixed floor count — superseded at runtime by a per-player random roll (12–20). */
   floors: number;
+  /** Legacy fixed room count — kept only as a fallback; live rooms roll per floor (see minRooms/maxRooms). */
   roomsPerFloor: number;
+  /** Per-floor random room-count range — each floor independently rolls in [minRooms, maxRooms]. */
+  minRooms?: number;
+  maxRooms?: number;
   spDrainMult: number;
   enemyPool: string[];
   boss: string;

@@ -188,10 +188,10 @@ export interface GameState {
   pendingRoom: string | null;
   /** Accumulated fusion "scar" penalty (GDD §5.0.4) — flat stat drain until repaired. */
   scars: number;
-  /** Furthest linear room index reached per layer id → drives the map's fog-of-war reveal. */
-  exploredMax: Record<number, number>;
-  /** Per-player random rooms-per-floor per layer id (12–20), rolled once and saved. */
-  layerRooms: Record<number, number>;
+  /** Furthest room reached on each floor (exploredMax[layerId][floor-1]) → drives the map's fog-of-war reveal. */
+  exploredMax: Record<number, number[]>;
+  /** Per-player random rooms-per-floor: layerRooms[layerId][floor-1] (each floor rolls 12–20 independently). */
+  layerRooms: Record<number, number[]>;
   /** Per-player random floor count per layer id (12–20), rolled once and saved. */
   layerFloors: Record<number, number>;
   /** Manual map progression: when false, a cleared room waits for the "Advance" tap. */

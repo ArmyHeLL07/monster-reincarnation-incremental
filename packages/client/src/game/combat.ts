@@ -1,4 +1,4 @@
-import type { DamageType, StatKey, Skill } from '@mri/shared';
+import type { DamageType, StatKey, Skill, DungeonLayer } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP } from './state';
@@ -377,14 +377,23 @@ function currentLayer(state: GameState, content: Content) {
   return content.dungeon.layers.find((l) => l.id === state.pos.layer);
 }
 
-/** Per-player random rooms-per-floor for a layer (12–20), rolled once and saved. */
-export function roomsOf(state: GameState, layer: { id: number }): number {
-  let r = state.layerRooms[layer.id];
-  if (r == null) {
-    r = 12 + Math.floor(Math.random() * 9); // 12..20 inclusive
-    state.layerRooms[layer.id] = r;
+/** Roll (once, then cache) an independent random room count for EVERY floor of this layer. */
+function ensureFloorRooms(state: GameState, layer: DungeonLayer): number[] {
+  const floors = floorsOf(state, layer);
+  let arr = state.layerRooms[layer.id];
+  if (!Array.isArray(arr) || arr.length !== floors) {
+    const min = layer.minRooms ?? 12;
+    const max = Math.max(min, layer.maxRooms ?? 20);
+    arr = Array.from({ length: floors }, () => min + Math.floor(Math.random() * (max - min + 1)));
+    state.layerRooms[layer.id] = arr;
   }
-  return r;
+  return arr;
+}
+
+/** Random rooms-per-floor for ONE specific floor of a layer — each floor rolls 12–20 on its own. */
+export function roomsOf(state: GameState, layer: DungeonLayer, floor: number): number {
+  const arr = ensureFloorRooms(state, layer);
+  return arr[floor - 1] ?? arr[arr.length - 1] ?? 12;
 }
 
 /** Fixed floors-per-layer (set in dungeon.json, currently 7). Rooms-per-floor stays random (roomsOf). */
@@ -392,9 +401,9 @@ export function floorsOf(_state: GameState, layer: { floors: number }): number {
   return layer.floors;
 }
 
-/** Roll every layer's random rooms-per-floor up-front (called once at game start so the map is stable). */
+/** Roll every layer's per-floor random rooms up-front (called once at game start so the map is stable). */
 export function ensureLayerRooms(state: GameState, content: Content): void {
-  for (const l of content.dungeon.layers) roomsOf(state, l);
+  for (const l of content.dungeon.layers) ensureFloorRooms(state, l);
 }
 
 /** Deterministic [0,1) hash of a room coordinate — keeps exploration rooms stable per map. */
@@ -410,16 +419,15 @@ function isExplorationRoom(state: GameState, content: Content): boolean {
   if (!layer) return false;
   const rate = layer.explorationRate ?? 0;
   if (rate <= 0) return false;
-  const R = roomsOf(state, layer);
   const { floor, room } = state.pos;
+  const R = roomsOf(state, layer, floor);
   if (room <= 1 || room >= R) return false; // entry room and boss room are always combat
   return roomHash(layer.id, floor, room) < rate;
 }
 
 /** Resolve a calm exploration room: a little EP, a little recovery, a chance at lore/secret rooms. */
 function resolveExploration(state: GameState, content: Content, log: Log): void {
-  const R = roomsOf(state, currentLayer(state, content)!);
-  recordExplored(state, R); // light the room on the map
+  recordExplored(state); // light the room on the map
   const reward = diffDef(state, content).rewardMult ?? 1;
   const ep = Math.max(1, Math.round(3 * reward));
   state.ep += ep;
@@ -449,10 +457,11 @@ function applyAmbient(state: GameState, content: Content, log: Log): void {
   addResistExp(state, content, type, resGain, log);
 }
 
-function recordExplored(state: GameState, roomsPerFloor: number): void {
-  const idx = (state.pos.floor - 1) * roomsPerFloor + state.pos.room;
-  const prev = state.exploredMax[state.pos.layer] ?? 0;
-  if (idx > prev) state.exploredMax[state.pos.layer] = idx;
+/** Mark the furthest room reached on the CURRENT floor (per-floor fog-of-war reveal). */
+function recordExplored(state: GameState): void {
+  const arr = (state.exploredMax[state.pos.layer] ??= []);
+  const fi = state.pos.floor - 1;
+  if ((arr[fi] ?? 0) < state.pos.room) arr[fi] = state.pos.room;
 }
 
 /** Luck-driven chance to sense a (gated) secret room when a floor is cleared (GDD §8.2). */
@@ -471,8 +480,8 @@ function trySenseRoom(state: GameState, content: Content, log: Log): void {
 function spawnEnemy(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
   if (!layer || layer.enemyPool.length === 0) return;
-  const R = roomsOf(state, layer);
-  recordExplored(state, R); // light the room on the map as we enter it
+  const R = roomsOf(state, layer, state.pos.floor);
+  recordExplored(state); // light the room on the map as we enter it
   const isBoss = state.pos.room >= R;
   const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
   const def = content.enemies.get(archId);
@@ -772,7 +781,7 @@ export function advanceRoom(state: GameState, content: Content, log: Log): void 
 function advancePosition(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
   if (!layer) return;
-  const R = roomsOf(state, layer);
+  const R = roomsOf(state, layer, state.pos.floor);
   const wasBoss = state.pos.room >= R; // the floor's last room is its boss
   if (!wasBoss) {
     state.pos.room += 1;

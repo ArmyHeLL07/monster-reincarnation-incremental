@@ -557,6 +557,8 @@ Hiyerarşik yapı: **Katman → Bölüm → Oda.**
 - **Katlar = Cehennem'e yaklaşma:** kat derinleştikçe koşullar Cehennem'e (§8.5) yaklaşır — en derin kat, normal modda bile "mini-cehennem" gibi. Zorluk dikey derinlikle artar.
 - Yapı hem **zorluğu** (derinlik = zorluk) hem **keşif alanını** tanımlar.
 
+> **Uygulanan oda modeli (kod):** Her **katmanın** kat sayısı `dungeon.json`'da sabittir (şu an 7). **Her katın oda sayısı, o kata özgü olarak `[minRooms, maxRooms]` (varsayılan 12–20) arasından bağımsız yuvarlanır** — aynı katmanın katları birbirinden farklı genişlikte olur. Her katın son odası o katın **boss**'udur. Yuvarlanan değerler oyuncu başına bir kez üretilip kayda yazılır (`state.layerRooms[layer][kat]`), böylece harita oturum boyunca sabit kalır. Keşif (fog-of-war) **kat-bazlı** takip edilir (`state.exploredMax[layer][kat]`).
+
 ### 8.2 Keşif Sistemi — İncremental Mantığı (3B değil)
 **Önemli tasarım ilkesi:** Bu bir incremental oyundur — fiziksel "gidip duvar yokla" YOK. Keşif **bilgi-kapısı** mekaniğidir: gizli oda doğrudan görünmez, ama **doğru bilgi onu açar.**
 

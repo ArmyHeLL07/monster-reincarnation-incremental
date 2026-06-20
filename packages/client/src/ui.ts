@@ -1,11 +1,11 @@
-import type { FusionResult, StatKey, Difficulty, Skill } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { availableEvolutions, currentForm, canEvolve, evolutionReady } from './game/evolution';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, levelPower } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower } from './game/combat';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -524,21 +524,20 @@ function wireCombat(el: HTMLElement): void {
 
 // ---- MAP -------------------------------------------------------------------
 
-/** Fog-of-war grid of one layer: floors are rows, rooms are cells; cleared rooms light up. */
-function dungeonGrid(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
-  const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
+/** Fog-of-war grid of one layer: floors are rows (each its own random width), rooms are cells. */
+function dungeonGrid(state: GameState, layer: DungeonLayer): string {
   const F = floorsOf(state, layer);
   const onLayer = state.pos.layer === layer.id;
-  const curLinear = (state.pos.floor - 1) * R + state.pos.room;
-  const reached = Math.max(state.exploredMax[layer.id] ?? 0, onLayer ? curLinear : 0);
+  const explored = state.exploredMax[layer.id] ?? [];
   let rows = '';
   for (let f = 1; f <= F; f++) {
+    const R = roomsOf(state, layer, f);
+    const reachedRoom = Math.max(explored[f - 1] ?? 0, onLayer && f === state.pos.floor ? state.pos.room : 0);
     let cells = '';
     for (let r = 1; r <= R; r++) {
-      const idx = (f - 1) * R + r;
       const isBoss = r === R;
       const isCurrent = onLayer && f === state.pos.floor && r === state.pos.room;
-      const revealed = idx <= reached || isCurrent;
+      const revealed = r <= reachedRoom || isCurrent;
       let cls = 'dcell';
       let glyph = '';
       if (isCurrent) {
@@ -563,7 +562,7 @@ function dungeonGrid(state: GameState, layer: { id: number; floors: number; room
 
 function mapTab(state: GameState): string {
   const cur = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
-  const curRooms = cur ? (state.layerRooms[cur.id] ?? cur.roomsPerFloor) : 0;
+  const curRooms = cur ? roomsOf(state, cur, state.pos.floor) : 0;
   const bossSoon = cur && state.pos.room >= curRooms ? ` · <b style="color:var(--ember)">${t('ui.boss')}</b>` : '';
   const pending = state.pendingRoom ? `<p style="color:var(--ember)">⌑ ${t('ui.room_sensed')}: ${t(CONTENT.rooms.get(state.pendingRoom)?.locKey ?? '')}</p>` : '';
   const legend = `
@@ -577,9 +576,18 @@ function mapTab(state: GameState): string {
     .map((l) => {
       const unlocked = state.tier >= l.tierReq;
       const current = state.pos.layer === l.id;
-      const max = state.exploredMax[l.id] ?? 0;
-      const total = floorsOf(state, l) * (state.layerRooms[l.id] ?? l.roomsPerFloor);
-      const prog = unlocked ? ` <span class="muted">${Math.floor((Math.min(max, total) / total) * 100)}%</span>` : '';
+      let prog = '';
+      if (unlocked) {
+        const explored = state.exploredMax[l.id] ?? [];
+        let total = 0;
+        let done = 0;
+        for (let f = 1; f <= floorsOf(state, l); f++) {
+          const R = roomsOf(state, l, f);
+          total += R;
+          done += Math.min(explored[f - 1] ?? 0, R);
+        }
+        prog = ` <span class="muted">${total > 0 ? Math.floor((done / total) * 100) : 0}%</span>`;
+      }
       const status = current
         ? `<span class="muted">${t('ui.current')}</span>`
         : !unlocked
@@ -602,10 +610,11 @@ function mapTab(state: GameState): string {
 }
 
 /** Buttons to jump back to any already-cleared floor of this layer and farm it. */
-function farmControls(state: GameState, layer: { id: number; floors: number; roomsPerFloor: number }): string {
-  const R = state.layerRooms[layer.id] ?? layer.roomsPerFloor;
-  const reached = state.exploredMax[layer.id] ?? 0;
-  const reachedFloors = Math.min(floorsOf(state, layer), Math.max(1, Math.ceil(reached / R)));
+function farmControls(state: GameState, layer: DungeonLayer): string {
+  const explored = state.exploredMax[layer.id] ?? [];
+  let reachedFloors = 1;
+  for (let f = 1; f <= floorsOf(state, layer); f++) if ((explored[f - 1] ?? 0) > 0) reachedFloors = f;
+  if (state.pos.layer === layer.id) reachedFloors = Math.max(reachedFloors, state.pos.floor);
   if (reachedFloors <= 1 && state.pos.floor === 1) return ''; // nothing earlier to revisit yet
   const btns: string[] = [];
   for (let f = 1; f <= reachedFloors; f++) {
@@ -992,7 +1001,7 @@ function wireLore(el: HTMLElement): void {
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
-      `<li><b>${t(`stat.${k}`)}</b>: ${state.stats[k]} ${state.statPoints > 0 ? `<button class="statadd" data-stat="${k}">+</button>` : ''}</li>`,
+      `<li><div class="row"><b>${t(`stat.${k}`)}</b><span>${state.stats[k]} ${state.statPoints > 0 ? `<button class="statadd" data-stat="${k}">+</button>` : ''}</span></div><p class="muted statdesc">${t(`stat.${k}.desc`)}</p></li>`,
   ).join('');
   const evos = availableEvolutions(state, CONTENT);
   const evoHtml = evos.length

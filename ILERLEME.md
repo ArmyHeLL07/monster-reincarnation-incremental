@@ -7,7 +7,20 @@
 > **Canlı demo:** https://armyhell07.github.io/monster-reincarnation-incremental/
 > **Repo:** https://github.com/ArmyHeLL07/monster-reincarnation-incremental
 
-**Son güncelleme: 2026-06-18**
+**Son güncelleme: 2026-06-20**
+
+---
+
+## ✅ Yapıldı (2026-06-20) — kat-bazlı random oda + stat lore
+
+- **Oda sayısı artık gerçekten kat-bazlı random (12–20).** Eskiden oda sayısı **katman başına**
+  tek sefer yuvarlanıp o katmanın tüm katlarına aynı veriliyordu → katlar hep aynı genişlikteydi
+  (3. kez "düzeltildi" denip geri saran sorun). Kök neden: harita/ilerleme matematiği "kat başına
+  sabit oda" varsayımına gömülüydü. Veri modeli kat-bazlı diziye taşındı (`layerRooms[layer][kat]`,
+  `exploredMax[layer][kat]`); `roomsOf` kata özgü; harita gridi her katı kendi genişliğinde çiziyor.
+  Aralık `dungeon.json`'da `minRooms`/`maxRooms` (data-driven). Eski kayıtlar otomatik göç ediyor.
+- **Stat lore açıklamaları:** 6 ana stat (STR/VIT/AGI/INT/WIS/LUCK) için lore ağırlıklı TR+EN
+  açıklama; Stats sekmesinde her statın altında görünüyor.
 
 ---
 
@@ -24,7 +37,8 @@
   EP + toparlanma + lore/gizli oda şansı.
 - **Manuel harita ilerlemesi:** varsayılan manuel ("İlerle →" butonu); "Oto-ilerle"
   toggle ile otomatik. (Önceden her öldürmede otomatik ilerliyordu.)
-- **Random kat sayısı 12-20** (oda sayısı zaten random'dı). Boss her katın sonunda.
+- **Random kat sayısı 12-20** (o tarihte oda sayısı **katman-bazlı** random'dı — kat-bazlı değil;
+  gerçek kat-bazlı oda 2026-06-20'de yapıldı). Boss her katın sonunda.
 - **Göz füzyonu (Madde 6):** iki takılı göz → tek slotta hibrit (hem pasif hem aktif);
   aynı mod → körlük cezası; book_8 ('gözler' lore) ile açılır.
 
