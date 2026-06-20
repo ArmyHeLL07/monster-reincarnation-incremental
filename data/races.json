@@ -22,7 +22,7 @@
   {
     "id": "human",
     "locKey": "race.human.name",
-    "startSkills": ["sharp_claw", "quick_thought", "hp_regen"],
+    "startSkills": ["fist_strike", "quick_thought", "hp_regen"],
     "startResistances": ["physical_res", "pierce_res"],
     "head": {
       "viewBox": "0 0 160 200",
