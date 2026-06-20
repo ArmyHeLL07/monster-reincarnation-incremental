@@ -1,6 +1,6 @@
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { newGame, recomputeMaxes } from './state';
+import { newGame } from './state';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
 
@@ -46,7 +46,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.resolvedEvents = []; // …and the fresh map's events re-trigger.
   state.bossRiddle = null; // …nor an open boss riddle…
   state.riddleLimits = {}; // …and riddle attempt-locks reset for the fresh run.
-  state.formHistory = [fresh.formId]; // lineage resets to the new weak start (seenForms = knowledge, preserved)
+  // formHistory is reset AFTER applyRace below, using the race's real starting form.
 
   // --- base stats reset, then keep the permanent boon -----------------------
   state.stats = { ...fresh.stats };
@@ -65,6 +65,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   applyDifficultyStart(state, content, state.difficulty);
   // Re-apply race-specific starting config so rebirths start with the correct race skills/form.
   applyRace(state, savedRaceId, content);
+  state.formHistory = [state.formId]; // lineage starts at THIS race's start form (set by applyRace; seenForms = knowledge, preserved)
 
   log({ key: 'log.rebirth_msg' });
   log({ key: 'log.rebirth_done', params: { n: state.rebirthCount } });
