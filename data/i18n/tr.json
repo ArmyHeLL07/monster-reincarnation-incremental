@@ -1219,5 +1219,19 @@
   "ui.it_regen": "Can yenilenme",
   "log.loot_drop": "✦ {rarity} {item} düştü!",
   "log.loot_full": "Çanta dolu — {item} eritildi (+{ep} EP)",
-  "log.scrapped": "Parçalandı: +{ep} EP"
+  "log.scrapped": "Parçalandı: +{ep} EP",
+  "ui.it_req": "Gerekir",
+  "ui.forge": "Yükselt",
+  "ui.auto_equip": "En iyiyi kuşan",
+  "ui.scrap_common": "Sıradanları parçala",
+  "ui.respec": "Statları sıfırla",
+  "ui.set_bonus": "Set Bonusu",
+  "ui.set_bonus_1": "+%5 hasar, +2 zırh",
+  "ui.set_bonus_2": "+%12 hasar, +5 zırh, +%3 kaçınma",
+  "ui.set_bonus_3": "+%25 hasar, +10 zırh, +%8 kaçınma, +can yenilenme",
+  "log.forged": "⚒ {item} ({rarity}) dövüldü!",
+  "log.autoequip": "{n} parça otomatik kuşanıldı.",
+  "log.scrap_all": "Sıradan eşyalar eritildi: +{ep} EP",
+  "log.respec": "Statlar sıfırlandı — puanlar iade edildi.",
+  "log.search_chest": "📦 Sandık! {rarity} {item} buldun."
 }

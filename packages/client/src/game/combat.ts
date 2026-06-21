@@ -243,8 +243,30 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
 export function allocStat(state: GameState, stat: StatKey): void {
   if (state.statPoints <= 0) return;
   state.stats[stat] += 1;
+  state.allocated[stat] = (state.allocated[stat] ?? 0) + 1; // tracked so respec can refund exactly
   state.statPoints -= 1;
   recomputeMaxes(state);
+}
+
+/** EP cost to respec — scales with how many points were allocated this life. */
+export function respecCost(state: GameState): number {
+  const total = Object.values(state.allocated ?? {}).reduce((s, v) => s + v, 0);
+  return total * 3;
+}
+
+/** Refund all manually-allocated stat points back to the pool (race base / evolution gains stay). */
+export function respecStats(state: GameState): boolean {
+  const cost = respecCost(state);
+  const total = Object.values(state.allocated).reduce((s, v) => s + v, 0);
+  if (total <= 0 || state.ep < cost) return false;
+  state.ep -= cost;
+  for (const k of Object.keys(state.allocated) as StatKey[]) {
+    state.stats[k] -= state.allocated[k];
+    state.statPoints += state.allocated[k];
+    state.allocated[k] = 0;
+  }
+  recomputeMaxes(state);
+  return true;
 }
 
 /**

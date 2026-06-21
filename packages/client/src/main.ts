@@ -1,9 +1,9 @@
 import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
-import { newGame, recomputeMaxes, emptyEquipment, type GameState, type LogEvent } from './game/state';
-import { equipItem, unequipItem, discardItem } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills } from './game/combat';
+import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
+import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -267,6 +267,34 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onForgeItem: (uid) => {
+      const idx = state.inventoryItems.findIndex((i) => i.uid === uid);
+      if (idx < 0) return;
+      const cost = forgeCost(state.inventoryItems[idx]);
+      if (cost <= 0 || state.ep < cost) return; // maxed or can't afford
+      const upgraded = forgeItem(state.inventoryItems[idx]);
+      if (!upgraded) return;
+      state.ep -= cost;
+      state.inventoryItems[idx] = upgraded;
+      logFn({ key: 'log.forged', params: { item: lootDisplayName(upgraded), rarity: `rarity.${upgraded.rarity}` } });
+      save(state);
+      render(state);
+    },
+    onAutoEquip: () => {
+      const n = autoEquipBest(state);
+      if (n > 0) { recomputeMaxes(state); logFn({ key: 'log.autoequip', params: { n } }); }
+      save(state);
+      render(state);
+    },
+    onScrapCommon: () => {
+      const ep = scrapUpTo(state, 'uncommon'); // scrap common + uncommon
+      if (ep > 0) { state.ep += ep; logFn({ key: 'log.scrap_all', params: { ep } }); }
+      save(state);
+      render(state);
+    },
+    onRespec: () => {
+      if (respecStats(state)) { logFn({ key: 'log.respec' }); save(state); render(state); }
+    },
     onSetDifficulty: (d: Difficulty) => {
       // Only change the difficulty knobs — never teleport the player or bypass layer/skill progression.
       // (The "start at a deeper layer" behaviour applies on a fresh start / rebirth, not on a live toggle.)
@@ -430,6 +458,7 @@ function migrate(s: GameState): void {
   // v6 fields — loot / equipment (humanoid races)
   s.inventoryItems ??= [];
   s.equipment ??= emptyEquipment();
+  s.allocated ??= emptyAllocated();
 }
 
 /**

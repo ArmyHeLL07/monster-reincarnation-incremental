@@ -78,6 +78,11 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
       if (it.regenMult) b.regenMult += it.regenMult;
       if (it.weaponPower) b.weaponPower += it.weaponPower;
     }
+    // Set bonus: rewards committing to high-rarity gear (3/6/9 "fine" pieces, rarity ≥ rare).
+    const tier = equipSetTier(state);
+    if (tier >= 3) { b.dmgMult += 0.25; b.armor += 10; b.dodgeBonus += 0.08; b.regenMult += 0.2; }
+    else if (tier >= 2) { b.dmgMult += 0.12; b.armor += 5; b.dodgeBonus += 0.03; }
+    else if (tier >= 1) { b.dmgMult += 0.05; b.armor += 2; }
   }
 
   // Ruler powers (sins/virtues already granted) — full value, no level.
@@ -91,4 +96,14 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
   }
 
   return b;
+}
+
+/** Set-bonus tier from equipped gear: counts "fine" pieces (rarity ≥ rare) → 0/1/2/3 at 3/6/9. */
+export function equipSetTier(state: GameState): number {
+  if (!state.equipment) return 0;
+  let fine = 0;
+  for (const it of Object.values(state.equipment)) {
+    if (it && (it.rarity === 'rare' || it.rarity === 'epic' || it.rarity === 'legendary')) fine++;
+  }
+  return fine >= 9 ? 3 : fine >= 6 ? 2 : fine >= 3 ? 1 : 0;
 }

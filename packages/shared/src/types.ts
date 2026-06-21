@@ -80,6 +80,8 @@ export interface LootItem {
   suffixKey?: string;
   /** Flat stat bonuses applied while equipped. */
   statBonus: Partial<Record<StatKey, number>>;
+  /** Minimum effective stats required to equip (heavy gear gates on STR/VIT/INT). */
+  statReq?: Partial<Record<StatKey, number>>;
   /** Flat damage reduction (armour pieces / shields). */
   armor?: number;
   /** Multiplicative outgoing-damage bonus (Σ into Bonuses.dmgMult). */

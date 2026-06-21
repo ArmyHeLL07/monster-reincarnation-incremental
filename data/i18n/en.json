@@ -1219,5 +1219,19 @@
   "ui.it_regen": "HP regen",
   "log.loot_drop": "✦ {rarity} {item} dropped!",
   "log.loot_full": "Bag full — melted {item} (+{ep} EP)",
-  "log.scrapped": "Scrapped: +{ep} EP"
+  "log.scrapped": "Scrapped: +{ep} EP",
+  "ui.it_req": "Requires",
+  "ui.forge": "Forge",
+  "ui.auto_equip": "Equip best",
+  "ui.scrap_common": "Scrap commons",
+  "ui.respec": "Respec stats",
+  "ui.set_bonus": "Set Bonus",
+  "ui.set_bonus_1": "+5% dmg, +2 armor",
+  "ui.set_bonus_2": "+12% dmg, +5 armor, +3% dodge",
+  "ui.set_bonus_3": "+25% dmg, +10 armor, +8% dodge, +HP regen",
+  "log.forged": "⚒ Forged {item} ({rarity})!",
+  "log.autoequip": "Auto-equipped {n} item(s).",
+  "log.scrap_all": "Melted common gear: +{ep} EP",
+  "log.respec": "Stats respecced — points refunded.",
+  "log.search_chest": "📦 Chest! Found {rarity} {item}."
 }

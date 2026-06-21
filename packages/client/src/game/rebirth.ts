@@ -1,6 +1,6 @@
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { newGame, recomputeMaxes, emptyEquipment } from './state';
+import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated } from './state';
 import type { LootItem } from '@mri/shared';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
@@ -42,6 +42,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   ];
   state.inventoryItems = keepLegendary;
   state.equipment = emptyEquipment();
+  state.allocated = emptyAllocated(); // a fresh life re-allocates from scratch
   state.enemy = null;
   state.eyeAssignments = { ...fresh.eyeAssignments };
   state.kills = 0;

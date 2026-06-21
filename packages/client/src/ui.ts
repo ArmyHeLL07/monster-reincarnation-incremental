@@ -2,13 +2,14 @@ import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, 
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus } from './game/state';
-import { EQUIP_SLOTS, lootDisplayName } from './game/loot';
+import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
+import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost } from './game/combat';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -60,6 +61,10 @@ export interface UiActions {
   onEquipItem: (uid: string) => void;
   onUnequipSlot: (slot: EquipSlot) => void;
   onDiscardItem: (uid: string) => void;
+  onForgeItem: (uid: string) => void;
+  onAutoEquip: () => void;
+  onScrapCommon: () => void;
+  onRespec: () => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'stats' | 'settings';
@@ -101,6 +106,7 @@ const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
 function logCategory(key: string): LogCat {
   if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
   if (key === 'log.loot_drop' || key === 'log.loot_full' || key === 'log.scrapped') return 'loot';
+  if (key === 'log.forged' || key === 'log.scrap_all' || key === 'log.autoequip' || key === 'log.search_chest') return 'loot';
   if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity/.test(key)) {
     return 'discovery';
   }
@@ -503,7 +509,12 @@ function equipSummary(state: GameState): string {
   const bits = [...stats];
   if (power) bits.push(`+${power} ${t('ui.it_power')}`);
   if (armor) bits.push(`+${armor} ${t('ui.it_armor')}`);
-  return bits.length ? `<p class="muted eq-sum">${bits.join(' · ')}</p>` : '';
+  const sum = bits.length ? `<p class="muted eq-sum">${bits.join(' · ')}</p>` : '';
+  const tier = equipSetTier(state);
+  const setLine = tier > 0
+    ? `<p class="eq-set"><b class="r-${tier >= 3 ? 'legendary' : tier >= 2 ? 'epic' : 'rare'}">✦ ${t('ui.set_bonus')} ${tier}</b> <span class="muted">${t(`ui.set_bonus_${tier}`)}</span></p>`
+    : '';
+  return sum + setLine;
 }
 
 /** The detail + compare panel for the currently-selected item (bag or equipped). */
@@ -533,13 +544,24 @@ function renderItemDetail(state: GameState): string {
       if (cmp.length) compare = `<div class="it-cmp"><span class="muted">${t('ui.vs_equipped')}:</span> ${cmp.join(' · ')}</div>`;
     }
   }
+  // equip requirements (red if unmet)
+  let reqLine = '';
+  if (it.statReq) {
+    const unmet = new Set(unmetReqs(state, it));
+    const parts = (Object.keys(it.statReq) as StatKey[]).map(
+      (k) => `<span class="${unmet.has(k) ? 'd-down' : 'd-up'}">${k} ${it.statReq![k]}</span>`,
+    );
+    reqLine = `<div class="it-req"><span class="muted">${t('ui.it_req')}:</span> ${parts.join(' · ')}</div>`;
+  }
+  const fCost = forgeCost(it);
   const actions = bagItem
-    ? `<button class="it-equip" data-uid="${it.uid}">${t('ui.equip')}</button>
+    ? `<button class="it-equip" data-uid="${it.uid}"${canEquip(state, it) ? '' : ' disabled'}>${t('ui.equip')}</button>
+       ${fCost > 0 ? `<button class="it-forge ghost" data-uid="${it.uid}"${state.ep >= fCost ? '' : ' disabled'}>${t('ui.forge')} (${fCost} EP)</button>` : ''}
        <button class="it-discard ghost" data-uid="${it.uid}">${t('ui.discard')} (+${it.value} EP)</button>`
     : `<button class="it-unequip" data-slot="${equippedSlot}">${t('ui.unequip')}</button>`;
   return `<section class="panel it-detail r-${it.rarity}">
     <div class="row"><span class="it-name r-${it.rarity}">${it.icon} ${lootDisplayName(it)}</span><span class="muted">${t(`rarity.${it.rarity}`)} · ${t(`slot.${it.type === 'accessory' ? 'acc1' : it.type}`)}</span></div>
-    <ul class="it-stats">${lines}</ul>${compare}
+    <ul class="it-stats">${lines}</ul>${reqLine}${compare}
     <div class="controls">${actions}</div></section>`;
 }
 
@@ -562,10 +584,14 @@ function inventoryTab(state: GameState): string {
   const bag = sorted.length
     ? sorted.map((it) => `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)}">${it.icon}</button>`).join('')
     : `<p class="muted">${t('ui.bag_empty')}</p>`;
+  const toolbar = `<div class="controls" style="margin:.2rem 0 0">
+      <button class="inv-auto ghost">${t('ui.auto_equip')}</button>
+      <button class="inv-scrap ghost">${t('ui.scrap_common')}</button>
+    </div>`;
   return `
     <section class="panel"><h2>${t('ui.equipment')}</h2>${doll}${equipSummary(state)}</section>
     <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.bag')}</h2><span class="muted">${state.inventoryItems.length}/${MAX_INVENTORY}</span></div>
-      <div class="bag-grid">${bag}</div></section>
+      ${toolbar}<div class="bag-grid">${bag}</div></section>
     ${renderItemDetail(state)}`;
 }
 
@@ -592,6 +618,12 @@ function wireInventory(el: HTMLElement): void {
     const uid = (e.currentTarget as HTMLElement).getAttribute('data-uid');
     if (uid) { selectedItemUid = null; ACTIONS.onDiscardItem(uid); }
   });
+  el.querySelector<HTMLButtonElement>('.it-forge')?.addEventListener('click', (e) => {
+    const uid = (e.currentTarget as HTMLElement).getAttribute('data-uid');
+    if (uid) ACTIONS.onForgeItem(uid);
+  });
+  el.querySelector<HTMLButtonElement>('.inv-auto')?.addEventListener('click', () => ACTIONS.onAutoEquip());
+  el.querySelector<HTMLButtonElement>('.inv-scrap')?.addEventListener('click', () => ACTIONS.onScrapCommon());
 }
 
 // ---- COMBAT ----------------------------------------------------------------
@@ -1565,6 +1597,7 @@ function statsTab(state: GameState): string {
       ${bar(state.level >= LEVEL_CAP ? 1 : state.xp, state.level >= LEVEL_CAP ? 1 : xpToNext(state.level), '#6d44d9')}
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints} · ${t('ui.auto_power')}: +${Math.round((levelPower(state) - 1) * 100)}%</p>
       <ul>${statRows}</ul>
+      ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
@@ -1684,6 +1717,7 @@ function wireStats(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.statadd').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onAllocStat(b.getAttribute('data-stat') as StatKey));
   });
+  el.querySelector<HTMLButtonElement>('#respec')?.addEventListener('click', () => ACTIONS.onRespec());
   el.querySelectorAll<HTMLElement>('.evo-node[data-form-id]').forEach((node) => {
     node.addEventListener('click', () => {
       const id = node.getAttribute('data-form-id');

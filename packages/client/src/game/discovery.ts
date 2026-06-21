@@ -1,7 +1,9 @@
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
+import { LEVEL_CAP, MAX_INVENTORY } from './state';
 import { appraisalTier } from './eyes';
 import { aggregateBonuses } from './effects';
+import { generateLoot, lootDisplayName } from './loot';
 import { normalizeAnswer, isRiddleLocked, recordRiddleWrong, applyRiddleReward } from './riddles';
 
 type Log = (e: LogEvent) => void;
@@ -50,6 +52,21 @@ export function search(state: GameState, content: Content, log: Log): void {
   if (book && Math.random() < 0.16 + luck * 0.005 + tier * 0.01) {
     state.booksFound.push(book.id);
     log({ key: 'log.search_book' });
+    return;
+  }
+
+  // 2.5) Treasure chest — gear, but only for humanoid races (a non-combat loot source).
+  const race = content.races.get(state.raceId);
+  if (race?.humanoid && Math.random() < 0.1 + luck * 0.004) {
+    const ilvl = state.tier * LEVEL_CAP + state.level + state.pos.layer * 2;
+    const item = generateLoot(ilvl, luck + tier * 2); // a careful search finds rarer gear
+    if (state.inventoryItems.length >= MAX_INVENTORY) {
+      state.ep += item.value;
+      log({ key: 'log.loot_full', params: { item: lootDisplayName(item), ep: item.value } });
+    } else {
+      state.inventoryItems.push(item);
+      log({ key: 'log.search_chest', params: { item: lootDisplayName(item), rarity: `rarity.${item.rarity}` } });
+    }
     return;
   }
 

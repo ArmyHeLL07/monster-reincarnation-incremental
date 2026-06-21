@@ -3,7 +3,13 @@
 // items.json / content table needed. Equip/unequip/discard helpers operate on GameState.
 import type { LootItem, LootType, LootRarity, EquipSlot, StatKey } from '@mri/shared';
 import type { GameState } from './state';
+import { effStat } from './state';
 import { t } from '../i18n';
+
+/** Stat each item type gates on (what you need to wield/wear it). Accessories have no requirement. */
+const REQ_STAT: Record<LootType, StatKey | null> = {
+  weapon: 'STR', offhand: 'VIT', head: 'VIT', body: 'VIT', hands: 'STR', legs: 'VIT', feet: 'AGI', accessory: null,
+};
 
 /** Composed display name: "[prefix] base [suffix]" — fully localised. */
 export function lootDisplayName(it: LootItem): string {
@@ -101,22 +107,10 @@ function addField(it: LootItem, field: NumField, amount: number): void {
   it[field] = Math.round(((it[field] ?? 0) + amount) * 1000) / 1000;
 }
 
-/** Generate one fully-formed loot instance for the given item level and LUCK. */
-export function generateLoot(ilvl: number, luck: number, forceRarity?: LootRarity): LootItem {
-  const lvl = Math.max(1, Math.round(ilvl));
-  const rarity = forceRarity ?? rollRarity(lvl, luck);
+/** Build a fully-formed item from a chosen base, level and rarity (shared by drops + forge). */
+function buildItem(base: BaseDef, lvl: number, rarity: LootRarity): LootItem {
   const mult = RARITY_MULT[rarity];
-  const base = pick(BASES);
-  const it: LootItem = {
-    uid: uid(),
-    type: base.type,
-    rarity,
-    icon: base.icon,
-    ilvl: lvl,
-    baseKey: base.baseKey,
-    statBonus: {},
-    value: 0,
-  };
+  const it: LootItem = { uid: uid(), type: base.type, rarity, icon: base.icon, ilvl: lvl, baseKey: base.baseKey, statBonus: {}, value: 0 };
   // base primary (scaled by rarity)
   const prim = basePrimary(base.type, lvl);
   if (prim.weaponPower) it.weaponPower = Math.max(1, Math.round(prim.weaponPower * mult));
@@ -141,8 +135,92 @@ export function generateLoot(ilvl: number, luck: number, forceRarity?: LootRarit
       if (!it.prefixKey) it.prefixKey = p.key;
     }
   }
+  // equip requirement on the gating stat (heavier the deeper/rarer the item)
+  const rs = REQ_STAT[base.type];
+  if (rs) {
+    const req = Math.floor(3 + lvl * 0.25 + RARITY_RANK[rarity]);
+    if (req > 0) it.statReq = { [rs]: req };
+  }
   it.value = Math.max(1, Math.round((lvl + 5) * RARITY_VALUE[rarity]));
   return it;
+}
+
+const RARITY_RANK: Record<LootRarity, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
+
+/** Generate one fully-formed loot instance for the given item level and LUCK. */
+export function generateLoot(ilvl: number, luck: number, forceRarity?: LootRarity): LootItem {
+  const lvl = Math.max(1, Math.round(ilvl));
+  const rarity = forceRarity ?? rollRarity(lvl, luck);
+  return buildItem(pick(BASES), lvl, rarity);
+}
+
+// ---- requirements / forge / QoL --------------------------------------------
+
+/** Stat requirements the player does NOT yet meet for this item (empty = equippable). */
+export function unmetReqs(state: GameState, it: LootItem): StatKey[] {
+  if (!it.statReq) return [];
+  return (Object.keys(it.statReq) as StatKey[]).filter((k) => effStat(state, k) < (it.statReq![k] ?? 0));
+}
+export function canEquip(state: GameState, it: LootItem): boolean {
+  return unmetReqs(state, it).length === 0;
+}
+
+/** EP cost to forge an item up one rarity tier (0 if already legendary). */
+export function forgeCost(it: LootItem): number {
+  const ni = RARITIES.indexOf(it.rarity) + 1;
+  if (ni >= RARITIES.length) return 0;
+  return Math.round(it.value * 2 + RARITY_VALUE[RARITIES[ni]] * (it.ilvl + 5) * 0.4);
+}
+
+/** Forge an item up one rarity tier, re-rolling at the higher budget but keeping its base. Null if maxed. */
+export function forgeItem(it: LootItem): LootItem | null {
+  const ni = RARITIES.indexOf(it.rarity) + 1;
+  if (ni >= RARITIES.length) return null;
+  const base = BASES.find((bd) => bd.baseKey === it.baseKey) ?? pick(BASES);
+  const up = buildItem(base, it.ilvl, RARITIES[ni]);
+  up.uid = it.uid; // keep identity so the UI selection persists after forging
+  return up;
+}
+
+/** Rough power score for comparing/auto-equipping items. */
+export function itemScore(it: LootItem): number {
+  let s = (it.weaponPower ?? 0) * 2 + (it.armor ?? 0) * 1.5 + (it.dmgMult ?? 0) * 120 + (it.dodgeBonus ?? 0) * 80 + (it.mpRegen ?? 0) * 3 + (it.regenMult ?? 0) * 30;
+  for (const k of Object.keys(it.statBonus) as StatKey[]) s += (it.statBonus[k] ?? 0) * 2;
+  return s;
+}
+
+/** Equip the best owned item into each empty/weaker slot. Returns how many swaps happened. */
+export function autoEquipBest(state: GameState): number {
+  let swaps = 0;
+  for (const slot of EQUIP_SLOTS) {
+    const cur = state.equipment[slot];
+    const curScore = cur ? itemScore(cur) : -1;
+    // candidates in the bag whose target slot matches and that we can equip
+    const cand = state.inventoryItems
+      .filter((it) => canEquip(state, it) && slotMatches(it, slot))
+      .sort((a, b) => itemScore(b) - itemScore(a))[0];
+    if (cand && itemScore(cand) > curScore) {
+      if (equipItem(state, cand.uid)) swaps++;
+    }
+  }
+  return swaps;
+}
+
+/** Whether an item can occupy a specific slot (accessories fit acc1/acc2). */
+function slotMatches(it: LootItem, slot: EquipSlot): boolean {
+  if (it.type === 'accessory') return slot === 'acc1' || slot === 'acc2';
+  return it.type === slot;
+}
+
+/** Scrap every bag item up to (and including) maxRarity. Returns total EP gained. */
+export function scrapUpTo(state: GameState, maxRarity: LootRarity): number {
+  const limit = RARITY_RANK[maxRarity];
+  let ep = 0;
+  state.inventoryItems = state.inventoryItems.filter((it) => {
+    if (RARITY_RANK[it.rarity] <= limit) { ep += it.value; return false; }
+    return true;
+  });
+  return ep;
 }
 
 // ---- equip / unequip / discard --------------------------------------------
@@ -160,6 +238,7 @@ export function equipItem(state: GameState, itemUid: string): boolean {
   const idx = state.inventoryItems.findIndex((i) => i.uid === itemUid);
   if (idx < 0) return false;
   const it = state.inventoryItems[idx];
+  if (!canEquip(state, it)) return false; // stat requirement not met
   const slot = slotForItem(it, state.equipment);
   state.inventoryItems.splice(idx, 1);
   const prev = state.equipment[slot];

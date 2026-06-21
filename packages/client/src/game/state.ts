@@ -8,6 +8,11 @@ export function emptyEquipment(): Record<EquipSlot, LootItem | null> {
   return { weapon: null, offhand: null, head: null, body: null, hands: null, legs: null, feet: null, acc1: null, acc2: null };
 }
 
+/** A zeroed per-stat allocation map. */
+export function emptyAllocated(): Record<StatKey, number> {
+  return { STR: 0, VIT: 0, AGI: 0, INT: 0, WIS: 0, LUCK: 0 };
+}
+
 export interface EyeAssignment {
   abilityId: string;
   mode: EyeMode;
@@ -240,6 +245,8 @@ export interface GameState {
   inventoryItems: LootItem[];
   /** Equipped loot per slot (paper-doll). Slots map: weapon/offhand/head/body/hands/legs/feet/acc1/acc2. */
   equipment: Record<EquipSlot, LootItem | null>;
+  /** Stat points the player has manually allocated this life (per stat) — refunded on respec. */
+  allocated: Record<StatKey, number>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -368,6 +375,7 @@ export function newGame(): GameState {
     raceConfirmed: false,
     inventoryItems: [],
     equipment: emptyEquipment(),
+    allocated: emptyAllocated(),
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
