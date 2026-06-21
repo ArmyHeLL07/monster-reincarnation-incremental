@@ -116,7 +116,8 @@
       "INT": 5,
       "WIS": 4,
       "LUCK": 6
-    }
+    },
+    "humanoid": true
   },
   {
     "id": "slime",
@@ -188,7 +189,8 @@
       "INT": 5,
       "WIS": 3,
       "LUCK": 5
-    }
+    },
+    "humanoid": true
   },
   {
     "id": "wyrmling",

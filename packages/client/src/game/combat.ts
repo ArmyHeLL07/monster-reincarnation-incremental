@@ -1,7 +1,8 @@
 import type { DamageType, StatKey, Skill, DungeonLayer } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
-import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP } from './state';
+import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
+import { generateLoot, lootDisplayName } from './loot';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
@@ -632,10 +633,11 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   let raw: number;
   if (def.kind === 'magic') {
     state.mp = Math.max(0, state.mp - (def.mpCost ?? 0));
-    raw = (def.damage ?? 0) + state.stats.INT * 0.6;
+    raw = (def.damage ?? 0) + effStat(state, 'INT') * 0.6;
   } else {
-    raw = (def.damage ?? 0) + Math.floor(state.stats.STR / 3);
+    raw = (def.damage ?? 0) + Math.floor(effStat(state, 'STR') / 3);
   }
+  raw += b.weaponPower; // equipped weapon power (0 for monsters / unarmed)
   raw += b.overdrawFrac * (state.maxHp - state.hp); // Overdraw: missing HP → power (§6.1)
   raw *= b.dmgMult * diff.playerMult * levelPower(state); // auto power: each level adds a little punch
   raw *= elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType); // element type-chart
@@ -899,6 +901,37 @@ export function chooseBossOption(
   }
 }
 
+const RARITY_RANK: Record<string, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
+
+/** Roll loot on kill — humanoid races only; monsters never receive gear. Bag-full melts to EP. */
+function maybeDropLoot(
+  state: GameState,
+  content: Content,
+  enemy: NonNullable<GameState['enemy']>,
+  b: Bonuses,
+  log: Log,
+): void {
+  const race = content.races.get(state.raceId);
+  if (!race?.humanoid) return; // monsters can't wear/wield gear
+  const chance = 0.08 * b.lootMult;
+  if (!enemy.isBoss && Math.random() > chance) return;
+  const ilvl = state.tier * LEVEL_CAP + state.level + state.pos.layer * 2;
+  const luck = effStat(state, 'LUCK');
+  // Bosses always drop, biased rarer (best of two rolls at higher item level).
+  let item = generateLoot(enemy.isBoss ? ilvl + 5 : ilvl, luck);
+  if (enemy.isBoss) {
+    const alt = generateLoot(ilvl + 5, luck);
+    if (RARITY_RANK[alt.rarity] > RARITY_RANK[item.rarity]) item = alt;
+  }
+  if (state.inventoryItems.length >= MAX_INVENTORY) {
+    state.ep += item.value; // bag full → melt to EP
+    log({ key: 'log.loot_full', params: { item: lootDisplayName(item), ep: item.value } });
+    return;
+  }
+  state.inventoryItems.push(item);
+  log({ key: 'log.loot_drop', params: { item: lootDisplayName(item), rarity: `rarity.${item.rarity}` } });
+}
+
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void {
   const enemy = state.enemy;
   if (!enemy) return;
@@ -933,6 +966,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
     }
   }
   log({ key: enemy.isBoss ? 'log.boss_kill' : 'log.kill', params: { enemy: enemy.locKey, ep } });
+  maybeDropLoot(state, content, enemy, b, log);
 
   const wasBoss = enemy.isBoss;
   const wasRiddleGuard = enemy.riddleGuard;

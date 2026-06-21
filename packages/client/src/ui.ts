@@ -1,7 +1,8 @@
-import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
-import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus } from './game/state';
+import { EQUIP_SLOTS, lootDisplayName } from './game/loot';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
@@ -56,10 +57,13 @@ export interface UiActions {
   onTogglePermadeath: () => void;
   onSelectRace: (raceId: string) => void;
   onSetRoom: (floor: number, room: number) => void;
+  onEquipItem: (uid: string) => void;
+  onUnequipSlot: (slot: EquipSlot) => void;
+  onDiscardItem: (uid: string) => void;
 }
 
-type Tab = 'combat' | 'map' | 'skills' | 'body' | 'lore' | 'stats' | 'settings';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'lore', 'stats', 'settings'];
+type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'stats' | 'settings';
+const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'stats', 'settings'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -70,6 +74,7 @@ const ICONS: Record<Tab, string> = {
   map: svg('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'),
   skills: svg('<path d="M12 2v6M12 16v6M2 12h6M16 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>'),
   body: EYE_SVG,
+  inventory: svg('<path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/>'),
   lore: svg('<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8"/>'),
   stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
   settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
@@ -88,12 +93,14 @@ let activeSkillPart: 'arm' | 'leg' | 'body' | 'eye' = 'arm';
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 let selectedEvoNodeId: string | null = null;
+let selectedItemUid: string | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot';
 const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
 
 /** Route a log line to its stream so combat spam never buries loot/discovery. */
 function logCategory(key: string): LogCat {
   if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
+  if (key === 'log.loot_drop' || key === 'log.loot_full' || key === 'log.scrapped') return 'loot';
   if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity/.test(key)) {
     return 'discovery';
   }
@@ -214,6 +221,8 @@ function structureSig(state: GameState): string {
     state.gatekeeperCleared,
     state.ruler.powers.length,
     Object.values(state.eyeAssignments).filter(Boolean).length,
+    state.inventoryItems.length,
+    Object.values(state.equipment).filter(Boolean).length,
   ].join('|');
 }
 
@@ -408,9 +417,17 @@ function hungerStage(h: number): number {
 
 // ---- tab routing -----------------------------------------------------------
 
+function isHumanoid(state: GameState): boolean {
+  return CONTENT.races.get(state.raceId)?.humanoid === true;
+}
+
 function renderTab(): void {
   const el = document.querySelector<HTMLElement>('#content');
   if (!el) return;
+  // The Inventory tab exists only for humanoid races; monsters never see it.
+  const invBtn = document.querySelector<HTMLElement>('.tabbtn[data-tab="inventory"]');
+  if (invBtn) invBtn.style.display = isHumanoid(CURSTATE) ? '' : 'none';
+  if (activeTab === 'inventory' && !isHumanoid(CURSTATE)) activeTab = 'combat';
   document.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
     b.classList.toggle('active', b.getAttribute('data-tab') === activeTab);
   });
@@ -436,6 +453,10 @@ function renderTab(): void {
       el.innerHTML = bodyTab(CURSTATE);
       wireBody(el);
       break;
+    case 'inventory':
+      el.innerHTML = inventoryTab(CURSTATE);
+      wireInventory(el);
+      break;
     case 'lore':
       el.innerHTML = loreTab(CURSTATE);
       wireLore(el);
@@ -449,6 +470,128 @@ function renderTab(): void {
       wireSettings(el);
       break;
   }
+}
+
+// ---- INVENTORY / EQUIPMENT (humanoid races) --------------------------------
+
+const RARITY_ORDER: LootRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+
+/** Human-readable stat/bonus lines for an item (used in the detail + compare panel). */
+function itemStatLines(it: LootItem): string[] {
+  const out: string[] = [];
+  for (const k of STATS) if (it.statBonus[k]) out.push(`+${it.statBonus[k]} ${k}`);
+  if (it.weaponPower) out.push(`+${it.weaponPower} ${t('ui.it_power')}`);
+  if (it.armor) out.push(`+${it.armor} ${t('ui.it_armor')}`);
+  if (it.dmgMult) out.push(`+${Math.round(it.dmgMult * 100)}% ${t('ui.it_dmg')}`);
+  if (it.dodgeBonus) out.push(`+${Math.round(it.dodgeBonus * 100)}% ${t('ui.it_dodge')}`);
+  if (it.mpRegen) out.push(`+${it.mpRegen} ${t('ui.it_mpregen')}`);
+  if (it.regenMult) out.push(`+${Math.round(it.regenMult * 100)}% ${t('ui.it_regen')}`);
+  return out;
+}
+
+/** Equipment overview: total flat stats granted by all worn gear. */
+function equipSummary(state: GameState): string {
+  const eq = equipStatBonus(state);
+  const stats = STATS.filter((k) => eq[k]).map((k) => `+${eq[k]} ${k}`);
+  let armor = 0;
+  let power = 0;
+  for (const it of Object.values(state.equipment)) {
+    if (!it) continue;
+    armor += it.armor ?? 0;
+    power += it.weaponPower ?? 0;
+  }
+  const bits = [...stats];
+  if (power) bits.push(`+${power} ${t('ui.it_power')}`);
+  if (armor) bits.push(`+${armor} ${t('ui.it_armor')}`);
+  return bits.length ? `<p class="muted eq-sum">${bits.join(' · ')}</p>` : '';
+}
+
+/** The detail + compare panel for the currently-selected item (bag or equipped). */
+function renderItemDetail(state: GameState): string {
+  if (!selectedItemUid) return '';
+  const bagItem = state.inventoryItems.find((i) => i.uid === selectedItemUid);
+  const equippedSlot = EQUIP_SLOTS.find((s) => state.equipment[s]?.uid === selectedItemUid);
+  const it = bagItem ?? (equippedSlot ? state.equipment[equippedSlot] : null);
+  if (!it) return '';
+  const lines = itemStatLines(it).map((l) => `<li>${l}</li>`).join('') || `<li class="muted">—</li>`;
+  // compare a bag item against whatever occupies its target slot
+  let compare = '';
+  if (bagItem) {
+    const target = it.type === 'accessory'
+      ? (state.equipment.acc1 ?? state.equipment.acc2)
+      : state.equipment[it.type];
+    if (target) {
+      const dPow = (it.weaponPower ?? 0) - (target.weaponPower ?? 0);
+      const dArm = (it.armor ?? 0) - (target.armor ?? 0);
+      const cmp: string[] = [];
+      if (dPow) cmp.push(delta(dPow, t('ui.it_power')));
+      if (dArm) cmp.push(delta(dArm, t('ui.it_armor')));
+      for (const k of STATS) {
+        const d = (it.statBonus[k] ?? 0) - (target.statBonus[k] ?? 0);
+        if (d) cmp.push(delta(d, k));
+      }
+      if (cmp.length) compare = `<div class="it-cmp"><span class="muted">${t('ui.vs_equipped')}:</span> ${cmp.join(' · ')}</div>`;
+    }
+  }
+  const actions = bagItem
+    ? `<button class="it-equip" data-uid="${it.uid}">${t('ui.equip')}</button>
+       <button class="it-discard ghost" data-uid="${it.uid}">${t('ui.discard')} (+${it.value} EP)</button>`
+    : `<button class="it-unequip" data-slot="${equippedSlot}">${t('ui.unequip')}</button>`;
+  return `<section class="panel it-detail r-${it.rarity}">
+    <div class="row"><span class="it-name r-${it.rarity}">${it.icon} ${lootDisplayName(it)}</span><span class="muted">${t(`rarity.${it.rarity}`)} · ${t(`slot.${it.type === 'accessory' ? 'acc1' : it.type}`)}</span></div>
+    <ul class="it-stats">${lines}</ul>${compare}
+    <div class="controls">${actions}</div></section>`;
+}
+
+function delta(d: number, label: string): string {
+  const cls = d > 0 ? 'd-up' : 'd-down';
+  const pct = !Number.isInteger(d);
+  const val = pct ? `${d > 0 ? '+' : ''}${Math.round(d * 100)}%` : `${d > 0 ? '+' : ''}${d}`;
+  return `<span class="${cls}">${val} ${label}</span>`;
+}
+
+function inventoryTab(state: GameState): string {
+  const slotCell = (slot: EquipSlot): string => {
+    const it = state.equipment[slot];
+    if (!it) return `<div class="eq-slot empty" data-eqslot="${slot}"><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
+    return `<div class="eq-slot r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-eqslot="${slot}" data-uid="${it.uid}" title="${lootDisplayName(it)}">
+      <span class="eq-ic">${it.icon}</span><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
+  };
+  const doll = `<div class="paperdoll">${EQUIP_SLOTS.map(slotCell).join('')}</div>`;
+  const sorted = [...state.inventoryItems].sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity));
+  const bag = sorted.length
+    ? sorted.map((it) => `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)}">${it.icon}</button>`).join('')
+    : `<p class="muted">${t('ui.bag_empty')}</p>`;
+  return `
+    <section class="panel"><h2>${t('ui.equipment')}</h2>${doll}${equipSummary(state)}</section>
+    <section class="panel"><div class="row"><h2 style="margin:0">${t('ui.bag')}</h2><span class="muted">${state.inventoryItems.length}/${MAX_INVENTORY}</span></div>
+      <div class="bag-grid">${bag}</div></section>
+    ${renderItemDetail(state)}`;
+}
+
+function wireInventory(el: HTMLElement): void {
+  el.querySelectorAll<HTMLElement>('.bag-cell, .eq-slot[data-uid]').forEach((c) => {
+    c.addEventListener('click', () => {
+      const uid = c.getAttribute('data-uid');
+      selectedItemUid = selectedItemUid === uid ? null : uid;
+      renderTab();
+    });
+  });
+  el.querySelectorAll<HTMLElement>('.eq-slot.empty').forEach((c) => {
+    c.addEventListener('click', () => { selectedItemUid = null; renderTab(); });
+  });
+  el.querySelector<HTMLButtonElement>('.it-equip')?.addEventListener('click', (e) => {
+    const uid = (e.currentTarget as HTMLElement).getAttribute('data-uid');
+    if (uid) ACTIONS.onEquipItem(uid);
+  });
+  el.querySelector<HTMLButtonElement>('.it-unequip')?.addEventListener('click', (e) => {
+    const slot = (e.currentTarget as HTMLElement).getAttribute('data-slot') as EquipSlot | null;
+    if (slot) ACTIONS.onUnequipSlot(slot);
+  });
+  el.querySelector<HTMLButtonElement>('.it-discard')?.addEventListener('click', (e) => {
+    const uid = (e.currentTarget as HTMLElement).getAttribute('data-uid');
+    if (uid) { selectedItemUid = null; ACTIONS.onDiscardItem(uid); }
+  });
 }
 
 // ---- COMBAT ----------------------------------------------------------------

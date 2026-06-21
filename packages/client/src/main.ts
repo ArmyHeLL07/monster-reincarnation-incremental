@@ -1,7 +1,8 @@
 import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
-import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
+import { newGame, recomputeMaxes, emptyEquipment, type GameState, type LogEvent } from './game/state';
+import { equipItem, unequipItem, discardItem } from './game/loot';
 import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
@@ -243,6 +244,29 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onEquipItem: (uid) => {
+      if (equipItem(state, uid)) {
+        recomputeMaxes(state); // worn gear feeds HP/MP/SP
+        save(state);
+        render(state);
+      }
+    },
+    onUnequipSlot: (slot) => {
+      if (unequipItem(state, slot)) {
+        recomputeMaxes(state);
+        save(state);
+        render(state);
+      }
+    },
+    onDiscardItem: (uid) => {
+      const ep = discardItem(state, uid);
+      if (ep > 0) {
+        state.ep += ep;
+        logFn({ key: 'log.scrapped', params: { ep } });
+      }
+      save(state);
+      render(state);
+    },
     onSetDifficulty: (d: Difficulty) => {
       // Only change the difficulty knobs — never teleport the player or bypass layer/skill progression.
       // (The "start at a deeper layer" behaviour applies on a fresh start / rebirth, not on a live toggle.)
@@ -403,6 +427,9 @@ function migrate(s: GameState): void {
   s.lastHit ??= undefined;
   // v5 fields — race selection confirmation
   s.raceConfirmed ??= s.kills > 0 || s.tier > 0 || s.level > 1;
+  // v6 fields — loot / equipment (humanoid races)
+  s.inventoryItems ??= [];
+  s.equipment ??= emptyEquipment();
 }
 
 /**

@@ -25,6 +25,8 @@ export interface Bonuses {
   surviveChance: number;
   /** Extra MP regen per round. */
   mpRegen: number;
+  /** Flat attack power from an equipped weapon (added to raw damage). */
+  weaponPower: number;
 }
 
 /** A skill's effect scales with its level (full value at lvMax); ruler powers are full value. */
@@ -45,6 +47,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     hungerMult: 1,
     surviveChance: 0,
     mpRegen: 0,
+    weaponPower: 0,
   };
 
   for (const slot of state.skills) {
@@ -62,6 +65,19 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.mpRegen) b.mpRegen += def.mpRegen * s;
     if (def.hungerMult) b.hungerMult *= def.hungerMult;
     if (def.surviveChance) b.surviveChance = Math.max(b.surviveChance, def.surviveChance * s);
+  }
+
+  // Equipped loot (humanoid races) — flat sums; statBonus is handled separately via effStat.
+  if (state.equipment) {
+    for (const it of Object.values(state.equipment)) {
+      if (!it) continue;
+      if (it.armor) b.armor += it.armor;
+      if (it.dmgMult) b.dmgMult += it.dmgMult;
+      if (it.dodgeBonus) b.dodgeBonus += it.dodgeBonus;
+      if (it.mpRegen) b.mpRegen += it.mpRegen;
+      if (it.regenMult) b.regenMult += it.regenMult;
+      if (it.weaponPower) b.weaponPower += it.weaponPower;
+    }
   }
 
   // Ruler powers (sins/virtues already granted) — full value, no level.

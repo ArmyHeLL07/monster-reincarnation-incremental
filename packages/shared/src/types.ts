@@ -52,6 +52,48 @@ export interface Race {
   startResistances?: string[];
   /** Starting base stats for a fresh run of this race (overrides the default 5/5/5/5/5/5). */
   startStats?: Record<StatKey, number>;
+  /** Humanoid races (human, skeleton, …) can carry an inventory and equip loot; monsters cannot. */
+  humanoid?: boolean;
+}
+
+// ---- Loot / equipment (humanoid races only) --------------------------------
+
+export type LootRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+/** Base category a generated item belongs to (drives which slot it occupies). */
+export type LootType = 'weapon' | 'offhand' | 'head' | 'body' | 'hands' | 'legs' | 'feet' | 'accessory';
+
+/** The 9 equip slots on a humanoid paper-doll. `accessory` items fill acc1/acc2. */
+export type EquipSlot = 'weapon' | 'offhand' | 'head' | 'body' | 'hands' | 'legs' | 'feet' | 'acc1' | 'acc2';
+
+/** A fully self-contained loot instance (procedurally generated; no external base table needed). */
+export interface LootItem {
+  uid: string;
+  type: LootType;
+  rarity: LootRarity;
+  icon: string;
+  /** Item level — drives the stat budget. */
+  ilvl: number;
+  /** Localisation keys for the display name parts: [prefix] base [suffix]. */
+  baseKey: string;
+  prefixKey?: string;
+  suffixKey?: string;
+  /** Flat stat bonuses applied while equipped. */
+  statBonus: Partial<Record<StatKey, number>>;
+  /** Flat damage reduction (armour pieces / shields). */
+  armor?: number;
+  /** Multiplicative outgoing-damage bonus (Σ into Bonuses.dmgMult). */
+  dmgMult?: number;
+  /** Flat dodge chance added. */
+  dodgeBonus?: number;
+  /** Extra MP regen per round. */
+  mpRegen?: number;
+  /** Multiplicative HP-regen bonus. */
+  regenMult?: number;
+  /** Weapon: flat power added to attack damage. */
+  weaponPower?: number;
+  /** EP value — what scrapping/selling yields, and a rough power readout. */
+  value: number;
 }
 
 /** A node in a race's (branching) evolution tree. Choosing a branch is permanent. */

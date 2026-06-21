@@ -504,6 +504,34 @@
         100% { opacity: 0; }
       }
 
+      /* --- inventory / equipment (humanoid races) --- */
+      .r-common { color: #b8b3a4; } .r-uncommon { color: #6fae53; } .r-rare { color: #4f86c2; }
+      .r-epic { color: #9a7fd0; } .r-legendary { color: #e0902f; }
+      .paperdoll { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin: 0.4rem 0 0.2rem; }
+      .eq-slot {
+        min-height: 58px; border: 1px solid var(--chitin); border-radius: 9px; background: #14121b;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+        cursor: pointer; padding: 0.3rem; text-align: center; transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .eq-slot:hover { border-color: var(--venom-dim); }
+      .eq-slot.empty { opacity: 0.55; border-style: dashed; }
+      .eq-slot.sel { box-shadow: 0 0 9px rgba(138, 178, 63, 0.45); }
+      .eq-slot .eq-ic { font-size: 1.5rem; line-height: 1; }
+      .eq-slot .eq-lbl { font-size: 0.6rem; color: var(--ash); text-transform: uppercase; letter-spacing: 0.04em; }
+      .eq-slot.r-uncommon { border-color: #6fae53; } .eq-slot.r-rare { border-color: #4f86c2; }
+      .eq-slot.r-epic { border-color: #9a7fd0; } .eq-slot.r-legendary { border-color: #e0902f; box-shadow: 0 0 9px rgba(224, 144, 47, 0.35); }
+      .eq-sum { font-size: 0.8rem; margin: 0.3rem 0 0; }
+      .bag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 0.4rem; margin-top: 0.45rem; }
+      .bag-cell { min-height: 46px; font-size: 1.5rem; line-height: 1; border: 1px solid var(--chitin); border-radius: 8px; background: #14121b; cursor: pointer; padding: 0; }
+      .bag-cell:hover { border-color: var(--venom-dim); }
+      .bag-cell.r-uncommon { border-color: #6fae53; } .bag-cell.r-rare { border-color: #4f86c2; }
+      .bag-cell.r-epic { border-color: #9a7fd0; } .bag-cell.r-legendary { border-color: #e0902f; box-shadow: 0 0 9px rgba(224, 144, 47, 0.4); }
+      .bag-cell.sel { outline: 2px solid var(--venom); outline-offset: 1px; }
+      .it-detail .it-name { font-weight: 600; }
+      .it-stats { margin: 0.35rem 0; padding-left: 1.1rem; font-size: 0.86rem; }
+      .it-cmp { font-size: 0.82rem; margin: 0.2rem 0 0.4rem; }
+      .d-up { color: #6fae53; } .d-down { color: #bb4140; }
+
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
         body { padding: 0.4rem; }

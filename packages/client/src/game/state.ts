@@ -1,4 +1,12 @@
-import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty } from '@mri/shared';
+import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot } from '@mri/shared';
+
+/** Bag capacity for humanoid races (slot-based; materials/stacks are a future extension). */
+export const MAX_INVENTORY = 20;
+
+/** A fresh, all-empty paper-doll (9 slots). */
+export function emptyEquipment(): Record<EquipSlot, LootItem | null> {
+  return { weapon: null, offhand: null, head: null, body: null, hands: null, legs: null, feet: null, acc1: null, acc2: null };
+}
 
 export interface EyeAssignment {
   abilityId: string;
@@ -226,6 +234,12 @@ export interface GameState {
   raceConfirmed: boolean;
   /** Suppresses repeated "larder full" log spam — set when first notified, cleared when inventory drops below cap. */
   larderFullNotified?: boolean;
+
+  // --- loot / equipment (humanoid races only) --------------------------------
+  /** Carried (un-equipped) loot — the bag. Empty for monster races (they never receive gear). */
+  inventoryItems: LootItem[];
+  /** Equipped loot per slot (paper-doll). Slots map: weapon/offhand/head/body/hands/legs/feet/acc1/acc2. */
+  equipment: Record<EquipSlot, LootItem | null>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -239,12 +253,32 @@ export interface GameEvents extends Record<string, unknown> {
   changed: undefined;
 }
 
-/** Recompute max HP/MP/SP from stats (+ stamina training) and clamp current values. */
+/** Flat stat bonuses from all equipped loot (empty for monster races / before equipment exists). */
+export function equipStatBonus(state: GameState): Record<StatKey, number> {
+  const out: Record<StatKey, number> = { STR: 0, VIT: 0, AGI: 0, INT: 0, WIS: 0, LUCK: 0 };
+  if (!state.equipment) return out;
+  for (const it of Object.values(state.equipment)) {
+    if (!it) continue;
+    for (const k of Object.keys(it.statBonus) as StatKey[]) out[k] += it.statBonus[k] ?? 0;
+  }
+  return out;
+}
+
+/** Effective value of one stat = allocated base + equipment bonus. */
+export function effStat(state: GameState, k: StatKey): number {
+  return state.stats[k] + equipStatBonus(state)[k];
+}
+
+/** Recompute max HP/MP/SP from effective stats (base + equipment) and clamp current values. */
 export function recomputeMaxes(state: GameState): void {
   const effLvl = state.tier * LEVEL_CAP + state.level; // auto growth: a small max bump per level
-  state.maxHp = 20 + state.stats.VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
-  state.maxMp = 10 + state.stats.INT * 3 + effLvl; // INT → MP (+1/level)
-  state.maxSp = 10 + state.stats.VIT * 2 + state.stats.AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
+  const eq = equipStatBonus(state); // equipped gear feeds HP/MP/SP via its VIT/INT/AGI
+  const VIT = state.stats.VIT + eq.VIT;
+  const INT = state.stats.INT + eq.INT;
+  const AGI = state.stats.AGI + eq.AGI;
+  state.maxHp = 20 + VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
+  state.maxMp = 10 + INT * 3 + effLvl; // INT → MP (+1/level)
+  state.maxSp = 10 + VIT * 2 + AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
   state.hp = Math.min(state.hp, state.maxHp);
   state.mp = Math.min(state.mp, state.maxMp);
   state.sp = Math.min(state.sp, state.maxSp);
@@ -332,6 +366,8 @@ export function newGame(): GameState {
     bossRiddle: null,
     riddleLimits: {},
     raceConfirmed: false,
+    inventoryItems: [],
+    equipment: emptyEquipment(),
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

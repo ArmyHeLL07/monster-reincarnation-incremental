@@ -1,6 +1,7 @@
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { newGame, recomputeMaxes } from './state';
+import { newGame, recomputeMaxes, emptyEquipment } from './state';
+import type { LootItem } from '@mri/shared';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
 
@@ -34,6 +35,13 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.ep = 0;
   state.hunger = 0;
   state.inventory = [];
+  // Loot: lower hierarchy resets, BUT legendary items persist (prestige reward, locked decision).
+  const keepLegendary: LootItem[] = [
+    ...(state.inventoryItems ?? []).filter((i) => i.rarity === 'legendary'),
+    ...Object.values(state.equipment ?? {}).filter((i): i is LootItem => !!i && i.rarity === 'legendary'),
+  ];
+  state.inventoryItems = keepLegendary;
+  state.equipment = emptyEquipment();
   state.enemy = null;
   state.eyeAssignments = { ...fresh.eyeAssignments };
   state.kills = 0;
