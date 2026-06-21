@@ -1,277 +1,5 @@
 [
   {
-    "id": "hatchling_spider",
-    "raceId": "spider",
-    "locKey": "form.hatchling_spider.name",
-    "evolvesTo": [
-      "lesser_weaver"
-    ],
-    "levelReq": 1
-  },
-  {
-    "id": "lesser_weaver",
-    "raceId": "spider",
-    "locKey": "form.lesser_weaver.name",
-    "evolvesTo": [
-      "venom_weaver",
-      "blade_weaver",
-      "greater_weaver"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "VIT": 2,
-      "STR": 1,
-      "AGI": 1
-    },
-    "grantSkills": [
-      "carapace",
-      "detect",
-      "forage"
-    ]
-  },
-  {
-    "id": "venom_weaver",
-    "raceId": "spider",
-    "locKey": "form.venom_weaver.name",
-    "evolvesTo": [
-      "shade_stalker"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "INT": 3,
-      "STR": 2
-    },
-    "grantSkills": [
-      "acid_spit",
-      "toxic_cloud",
-      "mana_sense",
-      "flame_bolt"
-    ]
-  },
-  {
-    "id": "blade_weaver",
-    "raceId": "spider",
-    "locKey": "form.blade_weaver.name",
-    "evolvesTo": [
-      "scythe_hunter"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "STR": 3,
-      "AGI": 2
-    },
-    "grantSkills": [
-      "pounce",
-      "rend",
-      "overdraw"
-    ]
-  },
-  {
-    "id": "greater_weaver",
-    "raceId": "spider",
-    "locKey": "form.greater_weaver.name",
-    "evolvesTo": [
-      "colossal_weaver"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "VIT": 6,
-      "STR": 2
-    },
-    "grantSkills": [
-      "endurance",
-      "carapace_lord",
-      "mp_regen"
-    ]
-  },
-  {
-    "id": "colossal_weaver",
-    "raceId": "spider",
-    "locKey": "form.colossal_weaver.name",
-    "evolvesTo": [
-      "undying_horror"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "VIT": 8,
-      "STR": 3
-    },
-    "grantSkills": [
-      "adamant_plating",
-      "blood_engine",
-      "toughness"
-    ]
-  },
-  {
-    "id": "shade_stalker",
-    "raceId": "spider",
-    "locKey": "form.shade_stalker.name",
-    "evolvesTo": [
-      "undying_horror"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "AGI": 4,
-      "INT": 2
-    },
-    "grantSkills": [
-      "stealth",
-      "phase_body",
-      "numbing_gaze",
-      "web_trap"
-    ]
-  },
-  {
-    "id": "scythe_hunter",
-    "raceId": "spider",
-    "locKey": "form.scythe_hunter.name",
-    "evolvesTo": [
-      "undying_horror"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "AGI": 3,
-      "STR": 3
-    },
-    "grantSkills": [
-      "piercing_gaze",
-      "silk_thread",
-      "spark"
-    ]
-  },
-  {
-    "id": "undying_horror",
-    "raceId": "spider",
-    "locKey": "form.undying_horror.name",
-    "evolvesTo": [
-      "revenant_horror"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "VIT": 6,
-      "STR": 3,
-      "AGI": 2
-    },
-    "grantSkills": [
-      "regeneration",
-      "regenerative_core",
-      "undying_husk"
-    ]
-  },
-  {
-    "id": "revenant_horror",
-    "raceId": "spider",
-    "locKey": "form.revenant_horror.name",
-    "evolvesTo": [
-      "dread_weaver"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "VIT": 5,
-      "STR": 4,
-      "AGI": 2
-    },
-    "grantSkills": [
-      "undying_vitality",
-      "regenerative_core"
-    ]
-  },
-  {
-    "id": "dread_weaver",
-    "raceId": "spider",
-    "locKey": "form.dread_weaver.name",
-    "evolvesTo": [
-      "wraith_sovereign"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "INT": 5,
-      "AGI": 4,
-      "WIS": 3
-    },
-    "grantSkills": [
-      "phantom_presence",
-      "plague_mist"
-    ]
-  },
-  {
-    "id": "wraith_sovereign",
-    "raceId": "spider",
-    "locKey": "form.wraith_sovereign.name",
-    "evolvesTo": [
-      "elder_sovereign"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "STR": 5,
-      "VIT": 5,
-      "INT": 4
-    },
-    "grantSkills": [
-      "spatial_web",
-      "soul_gaze"
-    ]
-  },
-  {
-    "id": "elder_sovereign",
-    "raceId": "spider",
-    "locKey": "form.elder_sovereign.name",
-    "evolvesTo": [
-      "abyssal_sovereign"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "INT": 6,
-      "WIS": 5,
-      "LUCK": 3
-    },
-    "grantSkills": [
-      "all_sight",
-      "precognition"
-    ]
-  },
-  {
-    "id": "abyssal_sovereign",
-    "raceId": "spider",
-    "locKey": "form.abyssal_sovereign.name",
-    "evolvesTo": [
-      "arachnid_sovereign"
-    ],
-    "levelReq": 10,
-    "statBonus": {
-      "STR": 7,
-      "VIT": 6,
-      "AGI": 5,
-      "INT": 5
-    },
-    "grantSkills": [
-      "reaper_edge",
-      "domination_gaze",
-      "endless_mana"
-    ]
-  },
-  {
-    "id": "arachnid_sovereign",
-    "raceId": "spider",
-    "locKey": "form.arachnid_sovereign.name",
-    "evolvesTo": [],
-    "levelReq": 10,
-    "statBonus": {
-      "STR": 5,
-      "VIT": 5,
-      "INT": 5,
-      "AGI": 3,
-      "WIS": 3,
-      "LUCK": 2
-    },
-    "grantSkills": [
-      "sovereign_form",
-      "apex_predator",
-      "soul_gaze",
-      "spatial_rift"
-    ]
-  },
-  {
     "id": "novice_human",
     "raceId": "human",
     "locKey": "form.novice_human.name",
@@ -3174,6 +2902,576 @@
       "sovereign_form",
       "obsidian_carapace",
       "unyielding_core"
+    ]
+  },
+  {
+    "id": "hatchling_spider",
+    "raceId": "spider",
+    "locKey": "form.hatchling_spider.name",
+    "evolvesTo": [
+      "lesser_weaver"
+    ],
+    "levelReq": 1,
+    "statBonus": {},
+    "grantSkills": []
+  },
+  {
+    "id": "lesser_weaver",
+    "raceId": "spider",
+    "locKey": "form.lesser_weaver.name",
+    "evolvesTo": [
+      "venom_weaver",
+      "shade_stalker"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 2,
+      "INT": 1,
+      "VIT": 1
+    },
+    "grantSkills": [
+      "binding_silk",
+      "pounce",
+      "carapace"
+    ]
+  },
+  {
+    "id": "venom_weaver",
+    "raceId": "spider",
+    "locKey": "form.venom_weaver.name",
+    "evolvesTo": [
+      "greater_weaver",
+      "dread_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "venom_bite",
+      "acid_spit"
+    ]
+  },
+  {
+    "id": "shade_stalker",
+    "raceId": "spider",
+    "locKey": "form.shade_stalker.name",
+    "evolvesTo": [
+      "scythe_hunter",
+      "blade_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "pounce",
+      "ambush_strike"
+    ]
+  },
+  {
+    "id": "greater_weaver",
+    "raceId": "spider",
+    "locKey": "form.greater_weaver.name",
+    "evolvesTo": [
+      "colossal_weaver",
+      "broodmother"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 4,
+      "INT": 3
+    },
+    "grantSkills": [
+      "web_trap",
+      "cutting_wire"
+    ]
+  },
+  {
+    "id": "dread_weaver",
+    "raceId": "spider",
+    "locKey": "form.dread_weaver.name",
+    "evolvesTo": [
+      "toxic_horror",
+      "plague_weaver"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "acid_spit",
+      "necro_toxin"
+    ]
+  },
+  {
+    "id": "scythe_hunter",
+    "raceId": "spider",
+    "locKey": "form.scythe_hunter.name",
+    "evolvesTo": [
+      "phantom_stalker_sp",
+      "undying_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 4,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "ambush_strike",
+      "stealth"
+    ]
+  },
+  {
+    "id": "blade_weaver",
+    "raceId": "spider",
+    "locKey": "form.blade_weaver.name",
+    "evolvesTo": [
+      "carapace_lord_sp",
+      "blade_sovereign_sp"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "scythe_limb",
+      "reaper_edge"
+    ]
+  },
+  {
+    "id": "colossal_weaver",
+    "raceId": "spider",
+    "locKey": "form.colossal_weaver.name",
+    "evolvesTo": [
+      "web_lord",
+      "silk_god"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 5,
+      "INT": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "cutting_wire",
+      "spatial_web"
+    ]
+  },
+  {
+    "id": "broodmother",
+    "raceId": "spider",
+    "locKey": "form.broodmother.name",
+    "evolvesTo": [
+      "brood_sovereign",
+      "spider_queen"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 5,
+      "INT": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "cutting_wire",
+      "spatial_web"
+    ]
+  },
+  {
+    "id": "toxic_horror",
+    "raceId": "spider",
+    "locKey": "form.toxic_horror.name",
+    "evolvesTo": [
+      "venom_sovereign_sp",
+      "revenant_horror"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "necro_toxin",
+      "plague_mist"
+    ]
+  },
+  {
+    "id": "plague_weaver",
+    "raceId": "spider",
+    "locKey": "form.plague_weaver.name",
+    "evolvesTo": [
+      "plague_god_sp",
+      "abyssal_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "necro_toxin",
+      "plague_mist"
+    ]
+  },
+  {
+    "id": "phantom_stalker_sp",
+    "raceId": "spider",
+    "locKey": "form.phantom_stalker_sp.name",
+    "evolvesTo": [
+      "shadow_sovereign_sp",
+      "nightmare_spider"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 5,
+      "LUCK": 3,
+      "INT": 2
+    },
+    "grantSkills": [
+      "stealth",
+      "silent_step"
+    ]
+  },
+  {
+    "id": "undying_horror",
+    "raceId": "spider",
+    "locKey": "form.undying_horror.name",
+    "evolvesTo": [
+      "eternal_horror",
+      "wraith_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "INT": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "undying_will",
+      "undying_husk"
+    ]
+  },
+  {
+    "id": "carapace_lord_sp",
+    "raceId": "spider",
+    "locKey": "form.carapace_lord_sp.name",
+    "evolvesTo": [
+      "iron_arachnid",
+      "elder_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "STR": 3,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "hardened_shell",
+      "adamant_plating"
+    ]
+  },
+  {
+    "id": "blade_sovereign_sp",
+    "raceId": "spider",
+    "locKey": "form.blade_sovereign_sp.name",
+    "evolvesTo": [
+      "scythe_sovereign",
+      "arachnid_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "AGI": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "reaper_edge",
+      "rend"
+    ]
+  },
+  {
+    "id": "web_lord",
+    "raceId": "spider",
+    "locKey": "form.web_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "spatial_web",
+      "snare_field"
+    ]
+  },
+  {
+    "id": "silk_god",
+    "raceId": "spider",
+    "locKey": "form.silk_god.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "spatial_web",
+      "snare_field"
+    ]
+  },
+  {
+    "id": "brood_sovereign",
+    "raceId": "spider",
+    "locKey": "form.brood_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "spatial_web",
+      "snare_field"
+    ]
+  },
+  {
+    "id": "spider_queen",
+    "raceId": "spider",
+    "locKey": "form.spider_queen.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "spatial_web",
+      "snare_field"
+    ]
+  },
+  {
+    "id": "venom_sovereign_sp",
+    "raceId": "spider",
+    "locKey": "form.venom_sovereign_sp.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 5,
+      "VIT": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "plague_mist",
+      "decay_curse"
+    ]
+  },
+  {
+    "id": "revenant_horror",
+    "raceId": "spider",
+    "locKey": "form.revenant_horror.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "undying_husk",
+      "regenerative_core"
+    ]
+  },
+  {
+    "id": "plague_god_sp",
+    "raceId": "spider",
+    "locKey": "form.plague_god_sp.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 5,
+      "VIT": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "plague_mist",
+      "decay_curse"
+    ]
+  },
+  {
+    "id": "abyssal_sovereign",
+    "raceId": "spider",
+    "locKey": "form.abyssal_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 5,
+      "VIT": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "plague_mist",
+      "decay_curse"
+    ]
+  },
+  {
+    "id": "shadow_sovereign_sp",
+    "raceId": "spider",
+    "locKey": "form.shadow_sovereign_sp.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "LUCK": 7,
+      "INT": 4
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "silent_step",
+      "phantom_presence"
+    ]
+  },
+  {
+    "id": "nightmare_spider",
+    "raceId": "spider",
+    "locKey": "form.nightmare_spider.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 8,
+      "LUCK": 7,
+      "INT": 4
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "silent_step",
+      "phantom_presence"
+    ]
+  },
+  {
+    "id": "eternal_horror",
+    "raceId": "spider",
+    "locKey": "form.eternal_horror.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "undying_husk",
+      "regenerative_core"
+    ]
+  },
+  {
+    "id": "wraith_sovereign",
+    "raceId": "spider",
+    "locKey": "form.wraith_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "INT": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "undying_husk",
+      "regenerative_core"
+    ]
+  },
+  {
+    "id": "iron_arachnid",
+    "raceId": "spider",
+    "locKey": "form.iron_arachnid.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "STR": 5,
+      "WIS": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "adamant_plating",
+      "obsidian_carapace"
+    ]
+  },
+  {
+    "id": "elder_sovereign",
+    "raceId": "spider",
+    "locKey": "form.elder_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "STR": 5,
+      "WIS": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "adamant_plating",
+      "obsidian_carapace"
+    ]
+  },
+  {
+    "id": "scythe_sovereign",
+    "raceId": "spider",
+    "locKey": "form.scythe_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "AGI": 5,
+      "VIT": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "rend",
+      "maul"
+    ]
+  },
+  {
+    "id": "arachnid_sovereign",
+    "raceId": "spider",
+    "locKey": "form.arachnid_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "AGI": 5,
+      "VIT": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "rend",
+      "maul"
     ]
   }
 ]

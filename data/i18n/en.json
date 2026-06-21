@@ -1142,5 +1142,22 @@
   "form.magma_god_golem.name": "Magma God Golem",
   "form.lava_sovereign.name": "Lava Sovereign",
   "form.cinder_titan.name": "Cinder Titan",
-  "form.obsidian_god.name": "Obsidian God"
+  "form.obsidian_god.name": "Obsidian God",
+  "form.broodmother.name": "Broodmother",
+  "form.toxic_horror.name": "Toxic Horror",
+  "form.plague_weaver.name": "Plague Weaver",
+  "form.phantom_stalker_sp.name": "Phantom Stalker",
+  "form.carapace_lord_sp.name": "Carapace Lord",
+  "form.blade_sovereign_sp.name": "Blade Sovereign",
+  "form.web_lord.name": "Web Lord",
+  "form.silk_god.name": "Silk God",
+  "form.brood_sovereign.name": "Brood Sovereign",
+  "form.spider_queen.name": "Spider Queen",
+  "form.venom_sovereign_sp.name": "Venom Sovereign",
+  "form.plague_god_sp.name": "Plague God",
+  "form.shadow_sovereign_sp.name": "Shadow Sovereign",
+  "form.nightmare_spider.name": "Nightmare Spider",
+  "form.eternal_horror.name": "Eternal Horror",
+  "form.iron_arachnid.name": "Iron Arachnid",
+  "form.scythe_sovereign.name": "Scythe Sovereign"
 }

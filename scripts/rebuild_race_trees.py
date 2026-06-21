@@ -50,6 +50,13 @@ ROLES = {
     'magmag':  ('STR', 'VIT', 'INT', ['stone_spike', 'magma_fist', 'earth_pillar', 'heavy_slam', 'scorching_breath', 'unyielding_core']),
     'arcaneg': ('INT', 'VIT', 'WIS', ['stone_spike', 'earth_pillar', 'mana_shield', 'spatial_rift', 'crystal_heart', 'void_barrier']),
     'crystalg':('VIT', 'WIS', 'INT', ['stone_skin', 'crystal_heart', 'iron_plating', 'obsidian_carapace', 'unyielding_core', 'void_barrier']),
+    # --- spider (poison/web/stealth/carapace/eyes — the icon race) ---
+    'sp_venom':   ('INT', 'WIS', 'VIT', ['venom_bite', 'acid_spit', 'necro_toxin', 'plague_mist', 'decay_curse', 'soul_gaze']),
+    'sp_web':     ('AGI', 'INT', 'LUCK', ['silk_thread', 'web_trap', 'cutting_wire', 'spatial_web', 'snare_field', 'binding_silk']),
+    'sp_blade':   ('STR', 'AGI', 'VIT', ['sharp_claw', 'scythe_limb', 'reaper_edge', 'rend', 'maul', 'blade_dance']),
+    'sp_stealth': ('AGI', 'LUCK', 'INT', ['pounce', 'ambush_strike', 'stealth', 'silent_step', 'phantom_presence', 'lethal_lunge']),
+    'sp_carapace':('VIT', 'STR', 'WIS', ['chitin_hide', 'carapace', 'hardened_shell', 'adamant_plating', 'obsidian_carapace', 'carapace_lord']),
+    'sp_horror':  ('VIT', 'INT', 'LUCK', ['hp_regen', 'regeneration', 'undying_will', 'undying_husk', 'regenerative_core', 'phase_body']),
 }
 
 # 'shadow_drake'/'storm' skill ids that don't exist get filtered later; keep pools loose.
@@ -179,6 +186,39 @@ RACES = {
             'eternal_colossus': ([], 'magmag'), 'cinder_titan': ([], 'magmag'),
             'obsidian_god': ([], 'crystalg'), 'golem_ascendant': ([], 'crystalg'),
             'stone_sovereign': ([], 'crystalg'), 'golem_sovereign': ([], 'crystalg'),
+        },
+    },
+    'spider': {
+        # startStats intentionally NOT set — spider keeps the 5/5/5/5/5/5 baseline
+        # ("örümcek dışında tüm ırkların statlarını ayarla" — earlier explicit instruction).
+        'start': None,
+        'sig': ['binding_silk', 'pounce', 'carapace'],
+        'root': 'hatchling_spider', 't1': 'lesser_weaver',
+        'tree': {
+            'hatchling_spider': (['lesser_weaver'], 'sp_web'),
+            'lesser_weaver': (['venom_weaver', 'shade_stalker'], 'sp_venom'),
+            'venom_weaver': (['greater_weaver', 'dread_weaver'], 'sp_venom'),
+            'shade_stalker': (['scythe_hunter', 'blade_weaver'], 'sp_stealth'),
+            'greater_weaver': (['colossal_weaver', 'broodmother'], 'sp_web'),
+            'dread_weaver': (['toxic_horror', 'plague_weaver'], 'sp_venom'),
+            'scythe_hunter': (['phantom_stalker_sp', 'undying_horror'], 'sp_stealth'),
+            'blade_weaver': (['carapace_lord_sp', 'blade_sovereign_sp'], 'sp_blade'),
+            'colossal_weaver': (['web_lord', 'silk_god'], 'sp_web'),
+            'broodmother': (['brood_sovereign', 'spider_queen'], 'sp_web'),
+            'toxic_horror': (['venom_sovereign_sp', 'revenant_horror'], 'sp_venom'),
+            'plague_weaver': (['plague_god_sp', 'abyssal_sovereign'], 'sp_venom'),
+            'phantom_stalker_sp': (['shadow_sovereign_sp', 'nightmare_spider'], 'sp_stealth'),
+            'undying_horror': (['eternal_horror', 'wraith_sovereign'], 'sp_horror'),
+            'carapace_lord_sp': (['iron_arachnid', 'elder_sovereign'], 'sp_carapace'),
+            'blade_sovereign_sp': (['scythe_sovereign', 'arachnid_sovereign'], 'sp_blade'),
+            'web_lord': ([], 'sp_web'), 'silk_god': ([], 'sp_web'),
+            'brood_sovereign': ([], 'sp_web'), 'spider_queen': ([], 'sp_web'),
+            'venom_sovereign_sp': ([], 'sp_venom'), 'revenant_horror': ([], 'sp_horror'),
+            'plague_god_sp': ([], 'sp_venom'), 'abyssal_sovereign': ([], 'sp_venom'),
+            'shadow_sovereign_sp': ([], 'sp_stealth'), 'nightmare_spider': ([], 'sp_stealth'),
+            'eternal_horror': ([], 'sp_horror'), 'wraith_sovereign': ([], 'sp_horror'),
+            'iron_arachnid': ([], 'sp_carapace'), 'elder_sovereign': ([], 'sp_carapace'),
+            'scythe_sovereign': ([], 'sp_blade'), 'arachnid_sovereign': ([], 'sp_blade'),
         },
     },
 }

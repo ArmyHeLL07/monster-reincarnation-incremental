@@ -75,6 +75,24 @@ NEW = {
     'lava_sovereign': ('Lav Hükümdarı', 'Lava Sovereign'),
     'cinder_titan': ('Köz Titanı', 'Cinder Titan'),
     'obsidian_god': ('Obsidyen Tanrı', 'Obsidian God'),
+    # --- spider (17 new) ---
+    'broodmother': ('Ana Örümcek', 'Broodmother'),
+    'toxic_horror': ('Zehirli Dehşet', 'Toxic Horror'),
+    'plague_weaver': ('Veba Örücü', 'Plague Weaver'),
+    'phantom_stalker_sp': ('Hayalet Avcı', 'Phantom Stalker'),
+    'carapace_lord_sp': ('Kabuk Lordu', 'Carapace Lord'),
+    'blade_sovereign_sp': ('Bıçak Hükümdarı', 'Blade Sovereign'),
+    'web_lord': ('Ağ Lordu', 'Web Lord'),
+    'silk_god': ('İpek Tanrısı', 'Silk God'),
+    'brood_sovereign': ('Yuva Hükümdarı', 'Brood Sovereign'),
+    'spider_queen': ('Örümcek Kraliçesi', 'Spider Queen'),
+    'venom_sovereign_sp': ('Ağı Hükümdarı', 'Venom Sovereign'),
+    'plague_god_sp': ('Veba Tanrısı', 'Plague God'),
+    'shadow_sovereign_sp': ('Gölge Hükümdarı', 'Shadow Sovereign'),
+    'nightmare_spider': ('Kâbus Örümceği', 'Nightmare Spider'),
+    'eternal_horror': ('Ebedi Dehşet', 'Eternal Horror'),
+    'iron_arachnid': ('Demir Örümcek', 'Iron Arachnid'),
+    'scythe_sovereign': ('Tırpan Hükümdarı', 'Scythe Sovereign'),
 }
 
 evos = json.load(open('data/evolutions.json', encoding='utf-8'))
