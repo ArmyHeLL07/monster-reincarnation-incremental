@@ -108,6 +108,10 @@ export interface EvolutionForm {
   levelReq: number;
   statBonus?: Partial<Record<StatKey, number>>;
   grantSkills?: string[];
+  /** A hidden (easter-egg) form — only revealed/available once its secret condition is met. */
+  secret?: { kills?: number };
+  /** This form is humanoid even if the race isn't (unlocks equipment — e.g. a slime's Rimuru form). */
+  humanoid?: boolean;
 }
 
 /** A data-driven skill. Player-facing text is referenced by localization key, never inlined. */

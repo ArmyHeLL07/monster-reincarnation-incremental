@@ -1,166 +1,2322 @@
 [
-  { "id": "venom_bite", "locKeyName": "skill.venom_bite.name", "locKeyDesc": "skill.venom_bite.desc", "kind": "active", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": ["lethal_venom"], "damage": 2, "damageType": "poison", "element": "poison" },
-  { "id": "lethal_venom", "locKeyName": "skill.lethal_venom.name", "locKeyDesc": "skill.lethal_venom.desc", "kind": "active", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": ["necro_toxin"], "damage": 5, "damageType": "poison", "element": "poison" },
-  { "id": "necro_toxin", "locKeyName": "skill.necro_toxin.name", "locKeyDesc": "skill.necro_toxin.desc", "kind": "active", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 8, "damageType": "poison", "element": "poison" },
-  { "id": "acid_spit", "locKeyName": "skill.acid_spit.name", "locKeyDesc": "skill.acid_spit.desc", "kind": "active", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": ["caustic_spray"], "damage": 4, "damageType": "acid", "element": "acid" },
-  { "id": "caustic_spray", "locKeyName": "skill.caustic_spray.name", "locKeyDesc": "skill.caustic_spray.desc", "kind": "active", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 7, "damageType": "acid", "element": "acid" },
-  { "id": "toxic_cloud", "locKeyName": "skill.toxic_cloud.name", "locKeyDesc": "skill.toxic_cloud.desc", "kind": "active", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["plague_mist"], "damage": 3, "damageType": "poison", "element": "poison" },
-  { "id": "plague_mist", "locKeyName": "skill.plague_mist.name", "locKeyDesc": "skill.plague_mist.desc", "kind": "active", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 7, "damageType": "poison", "element": "poison" },
-
-  { "id": "sharp_claw", "locKeyName": "skill.sharp_claw.name", "locKeyDesc": "skill.sharp_claw.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["scythe_limb"], "damage": 3, "damageType": "physical", "element": "physical" },
-  { "id": "scythe_limb", "locKeyName": "skill.scythe_limb.name", "locKeyDesc": "skill.scythe_limb.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["reaper_edge"], "damage": 6, "damageType": "pierce", "element": "pierce" },
-  { "id": "reaper_edge", "locKeyName": "skill.reaper_edge.name", "locKeyDesc": "skill.reaper_edge.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "pierce", "element": "pierce" },
-
-  { "id": "fist_strike", "locKeyName": "skill.fist_strike.name", "locKeyDesc": "skill.fist_strike.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["heavy_punch"], "damage": 3, "damageType": "physical", "element": "physical" },
-  { "id": "heavy_punch", "locKeyName": "skill.heavy_punch.name", "locKeyDesc": "skill.heavy_punch.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["shattering_strike"], "damage": 6, "damageType": "physical", "element": "physical" },
-  { "id": "shattering_strike", "locKeyName": "skill.shattering_strike.name", "locKeyDesc": "skill.shattering_strike.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "physical", "element": "physical" },
-  { "id": "pounce", "locKeyName": "skill.pounce.name", "locKeyDesc": "skill.pounce.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["ambush_strike"], "damage": 3, "damageType": "physical", "element": "physical" },
-  { "id": "ambush_strike", "locKeyName": "skill.ambush_strike.name", "locKeyDesc": "skill.ambush_strike.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["lethal_lunge"], "damage": 6, "damageType": "pierce", "element": "pierce" },
-  { "id": "lethal_lunge", "locKeyName": "skill.lethal_lunge.name", "locKeyDesc": "skill.lethal_lunge.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 9, "damageType": "pierce", "element": "pierce" },
-  { "id": "rend", "locKeyName": "skill.rend.name", "locKeyDesc": "skill.rend.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["maul"], "damage": 4, "damageType": "pierce", "element": "pierce" },
-  { "id": "maul", "locKeyName": "skill.maul.name", "locKeyDesc": "skill.maul.desc", "kind": "active", "stats": ["STR"], "lvMax": 10, "evolvesTo": [], "damage": 8, "damageType": "physical", "element": "physical" },
-
-  { "id": "silk_thread", "locKeyName": "skill.silk_thread.name", "locKeyDesc": "skill.silk_thread.desc", "kind": "active", "stats": ["AGI", "INT"], "lvMax": 10, "evolvesTo": ["binding_silk"], "damage": 1, "damageType": "physical", "element": "silk" },
-  { "id": "binding_silk", "locKeyName": "skill.binding_silk.name", "locKeyDesc": "skill.binding_silk.desc", "kind": "active", "stats": ["AGI", "INT"], "lvMax": 10, "evolvesTo": ["cutting_wire"], "damage": 2, "damageType": "physical", "element": "silk" },
-  { "id": "cutting_wire", "locKeyName": "skill.cutting_wire.name", "locKeyDesc": "skill.cutting_wire.desc", "kind": "active", "stats": ["AGI", "INT"], "lvMax": 10, "evolvesTo": ["spatial_web"], "damage": 4, "damageType": "physical", "element": "silk" },
-  { "id": "spatial_web", "locKeyName": "skill.spatial_web.name", "locKeyDesc": "skill.spatial_web.desc", "kind": "active", "stats": ["AGI", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 7, "damageType": "physical", "element": "silk", "dodgeBonus": 0.05 },
-  { "id": "web_trap", "locKeyName": "skill.web_trap.name", "locKeyDesc": "skill.web_trap.desc", "kind": "active", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["snare_field"], "damage": 2, "damageType": "physical", "element": "silk" },
-  { "id": "snare_field", "locKeyName": "skill.snare_field.name", "locKeyDesc": "skill.snare_field.desc", "kind": "active", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["spatial_web"], "damage": 4, "damageType": "physical", "element": "silk" },
-  { "id": "sticky_coat", "locKeyName": "skill.sticky_coat.name", "locKeyDesc": "skill.sticky_coat.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["adhesive_mastery"], "dodgeBonus": 0.02 },
-  { "id": "adhesive_mastery", "locKeyName": "skill.adhesive_mastery.name", "locKeyDesc": "skill.adhesive_mastery.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.05 },
-
-  { "id": "appraisal", "locKeyName": "skill.appraisal.name", "locKeyDesc": "skill.appraisal.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["insight"], "eyeModes": ["passive", "active"], "acquireKey": "skill.appraisal.acq" },
-  { "id": "insight", "locKeyName": "skill.insight.name", "locKeyDesc": "skill.insight.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["all_sight"], "eyeModes": ["passive", "active"] },
-  { "id": "all_sight", "locKeyName": "skill.all_sight.name", "locKeyDesc": "skill.all_sight.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["passive", "active"] },
-  { "id": "detect", "locKeyName": "skill.detect.name", "locKeyDesc": "skill.detect.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["foresight"], "dodgeBonus": 0.02 },
-  { "id": "foresight", "locKeyName": "skill.foresight.name", "locKeyDesc": "skill.foresight.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["precognition"], "dodgeBonus": 0.05 },
-  { "id": "precognition", "locKeyName": "skill.precognition.name", "locKeyDesc": "skill.precognition.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.1 },
-  { "id": "quick_thought", "locKeyName": "skill.quick_thought.name", "locKeyDesc": "skill.quick_thought.desc", "kind": "util", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["accelerated_mind"], "xpMult": 0.05 },
-  { "id": "accelerated_mind", "locKeyName": "skill.accelerated_mind.name", "locKeyDesc": "skill.accelerated_mind.desc", "kind": "util", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["parallel_minds"], "xpMult": 0.1 },
-  { "id": "parallel_minds", "locKeyName": "skill.parallel_minds.name", "locKeyDesc": "skill.parallel_minds.desc", "kind": "util", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "xpMult": 0.2 },
-  { "id": "memory_palace", "locKeyName": "skill.memory_palace.name", "locKeyDesc": "skill.memory_palace.desc", "kind": "util", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["eidetic_recall"], "xpMult": 0.05 },
-  { "id": "eidetic_recall", "locKeyName": "skill.eidetic_recall.name", "locKeyDesc": "skill.eidetic_recall.desc", "kind": "util", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "xpMult": 0.1 },
-
-  { "id": "mana_sense", "locKeyName": "skill.mana_sense.name", "locKeyDesc": "skill.mana_sense.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["mana_control"], "mpRegen": 1 },
-  { "id": "mana_control", "locKeyName": "skill.mana_control.name", "locKeyDesc": "skill.mana_control.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["mana_mastery"], "mpRegen": 2 },
-  { "id": "mana_mastery", "locKeyName": "skill.mana_mastery.name", "locKeyDesc": "skill.mana_mastery.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "mpRegen": 4 },
-  { "id": "flame_bolt", "locKeyName": "skill.flame_bolt.name", "locKeyDesc": "skill.flame_bolt.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["fire_lance"], "damage": 5, "damageType": "fire", "element": "fire", "mpCost": 3 },
-  { "id": "fire_lance", "locKeyName": "skill.fire_lance.name", "locKeyDesc": "skill.fire_lance.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "fire", "element": "fire", "mpCost": 6 },
-  { "id": "frost_shard", "locKeyName": "skill.frost_shard.name", "locKeyDesc": "skill.frost_shard.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["ice_spear"], "damage": 4, "damageType": "frost", "element": "frost", "mpCost": 3 },
-  { "id": "ice_spear", "locKeyName": "skill.ice_spear.name", "locKeyDesc": "skill.ice_spear.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 9, "damageType": "frost", "element": "frost", "mpCost": 6 },
-  { "id": "stone_spike", "locKeyName": "skill.stone_spike.name", "locKeyDesc": "skill.stone_spike.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["earth_pillar"], "damage": 5, "damageType": "physical", "element": "earth", "mpCost": 3 },
-  { "id": "earth_pillar", "locKeyName": "skill.earth_pillar.name", "locKeyDesc": "skill.earth_pillar.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "physical", "element": "earth", "mpCost": 6 },
-  { "id": "gale_cut", "locKeyName": "skill.gale_cut.name", "locKeyDesc": "skill.gale_cut.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["wind_blade"], "damage": 4, "damageType": "pierce", "element": "wind", "mpCost": 2 },
-  { "id": "wind_blade", "locKeyName": "skill.wind_blade.name", "locKeyDesc": "skill.wind_blade.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 8, "damageType": "pierce", "element": "wind", "mpCost": 5 },
-  { "id": "spark", "locKeyName": "skill.spark.name", "locKeyDesc": "skill.spark.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["lightning_strike"], "damage": 6, "damageType": "lightning", "element": "lightning", "mpCost": 4 },
-  { "id": "lightning_strike", "locKeyName": "skill.lightning_strike.name", "locKeyDesc": "skill.lightning_strike.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 12, "damageType": "lightning", "element": "lightning", "mpCost": 8 },
-  { "id": "void_step", "locKeyName": "skill.void_step.name", "locKeyDesc": "skill.void_step.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["spatial_rift"], "damage": 5, "damageType": "magic", "element": "void", "mpCost": 4, "dodgeBonus": 0.03 },
-  { "id": "spatial_rift", "locKeyName": "skill.spatial_rift.name", "locKeyDesc": "skill.spatial_rift.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 11, "damageType": "magic", "element": "void", "mpCost": 8, "dodgeBonus": 0.05 },
-
-  { "id": "piercing_gaze", "locKeyName": "skill.piercing_gaze.name", "locKeyDesc": "skill.piercing_gaze.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": ["heavy_gaze"], "eyeModes": ["active"], "gaze": { "damage": 3 } },
-  { "id": "heavy_gaze", "locKeyName": "skill.heavy_gaze.name", "locKeyDesc": "skill.heavy_gaze.desc", "kind": "eye", "stats": ["INT", "WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "damage": 7 } },
-  { "id": "numbing_gaze", "locKeyName": "skill.numbing_gaze.name", "locKeyDesc": "skill.numbing_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["paralytic_gaze"], "eyeModes": ["active"], "gaze": { "negateChance": 0.1 } },
-  { "id": "paralytic_gaze", "locKeyName": "skill.paralytic_gaze.name", "locKeyDesc": "skill.paralytic_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.22 } },
-  { "id": "petrify_gaze", "locKeyName": "skill.petrify_gaze.name", "locKeyDesc": "skill.petrify_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["stone_gaze"], "eyeModes": ["active"], "gaze": { "negateChance": 0.15 } },
-  { "id": "stone_gaze", "locKeyName": "skill.stone_gaze.name", "locKeyDesc": "skill.stone_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.3 } },
-  { "id": "dread_gaze", "locKeyName": "skill.dread_gaze.name", "locKeyDesc": "skill.dread_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["terror_gaze"], "eyeModes": ["passive"], "gaze": { "negateChance": 0.15 }, "acquireKey": "skill.dread_gaze.acq" },
-  { "id": "terror_gaze", "locKeyName": "skill.terror_gaze.name", "locKeyDesc": "skill.terror_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["passive"], "gaze": { "negateChance": 0.28 } },
-  { "id": "soul_gaze", "locKeyName": "skill.soul_gaze.name", "locKeyDesc": "skill.soul_gaze.desc", "kind": "eye", "stats": ["WIS", "INT"], "lvMax": 10, "evolvesTo": ["rend_soul_gaze"], "eyeModes": ["active"], "gaze": { "damage": 4, "trueDamage": true } },
-  { "id": "rend_soul_gaze", "locKeyName": "skill.rend_soul_gaze.name", "locKeyDesc": "skill.rend_soul_gaze.desc", "kind": "eye", "stats": ["WIS", "INT"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "damage": 9, "trueDamage": true } },
-  { "id": "charm_gaze", "locKeyName": "skill.charm_gaze.name", "locKeyDesc": "skill.charm_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["domination_gaze"], "eyeModes": ["active"], "gaze": { "negateChance": 0.12 } },
-  { "id": "domination_gaze", "locKeyName": "skill.domination_gaze.name", "locKeyDesc": "skill.domination_gaze.desc", "kind": "eye", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "eyeModes": ["active"], "gaze": { "negateChance": 0.25 } },
-
-  { "id": "hp_regen", "locKeyName": "skill.hp_regen.name", "locKeyDesc": "skill.hp_regen.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["auto_heal"], "hpRegen": 1, "acquireKey": "skill.hp_regen.acq" },
-  { "id": "auto_heal", "locKeyName": "skill.auto_heal.name", "locKeyDesc": "skill.auto_heal.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["regeneration"], "hpRegen": 3 },
-  { "id": "regeneration", "locKeyName": "skill.regeneration.name", "locKeyDesc": "skill.regeneration.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["undying_vitality"], "hpRegen": 6 },
-  { "id": "undying_vitality", "locKeyName": "skill.undying_vitality.name", "locKeyDesc": "skill.undying_vitality.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 10, "regenMult": 0.5 },
-  { "id": "mp_regen", "locKeyName": "skill.mp_regen.name", "locKeyDesc": "skill.mp_regen.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["mana_flow"], "mpRegen": 1 },
-  { "id": "mana_flow", "locKeyName": "skill.mana_flow.name", "locKeyDesc": "skill.mana_flow.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["endless_mana"], "mpRegen": 3 },
-  { "id": "endless_mana", "locKeyName": "skill.endless_mana.name", "locKeyDesc": "skill.endless_mana.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "mpRegen": 6 },
-  { "id": "endurance", "locKeyName": "skill.endurance.name", "locKeyDesc": "skill.endurance.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["toughness"], "spRegen": 1 },
-  { "id": "toughness", "locKeyName": "skill.toughness.name", "locKeyDesc": "skill.toughness.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["undying_will"], "spRegen": 2 },
-  { "id": "undying_will", "locKeyName": "skill.undying_will.name", "locKeyDesc": "skill.undying_will.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "spRegen": 3, "surviveChance": 0.1 },
-  { "id": "overdraw", "locKeyName": "skill.overdraw.name", "locKeyDesc": "skill.overdraw.desc", "kind": "passive", "stats": ["STR", "VIT"], "lvMax": 10, "evolvesTo": ["blood_engine"], "overdrawFrac": 0.1 },
-  { "id": "blood_engine", "locKeyName": "skill.blood_engine.name", "locKeyDesc": "skill.blood_engine.desc", "kind": "passive", "stats": ["STR", "VIT"], "lvMax": 10, "evolvesTo": [], "overdrawFrac": 0.2 },
-  { "id": "carapace", "locKeyName": "skill.carapace.name", "locKeyDesc": "skill.carapace.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["hardened_shell"], "armor": 1 },
-  { "id": "hardened_shell", "locKeyName": "skill.hardened_shell.name", "locKeyDesc": "skill.hardened_shell.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["adamant_plating"], "armor": 3 },
-  { "id": "adamant_plating", "locKeyName": "skill.adamant_plating.name", "locKeyDesc": "skill.adamant_plating.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 6 },
-
-  { "id": "stealth", "locKeyName": "skill.stealth.name", "locKeyDesc": "skill.stealth.desc", "kind": "util", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["silent_step"], "dodgeBonus": 0.03 },
-  { "id": "silent_step", "locKeyName": "skill.silent_step.name", "locKeyDesc": "skill.silent_step.desc", "kind": "util", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["phantom_presence"], "dodgeBonus": 0.06 },
-  { "id": "phantom_presence", "locKeyName": "skill.phantom_presence.name", "locKeyDesc": "skill.phantom_presence.desc", "kind": "util", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.12 },
-  { "id": "climb", "locKeyName": "skill.climb.name", "locKeyDesc": "skill.climb.desc", "kind": "util", "stats": ["AGI"], "lvMax": 10, "evolvesTo": ["wall_master"], "lootMult": 0.05 },
-  { "id": "wall_master", "locKeyName": "skill.wall_master.name", "locKeyDesc": "skill.wall_master.desc", "kind": "util", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.1 },
-  { "id": "forage", "locKeyName": "skill.forage.name", "locKeyDesc": "skill.forage.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["scavenger"], "lootMult": 0.05 },
-  { "id": "scavenger", "locKeyName": "skill.scavenger.name", "locKeyDesc": "skill.scavenger.desc", "kind": "util", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.12 },
-  { "id": "keen_nose", "locKeyName": "skill.keen_nose.name", "locKeyDesc": "skill.keen_nose.desc", "kind": "util", "stats": ["WIS", "LUCK"], "lvMax": 10, "evolvesTo": ["treasure_sense"], "lootMult": 0.05 },
-  { "id": "treasure_sense", "locKeyName": "skill.treasure_sense.name", "locKeyDesc": "skill.treasure_sense.desc", "kind": "util", "stats": ["WIS", "LUCK"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.12 },
-  { "id": "lucky_find", "locKeyName": "skill.lucky_find.name", "locKeyDesc": "skill.lucky_find.desc", "kind": "util", "stats": ["LUCK"], "lvMax": 10, "evolvesTo": ["fortunes_favor"], "lootMult": 0.06 },
-  { "id": "fortunes_favor", "locKeyName": "skill.fortunes_favor.name", "locKeyDesc": "skill.fortunes_favor.desc", "kind": "util", "stats": ["LUCK"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.15 },
-
-  { "id": "chitin_hide", "locKeyName": "skill.chitin_hide.name", "locKeyDesc": "skill.chitin_hide.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 1 },
-  { "id": "many_legged_gait", "locKeyName": "skill.many_legged_gait.name", "locKeyDesc": "skill.many_legged_gait.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.03 },
-  { "id": "cold_blood", "locKeyName": "skill.cold_blood.name", "locKeyDesc": "skill.cold_blood.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hungerMult": 0.7 },
-  { "id": "night_born", "locKeyName": "skill.night_born.name", "locKeyDesc": "skill.night_born.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.05 },
-  { "id": "apex_predator", "locKeyName": "skill.apex_predator.name", "locKeyDesc": "skill.apex_predator.desc", "kind": "passive", "stats": ["STR"], "lvMax": 10, "evolvesTo": [], "gaze": { "negateChance": 0.08 }, "dmgMult": 0.1 },
-  { "id": "carapace_lord", "locKeyName": "skill.carapace_lord.name", "locKeyDesc": "skill.carapace_lord.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 4 },
-  { "id": "phase_body", "locKeyName": "skill.phase_body.name", "locKeyDesc": "skill.phase_body.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.1 },
-  { "id": "regenerative_core", "locKeyName": "skill.regenerative_core.name", "locKeyDesc": "skill.regenerative_core.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 },
-  { "id": "sovereign_form", "locKeyName": "skill.sovereign_form.name", "locKeyDesc": "skill.sovereign_form.desc", "kind": "passive", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "dmgMult": 0.25, "lootMult": 0.2 },
-  { "id": "undying_husk", "locKeyName": "skill.undying_husk.name", "locKeyDesc": "skill.undying_husk.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "surviveChance": 0.2, "acquireKey": "skill.undying_husk.acq" },
-
-  { "id": "stillness", "locKeyName": "skill.stillness.name", "locKeyDesc": "skill.stillness.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": ["inner_silence"], "hidden": true, "regenMult": 0.3, "acquireKey": "skill.stillness.acq" },
-  { "id": "inner_silence", "locKeyName": "skill.inner_silence.name", "locKeyDesc": "skill.inner_silence.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "hidden": true, "regenMult": 0.5, "armor": 2 },
-  { "id": "forbidden_knowledge", "locKeyName": "skill.forbidden_knowledge.name", "locKeyDesc": "skill.forbidden_knowledge.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "hidden": true, "dmgMult": 0.15, "xpMult": 0.1, "acquireKey": "skill.forbidden_knowledge.acq" },
-
-  { "id": "larder", "locKeyName": "skill.larder.name", "locKeyDesc": "skill.larder.desc", "kind": "util", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "acquireKey": "skill.larder.acq" },
-
-  { "id": "predator_instinct", "locKeyName": "skill.predator_instinct.name", "locKeyDesc": "skill.predator_instinct.desc", "kind": "passive", "stats": ["STR", "LUCK"], "lvMax": 10, "evolvesTo": [], "lootMult": 0.15, "part": "body" },
-  { "id": "undead_vigor", "locKeyName": "skill.undead_vigor.name", "locKeyDesc": "skill.undead_vigor.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["regenerative_core"], "hpRegen": 2, "spRegen": 1 },
-  { "id": "draconic_blood", "locKeyName": "skill.draconic_blood.name", "locKeyDesc": "skill.draconic_blood.desc", "kind": "passive", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "xpMult": 0.25 },
-  { "id": "stone_nature", "locKeyName": "skill.stone_nature.name", "locKeyDesc": "skill.stone_nature.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hungerMult": 0.35 },
-  { "id": "sword_slash", "locKeyName": "skill.sword_slash.name", "locKeyDesc": "skill.sword_slash.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["blade_dance"], "damage": 3, "damageType": "physical", "element": "physical" },
-  { "id": "blade_dance", "locKeyName": "skill.blade_dance.name", "locKeyDesc": "skill.blade_dance.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["righteous_strike"], "damage": 6, "damageType": "physical", "element": "physical" },
-  { "id": "righteous_strike", "locKeyName": "skill.righteous_strike.name", "locKeyDesc": "skill.righteous_strike.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "physical", "element": "physical" },
-  { "id": "shield_guard", "locKeyName": "skill.shield_guard.name", "locKeyDesc": "skill.shield_guard.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["shield_wall"], "armor": 1 },
-  { "id": "shield_wall", "locKeyName": "skill.shield_wall.name", "locKeyDesc": "skill.shield_wall.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["bastion"], "armor": 3 },
-  { "id": "bastion", "locKeyName": "skill.bastion.name", "locKeyDesc": "skill.bastion.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 6 },
-  { "id": "holy_strike", "locKeyName": "skill.holy_strike.name", "locKeyDesc": "skill.holy_strike.desc", "kind": "magic", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": ["divine_smite"], "damage": 5, "damageType": "magic", "element": "magic", "mpCost": 3 },
-  { "id": "divine_smite", "locKeyName": "skill.divine_smite.name", "locKeyDesc": "skill.divine_smite.desc", "kind": "magic", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "magic", "element": "magic", "mpCost": 6 },
-  { "id": "divine_recovery", "locKeyName": "skill.divine_recovery.name", "locKeyDesc": "skill.divine_recovery.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 },
-  { "id": "weapon_mastery", "locKeyName": "skill.weapon_mastery.name", "locKeyDesc": "skill.weapon_mastery.desc", "kind": "passive", "stats": ["STR"], "lvMax": 10, "evolvesTo": ["blade_mastery"], "dmgMult": 0.05 },
-  { "id": "blade_mastery", "locKeyName": "skill.blade_mastery.name", "locKeyDesc": "skill.blade_mastery.desc", "kind": "passive", "stats": ["STR"], "lvMax": 10, "evolvesTo": [], "dmgMult": 0.12 },
-  { "id": "parry", "locKeyName": "skill.parry.name", "locKeyDesc": "skill.parry.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.05 },
-  { "id": "battle_cry", "locKeyName": "skill.battle_cry.name", "locKeyDesc": "skill.battle_cry.desc", "kind": "active", "stats": ["STR", "VIT"], "lvMax": 10, "evolvesTo": [], "damage": 2, "damageType": "fear", "element": "physical", "cooldown": 4 },
-  { "id": "iron_will", "locKeyName": "skill.iron_will.name", "locKeyDesc": "skill.iron_will.desc", "kind": "passive", "stats": ["WIS"], "lvMax": 10, "evolvesTo": [], "spRegen": 1, "surviveChance": 0.05 },
-  { "id": "mana_shield", "locKeyName": "skill.mana_shield.name", "locKeyDesc": "skill.mana_shield.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "overdrawFrac": 0.15 },
-  { "id": "gelatinous_body", "locKeyName": "skill.gelatinous_body.name", "locKeyDesc": "skill.gelatinous_body.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["elastic_shield"], "armor": 1 },
-  { "id": "elastic_shield", "locKeyName": "skill.elastic_shield.name", "locKeyDesc": "skill.elastic_shield.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["primordial_ooze_shield"], "armor": 3 },
-  { "id": "primordial_ooze_shield", "locKeyName": "skill.primordial_ooze_shield.name", "locKeyDesc": "skill.primordial_ooze_shield.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 6 },
-  { "id": "acid_deluge", "locKeyName": "skill.acid_deluge.name", "locKeyDesc": "skill.acid_deluge.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "acid", "element": "acid", "mpCost": 6 },
-  { "id": "dissolving_touch", "locKeyName": "skill.dissolving_touch.name", "locKeyDesc": "skill.dissolving_touch.desc", "kind": "passive", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "dmgMult": 0.1 },
-  { "id": "bone_armor", "locKeyName": "skill.bone_armor.name", "locKeyDesc": "skill.bone_armor.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["hardened_ribs"], "armor": 1 },
-  { "id": "hardened_ribs", "locKeyName": "skill.hardened_ribs.name", "locKeyDesc": "skill.hardened_ribs.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["bone_fortress"], "armor": 3 },
-  { "id": "bone_fortress", "locKeyName": "skill.bone_fortress.name", "locKeyDesc": "skill.bone_fortress.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 6 },
-  { "id": "shadow_bolt", "locKeyName": "skill.shadow_bolt.name", "locKeyDesc": "skill.shadow_bolt.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": ["decay_curse"], "damage": 5, "damageType": "magic", "element": "magic", "mpCost": 3 },
-  { "id": "decay_curse", "locKeyName": "skill.decay_curse.name", "locKeyDesc": "skill.decay_curse.desc", "kind": "magic", "stats": ["INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "magic", "element": "magic", "mpCost": 6 },
-  { "id": "bone_arrow", "locKeyName": "skill.bone_arrow.name", "locKeyDesc": "skill.bone_arrow.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["arrow_barrage"], "damage": 4, "damageType": "pierce", "element": "physical" },
-  { "id": "arrow_barrage", "locKeyName": "skill.arrow_barrage.name", "locKeyDesc": "skill.arrow_barrage.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 8, "damageType": "pierce", "element": "physical" },
-  { "id": "unholy_heart", "locKeyName": "skill.unholy_heart.name", "locKeyDesc": "skill.unholy_heart.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 },
-  { "id": "dragon_claw", "locKeyName": "skill.dragon_claw.name", "locKeyDesc": "skill.dragon_claw.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": ["dragon_slash"], "damage": 3, "damageType": "physical", "element": "physical" },
-  { "id": "dragon_slash", "locKeyName": "skill.dragon_slash.name", "locKeyDesc": "skill.dragon_slash.desc", "kind": "active", "stats": ["STR", "AGI"], "lvMax": 10, "evolvesTo": [], "damage": 6, "damageType": "physical", "element": "physical" },
-  { "id": "fire_breath", "locKeyName": "skill.fire_breath.name", "locKeyDesc": "skill.fire_breath.desc", "kind": "magic", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": ["scorching_breath"], "damage": 5, "damageType": "fire", "element": "fire", "mpCost": 3 },
-  { "id": "scorching_breath", "locKeyName": "skill.scorching_breath.name", "locKeyDesc": "skill.scorching_breath.desc", "kind": "magic", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "fire", "element": "fire", "mpCost": 6 },
-  { "id": "dragon_scale", "locKeyName": "skill.dragon_scale.name", "locKeyDesc": "skill.dragon_scale.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["hardened_scales"], "armor": 2 },
-  { "id": "hardened_scales", "locKeyName": "skill.hardened_scales.name", "locKeyDesc": "skill.hardened_scales.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 5 },
-  { "id": "dragon_heart", "locKeyName": "skill.dragon_heart.name", "locKeyDesc": "skill.dragon_heart.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 },
-  { "id": "void_barrier", "locKeyName": "skill.void_barrier.name", "locKeyDesc": "skill.void_barrier.desc", "kind": "passive", "stats": ["AGI"], "lvMax": 10, "evolvesTo": [], "dodgeBonus": 0.06 },
-  { "id": "stone_skin", "locKeyName": "skill.stone_skin.name", "locKeyDesc": "skill.stone_skin.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["iron_plating"], "armor": 2 },
-  { "id": "iron_plating", "locKeyName": "skill.iron_plating.name", "locKeyDesc": "skill.iron_plating.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": ["obsidian_carapace"], "armor": 4 },
-  { "id": "obsidian_carapace", "locKeyName": "skill.obsidian_carapace.name", "locKeyDesc": "skill.obsidian_carapace.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "armor": 7 },
-  { "id": "steam_engine", "locKeyName": "skill.steam_engine.name", "locKeyDesc": "skill.steam_engine.desc", "kind": "passive", "stats": ["STR", "VIT"], "lvMax": 10, "evolvesTo": [], "overdrawFrac": 0.2 },
-  { "id": "heavy_slam", "locKeyName": "skill.heavy_slam.name", "locKeyDesc": "skill.heavy_slam.desc", "kind": "active", "stats": ["STR"], "lvMax": 10, "evolvesTo": ["magma_fist"], "damage": 6, "damageType": "physical", "element": "physical" },
-  { "id": "magma_fist", "locKeyName": "skill.magma_fist.name", "locKeyDesc": "skill.magma_fist.desc", "kind": "magic", "stats": ["STR", "INT"], "lvMax": 10, "evolvesTo": [], "damage": 10, "damageType": "fire", "element": "fire" },
-  { "id": "unyielding_core", "locKeyName": "skill.unyielding_core.name", "locKeyDesc": "skill.unyielding_core.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "surviveChance": 0.2 },
-  { "id": "crystal_heart", "locKeyName": "skill.crystal_heart.name", "locKeyDesc": "skill.crystal_heart.desc", "kind": "passive", "stats": ["VIT"], "lvMax": 10, "evolvesTo": [], "hpRegen": 2, "regenMult": 0.4 }
+  {
+    "id": "venom_bite",
+    "locKeyName": "skill.venom_bite.name",
+    "locKeyDesc": "skill.venom_bite.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "lethal_venom"
+    ],
+    "damage": 2,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "lethal_venom",
+    "locKeyName": "skill.lethal_venom.name",
+    "locKeyDesc": "skill.lethal_venom.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "necro_toxin"
+    ],
+    "damage": 5,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "necro_toxin",
+    "locKeyName": "skill.necro_toxin.name",
+    "locKeyDesc": "skill.necro_toxin.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 8,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "acid_spit",
+    "locKeyName": "skill.acid_spit.name",
+    "locKeyDesc": "skill.acid_spit.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "caustic_spray"
+    ],
+    "damage": 4,
+    "damageType": "acid",
+    "element": "acid"
+  },
+  {
+    "id": "caustic_spray",
+    "locKeyName": "skill.caustic_spray.name",
+    "locKeyDesc": "skill.caustic_spray.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 7,
+    "damageType": "acid",
+    "element": "acid"
+  },
+  {
+    "id": "toxic_cloud",
+    "locKeyName": "skill.toxic_cloud.name",
+    "locKeyDesc": "skill.toxic_cloud.desc",
+    "kind": "active",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "plague_mist"
+    ],
+    "damage": 3,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "plague_mist",
+    "locKeyName": "skill.plague_mist.name",
+    "locKeyDesc": "skill.plague_mist.desc",
+    "kind": "active",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 7,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "sharp_claw",
+    "locKeyName": "skill.sharp_claw.name",
+    "locKeyDesc": "skill.sharp_claw.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "scythe_limb"
+    ],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "scythe_limb",
+    "locKeyName": "skill.scythe_limb.name",
+    "locKeyDesc": "skill.scythe_limb.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "reaper_edge"
+    ],
+    "damage": 6,
+    "damageType": "pierce",
+    "element": "pierce"
+  },
+  {
+    "id": "reaper_edge",
+    "locKeyName": "skill.reaper_edge.name",
+    "locKeyDesc": "skill.reaper_edge.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "pierce",
+    "element": "pierce"
+  },
+  {
+    "id": "fist_strike",
+    "locKeyName": "skill.fist_strike.name",
+    "locKeyDesc": "skill.fist_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "heavy_punch"
+    ],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "heavy_punch",
+    "locKeyName": "skill.heavy_punch.name",
+    "locKeyDesc": "skill.heavy_punch.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "shattering_strike"
+    ],
+    "damage": 6,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "shattering_strike",
+    "locKeyName": "skill.shattering_strike.name",
+    "locKeyDesc": "skill.shattering_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "pounce",
+    "locKeyName": "skill.pounce.name",
+    "locKeyDesc": "skill.pounce.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "ambush_strike"
+    ],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "ambush_strike",
+    "locKeyName": "skill.ambush_strike.name",
+    "locKeyDesc": "skill.ambush_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "lethal_lunge"
+    ],
+    "damage": 6,
+    "damageType": "pierce",
+    "element": "pierce"
+  },
+  {
+    "id": "lethal_lunge",
+    "locKeyName": "skill.lethal_lunge.name",
+    "locKeyDesc": "skill.lethal_lunge.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 9,
+    "damageType": "pierce",
+    "element": "pierce"
+  },
+  {
+    "id": "rend",
+    "locKeyName": "skill.rend.name",
+    "locKeyDesc": "skill.rend.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "maul"
+    ],
+    "damage": 4,
+    "damageType": "pierce",
+    "element": "pierce"
+  },
+  {
+    "id": "maul",
+    "locKeyName": "skill.maul.name",
+    "locKeyDesc": "skill.maul.desc",
+    "kind": "active",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 8,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "silk_thread",
+    "locKeyName": "skill.silk_thread.name",
+    "locKeyDesc": "skill.silk_thread.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "binding_silk"
+    ],
+    "damage": 1,
+    "damageType": "physical",
+    "element": "silk"
+  },
+  {
+    "id": "binding_silk",
+    "locKeyName": "skill.binding_silk.name",
+    "locKeyDesc": "skill.binding_silk.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "cutting_wire"
+    ],
+    "damage": 2,
+    "damageType": "physical",
+    "element": "silk"
+  },
+  {
+    "id": "cutting_wire",
+    "locKeyName": "skill.cutting_wire.name",
+    "locKeyDesc": "skill.cutting_wire.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "spatial_web"
+    ],
+    "damage": 4,
+    "damageType": "physical",
+    "element": "silk"
+  },
+  {
+    "id": "spatial_web",
+    "locKeyName": "skill.spatial_web.name",
+    "locKeyDesc": "skill.spatial_web.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 7,
+    "damageType": "physical",
+    "element": "silk",
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "web_trap",
+    "locKeyName": "skill.web_trap.name",
+    "locKeyDesc": "skill.web_trap.desc",
+    "kind": "active",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "snare_field"
+    ],
+    "damage": 2,
+    "damageType": "physical",
+    "element": "silk"
+  },
+  {
+    "id": "snare_field",
+    "locKeyName": "skill.snare_field.name",
+    "locKeyDesc": "skill.snare_field.desc",
+    "kind": "active",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "spatial_web"
+    ],
+    "damage": 4,
+    "damageType": "physical",
+    "element": "silk"
+  },
+  {
+    "id": "sticky_coat",
+    "locKeyName": "skill.sticky_coat.name",
+    "locKeyDesc": "skill.sticky_coat.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "adhesive_mastery"
+    ],
+    "dodgeBonus": 0.02
+  },
+  {
+    "id": "adhesive_mastery",
+    "locKeyName": "skill.adhesive_mastery.name",
+    "locKeyDesc": "skill.adhesive_mastery.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "appraisal",
+    "locKeyName": "skill.appraisal.name",
+    "locKeyDesc": "skill.appraisal.desc",
+    "kind": "eye",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "insight"
+    ],
+    "eyeModes": [
+      "passive",
+      "active"
+    ],
+    "acquireKey": "skill.appraisal.acq"
+  },
+  {
+    "id": "insight",
+    "locKeyName": "skill.insight.name",
+    "locKeyDesc": "skill.insight.desc",
+    "kind": "eye",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "all_sight"
+    ],
+    "eyeModes": [
+      "passive",
+      "active"
+    ]
+  },
+  {
+    "id": "all_sight",
+    "locKeyName": "skill.all_sight.name",
+    "locKeyDesc": "skill.all_sight.desc",
+    "kind": "eye",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "passive",
+      "active"
+    ]
+  },
+  {
+    "id": "detect",
+    "locKeyName": "skill.detect.name",
+    "locKeyDesc": "skill.detect.desc",
+    "kind": "util",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "foresight"
+    ],
+    "dodgeBonus": 0.02
+  },
+  {
+    "id": "foresight",
+    "locKeyName": "skill.foresight.name",
+    "locKeyDesc": "skill.foresight.desc",
+    "kind": "util",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "precognition"
+    ],
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "precognition",
+    "locKeyName": "skill.precognition.name",
+    "locKeyDesc": "skill.precognition.desc",
+    "kind": "util",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.1
+  },
+  {
+    "id": "quick_thought",
+    "locKeyName": "skill.quick_thought.name",
+    "locKeyDesc": "skill.quick_thought.desc",
+    "kind": "util",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "accelerated_mind"
+    ],
+    "xpMult": 0.05
+  },
+  {
+    "id": "accelerated_mind",
+    "locKeyName": "skill.accelerated_mind.name",
+    "locKeyDesc": "skill.accelerated_mind.desc",
+    "kind": "util",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "parallel_minds"
+    ],
+    "xpMult": 0.1
+  },
+  {
+    "id": "parallel_minds",
+    "locKeyName": "skill.parallel_minds.name",
+    "locKeyDesc": "skill.parallel_minds.desc",
+    "kind": "util",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.2
+  },
+  {
+    "id": "memory_palace",
+    "locKeyName": "skill.memory_palace.name",
+    "locKeyDesc": "skill.memory_palace.desc",
+    "kind": "util",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "eidetic_recall"
+    ],
+    "xpMult": 0.05
+  },
+  {
+    "id": "eidetic_recall",
+    "locKeyName": "skill.eidetic_recall.name",
+    "locKeyDesc": "skill.eidetic_recall.desc",
+    "kind": "util",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.1
+  },
+  {
+    "id": "mana_sense",
+    "locKeyName": "skill.mana_sense.name",
+    "locKeyDesc": "skill.mana_sense.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "mana_control"
+    ],
+    "mpRegen": 1
+  },
+  {
+    "id": "mana_control",
+    "locKeyName": "skill.mana_control.name",
+    "locKeyDesc": "skill.mana_control.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "mana_mastery"
+    ],
+    "mpRegen": 2
+  },
+  {
+    "id": "mana_mastery",
+    "locKeyName": "skill.mana_mastery.name",
+    "locKeyDesc": "skill.mana_mastery.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "mpRegen": 4
+  },
+  {
+    "id": "flame_bolt",
+    "locKeyName": "skill.flame_bolt.name",
+    "locKeyDesc": "skill.flame_bolt.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "fire_lance"
+    ],
+    "damage": 5,
+    "damageType": "fire",
+    "element": "fire",
+    "mpCost": 3
+  },
+  {
+    "id": "fire_lance",
+    "locKeyName": "skill.fire_lance.name",
+    "locKeyDesc": "skill.fire_lance.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "fire",
+    "element": "fire",
+    "mpCost": 6
+  },
+  {
+    "id": "frost_shard",
+    "locKeyName": "skill.frost_shard.name",
+    "locKeyDesc": "skill.frost_shard.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "ice_spear"
+    ],
+    "damage": 4,
+    "damageType": "frost",
+    "element": "frost",
+    "mpCost": 3
+  },
+  {
+    "id": "ice_spear",
+    "locKeyName": "skill.ice_spear.name",
+    "locKeyDesc": "skill.ice_spear.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 9,
+    "damageType": "frost",
+    "element": "frost",
+    "mpCost": 6
+  },
+  {
+    "id": "stone_spike",
+    "locKeyName": "skill.stone_spike.name",
+    "locKeyDesc": "skill.stone_spike.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "earth_pillar"
+    ],
+    "damage": 5,
+    "damageType": "physical",
+    "element": "earth",
+    "mpCost": 3
+  },
+  {
+    "id": "earth_pillar",
+    "locKeyName": "skill.earth_pillar.name",
+    "locKeyDesc": "skill.earth_pillar.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "physical",
+    "element": "earth",
+    "mpCost": 6
+  },
+  {
+    "id": "gale_cut",
+    "locKeyName": "skill.gale_cut.name",
+    "locKeyDesc": "skill.gale_cut.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "wind_blade"
+    ],
+    "damage": 4,
+    "damageType": "pierce",
+    "element": "wind",
+    "mpCost": 2
+  },
+  {
+    "id": "wind_blade",
+    "locKeyName": "skill.wind_blade.name",
+    "locKeyDesc": "skill.wind_blade.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 8,
+    "damageType": "pierce",
+    "element": "wind",
+    "mpCost": 5
+  },
+  {
+    "id": "spark",
+    "locKeyName": "skill.spark.name",
+    "locKeyDesc": "skill.spark.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "lightning_strike"
+    ],
+    "damage": 6,
+    "damageType": "lightning",
+    "element": "lightning",
+    "mpCost": 4
+  },
+  {
+    "id": "lightning_strike",
+    "locKeyName": "skill.lightning_strike.name",
+    "locKeyDesc": "skill.lightning_strike.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 12,
+    "damageType": "lightning",
+    "element": "lightning",
+    "mpCost": 8
+  },
+  {
+    "id": "void_step",
+    "locKeyName": "skill.void_step.name",
+    "locKeyDesc": "skill.void_step.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "spatial_rift"
+    ],
+    "damage": 5,
+    "damageType": "magic",
+    "element": "void",
+    "mpCost": 4,
+    "dodgeBonus": 0.03
+  },
+  {
+    "id": "spatial_rift",
+    "locKeyName": "skill.spatial_rift.name",
+    "locKeyDesc": "skill.spatial_rift.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 11,
+    "damageType": "magic",
+    "element": "void",
+    "mpCost": 8,
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "piercing_gaze",
+    "locKeyName": "skill.piercing_gaze.name",
+    "locKeyDesc": "skill.piercing_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "heavy_gaze"
+    ],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "damage": 3
+    }
+  },
+  {
+    "id": "heavy_gaze",
+    "locKeyName": "skill.heavy_gaze.name",
+    "locKeyDesc": "skill.heavy_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "damage": 7
+    }
+  },
+  {
+    "id": "numbing_gaze",
+    "locKeyName": "skill.numbing_gaze.name",
+    "locKeyDesc": "skill.numbing_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "paralytic_gaze"
+    ],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.1
+    }
+  },
+  {
+    "id": "paralytic_gaze",
+    "locKeyName": "skill.paralytic_gaze.name",
+    "locKeyDesc": "skill.paralytic_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.22
+    }
+  },
+  {
+    "id": "petrify_gaze",
+    "locKeyName": "skill.petrify_gaze.name",
+    "locKeyDesc": "skill.petrify_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "stone_gaze"
+    ],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.15
+    }
+  },
+  {
+    "id": "stone_gaze",
+    "locKeyName": "skill.stone_gaze.name",
+    "locKeyDesc": "skill.stone_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.3
+    }
+  },
+  {
+    "id": "dread_gaze",
+    "locKeyName": "skill.dread_gaze.name",
+    "locKeyDesc": "skill.dread_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "terror_gaze"
+    ],
+    "eyeModes": [
+      "passive"
+    ],
+    "gaze": {
+      "negateChance": 0.15
+    },
+    "acquireKey": "skill.dread_gaze.acq"
+  },
+  {
+    "id": "terror_gaze",
+    "locKeyName": "skill.terror_gaze.name",
+    "locKeyDesc": "skill.terror_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "passive"
+    ],
+    "gaze": {
+      "negateChance": 0.28
+    }
+  },
+  {
+    "id": "soul_gaze",
+    "locKeyName": "skill.soul_gaze.name",
+    "locKeyDesc": "skill.soul_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "rend_soul_gaze"
+    ],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "damage": 4,
+      "trueDamage": true
+    }
+  },
+  {
+    "id": "rend_soul_gaze",
+    "locKeyName": "skill.rend_soul_gaze.name",
+    "locKeyDesc": "skill.rend_soul_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "damage": 9,
+      "trueDamage": true
+    }
+  },
+  {
+    "id": "charm_gaze",
+    "locKeyName": "skill.charm_gaze.name",
+    "locKeyDesc": "skill.charm_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "domination_gaze"
+    ],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.12
+    }
+  },
+  {
+    "id": "domination_gaze",
+    "locKeyName": "skill.domination_gaze.name",
+    "locKeyDesc": "skill.domination_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "eyeModes": [
+      "active"
+    ],
+    "gaze": {
+      "negateChance": 0.25
+    }
+  },
+  {
+    "id": "hp_regen",
+    "locKeyName": "skill.hp_regen.name",
+    "locKeyDesc": "skill.hp_regen.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "auto_heal"
+    ],
+    "hpRegen": 1,
+    "acquireKey": "skill.hp_regen.acq"
+  },
+  {
+    "id": "auto_heal",
+    "locKeyName": "skill.auto_heal.name",
+    "locKeyDesc": "skill.auto_heal.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "regeneration"
+    ],
+    "hpRegen": 3
+  },
+  {
+    "id": "regeneration",
+    "locKeyName": "skill.regeneration.name",
+    "locKeyDesc": "skill.regeneration.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "undying_vitality"
+    ],
+    "hpRegen": 6
+  },
+  {
+    "id": "undying_vitality",
+    "locKeyName": "skill.undying_vitality.name",
+    "locKeyDesc": "skill.undying_vitality.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 10,
+    "regenMult": 0.5
+  },
+  {
+    "id": "mp_regen",
+    "locKeyName": "skill.mp_regen.name",
+    "locKeyDesc": "skill.mp_regen.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "mana_flow"
+    ],
+    "mpRegen": 1
+  },
+  {
+    "id": "mana_flow",
+    "locKeyName": "skill.mana_flow.name",
+    "locKeyDesc": "skill.mana_flow.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "endless_mana"
+    ],
+    "mpRegen": 3
+  },
+  {
+    "id": "endless_mana",
+    "locKeyName": "skill.endless_mana.name",
+    "locKeyDesc": "skill.endless_mana.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "mpRegen": 6
+  },
+  {
+    "id": "endurance",
+    "locKeyName": "skill.endurance.name",
+    "locKeyDesc": "skill.endurance.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "toughness"
+    ],
+    "spRegen": 1
+  },
+  {
+    "id": "toughness",
+    "locKeyName": "skill.toughness.name",
+    "locKeyDesc": "skill.toughness.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "undying_will"
+    ],
+    "spRegen": 2
+  },
+  {
+    "id": "undying_will",
+    "locKeyName": "skill.undying_will.name",
+    "locKeyDesc": "skill.undying_will.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "spRegen": 3,
+    "surviveChance": 0.1
+  },
+  {
+    "id": "overdraw",
+    "locKeyName": "skill.overdraw.name",
+    "locKeyDesc": "skill.overdraw.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "blood_engine"
+    ],
+    "overdrawFrac": 0.1
+  },
+  {
+    "id": "blood_engine",
+    "locKeyName": "skill.blood_engine.name",
+    "locKeyDesc": "skill.blood_engine.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "overdrawFrac": 0.2
+  },
+  {
+    "id": "carapace",
+    "locKeyName": "skill.carapace.name",
+    "locKeyDesc": "skill.carapace.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "hardened_shell"
+    ],
+    "armor": 1
+  },
+  {
+    "id": "hardened_shell",
+    "locKeyName": "skill.hardened_shell.name",
+    "locKeyDesc": "skill.hardened_shell.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "adamant_plating"
+    ],
+    "armor": 3
+  },
+  {
+    "id": "adamant_plating",
+    "locKeyName": "skill.adamant_plating.name",
+    "locKeyDesc": "skill.adamant_plating.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 6
+  },
+  {
+    "id": "stealth",
+    "locKeyName": "skill.stealth.name",
+    "locKeyDesc": "skill.stealth.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "silent_step"
+    ],
+    "dodgeBonus": 0.03
+  },
+  {
+    "id": "silent_step",
+    "locKeyName": "skill.silent_step.name",
+    "locKeyDesc": "skill.silent_step.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "phantom_presence"
+    ],
+    "dodgeBonus": 0.06
+  },
+  {
+    "id": "phantom_presence",
+    "locKeyName": "skill.phantom_presence.name",
+    "locKeyDesc": "skill.phantom_presence.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.12
+  },
+  {
+    "id": "climb",
+    "locKeyName": "skill.climb.name",
+    "locKeyDesc": "skill.climb.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "wall_master"
+    ],
+    "lootMult": 0.05
+  },
+  {
+    "id": "wall_master",
+    "locKeyName": "skill.wall_master.name",
+    "locKeyDesc": "skill.wall_master.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.1
+  },
+  {
+    "id": "forage",
+    "locKeyName": "skill.forage.name",
+    "locKeyDesc": "skill.forage.desc",
+    "kind": "util",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "scavenger"
+    ],
+    "lootMult": 0.05
+  },
+  {
+    "id": "scavenger",
+    "locKeyName": "skill.scavenger.name",
+    "locKeyDesc": "skill.scavenger.desc",
+    "kind": "util",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.12
+  },
+  {
+    "id": "keen_nose",
+    "locKeyName": "skill.keen_nose.name",
+    "locKeyDesc": "skill.keen_nose.desc",
+    "kind": "util",
+    "stats": [
+      "WIS",
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "treasure_sense"
+    ],
+    "lootMult": 0.05
+  },
+  {
+    "id": "treasure_sense",
+    "locKeyName": "skill.treasure_sense.name",
+    "locKeyDesc": "skill.treasure_sense.desc",
+    "kind": "util",
+    "stats": [
+      "WIS",
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.12
+  },
+  {
+    "id": "lucky_find",
+    "locKeyName": "skill.lucky_find.name",
+    "locKeyDesc": "skill.lucky_find.desc",
+    "kind": "util",
+    "stats": [
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "fortunes_favor"
+    ],
+    "lootMult": 0.06
+  },
+  {
+    "id": "fortunes_favor",
+    "locKeyName": "skill.fortunes_favor.name",
+    "locKeyDesc": "skill.fortunes_favor.desc",
+    "kind": "util",
+    "stats": [
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.15
+  },
+  {
+    "id": "chitin_hide",
+    "locKeyName": "skill.chitin_hide.name",
+    "locKeyDesc": "skill.chitin_hide.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 1
+  },
+  {
+    "id": "many_legged_gait",
+    "locKeyName": "skill.many_legged_gait.name",
+    "locKeyDesc": "skill.many_legged_gait.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.03
+  },
+  {
+    "id": "cold_blood",
+    "locKeyName": "skill.cold_blood.name",
+    "locKeyDesc": "skill.cold_blood.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hungerMult": 0.7
+  },
+  {
+    "id": "night_born",
+    "locKeyName": "skill.night_born.name",
+    "locKeyDesc": "skill.night_born.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.05
+  },
+  {
+    "id": "apex_predator",
+    "locKeyName": "skill.apex_predator.name",
+    "locKeyDesc": "skill.apex_predator.desc",
+    "kind": "passive",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "gaze": {
+      "negateChance": 0.08
+    },
+    "dmgMult": 0.1
+  },
+  {
+    "id": "carapace_lord",
+    "locKeyName": "skill.carapace_lord.name",
+    "locKeyDesc": "skill.carapace_lord.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 4
+  },
+  {
+    "id": "phase_body",
+    "locKeyName": "skill.phase_body.name",
+    "locKeyDesc": "skill.phase_body.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.1
+  },
+  {
+    "id": "regenerative_core",
+    "locKeyName": "skill.regenerative_core.name",
+    "locKeyDesc": "skill.regenerative_core.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 2,
+    "regenMult": 0.4
+  },
+  {
+    "id": "sovereign_form",
+    "locKeyName": "skill.sovereign_form.name",
+    "locKeyDesc": "skill.sovereign_form.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.25,
+    "lootMult": 0.2
+  },
+  {
+    "id": "undying_husk",
+    "locKeyName": "skill.undying_husk.name",
+    "locKeyDesc": "skill.undying_husk.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "surviveChance": 0.2,
+    "acquireKey": "skill.undying_husk.acq"
+  },
+  {
+    "id": "stillness",
+    "locKeyName": "skill.stillness.name",
+    "locKeyDesc": "skill.stillness.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "inner_silence"
+    ],
+    "hidden": true,
+    "regenMult": 0.3,
+    "acquireKey": "skill.stillness.acq"
+  },
+  {
+    "id": "inner_silence",
+    "locKeyName": "skill.inner_silence.name",
+    "locKeyDesc": "skill.inner_silence.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hidden": true,
+    "regenMult": 0.5,
+    "armor": 2
+  },
+  {
+    "id": "forbidden_knowledge",
+    "locKeyName": "skill.forbidden_knowledge.name",
+    "locKeyDesc": "skill.forbidden_knowledge.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hidden": true,
+    "dmgMult": 0.15,
+    "xpMult": 0.1,
+    "acquireKey": "skill.forbidden_knowledge.acq"
+  },
+  {
+    "id": "larder",
+    "locKeyName": "skill.larder.name",
+    "locKeyDesc": "skill.larder.desc",
+    "kind": "util",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "acquireKey": "skill.larder.acq"
+  },
+  {
+    "id": "predator_instinct",
+    "locKeyName": "skill.predator_instinct.name",
+    "locKeyDesc": "skill.predator_instinct.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.15,
+    "part": "body"
+  },
+  {
+    "id": "undead_vigor",
+    "locKeyName": "skill.undead_vigor.name",
+    "locKeyDesc": "skill.undead_vigor.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "regenerative_core"
+    ],
+    "hpRegen": 2,
+    "spRegen": 1
+  },
+  {
+    "id": "draconic_blood",
+    "locKeyName": "skill.draconic_blood.name",
+    "locKeyDesc": "skill.draconic_blood.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.25
+  },
+  {
+    "id": "stone_nature",
+    "locKeyName": "skill.stone_nature.name",
+    "locKeyDesc": "skill.stone_nature.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hungerMult": 0.35
+  },
+  {
+    "id": "sword_slash",
+    "locKeyName": "skill.sword_slash.name",
+    "locKeyDesc": "skill.sword_slash.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "blade_dance"
+    ],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "blade_dance",
+    "locKeyName": "skill.blade_dance.name",
+    "locKeyDesc": "skill.blade_dance.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "righteous_strike"
+    ],
+    "damage": 6,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "righteous_strike",
+    "locKeyName": "skill.righteous_strike.name",
+    "locKeyDesc": "skill.righteous_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "shield_guard",
+    "locKeyName": "skill.shield_guard.name",
+    "locKeyDesc": "skill.shield_guard.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "shield_wall"
+    ],
+    "armor": 1
+  },
+  {
+    "id": "shield_wall",
+    "locKeyName": "skill.shield_wall.name",
+    "locKeyDesc": "skill.shield_wall.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "bastion"
+    ],
+    "armor": 3
+  },
+  {
+    "id": "bastion",
+    "locKeyName": "skill.bastion.name",
+    "locKeyDesc": "skill.bastion.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 6
+  },
+  {
+    "id": "holy_strike",
+    "locKeyName": "skill.holy_strike.name",
+    "locKeyDesc": "skill.holy_strike.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "divine_smite"
+    ],
+    "damage": 5,
+    "damageType": "magic",
+    "element": "magic",
+    "mpCost": 3
+  },
+  {
+    "id": "divine_smite",
+    "locKeyName": "skill.divine_smite.name",
+    "locKeyDesc": "skill.divine_smite.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "magic",
+    "element": "magic",
+    "mpCost": 6
+  },
+  {
+    "id": "divine_recovery",
+    "locKeyName": "skill.divine_recovery.name",
+    "locKeyDesc": "skill.divine_recovery.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 2,
+    "regenMult": 0.4
+  },
+  {
+    "id": "weapon_mastery",
+    "locKeyName": "skill.weapon_mastery.name",
+    "locKeyDesc": "skill.weapon_mastery.desc",
+    "kind": "passive",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "blade_mastery"
+    ],
+    "dmgMult": 0.05
+  },
+  {
+    "id": "blade_mastery",
+    "locKeyName": "skill.blade_mastery.name",
+    "locKeyDesc": "skill.blade_mastery.desc",
+    "kind": "passive",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.12
+  },
+  {
+    "id": "parry",
+    "locKeyName": "skill.parry.name",
+    "locKeyDesc": "skill.parry.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "battle_cry",
+    "locKeyName": "skill.battle_cry.name",
+    "locKeyDesc": "skill.battle_cry.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 2,
+    "damageType": "fear",
+    "element": "physical",
+    "cooldown": 4
+  },
+  {
+    "id": "iron_will",
+    "locKeyName": "skill.iron_will.name",
+    "locKeyDesc": "skill.iron_will.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "spRegen": 1,
+    "surviveChance": 0.05
+  },
+  {
+    "id": "mana_shield",
+    "locKeyName": "skill.mana_shield.name",
+    "locKeyDesc": "skill.mana_shield.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "overdrawFrac": 0.15
+  },
+  {
+    "id": "gelatinous_body",
+    "locKeyName": "skill.gelatinous_body.name",
+    "locKeyDesc": "skill.gelatinous_body.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "elastic_shield"
+    ],
+    "armor": 1
+  },
+  {
+    "id": "elastic_shield",
+    "locKeyName": "skill.elastic_shield.name",
+    "locKeyDesc": "skill.elastic_shield.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "primordial_ooze_shield"
+    ],
+    "armor": 3
+  },
+  {
+    "id": "primordial_ooze_shield",
+    "locKeyName": "skill.primordial_ooze_shield.name",
+    "locKeyDesc": "skill.primordial_ooze_shield.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 6
+  },
+  {
+    "id": "acid_deluge",
+    "locKeyName": "skill.acid_deluge.name",
+    "locKeyDesc": "skill.acid_deluge.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "acid",
+    "element": "acid",
+    "mpCost": 6
+  },
+  {
+    "id": "dissolving_touch",
+    "locKeyName": "skill.dissolving_touch.name",
+    "locKeyDesc": "skill.dissolving_touch.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.1
+  },
+  {
+    "id": "bone_armor",
+    "locKeyName": "skill.bone_armor.name",
+    "locKeyDesc": "skill.bone_armor.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "hardened_ribs"
+    ],
+    "armor": 1
+  },
+  {
+    "id": "hardened_ribs",
+    "locKeyName": "skill.hardened_ribs.name",
+    "locKeyDesc": "skill.hardened_ribs.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "bone_fortress"
+    ],
+    "armor": 3
+  },
+  {
+    "id": "bone_fortress",
+    "locKeyName": "skill.bone_fortress.name",
+    "locKeyDesc": "skill.bone_fortress.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 6
+  },
+  {
+    "id": "shadow_bolt",
+    "locKeyName": "skill.shadow_bolt.name",
+    "locKeyDesc": "skill.shadow_bolt.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "decay_curse"
+    ],
+    "damage": 5,
+    "damageType": "magic",
+    "element": "magic",
+    "mpCost": 3
+  },
+  {
+    "id": "decay_curse",
+    "locKeyName": "skill.decay_curse.name",
+    "locKeyDesc": "skill.decay_curse.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "magic",
+    "element": "magic",
+    "mpCost": 6
+  },
+  {
+    "id": "bone_arrow",
+    "locKeyName": "skill.bone_arrow.name",
+    "locKeyDesc": "skill.bone_arrow.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "arrow_barrage"
+    ],
+    "damage": 4,
+    "damageType": "pierce",
+    "element": "physical"
+  },
+  {
+    "id": "arrow_barrage",
+    "locKeyName": "skill.arrow_barrage.name",
+    "locKeyDesc": "skill.arrow_barrage.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 8,
+    "damageType": "pierce",
+    "element": "physical"
+  },
+  {
+    "id": "unholy_heart",
+    "locKeyName": "skill.unholy_heart.name",
+    "locKeyDesc": "skill.unholy_heart.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 2,
+    "regenMult": 0.4
+  },
+  {
+    "id": "dragon_claw",
+    "locKeyName": "skill.dragon_claw.name",
+    "locKeyDesc": "skill.dragon_claw.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "dragon_slash"
+    ],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "dragon_slash",
+    "locKeyName": "skill.dragon_slash.name",
+    "locKeyDesc": "skill.dragon_slash.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 6,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "fire_breath",
+    "locKeyName": "skill.fire_breath.name",
+    "locKeyDesc": "skill.fire_breath.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "scorching_breath"
+    ],
+    "damage": 5,
+    "damageType": "fire",
+    "element": "fire",
+    "mpCost": 3
+  },
+  {
+    "id": "scorching_breath",
+    "locKeyName": "skill.scorching_breath.name",
+    "locKeyDesc": "skill.scorching_breath.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "fire",
+    "element": "fire",
+    "mpCost": 6
+  },
+  {
+    "id": "dragon_scale",
+    "locKeyName": "skill.dragon_scale.name",
+    "locKeyDesc": "skill.dragon_scale.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "hardened_scales"
+    ],
+    "armor": 2
+  },
+  {
+    "id": "hardened_scales",
+    "locKeyName": "skill.hardened_scales.name",
+    "locKeyDesc": "skill.hardened_scales.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 5
+  },
+  {
+    "id": "dragon_heart",
+    "locKeyName": "skill.dragon_heart.name",
+    "locKeyDesc": "skill.dragon_heart.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 2,
+    "regenMult": 0.4
+  },
+  {
+    "id": "void_barrier",
+    "locKeyName": "skill.void_barrier.name",
+    "locKeyDesc": "skill.void_barrier.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.06
+  },
+  {
+    "id": "stone_skin",
+    "locKeyName": "skill.stone_skin.name",
+    "locKeyDesc": "skill.stone_skin.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "iron_plating"
+    ],
+    "armor": 2
+  },
+  {
+    "id": "iron_plating",
+    "locKeyName": "skill.iron_plating.name",
+    "locKeyDesc": "skill.iron_plating.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "obsidian_carapace"
+    ],
+    "armor": 4
+  },
+  {
+    "id": "obsidian_carapace",
+    "locKeyName": "skill.obsidian_carapace.name",
+    "locKeyDesc": "skill.obsidian_carapace.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 7
+  },
+  {
+    "id": "steam_engine",
+    "locKeyName": "skill.steam_engine.name",
+    "locKeyDesc": "skill.steam_engine.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "overdrawFrac": 0.2
+  },
+  {
+    "id": "heavy_slam",
+    "locKeyName": "skill.heavy_slam.name",
+    "locKeyDesc": "skill.heavy_slam.desc",
+    "kind": "active",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "magma_fist"
+    ],
+    "damage": 6,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "magma_fist",
+    "locKeyName": "skill.magma_fist.name",
+    "locKeyDesc": "skill.magma_fist.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 10,
+    "damageType": "fire",
+    "element": "fire"
+  },
+  {
+    "id": "unyielding_core",
+    "locKeyName": "skill.unyielding_core.name",
+    "locKeyDesc": "skill.unyielding_core.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "surviveChance": 0.2
+  },
+  {
+    "id": "crystal_heart",
+    "locKeyName": "skill.crystal_heart.name",
+    "locKeyDesc": "skill.crystal_heart.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 2,
+    "regenMult": 0.4
+  },
+  {
+    "id": "predator",
+    "locKeyName": "skill.predator.name",
+    "locKeyDesc": "skill.predator.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "gluttony"
+    ],
+    "lootMult": 0.1,
+    "xpMult": 0.05
+  },
+  {
+    "id": "gluttony",
+    "locKeyName": "skill.gluttony.name",
+    "locKeyDesc": "skill.gluttony.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "beelzebuth"
+    ],
+    "lootMult": 0.2,
+    "xpMult": 0.1,
+    "regenMult": 0.15
+  },
+  {
+    "id": "beelzebuth",
+    "locKeyName": "skill.beelzebuth.name",
+    "locKeyDesc": "skill.beelzebuth.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.35,
+    "xpMult": 0.15,
+    "surviveChance": 0.1
+  },
+  {
+    "id": "great_sage",
+    "locKeyName": "skill.great_sage.name",
+    "locKeyDesc": "skill.great_sage.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "raphael"
+    ],
+    "xpMult": 0.15,
+    "dmgMult": 0.05
+  },
+  {
+    "id": "raphael",
+    "locKeyName": "skill.raphael.name",
+    "locKeyDesc": "skill.raphael.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.3,
+    "dmgMult": 0.15,
+    "surviveChance": 0.15
+  }
 ]

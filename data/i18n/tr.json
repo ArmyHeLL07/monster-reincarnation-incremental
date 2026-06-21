@@ -1244,5 +1244,18 @@
   "enemy.earth_dragon_kaguna.name": "Toprak Ejderhası Kaguna",
   "enemy.earth_dragon_rendill.name": "Ateş Ejderhası Rendill",
   "enemy.queen_taratect.name": "Kraliçe Taratect",
-  "enemy.system_guardian.name": "Sistem Bekçisi"
+  "enemy.system_guardian.name": "Sistem Bekçisi",
+  "skill.predator.name": "Yutucu",
+  "skill.predator.desc": "Avladığını sömürür — ganimet ve tecrübe kazancı artar.",
+  "skill.gluttony.name": "Oburluk",
+  "skill.gluttony.desc": "Predator’ın evrimi: yuttukça güçlenir, yenilenir.",
+  "skill.beelzebuth.name": "Beelzebuth",
+  "skill.beelzebuth.desc": "Oburluk Lordu — sınırsız mide, ölümcül darbeyi atlatma şansı.",
+  "skill.great_sage.name": "Büyük Bilge",
+  "skill.great_sage.desc": "Düşünce hızlandırma ve analiz — tecrübe ve hasar artar.",
+  "skill.raphael.name": "Raphael",
+  "skill.raphael.desc": "Bilgelik Lordu — tanrısal hesap gücü: büyük XP/hasar bonusu ve hayatta kalma.",
+  "form.demon_slime.name": "İblis Slime",
+  "form.rimuru_tempest.name": "Rimuru Tempest",
+  "form.demon_lord_rimuru.name": "Demon Lord Rimuru"
 }

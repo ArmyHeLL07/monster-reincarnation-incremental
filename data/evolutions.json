@@ -613,7 +613,8 @@
     "locKey": "form.ooze_spawn.name",
     "evolvesTo": [
       "acid_ooze",
-      "crystalline_ooze"
+      "crystalline_ooze",
+      "demon_slime"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -798,7 +799,8 @@
     "locKey": "form.devourer_slime.name",
     "evolvesTo": [
       "void_devourer",
-      "primordial_ooze"
+      "primordial_ooze",
+      "demon_slime"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -3473,5 +3475,74 @@
       "rend",
       "maul"
     ]
+  },
+  {
+    "id": "demon_slime",
+    "raceId": "slime",
+    "locKey": "form.demon_slime.name",
+    "evolvesTo": [
+      "rimuru_tempest"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "VIT": 5,
+      "WIS": 4,
+      "AGI": 3,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "predator",
+      "great_sage",
+      "gelatinous_body"
+    ],
+    "secret": {
+      "kills": 666
+    },
+    "humanoid": true
+  },
+  {
+    "id": "rimuru_tempest",
+    "raceId": "slime",
+    "locKey": "form.rimuru_tempest.name",
+    "evolvesTo": [
+      "demon_lord_rimuru"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "VIT": 6,
+      "WIS": 6,
+      "AGI": 4,
+      "LUCK": 4,
+      "STR": 3
+    },
+    "grantSkills": [
+      "great_sage",
+      "raphael",
+      "mana_shield"
+    ],
+    "humanoid": true
+  },
+  {
+    "id": "demon_lord_rimuru",
+    "raceId": "slime",
+    "locKey": "form.demon_lord_rimuru.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 10,
+      "WIS": 8,
+      "VIT": 7,
+      "AGI": 5,
+      "LUCK": 5,
+      "STR": 4
+    },
+    "grantSkills": [
+      "raphael",
+      "beelzebuth",
+      "sovereign_form"
+    ],
+    "humanoid": true
   }
 ]

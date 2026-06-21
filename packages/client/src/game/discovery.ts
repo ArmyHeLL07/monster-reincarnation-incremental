@@ -4,6 +4,7 @@ import { LEVEL_CAP, MAX_INVENTORY } from './state';
 import { appraisalTier } from './eyes';
 import { aggregateBonuses } from './effects';
 import { generateLoot, lootDisplayName } from './loot';
+import { isHumanoidForm } from './evolution';
 import { normalizeAnswer, isRiddleLocked, recordRiddleWrong, applyRiddleReward } from './riddles';
 
 type Log = (e: LogEvent) => void;
@@ -55,9 +56,8 @@ export function search(state: GameState, content: Content, log: Log): void {
     return;
   }
 
-  // 2.5) Treasure chest — gear, but only for humanoid races (a non-combat loot source).
-  const race = content.races.get(state.raceId);
-  if (race?.humanoid && Math.random() < 0.1 + luck * 0.004) {
+  // 2.5) Treasure chest — gear, but only for humanoid races/forms (a non-combat loot source).
+  if (isHumanoidForm(state, content) && Math.random() < 0.1 + luck * 0.004) {
     const ilvl = state.tier * LEVEL_CAP + state.level + state.pos.layer * 2;
     const item = generateLoot(ilvl, luck + tier * 2); // a careful search finds rarer gear
     if (state.inventoryItems.length >= MAX_INVENTORY) {

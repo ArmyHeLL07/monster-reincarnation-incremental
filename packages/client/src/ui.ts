@@ -5,7 +5,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus } 
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
 import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -120,6 +120,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
+  'log.harvest_festival',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -441,7 +442,7 @@ function hungerStage(h: number): number {
 // ---- tab routing -----------------------------------------------------------
 
 function isHumanoid(state: GameState): boolean {
-  return CONTENT.races.get(state.raceId)?.humanoid === true;
+  return isHumanoidForm(state, CONTENT); // humanoid race OR a humanoid form (slime's Rimuru path)
 }
 
 function renderTab(): void {

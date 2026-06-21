@@ -3,6 +3,7 @@ import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
 import { generateLoot, lootDisplayName } from './loot';
+import { isHumanoidForm } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
@@ -31,6 +32,8 @@ const HUNGER_RISE_COMBAT = 0.7;
 const DEEP_READ_XP = 5;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
+/** Souls (kills) a slime must reap in one life to awaken the hidden Demon Slime / Rimuru path. */
+const SECRET_HARVEST_SOULS = 666;
 const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
 const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player
@@ -945,8 +948,7 @@ function maybeDropLoot(
   b: Bonuses,
   log: Log,
 ): void {
-  const race = content.races.get(state.raceId);
-  if (!race?.humanoid) return; // monsters can't wear/wield gear
+  if (!isHumanoidForm(state, content)) return; // monsters can't wear gear (unless a humanoid form, e.g. Rimuru)
   const chance = 0.08 * b.lootMult;
   if (!enemy.isBoss && Math.random() > chance) return;
   const ilvl = state.tier * LEVEL_CAP + state.level + state.pos.layer * 2;
@@ -973,6 +975,8 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward));
   state.ep += ep;
   state.kills += 1;
+  // Harvest Festival (easter egg): a slime that has reaped enough souls awakens a hidden path.
+  if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });
   gainXp(state, ep * XP_PER_EP, log);
   // Passive, util, and eye skills gain XP upon defeating enemies (since they cannot be actively cast).
   for (const slot of state.skills) {

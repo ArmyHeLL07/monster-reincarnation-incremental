@@ -1244,5 +1244,18 @@
   "enemy.earth_dragon_kaguna.name": "Earth Dragon Kaguna",
   "enemy.earth_dragon_rendill.name": "Fire Dragon Rendill",
   "enemy.queen_taratect.name": "Queen Taratect",
-  "enemy.system_guardian.name": "System Guardian"
+  "enemy.system_guardian.name": "System Guardian",
+  "skill.predator.name": "Predator",
+  "skill.predator.desc": "Devours the hunted — boosts loot and experience gain.",
+  "skill.gluttony.name": "Gluttony",
+  "skill.gluttony.desc": "Evolved Predator: grows stronger and regenerates as it feeds.",
+  "skill.beelzebuth.name": "Beelzebuth",
+  "skill.beelzebuth.desc": "Lord of Gluttony — bottomless stomach, a chance to survive a lethal blow.",
+  "skill.great_sage.name": "Great Sage",
+  "skill.great_sage.desc": "Thought acceleration and analysis — raises experience and damage.",
+  "skill.raphael.name": "Raphael",
+  "skill.raphael.desc": "Lord of Wisdom — god-tier computation: huge XP/damage bonus and survival.",
+  "form.demon_slime.name": "Demon Slime",
+  "form.rimuru_tempest.name": "Rimuru Tempest",
+  "form.demon_lord_rimuru.name": "Demon Lord Rimuru"
 }

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '0.8.1';
+export const VERSION = '0.9.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '0.9.0',
+    date: '2026-06-22',
+    tr: [
+      'Gizli Tensura easter egg: Slime ırkı 666 öldürme sonrası insansı yol açılıyor',
+      'Demon Slime → Rimuru Fırtına → İblis Lordu Rimuru formu (envanter + kuşanma)',
+      'Predatör / Oburluk / Beelzebuth ve Büyük Bilge / Raphael skill zincirleri',
+      'Harvest Festival bildirim tostu (666. öldürmede)',
+    ],
+    en: [
+      'Secret Tensura easter egg: Slime race unlocks humanoid path at 666 kills',
+      'Demon Slime → Rimuru Tempest → Demon Lord Rimuru forms (with inventory + gear)',
+      'Predator / Gluttony / Beelzebuth and Great Sage / Raphael skill chains',
+      'Harvest Festival toast notification on the 666th kill',
+    ],
+  },
   {
     v: '0.8.1',
     date: '2026-06-21',

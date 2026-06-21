@@ -18,8 +18,20 @@ export function availableEvolutions(state: GameState, content: Content): Evoluti
     .filter((f): f is EvolutionForm => f !== undefined);
 }
 
+/** A secret (easter-egg) form is only reachable once its hidden condition is met. */
+export function secretMet(state: GameState, form: EvolutionForm): boolean {
+  if (!form.secret) return true;
+  if (form.secret.kills && state.kills < form.secret.kills) return false;
+  return true;
+}
+
 export function canEvolve(state: GameState, form: EvolutionForm): boolean {
-  return state.level >= form.levelReq;
+  return secretMet(state, form) && state.level >= form.levelReq;
+}
+
+/** True when the player can carry/equip gear — humanoid race OR a humanoid form (e.g. a slime's Rimuru). */
+export function isHumanoidForm(state: GameState, content: Content): boolean {
+  return content.races.get(state.raceId)?.humanoid === true || content.forms.get(state.formId)?.humanoid === true;
 }
 
 /** True when the player is at/over the level for any next form (show the "evolve?" prompt). */
@@ -45,7 +57,7 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   const cur = content.forms.get(state.formId);
   if (!cur || !cur.evolvesTo.includes(formId)) return false;
   const form = content.forms.get(formId);
-  if (!form || state.level < form.levelReq) return false;
+  if (!form || state.level < form.levelReq || !secretMet(state, form)) return false;
 
   if (form.statBonus) {
     for (const [k, v] of Object.entries(form.statBonus)) {
@@ -150,11 +162,15 @@ export interface EvoNode {
   children: string[];
 }
 
-/** Bu ırkın formları (mevcut formun raceId'sine göre). */
+/** Bu ırkın formları (mevcut formun raceId'sine göre). Gizli (secret) formlar koşul sağlanana
+ *  kadar AĞAÇTAN TAMAMEN GİZLİDİR — easter egg ancak ruh hasadı tamamlanınca beliriverir.
+ *  (İstisna: o forma zaten evrimleştiysen kendi formun her zaman görünür.) */
 function raceForms(state: GameState, content: Content): EvolutionForm[] {
   const cur = content.forms.get(state.formId);
   const raceId = cur?.raceId;
-  return [...content.forms.values()].filter((f) => f.raceId === raceId);
+  return [...content.forms.values()].filter(
+    (f) => f.raceId === raceId && (!f.secret || secretMet(state, f) || f.id === state.formId),
+  );
 }
 
 /** evolvesTo grafiğinde her forma giden ebeveynler. */
