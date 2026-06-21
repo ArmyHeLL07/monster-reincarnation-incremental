@@ -3,7 +3,7 @@ import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, type EvoNode } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';

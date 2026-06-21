@@ -64,6 +64,61 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   return true;
 }
 
+// ---- save migration: forms removed in the binary-tree rework ---------------
+// The old linear human chain (29 forms) was replaced by a binary branching tree. Saves that
+// stopped on a removed form (e.g. `warlord`) would point formId at a non-existent form → the
+// evolution tree can't resolve raceId and the player can't evolve. Map each removed id onto the
+// nearest surviving form (by theme/tier), then rebuild the lineage so the tree renders cleanly.
+const REMOVED_HUMAN_FORM_MAP: Record<string, string> = {
+  swordmaster: 'champion_human', battle_mage: 'elemental_mage', guardian: 'paladin',
+  arcane_knight: 'paladin', stalwart: 'paladin', warlord: 'blood_warlord',
+  conqueror: 'war_deity', war_incarnate: 'war_deity', divine_warrior: 'divine_champion',
+  sovereign_knight: 'blade_sovereign', human_sovereign: 'grand_champion', arcane_lord: 'chaos_archmage',
+  spell_binder: 'void_seeker', arcane_warlord: 'flame_sovereign', war_mage: 'volcano_lord',
+  divine_mage: 'death_ascendant', arcane_sage: 'frost_archmage', arcane_sovereign: 'chaos_archmage',
+  iron_guardian: 'paladin', fortress_knight: 'paladin', bulwark: 'divine_champion',
+  eternal_guardian: 'holy_crusader', divine_shield: 'holy_crusader', guardian_sovereign: 'divine_champion',
+  iron_sovereign: 'grand_champion',
+};
+
+/** Root→…→formId lineage (the actual ancestry path in the current form graph). */
+function ancestryOf(content: Content, formId: string): string[] {
+  const parentOf = (id: string): string | undefined => {
+    for (const f of content.forms.values()) if (f.evolvesTo.includes(id)) return f.id;
+    return undefined;
+  };
+  const chain: string[] = [];
+  let cur: string | undefined = formId;
+  const guard = new Set<string>();
+  while (cur && !guard.has(cur)) { guard.add(cur); chain.push(cur); cur = parentOf(cur); }
+  return chain.reverse();
+}
+
+/** One-time repair: remap a removed formId/history onto the surviving tree. Returns true if changed. */
+export function remapRemovedForms(state: GameState, content: Content): boolean {
+  const fix = (id: string): string | undefined => {
+    if (content.forms.get(id)) return id; // still a valid form
+    const mapped = REMOVED_HUMAN_FORM_MAP[id];
+    return mapped && content.forms.get(mapped) ? mapped : undefined;
+  };
+  const before = state.formId;
+  let next = fix(state.formId);
+  if (!next) {
+    // Unmappable: fall back to the deepest still-valid form in history, else this race's root.
+    const validHist = state.formHistory.map(fix).filter((x): x is string => !!x);
+    const raceRoot = [...content.forms.values()].find(
+      (f) => f.raceId === state.raceId && ![...content.forms.values()].some((p) => p.evolvesTo.includes(f.id)),
+    );
+    next = validHist[validHist.length - 1] ?? raceRoot?.id ?? state.formId;
+  }
+  const historyDirty = state.formHistory.some((id) => !content.forms.get(id));
+  if (next === before && !historyDirty) return false;
+  state.formId = next;
+  state.formHistory = ancestryOf(content, next); // clean lineage for the tree
+  state.seenForms = [...new Set(state.seenForms.map(fix).filter((x): x is string => !!x))];
+  return true;
+}
+
 // ---- Evolution tree view (Statlar sekmesi görseli) -------------------------
 
 export type EvoNodeStatus = 'past' | 'current' | 'available' | 'locked' | 'missed' | 'hidden';

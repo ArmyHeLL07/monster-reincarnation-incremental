@@ -365,7 +365,7 @@ function restRound(state: GameState, content: Content): void {
  *   w/ lore  → normal 10%, near-death 30%
  */
 function tryLearnRegen(state: GameState, content: Content, log: Log, forced: boolean): void {
-  if (state.skills.some((s) => s.id === 'hp_regen' || s.id === 'auto_heal' || s.id === 'regeneration')) return;
+  if (hasSkillLine(state, content, 'hp_regen')) return; // whole regen lineage, not just the base id
   const missing = 1 - state.hp / Math.max(1, state.maxHp);
   const nearDeath = forced || missing >= 0.6; // otherwise it's "normal" play — still possible, just rarer
   const lore = state.booksFound.some((id) => content.books.get(id)?.hints === 'regen');
@@ -954,12 +954,12 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
     state.mpTransferUnlocked = true;
     log({ key: 'log.discover_mp_transfer' });
   }
-  if (!state.skills.some((s) => s.id === 'larder') && Math.random() < LARDER_DISCOVER_CHANCE) {
+  if (!hasSkillLine(state, content, 'larder') && Math.random() < LARDER_DISCOVER_CHANCE) {
     state.skills.push({ id: 'larder', level: 1, exp: 0 });
     log({ key: 'log.discover_larder' });
   }
   // The basic Appraisal eye is now a discovery (no longer free) — slot it in Body to use it.
-  if (!state.skills.some((s) => s.id === 'appraisal' || s.id === 'insight') && Math.random() < APPRAISAL_DISCOVER_CHANCE) {
+  if (!hasSkillLine(state, content, 'appraisal') && Math.random() < APPRAISAL_DISCOVER_CHANCE) {
     state.skills.push({ id: 'appraisal', level: 1, exp: 0 });
     log({ key: 'log.discover_appraisal' });
   }
@@ -974,7 +974,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
   }
   if (
     state.level >= EYE_DISCOVER_LEVEL &&
-    !state.skills.some((s) => s.id === 'dread_gaze') &&
+    !hasSkillLine(state, content, 'dread_gaze') &&
     Math.random() < EYE_DISCOVER_CHANCE
   ) {
     state.skills.push({ id: 'dread_gaze', level: 1, exp: 0 });
@@ -1089,6 +1089,79 @@ function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log
       slot.exp = 0;
     }
   }
+}
+
+// ---- skill lineage (evolution-chain aware ownership) -----------------------
+// A skill levels up in-place: at max level its slot.id becomes its evolvesTo[0] (a new id).
+// So a discovery guard that checks only the BASE id (e.g. 'dread_gaze') stops matching once
+// the skill has evolved away ('terror_gaze'), and re-grants the base every tick → duplicate
+// slots pile up (badly during offline catch-up). These helpers check the WHOLE lineage instead.
+
+/** All ids reachable forward from a base id via evolvesTo (inclusive). */
+function skillForwardLine(content: Content, baseId: string): Set<string> {
+  const out = new Set<string>();
+  const stack = [baseId];
+  while (stack.length) {
+    const id = stack.pop()!;
+    if (out.has(id)) continue;
+    out.add(id);
+    for (const n of content.skills.get(id)?.evolvesTo ?? []) stack.push(n);
+  }
+  return out;
+}
+
+/** True if the player owns the base skill OR any of its evolved forms (its whole mastery line). */
+export function hasSkillLine(state: GameState, content: Content, baseId: string): boolean {
+  const line = skillForwardLine(content, baseId);
+  return state.skills.some((s) => line.has(s.id));
+}
+
+/** Walk back to the root of a skill's evolution lineage (the id no other skill evolves into). */
+function skillRootId(content: Content, id: string): string {
+  let cur = id;
+  const guard = new Set<string>();
+  for (;;) {
+    if (guard.has(cur)) return cur; // cycle safety
+    guard.add(cur);
+    let parent: string | undefined;
+    for (const def of content.skills.values()) {
+      if (def.evolvesTo.includes(cur)) { parent = def.id; break; }
+    }
+    if (!parent) return cur;
+    cur = parent;
+  }
+}
+
+/**
+ * One-time save repair: collapse duplicate skill slots that share an evolution lineage into one.
+ * The most-advanced slot (higher tier, then level, then exp) survives; equipped ids are re-pointed
+ * onto the surviving slot. Returns how many slots were removed.
+ */
+export function dedupeSkills(state: GameState, content: Content): number {
+  const byRoot = new Map<string, SkillSlot[]>();
+  const unknown: SkillSlot[] = []; // ids not in the content graph — never touch them
+  for (const s of state.skills) {
+    if (!content.skills.get(s.id)) { unknown.push(s); continue; }
+    const r = skillRootId(content, s.id);
+    const arr = byRoot.get(r);
+    if (arr) arr.push(s); else byRoot.set(r, [s]);
+  }
+  const score = (s: SkillSlot) => (s.tier ?? 1) * 1e6 + s.level * 1e3 + s.exp;
+  const keepByRoot = new Map<string, SkillSlot>();
+  let removed = 0;
+  for (const [r, arr] of byRoot) {
+    arr.sort((a, b) => score(b) - score(a));
+    keepByRoot.set(r, arr[0]);
+    removed += arr.length - 1;
+  }
+  if (removed === 0) return 0;
+  state.skills = [...keepByRoot.values(), ...unknown];
+  const survives = new Set(state.skills.map((s) => s.id));
+  const seen = new Set<string>();
+  state.equipped = state.equipped
+    .map((id) => (content.skills.get(id) ? keepByRoot.get(skillRootId(content, id))?.id ?? id : id))
+    .filter((id) => survives.has(id) && !seen.has(id) && (seen.add(id), true));
+  return removed;
 }
 
 /** Ensure the player has a resistance slot for a damage type — auto-grants on first exposure. */

@@ -2,10 +2,10 @@ import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, type GameState, type LogEvent } from './game/state';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
-import { evolve } from './game/evolution';
+import { evolve, remapRemovedForms } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
@@ -24,6 +24,7 @@ async function init(): Promise<void> {
   await loadI18n(base, lang);
   const content = await loadContent(base);
   recomputeMaxes(state);
+  repairSave(state, content); // content-aware fixes (dedupe skill lineages, remap removed forms) — BEFORE offline
   ensureLayerRooms(state, content); // roll this player's random rooms-per-floor once
   ensureEquipped(state, content); // backfill the equipped loadout from owned active skills
   for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
@@ -308,6 +309,7 @@ async function init(): Promise<void> {
           state = JSON.parse(text) as GameState;
           migrate(state);
           recomputeMaxes(state);
+          repairSave(state, content);
           for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
           resetUi();
           save(state);
@@ -399,6 +401,17 @@ function migrate(s: GameState): void {
   s.lastHit ??= undefined;
   // v5 fields — race selection confirmation
   s.raceConfirmed ??= s.kills > 0 || s.tier > 0 || s.level > 1;
+}
+
+/**
+ * Content-aware save repair (needs the loaded content graph, unlike the field-backfill `migrate`).
+ * Runs once on load/import, BEFORE offline catch-up so a corrupt save can't be simulated forward:
+ *   1. dedupeSkills — collapse duplicate skill slots from the old in-place-evolution grant bug.
+ *   2. remapRemovedForms — point saves stuck on a deleted form onto the new binary tree.
+ */
+function repairSave(state: GameState, content: Content): void {
+  dedupeSkills(state, content);
+  remapRemovedForms(state, content);
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
