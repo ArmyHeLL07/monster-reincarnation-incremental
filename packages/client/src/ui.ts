@@ -1276,7 +1276,7 @@ function evolutionTree(state: GameState): string {
       else icon = '?';
 
       return `
-        <div class="evo-node ${n.status}${isSelected}" data-form-id="${n.id}" style="left: ${coord.x}%; top: ${coord.y}%;">
+        <div class="evo-node ${n.status} tier-${n.tier}${isSelected}" data-form-id="${n.id}" style="left: ${coord.x}%; top: ${coord.y}%;">
           <div class="evo-circle">${icon}</div>
           <div class="evo-node-label">${name}</div>
         </div>
