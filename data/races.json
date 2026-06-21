@@ -69,6 +69,14 @@
           "r": 8
         }
       ]
+    },
+    "startStats": {
+      "STR": 4,
+      "VIT": 4,
+      "AGI": 8,
+      "INT": 6,
+      "WIS": 4,
+      "LUCK": 4
     }
   },
   {
