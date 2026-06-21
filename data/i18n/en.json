@@ -1159,5 +1159,6 @@
   "form.nightmare_spider.name": "Nightmare Spider",
   "form.eternal_horror.name": "Eternal Horror",
   "form.iron_arachnid.name": "Iron Arachnid",
-  "form.scythe_sovereign.name": "Scythe Sovereign"
+  "form.scythe_sovereign.name": "Scythe Sovereign",
+  "ui.evolved": "Evolved!"
 }

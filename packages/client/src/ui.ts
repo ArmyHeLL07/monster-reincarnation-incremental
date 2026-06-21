@@ -269,6 +269,20 @@ export function render(state: GameState): void {
   live(state);
 }
 
+/** One-shot evolution celebration: a fullscreen light burst + the new form name. Auto-removed.
+ *  Imperative (appended to <body>, not part of any re-rendered tab) so ticks don't replay it. */
+export function playEvolveEffect(formId: string): void {
+  const form = CONTENT.forms.get(formId);
+  const name = form ? t(form.locKey) : '';
+  const el = document.createElement('div');
+  el.className = 'evo-burst';
+  el.innerHTML =
+    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
+    `<div class="evo-burst-text">✦ ${t('ui.evolved')} ✦<span>${name}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+
 const HUNGER_COLORS = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'];
 
 /** Top-bar sub-line (tier/level/form/layer/pos/action) — pure text, cheap to refresh. */

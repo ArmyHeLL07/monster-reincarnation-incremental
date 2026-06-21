@@ -10,7 +10,7 @@ import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { load, save, clear } from './game/save';
-import { mount, live, render, pushLog, setLastFusion, resetUi, type UiActions } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, type UiActions } from './ui';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
@@ -135,9 +135,10 @@ async function init(): Promise<void> {
       render(state);
     },
     onEvolve: (formId) => {
-      evolve(state, content, formId, logFn);
+      const ok = evolve(state, content, formId, logFn);
       save(state);
       render(state);
+      if (ok) playEvolveEffect(state.formId); // celebrate the new form (state.formId is now the target)
     },
     onFuse: (a, b) => {
       const r = fuse(state, content, a, b, logFn);

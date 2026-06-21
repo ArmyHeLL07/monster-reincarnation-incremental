@@ -441,6 +441,35 @@
       .fs-btn:hover { color: var(--bone); border-color: var(--venom-dim); }
       .fs-btn.active { color: var(--abyss); background: linear-gradient(180deg, var(--venom), var(--venom-dim)); border-color: var(--venom); box-shadow: 0 0 10px rgba(138, 178, 63, 0.25); }
 
+      /* --- evolution burst: a one-shot fullscreen flash, appended to <body> on evolve --- */
+      .evo-burst { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .evo-burst-ring {
+        position: absolute; width: 44px; height: 44px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(224, 144, 47, 0.95), rgba(138, 178, 63, 0.45) 42%, transparent 70%);
+        animation: evo-burst-ring 1.2s ease-out forwards;
+      }
+      .evo-burst-rays {
+        position: absolute; width: 4px; height: 240px;
+        background: linear-gradient(transparent, rgba(224, 144, 47, 0.55), transparent);
+        animation: evo-burst-rays 1s ease-out forwards;
+      }
+      .evo-burst-text {
+        position: relative; text-align: center; font-family: var(--disp); color: var(--bone);
+        letter-spacing: 0.2em; text-transform: uppercase; font-size: 1.05rem;
+        text-shadow: 0 0 14px var(--ember), 0 0 30px var(--venom);
+        animation: evo-burst-text 1.9s ease-out forwards;
+      }
+      .evo-burst-text span { display: block; margin-top: 0.35rem; font-size: 1.55rem; color: var(--ember); letter-spacing: 0.12em; }
+      @keyframes evo-burst-ring { 0% { transform: scale(0.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(24); opacity: 0; } }
+      @keyframes evo-burst-rays { 0% { transform: scale(0.2) rotate(0deg); opacity: 0; } 25% { opacity: 0.9; } 100% { transform: scale(1.4) rotate(40deg); opacity: 0; } }
+      @keyframes evo-burst-text {
+        0% { transform: scale(0.6); opacity: 0; }
+        18% { transform: scale(1.12); opacity: 1; }
+        30% { transform: scale(1); }
+        76% { opacity: 1; }
+        100% { opacity: 0; transform: scale(1.05); }
+      }
+
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
         body { padding: 0.4rem; }
