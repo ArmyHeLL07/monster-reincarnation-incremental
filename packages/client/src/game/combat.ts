@@ -326,14 +326,14 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   if (state.combatMode === 'auto') {
     for (const id of state.equipped) {
       if (!state.enemy) break;
-      if (castSkill(state, content, id, log, b) && state.enemy.hp <= 0) {
-        onKill(state, content, log, b);
+      if (castSkill(state, content, id, log, b, isOffline) && state.enemy.hp <= 0) {
+        onKill(state, content, log, b, isOffline);
         break;
       }
     }
   }
   if (state.enemy) fireGaze(state, content, log);
-  if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b);
+  if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b, isOffline);
   // Enemy strikes on its own cadence (paced in both modes).
   if (state.enemy) {
     state.enemy.atkCd -= 1;
@@ -620,7 +620,7 @@ export function chooseEvent(state: GameState, content: Content, choiceIndex: num
 }
 
 /** Cast one specific equipped skill at the current enemy (shared by auto & manual). True if it fired. */
-function castSkill(state: GameState, content: Content, id: string, log: Log, b: Bonuses): boolean {
+function castSkill(state: GameState, content: Content, id: string, log: Log, b: Bonuses, isOffline = false): boolean {
   const enemy = state.enemy;
   if (!enemy) return false;
   const slot = state.skills.find((s) => s.id === id);
@@ -665,7 +665,7 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   state.cooldowns[id] = skillCooldown(def, state);
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
-  addSkillExp(content, slot, gain, log, b.xpMult);
+  addSkillExp(content, slot, gain, log, b.xpMult, isOffline);
   return true;
 }
 
@@ -932,7 +932,7 @@ function maybeDropLoot(
   log({ key: 'log.loot_drop', params: { item: lootDisplayName(item), rarity: `rarity.${item.rarity}` } });
 }
 
-function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void {
+function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffline = false): void {
   const enemy = state.enemy;
   if (!enemy) return;
   const reward = diffDef(state, content).rewardMult ?? 1; // Hell pays more, Easy less
@@ -945,7 +945,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses): void 
     const def = content.skills.get(slot.id);
     if (def && (def.kind === 'passive' || def.kind === 'util' || def.kind === 'eye')) {
       const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.15)) * b.xpMult * 0.5));
-      addSkillExp(content, slot, gain, log, b.xpMult);
+      addSkillExp(content, slot, gain, log, b.xpMult, isOffline);
     }
   }
   // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
@@ -1103,7 +1103,7 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   state.enemy = null;
 }
 
-function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number): void {
+function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number, isOffline = false): void {
   const def = content.skills.get(slot.id);
   if (!def) return;
   slot.exp += Math.max(1, Math.round(amount * (slot.id === 'larder' ? 1 : xpMult)));
@@ -1111,6 +1111,12 @@ function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log
     slot.exp -= skillExpToNext(slot.level);
     slot.level += 1;
     log({ key: 'log.skill_up', params: { skill: def.locKeyName, lvLabel: LV_LABEL, lv: slot.level } });
+  }
+  // Skill evolution is held back while OFFLINE — it should happen in active play (the player sees it,
+  // and can delete/keep the skill first). The skill sits maxed until the next live kill.
+  if (isOffline) {
+    if (slot.level >= def.lvMax) slot.exp = Math.min(slot.exp, skillExpToNext(slot.level));
+    return;
   }
   if (slot.level >= def.lvMax && def.evolvesTo.length > 0) {
     const nextId = def.evolvesTo[0];
