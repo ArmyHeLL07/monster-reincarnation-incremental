@@ -443,20 +443,30 @@ const DMG_COLORS: Record<string, string> = {
   acid: '#b6d33f', lightning: '#d2a73a', magic: '#9a7fd0', fear: '#a4506a', soul: '#c0626f',
 };
 
-/** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled. */
-function enemyPortrait(inst: NonNullable<GameState['enemy']>): string {
+/** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled.
+ *  `active` = combat is live → the portrait gets a per-tick attack lunge (synced to the 1s round). */
+function enemyPortrait(inst: NonNullable<GameState['enemy']>, active: boolean): string {
   const color = DMG_COLORS[inst.damageType] ?? '#989384';
   const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : '';
-  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}" style="border-color:${color};${glow}">${inst.icon ?? '❓'}</div>`;
+  const anim = active ? ' combat-active' : ' idle-foe';
+  // color:${color} so the boss-glow keyframe's currentColor matches the element's element-colour.
+  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${anim}" style="border-color:${color};color:${color};${glow}">${inst.icon ?? '❓'}</div>`;
+}
+
+/** Animated player presence while resting / meditating — the race head with a breathing aura. */
+function restStage(state: GameState): string {
+  const kind = state.action === 'meditate' ? 'meditating' : 'resting';
+  return `<div class="rest-stage ${kind}"><span class="rest-aura">${headSvg(state)}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span></div>`;
 }
 
 function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) {
+    if (state.action === 'rest' || state.action === 'meditate') return restStage(state);
     if (state.action === 'combat' && state.roomCleared) return `<p class="muted">✓ ${t('ui.room_cleared')}</p>`;
     return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   }
-  const portrait = enemyPortrait(inst);
+  const portrait = enemyPortrait(inst, state.action === 'combat');
   const tier = appraisalTier(state);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
