@@ -175,67 +175,157 @@
       .dlegend i.fog { background: #0b0a10; }
       .dlegend i.boss { background: #2a2016; border-color: var(--ember); }
 
-      /* Evrim ağacı — dikey, alttan-yukarı dallanan: spine + branch bar + available glow. */
-      .evotree { display: flex; flex-direction: column; align-items: center; padding: 0.3rem 0 0.5rem; overflow-x: auto; width: 100%; }
-      .evo-row { position: relative; display: flex; justify-content: center; padding-top: 18px; }
-      .evo-row.top { padding-top: 0; }
-      .evo-row:not(.top)::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 18px; background: #3a3550; transform: translateX(-50%); }
-      .evo-row.branch-2::before { content: ''; position: absolute; top: 18px; left: 20%; right: 20%; height: 2px; background: #3a3550; }
-      .evo-row.branch-3::before { content: ''; position: absolute; top: 18px; left: 8%; right: 8%; height: 2px; background: #3a3550; }
-      .evo-row.branch-4::before { content: ''; position: absolute; top: 18px; left: 6%; right: 6%; height: 2px; background: #3a3550; }
-      .evo-row.branch-8::before { content: ''; position: absolute; top: 18px; left: 3%; right: 3%; height: 2px; background: #3a3550; }
-      .evo-row.branch-16::before { content: ''; position: absolute; top: 18px; left: 1%; right: 1%; height: 2px; background: #3a3550; }
-      .evo-cellwrap { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: nowrap; }
-      .evo-tlabel { position: absolute; left: 2px; top: 22px; font-family: var(--mono); font-size: 0.58rem; color: var(--ash); opacity: 0.55; }
-      .evo-cell {
-        position: relative; border: 1px solid #2a2536; border-radius: 7px; padding: 0.35rem 0.6rem; min-width: 6.2rem;
-        background: #14121b; text-align: center; transition: border-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+      /* Evrim ağacı — dikey, alttan-yukarı dallanan dairesel düğümler ve SVG bağlantıları */
+      .evotree-viewport {
+        overflow-x: auto; width: 100%; border-radius: var(--rad);
+        border: 1px solid var(--chitin); background: rgba(10, 9, 16, 0.45);
+        margin: 0.4rem 0 0.8rem;
       }
-      .evo-cell .evo-name { font-weight: 600; font-size: 0.82rem; color: var(--bone); }
-      .evo-cell .evo-d { font-size: 0.7rem; margin-top: 0.12rem; }
-      .evo-cell .evo { margin-top: 0.3rem; }
-      .evo-cell.current { border-color: #6d44d9; box-shadow: 0 0 10px rgba(109, 68, 217, 0.65); }
-      .evo-cell.past { opacity: 0.6; }
-      .evo-cell.available { border-color: var(--venom); animation: evoglow 1.7s ease-in-out infinite; }
-      .evo-cell.available .evo-name { color: var(--venom); }
-      .evo-cell.locked { opacity: 0.82; }
-      .evo-cell.missed { opacity: 0.32; border-style: dashed; }
-      .evo-cell.hidden { opacity: 0.4; border-style: dashed; }
-      .evo-cell.hidden .evo-name { color: var(--ash); }
-      @keyframes evoglow { 0%, 100% { box-shadow: 0 0 4px var(--venom-dim); } 50% { box-shadow: 0 0 14px var(--venom); } }
+      .evotree-container {
+        position: relative; width: 100%; min-width: 580px; height: 420px;
+        overflow: hidden;
+      }
+      .evotree-svg {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 1;
+      }
+      .evo-path {
+        stroke-width: 3.5px; fill: none; transition: stroke 0.35s ease, stroke-dasharray 0.35s ease;
+      }
+      .evo-path.unlocked {
+        stroke: var(--venom);
+        filter: drop-shadow(0 0 3px var(--venom-dim));
+      }
+      .evo-path.locked {
+        stroke: #2d263b;
+        stroke-dasharray: 5 5;
+      }
+      .evo-node {
+        position: absolute; z-index: 2; transform: translate(-50%, -50%);
+        display: flex; flex-direction: column; align-items: center;
+        cursor: pointer; transition: transform 0.2s ease-in-out;
+        user-select: none; -webkit-user-drag: none;
+      }
+      .evo-node:hover {
+        transform: translate(-50%, -50%) scale(1.08);
+      }
+      .evo-circle {
+        width: 42px; height: 42px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: #14121b; border: 2.5px solid #2a2536;
+        transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        font-size: 1.15rem; color: var(--bone);
+      }
+      .evo-node.current .evo-circle {
+        border-color: #8c66ff;
+        background: radial-gradient(circle, #2a165c 0%, #0e0a1a 100%);
+        box-shadow: 0 0 16px rgba(140, 102, 255, 0.75), inset 0 0 8px rgba(140, 102, 255, 0.4);
+        animation: current-pulse 2s infinite ease-in-out;
+      }
+      .evo-node.past .evo-circle {
+        border-color: var(--venom-dim);
+        background: radial-gradient(circle, #1c2b14 0%, #090e06 100%);
+        box-shadow: 0 0 8px rgba(88, 111, 44, 0.45);
+        color: var(--venom);
+      }
+      .evo-node.available .evo-circle {
+        border-color: var(--venom);
+        background: radial-gradient(circle, #3d5222 0%, #151e0b 100%);
+        box-shadow: 0 0 16px rgba(138, 178, 63, 0.7);
+        animation: evoglow 1.8s infinite ease-in-out;
+        color: var(--venom);
+      }
+      .evo-node.locked .evo-circle {
+        border-color: #3b354d;
+        background: #181622;
+        color: var(--ash);
+        opacity: 0.9;
+      }
+      .evo-node.missed .evo-circle {
+        border-color: #452a2a;
+        background: #1a0f0f;
+        color: #7a5454;
+        opacity: 0.45;
+        border-style: dashed;
+      }
+      .evo-node.hidden .evo-circle {
+        border-color: #242130;
+        background: #121018;
+        color: #555166;
+        opacity: 0.35;
+        border-style: dashed;
+      }
+      .evo-node.selected .evo-circle {
+        outline: 2px solid var(--bone);
+        outline-offset: 2px;
+      }
+      .evo-node-label {
+        font-size: 0.65rem; font-family: var(--mono); color: var(--ash);
+        margin-top: 0.35rem; text-align: center; white-space: nowrap;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9); transition: color 0.2s;
+      }
+      .evo-node:hover .evo-node-label,
+      .evo-node.selected .evo-node-label {
+        color: var(--bone);
+      }
+      .evo-node.current .evo-node-label {
+        color: #aa94ff; font-weight: 700;
+      }
+      .evo-node.available .evo-node-label {
+        color: var(--venom);
+      }
 
-      /* --- Phylogeny tree layout (diverging branches, e.g. human race) --- */
-      .evotree-phylo-wrap { display: flex; justify-content: center; overflow-x: auto; width: 100%; padding: 0.3rem 0 0.5rem; }
-      .evotree-phylo { display: inline-flex; flex-direction: column; align-items: stretch; }
-      .phylo-tracks { display: flex; flex-direction: row; align-items: flex-start; gap: 0.55rem; }
-      .phylo-track { display: flex; flex-direction: column; align-items: center; position: relative; }
-      /* Vertical trunk line per track — connects cells top to bottom */
-      .phylo-cell { position: relative; padding-top: 16px; }
-      .phylo-cell::before { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 16px; background: #3a3550; transform: translateX(-50%); }
-      .phylo-cell-top { padding-top: 0; }
-      .phylo-cell-top::before { display: none; }
-      /* Connector stub from each track bottom down to fork */
-      .phylo-track::after { content: ''; position: absolute; bottom: -20px; left: 50%; width: 2px; height: 20px; background: #3a3550; transform: translateX(-50%); }
-      /* Active track (chosen path) gets a subtle highlight */
-      .phylo-active .evo-cell:not(.hidden):not(.missed) { border-color: #3a3060; }
-      /* Fork: horizontal crossbar + vertical connector down to branchNode */
-      .phylo-fork { position: relative; height: 20px; }
-      .phylo-fork::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 2px; background: #3a3550; }
-      .phylo-fork::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 20px; background: #3a3550; transform: translateX(-50%); }
-      /* Common trunk cells */
-      .phylo-common-row { position: relative; padding-top: 16px; display: flex; justify-content: center; }
-      .phylo-common-row::before { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 16px; background: #3a3550; transform: translateX(-50%); }
-      .phylo-common-top { padding-top: 0; }
-      .phylo-common-top::before { display: none; }
-      /* Tier tag inside phylo cells */
-      .evo-tier-tag { font-family: var(--mono); font-size: 0.5rem; color: var(--ash); opacity: 0.55; margin-bottom: 0.08rem; }
+      /* Info kartı */
+      .evo-info-card {
+        background: linear-gradient(180deg, #1b1727, #110e1a);
+        border: 1px solid var(--chitin); border-radius: var(--rad);
+        padding: 0.95rem 1.15rem; margin-top: 0.7rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+        border-left: 4px solid var(--chitin);
+        transition: border-left-color 0.3s ease;
+      }
+      .evo-info-card.status-current, .evo-info-card.status-past {
+        border-left-color: #8c66ff;
+      }
+      .evo-info-card.status-available {
+        border-left-color: var(--venom);
+      }
+      .evo-info-card.status-locked {
+        border-left-color: var(--ember);
+      }
+      .evo-info-card.status-missed, .evo-info-card.status-hidden {
+        border-left-color: var(--blood);
+        opacity: 0.7;
+      }
+      .evo-info-header {
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 0.5rem; margin-bottom: 0.7rem;
+      }
+      .evo-info-title {
+        font-family: var(--disp); font-size: 0.98rem;
+        text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+      }
+      .evo-info-status {
+        font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase;
+        letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 4px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .evo-info-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1.5rem;
+      }
+      .evo-info-section-title {
+        font-size: 0.72rem; text-transform: uppercase;
+        letter-spacing: 0.08em; color: var(--venom); margin-bottom: 0.25rem;
+      }
 
-      @media (max-width: 520px) {
-        .evo-cell { min-width: 5rem; padding: 0.25rem 0.4rem; }
-        .evo-cell .evo-name { font-size: 0.75rem; }
-        .evo-cell .evo-d { font-size: 0.62rem; }
-        .evo-cellwrap { gap: 0.35rem; }
-        .evo-tlabel { font-size: 0.5rem; }
+      @keyframes evoglow {
+        0%, 100% { box-shadow: 0 0 5px rgba(138, 178, 63, 0.4); }
+        50% { box-shadow: 0 0 16px rgba(138, 178, 63, 0.85); }
+      }
+      @keyframes current-pulse {
+        0%, 100% { box-shadow: 0 0 6px rgba(140, 102, 255, 0.4); transform: scale(1); }
+        50% { box-shadow: 0 0 18px rgba(140, 102, 255, 0.85); transform: scale(1.05); }
       }
 
       .evpanel .ev-head { font-size: 0.95rem; margin-bottom: 0.3rem; }

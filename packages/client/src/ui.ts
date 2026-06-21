@@ -3,7 +3,7 @@ import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX } from './game/state';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView, type EvoNode } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -87,6 +87,7 @@ let selectedEyeB: string | null = null;
 let activeSkillPart: 'arm' | 'leg' | 'body' | 'eye' = 'arm';
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
+let selectedEvoNodeId: string | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot';
 const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
 
@@ -140,6 +141,7 @@ export function resetUi(): void {
   selectedB = null;
   lastFusion = null;
   expandedSkill = null;
+  selectedEvoNodeId = null;
   activeTab = 'combat';
   logs.combat.length = 0;
   logs.discovery.length = 0;
@@ -1176,109 +1178,200 @@ function wireLore(el: HTMLElement): void {
 
 // ---- STATS (+ evolution) ---------------------------------------------------
 
-/** Dikey dallanan evrim ağacı (alttan-yukarı): bağlayıcı çizgiler + branch bar, available glow. */
-function renderEvoCell(n: EvoNode, tierTag = false): string {
-  const name = n.name ? t(n.name) : '???';
-  const bonus = n.statBonus ? Object.entries(n.statBonus).map(([k, v]) => `+${v}${k}`).join(' ') : '';
-  const skills = n.grantSkills?.length ? ` · ${n.grantSkills.length} skill` : '';
-  let detail = '';
-  if (n.status === 'available') {
-    detail = `<div class="muted evo-d">${bonus}${skills}</div><button class="evo" data-form="${n.id}">${t('ui.evolve')}</button>`;
-  } else if (n.status === 'locked') {
-    detail = `<div class="muted evo-d">${t('ui.evo_locked', { lv: n.levelReq })}</div>`;
-  } else if (n.status === 'missed') {
-    detail = `<div class="muted evo-d">✕ ${t('ui.evo_missed')}</div>`;
-  } else if (n.status === 'hidden') {
-    detail = `<div class="muted evo-d">${t('ui.evo_hidden')}</div>`;
-  } else if ((n.status === 'past' || n.status === 'current') && bonus) {
-    detail = `<div class="muted evo-d">${bonus}${skills}</div>`;
+function evoStatusText(status: EvoNodeStatus, lang: string): string {
+  const isTr = lang === 'tr';
+  switch (status) {
+    case 'past': return isTr ? 'Geçmiş Form' : 'Past Form';
+    case 'current': return isTr ? 'Mevcut Form' : 'Current Form';
+    case 'available': return isTr ? 'Evrilebilir' : 'Available';
+    case 'locked': return isTr ? 'Kilitli' : 'Locked';
+    case 'missed': return isTr ? 'Kaçırıldı' : 'Missed';
+    case 'hidden': return isTr ? 'Gizli' : 'Hidden';
+    default: return status;
   }
-  const mark = n.status === 'current' ? '◉ ' : n.status === 'past' ? '✓ ' : '';
-  const tLabel = tierTag ? `<div class="evo-tier-tag">T${n.tier}</div>` : '';
-  return `<div class="evo-cell ${n.status}">${tLabel}<div class="evo-name">${mark}${name}</div>${detail}</div>`;
 }
 
-/** Phylogeny-style renderer for races with fully diverging paths (no reconvergence). */
-function evolutionTreePhylo(nodes: EvoNode[]): string {
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
-  const inTreeKids = (n: EvoNode) => n.children.filter(c => nodeMap.has(c)).map(c => nodeMap.get(c)!);
-
-  const root = nodes.find(n => n.parents.every(p => !nodeMap.has(p)));
-  if (!root) return '';
-
-  // Walk the single-child trunk until we hit the branch point
-  const trunk: EvoNode[] = [];
-  let cur: EvoNode | undefined = root;
-  while (cur) {
-    trunk.push(cur);
-    const kids = inTreeKids(cur);
-    if (kids.length !== 1) break;
-    cur = kids[0];
-  }
-
-  const branchNode = trunk[trunk.length - 1];
-  const trackRoots = inTreeKids(branchNode);
-  if (trackRoots.length < 2) return '';
-
-  // Follow each branch to its leaf
-  const buildTrack = (start: EvoNode): EvoNode[] => {
-    const track: EvoNode[] = [];
-    let n: EvoNode | undefined = start;
-    while (n) { track.push(n); const k = inTreeKids(n); n = k[0]; }
-    return track;
-  };
-  const tracks = trackRoots.map(buildTrack);
-
-  // Render parallel columns (T-high at top, T-low at bottom within each column)
-  const tracksHtml = tracks.map(track => {
-    const isActive = track.some(n => n.status === 'current' || n.status === 'past' || n.status === 'available');
-    const cells = [...track].reverse().map((n, i) =>
-      `<div class="phylo-cell${i === 0 ? ' phylo-cell-top' : ''}">${renderEvoCell(n, true)}</div>`
-    ).join('');
-    return `<div class="phylo-track${isActive ? ' phylo-active' : ''}">${cells}</div>`;
-  }).join('');
-
-  // Trunk prefix: everything above branchNode (i.e., trunk without branchNode)
-  // branchNode itself is shown as the connector between trunk and tracks
-  const prefixNodes = trunk.slice(0, -1); // exclude branchNode
-  const branchHtml = `<div class="phylo-common-row phylo-common-top">${renderEvoCell(branchNode, true)}</div>`;
-  const prefixHtml = prefixNodes.slice().reverse().map(n =>
-    `<div class="phylo-common-row">${renderEvoCell(n, true)}</div>`
-  ).join('');
-
-  return `<div class="evotree-phylo-wrap"><div class="evotree-phylo">
-    <div class="phylo-tracks">${tracksHtml}</div>
-    <div class="phylo-fork"></div>
-    ${branchHtml}
-    ${prefixHtml}
-  </div></div>`;
-}
-
+/** Dikey dallanan evrim ağacı (alttan-yukarı dairesel düğümler ve SVG bağlantıları) */
 function evolutionTree(state: GameState): string {
-  const nodes = evolutionTreeView(state, CONTENT);
+  const nodes: EvoNode[] = evolutionTreeView(state, CONTENT);
   if (!nodes.length) return '';
 
-  // Detect fully diverging branches (no form has 2+ in-tree parents → no reconvergence).
-  const nodeSet = new Set(nodes.map(n => n.id));
-  const hasConvergence = nodes.some(n => n.parents.filter(p => nodeSet.has(p)).length > 1);
-  const branchNodeCount = nodes.filter(n => n.children.filter(c => nodeSet.has(c)).length > 1).length;
-  const hasBranch = branchNodeCount > 0;
-  // Phylo layout only fits a SINGLE branch point (one trunk splits into parallel tracks).
-  // A binary tree has many branch nodes — use tier-row layout instead.
-  if (hasBranch && !hasConvergence && branchNodeCount === 1) return evolutionTreePhylo(nodes);
+  if (!selectedEvoNodeId || !nodes.some((n) => n.id === selectedEvoNodeId)) {
+    selectedEvoNodeId = state.formId;
+  }
+  if (!nodes.some((n) => n.id === selectedEvoNodeId)) {
+    selectedEvoNodeId = nodes[0]?.id || null;
+  }
 
-  // Default: tier-row layout (converging branches, linear chains)
-  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => b - a);
-  const rows = tiers
-    .map((tier, i) => {
-      const tierNodes = nodes.filter((n) => n.tier === tier);
-      const branchClass = tierNodes.length > 1 ? ` branch branch-${tierNodes.length}` : '';
-      const first = i === 0 ? ' top' : '';
-      const cells = tierNodes.map(n => renderEvoCell(n)).join('');
-      return `<div class="evo-row${branchClass}${first}"><span class="evo-tlabel">T${tier}</span><div class="evo-cellwrap">${cells}</div></div>`;
+  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
+  const maxTier = tiers.length > 1 ? tiers[tiers.length - 1] : 1;
+
+  const coords = new Map<string, { x: number; y: number }>();
+  const marginY = 12; // vertical margin percentage
+
+  for (const tier of tiers) {
+    const tierNodes = nodes.filter((n) => n.tier === tier);
+    if (tier > 0) {
+      tierNodes.sort((a, b) => {
+        const getParentAvgX = (node: EvoNode): number => {
+          if (!node.parents.length) return 50;
+          let sum = 0, count = 0;
+          for (const pId of node.parents) {
+            const pCoord = coords.get(pId);
+            if (pCoord) { sum += pCoord.x; count++; }
+          }
+          return count > 0 ? sum / count : 50;
+        };
+        const ax = getParentAvgX(a);
+        const bx = getParentAvgX(b);
+        if (Math.abs(ax - bx) < 0.01) {
+          return a.id.localeCompare(b.id);
+        }
+        return ax - bx;
+      });
+    } else {
+      tierNodes.sort((a, b) => a.id.localeCompare(b.id));
+    }
+
+    for (let i = 0; i < tierNodes.length; i++) {
+      const node = tierNodes[i];
+      const x = ((i + 0.5) / tierNodes.length) * 100;
+      const y = 100 - marginY - (tier / maxTier) * (100 - 2 * marginY);
+      coords.set(node.id, { x, y });
+    }
+  }
+
+  let pathsHtml = '';
+  for (const node of nodes) {
+    const fromCoord = coords.get(node.id);
+    if (!fromCoord) continue;
+
+    for (const childId of node.children) {
+      const childNode = nodes.find((n) => n.id === childId);
+      if (!childNode) continue;
+      const toCoord = coords.get(childId);
+      if (!toCoord) continue;
+
+      const fromIsUnlocked = node.status === 'past' || node.status === 'current';
+      const toIsUnlocked = childNode.status === 'past' || childNode.status === 'current' || childNode.status === 'available';
+      const isPathUnlocked = fromIsUnlocked && toIsUnlocked;
+      const pathClass = isPathUnlocked ? 'unlocked' : 'locked';
+
+      const midY = (fromCoord.y + toCoord.y) / 2;
+      pathsHtml += `<path class="evo-path ${pathClass}" d="M ${fromCoord.x}% ${fromCoord.y}% C ${fromCoord.x}% ${midY}%, ${toCoord.x}% ${midY}%, ${toCoord.x}% ${toCoord.y}%" />`;
+    }
+  }
+
+  const nodesHtml = nodes
+    .map((n) => {
+      const coord = coords.get(n.id)!;
+      const name = n.name ? t(n.name) : '???';
+      const isSelected = n.id === selectedEvoNodeId ? ' selected' : '';
+
+      let icon = '';
+      if (n.status === 'current') icon = '◉';
+      else if (n.status === 'past') icon = '✓';
+      else if (n.status === 'available') icon = '✦';
+      else if (n.status === 'locked') icon = '🔒';
+      else if (n.status === 'missed') icon = '✕';
+      else icon = '?';
+
+      return `
+        <div class="evo-node ${n.status}${isSelected}" data-form-id="${n.id}" style="left: ${coord.x}%; top: ${coord.y}%;">
+          <div class="evo-circle">${icon}</div>
+          <div class="evo-node-label">${name}</div>
+        </div>
+      `;
     })
     .join('');
-  return `<div class="evotree">${rows}</div>`;
+
+  return `
+    <div class="evotree-viewport">
+      <div class="evotree-container">
+        <svg class="evotree-svg">
+          ${pathsHtml}
+        </svg>
+        ${nodesHtml}
+      </div>
+    </div>
+  `;
+}
+
+function evolutionInfoCard(state: GameState): string {
+  const nodes = evolutionTreeView(state, CONTENT);
+  if (!selectedEvoNodeId) return '';
+  const n = nodes.find((x) => x.id === selectedEvoNodeId);
+  if (!n) return '';
+
+  const name = n.name ? t(n.name) : '???';
+
+  let bonusHtml = '';
+  if (n.statBonus) {
+    const list = Object.entries(n.statBonus)
+      .map(([k, v]) => `<li><b>${k}</b>: +${v}</li>`)
+      .join('');
+    if (list) {
+      bonusHtml = `
+        <div>
+          <div class="evo-info-section-title">${t('ui.stats')}</div>
+          <ul style="padding-left:1.1rem;margin:0;font-size:0.82rem;list-style-type:square;color:var(--bone);">${list}</ul>
+        </div>
+      `;
+    }
+  }
+
+  let skillsHtml = '';
+  if (n.grantSkills && n.grantSkills.length > 0) {
+    const list = n.grantSkills
+      .map((id) => {
+        const sDef = CONTENT.skills.get(id);
+        const sName = sDef ? t(sDef.locKeyName) : id;
+        const sDesc = sDef ? t(sDef.locKeyDesc) : '';
+        return `<li style="margin-bottom: 0.3rem;"><b>${sName}</b><br><span class="muted" style="font-size:0.75rem">${sDesc}</span></li>`;
+      })
+      .join('');
+    if (list) {
+      skillsHtml = `
+        <div>
+          <div class="evo-info-section-title">${t('ui.skills')}</div>
+          <ul style="padding-left:1.1rem;margin:0;font-size:0.82rem;list-style-type:none;color:var(--bone);">${list}</ul>
+        </div>
+      `;
+    }
+  }
+
+  const levelReqMet = state.level >= n.levelReq;
+  const levelColor = levelReqMet ? 'var(--venom)' : 'var(--blood)';
+  const statusLabel = evoStatusText(n.status, state.lang || 'tr');
+  const currentLabel = state.lang === 'tr' ? 'Mevcut' : 'Current';
+
+  const actionBtn =
+    n.status === 'available'
+      ? `<button class="evo-action-btn active" data-form="${n.id}" style="min-height:36px; padding:0.4rem 1.2rem;">${t('ui.evolve')}</button>`
+      : n.status === 'locked'
+        ? `<button disabled style="min-height:36px; padding:0.4rem 1.2rem; opacity:0.5;">${t('ui.evo_locked', { lv: n.levelReq })}</button>`
+        : '';
+
+  return `
+    <div class="evo-info-card status-${n.status}">
+      <div class="evo-info-header">
+        <div class="evo-info-title">${name}</div>
+        <div class="evo-info-status">${statusLabel}</div>
+      </div>
+      <div class="evo-info-grid">
+        ${bonusHtml || `<div class="muted" style="font-size:0.82rem;">${t('ui.empty')}</div>`}
+        ${skillsHtml || `<div class="muted" style="font-size:0.82rem;">${t('ui.empty')}</div>`}
+        <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.6rem; margin-top: 0.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="font-size: 0.82rem;">
+            ${t('ui.evo_requires')}: 
+            <span style="color:${levelColor}; font-weight:bold;">${t('ui.level')} ${n.levelReq}</span> 
+            <span class="muted">(${currentLabel}: ${state.level})</span>
+          </div>
+          ${actionBtn}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function statsTab(state: GameState): string {
@@ -1287,6 +1380,7 @@ function statsTab(state: GameState): string {
       `<li><div class="row"><b>${t(`stat.${k}`)}</b><span>${state.stats[k]} ${state.statPoints > 0 ? `<button class="statadd" data-stat="${k}">+</button>` : ''}</span></div><p class="muted statdesc">${t(`stat.${k}.desc`)}</p></li>`,
   ).join('');
   const treeHtml = evolutionTree(state);
+  const infoCardHtml = evolutionInfoCard(state);
   const form = currentForm(state, CONTENT);
   return `
     <section class="panel">
@@ -1295,10 +1389,11 @@ function statsTab(state: GameState): string {
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints} · ${t('ui.auto_power')}: +${Math.round((levelPower(state) - 1) * 100)}%</p>
       <ul>${statRows}</ul>
     </section>
-    <section class="panel">
+    <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${treeHtml}
+      ${infoCardHtml}
     </section>
     ${racePanel(state)}
     ${rulerPanel(state)}
@@ -1412,7 +1507,16 @@ function wireStats(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.statadd').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onAllocStat(b.getAttribute('data-stat') as StatKey));
   });
-  el.querySelectorAll<HTMLButtonElement>('.evo').forEach((b) => {
+  el.querySelectorAll<HTMLElement>('.evo-node[data-form-id]').forEach((node) => {
+    node.addEventListener('click', () => {
+      const id = node.getAttribute('data-form-id');
+      if (id) {
+        selectedEvoNodeId = id;
+        render(CURSTATE);
+      }
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.evo-action-btn[data-form]').forEach((b) => {
     b.addEventListener('click', () => {
       const f = b.getAttribute('data-form');
       if (f) ACTIONS.onEvolve(f);
