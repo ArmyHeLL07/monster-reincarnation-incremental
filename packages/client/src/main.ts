@@ -10,7 +10,7 @@ import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { load, save, clear } from './game/save';
-import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, type UiActions } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, type UiActions } from './ui';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
@@ -203,6 +203,7 @@ async function init(): Promise<void> {
         resetUi();
         save(state);
         render(state);
+        playRebirthEffect(state); // death → soul-light → rebirth arc
       }
     },
     onReadBook: (id) => {

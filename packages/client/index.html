@@ -470,6 +470,40 @@
         100% { opacity: 0; transform: scale(1.05); }
       }
 
+      /* --- rebirth: a dramatic death→soul-light→rebirth arc (longer & darker than evolve) --- */
+      .rb-burst { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .rb-veil { position: absolute; inset: 0; animation: rb-veil 2.4s ease-in-out forwards; }
+      @keyframes rb-veil {
+        0%   { background: radial-gradient(circle at 50% 58%, rgba(10, 9, 16, 0), rgba(10, 9, 16, 0)); }
+        24%  { background: radial-gradient(circle at 50% 58%, rgba(10, 9, 16, 0.86), rgba(6, 5, 10, 0.96)); }   /* death — screen darkens */
+        56%  { background: radial-gradient(circle at 50% 54%, rgba(180, 160, 235, 0.85), rgba(20, 16, 32, 0.8)); } /* soul light blooms */
+        100% { background: radial-gradient(circle at 50% 50%, rgba(180, 160, 235, 0), rgba(10, 9, 16, 0)); }       /* clears */
+      }
+      .rb-soul {
+        position: absolute; width: 150px; height: 150px; border-radius: 50%; filter: blur(2px);
+        background: radial-gradient(circle, rgba(224, 216, 255, 0.95), rgba(154, 127, 208, 0.5) 45%, transparent 70%);
+        animation: rb-soul 2.4s ease-out forwards;
+      }
+      @keyframes rb-soul {
+        0%   { transform: translateY(60px) scale(0.25); opacity: 0; }
+        30%  { opacity: 0.35; }
+        56%  { transform: translateY(-26px) scale(1.25); opacity: 1; }
+        100% { transform: translateY(-130px) scale(0.55); opacity: 0; }
+      }
+      .rb-text {
+        position: relative; text-align: center; font-family: var(--disp); color: var(--bone);
+        letter-spacing: 0.22em; text-transform: uppercase; font-size: 1.1rem;
+        text-shadow: 0 0 16px #9a7fd0, 0 0 34px #4f86c2; animation: rb-text 2.4s ease-out forwards;
+      }
+      .rb-text span { display: block; margin-top: 0.4rem; font-size: 0.95rem; color: #b9a8e6; letter-spacing: 0.1em; }
+      @keyframes rb-text {
+        0%, 35% { transform: scale(0.7); opacity: 0; }
+        50%  { transform: scale(1.1); opacity: 1; }
+        60%  { transform: scale(1); }
+        82%  { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
         body { padding: 0.4rem; }

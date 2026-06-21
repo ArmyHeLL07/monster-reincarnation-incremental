@@ -283,6 +283,17 @@ export function playEvolveEffect(formId: string): void {
   setTimeout(() => el.remove(), 2000);
 }
 
+/** One-shot rebirth celebration: a death→soul-light→rebirth arc. Imperative + auto-removed. */
+export function playRebirthEffect(state: GameState): void {
+  const el = document.createElement('div');
+  el.className = 'rb-burst';
+  el.innerHTML =
+    '<div class="rb-veil"></div><div class="rb-soul"></div>' +
+    `<div class="rb-text">✦ ${t('ui.reborn')} ✦<span>${t('ui.rebirths')}: ${state.rebirthCount}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
 const HUNGER_COLORS = ['#6fae53', '#d2a73a', '#e0902f', '#bb4140'];
 
 /** Top-bar sub-line (tier/level/form/layer/pos/action) — pure text, cheap to refresh. */
