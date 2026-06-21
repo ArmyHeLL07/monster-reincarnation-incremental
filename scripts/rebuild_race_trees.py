@@ -43,15 +43,15 @@ ROLES = {
     # --- wyrmling ---
     'flame':   ('STR', 'INT', 'VIT', ['dragon_claw', 'fire_breath', 'dragon_slash', 'scorching_breath', 'dragon_heart', 'magma_fist']),
     'magma':   ('STR', 'VIT', 'INT', ['magma_fist', 'fire_lance', 'heavy_slam', 'scorching_breath', 'dragon_scale', 'dragon_heart']),
-    'storm':   ('INT', 'AGI', 'WIS', ['spark', 'gale_cut', 'lightning_strike', 'wind_blade', 'spatial_rift', 'storm']),
+    'storm':   ('INT', 'AGI', 'WIS', ['spark', 'gale_cut', 'lightning_strike', 'wind_blade', 'spatial_rift', 'dragon_heart']),
     'shadow':  ('INT', 'AGI', 'LUCK', ['shadow_bolt', 'void_step', 'decay_curse', 'spatial_rift', 'domination_gaze', 'soul_gaze']),
     # --- golem ---
     'iron':    ('VIT', 'STR', 'WIS', ['toughness', 'stone_skin', 'iron_plating', 'shield_wall', 'obsidian_carapace', 'bastion']),
-    'magmag':  ('STR', 'VIT', 'INT', ['stone_spike', 'magma_fist', 'earth_pillar', 'heavy_slam', 'scorching_breath', 'unyielding_core']),
+    'magmag':  ('STR', 'VIT', 'INT', ['stone_spike', 'magma_fist', 'earth_pillar', 'heavy_slam', 'crystal_heart', 'unyielding_core']),
     'arcaneg': ('INT', 'VIT', 'WIS', ['stone_spike', 'earth_pillar', 'mana_shield', 'spatial_rift', 'crystal_heart', 'void_barrier']),
     'crystalg':('VIT', 'WIS', 'INT', ['stone_skin', 'crystal_heart', 'iron_plating', 'obsidian_carapace', 'unyielding_core', 'void_barrier']),
     # --- spider (poison/web/stealth/carapace/eyes — the icon race) ---
-    'sp_venom':   ('INT', 'WIS', 'VIT', ['venom_bite', 'acid_spit', 'necro_toxin', 'plague_mist', 'decay_curse', 'soul_gaze']),
+    'sp_venom':   ('INT', 'WIS', 'VIT', ['venom_bite', 'lethal_venom', 'necro_toxin', 'toxic_cloud', 'decay_curse', 'soul_gaze']),
     'sp_web':     ('AGI', 'INT', 'LUCK', ['silk_thread', 'web_trap', 'cutting_wire', 'spatial_web', 'snare_field', 'binding_silk']),
     'sp_blade':   ('STR', 'AGI', 'VIT', ['sharp_claw', 'scythe_limb', 'reaper_edge', 'rend', 'maul', 'blade_dance']),
     'sp_stealth': ('AGI', 'LUCK', 'INT', ['pounce', 'ambush_strike', 'stealth', 'silent_step', 'phantom_presence', 'lethal_lunge']),
@@ -97,7 +97,7 @@ RACES = {
     },
     'skeleton': {
         'start': {'STR': 6, 'VIT': 7, 'AGI': 4, 'INT': 5, 'WIS': 3, 'LUCK': 5},
-        'sig': ['sharp_claw', 'undead_vigor', 'hp_regen'],
+        'sig': ['bone_arrow', 'undead_vigor', 'bone_armor'],
         'root': 'bone_rattle', 't1': 'risen_skeleton',
         'tree': {
             'bone_rattle': (['risen_skeleton'], 'bonewar'),
@@ -128,7 +128,7 @@ RACES = {
     },
     'wyrmling': {
         'start': {'STR': 7, 'VIT': 5, 'AGI': 5, 'INT': 6, 'WIS': 4, 'LUCK': 4},
-        'sig': ['sharp_claw', 'draconic_blood', 'flame_bolt'],
+        'sig': ['dragon_claw', 'draconic_blood', 'fire_breath'],
         'root': 'wyrmling_hatch', 't1': 'young_drake',
         'tree': {
             'wyrmling_hatch': (['young_drake'], 'flame'),

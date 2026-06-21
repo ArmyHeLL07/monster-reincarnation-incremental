@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '0.8.0';
+export const VERSION = '0.8.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '0.8.1',
+    date: '2026-06-21',
+    tr: [
+      'Irklara tematik skiller: iskelet artık Kemik Ok/Zırh (Keskin Pençe yerine)',
+      'Ejderha Ateş Nefesi kullanıyor (Alev Oku yerine) + Ejder Pençesi',
+      'Golem/örümcek skil havuzları tutarlı hale getirildi',
+    ],
+    en: [
+      'Race-thematic skills: skeleton now uses Bone Arrow/Armor (not Sharp Claw)',
+      'Dragon uses Fire Breath (not Flame Bolt) + Dragon Claw',
+      'Golem/spider skill pools made coherent',
+    ],
+  },
   {
     v: '0.8.0',
     date: '2026-06-21',

@@ -156,9 +156,9 @@
     "id": "skeleton",
     "locKey": "race.skeleton.name",
     "startSkills": [
-      "sharp_claw",
-      "hp_regen",
-      "undead_vigor"
+      "bone_arrow",
+      "undead_vigor",
+      "bone_armor"
     ],
     "startResistances": [
       "physical_res",
@@ -196,8 +196,8 @@
     "id": "wyrmling",
     "locKey": "race.wyrmling.name",
     "startSkills": [
-      "sharp_claw",
-      "flame_bolt",
+      "dragon_claw",
+      "fire_breath",
       "draconic_blood"
     ],
     "startResistances": [

@@ -1201,9 +1201,9 @@
       "AGI": 1
     },
     "grantSkills": [
-      "sharp_claw",
+      "bone_arrow",
       "undead_vigor",
-      "hp_regen"
+      "bone_armor"
     ]
   },
   {
@@ -1776,9 +1776,9 @@
       "VIT": 1
     },
     "grantSkills": [
-      "sharp_claw",
+      "dragon_claw",
       "draconic_blood",
-      "flame_bolt"
+      "fire_breath"
     ]
   },
   {
@@ -2775,7 +2775,7 @@
     "grantSkills": [
       "sovereign_form",
       "heavy_slam",
-      "scorching_breath"
+      "crystal_heart"
     ]
   },
   {
@@ -2793,7 +2793,7 @@
     "grantSkills": [
       "sovereign_form",
       "heavy_slam",
-      "scorching_breath"
+      "crystal_heart"
     ]
   },
   {
@@ -2811,7 +2811,7 @@
     "grantSkills": [
       "sovereign_form",
       "heavy_slam",
-      "scorching_breath"
+      "crystal_heart"
     ]
   },
   {
@@ -2829,7 +2829,7 @@
     "grantSkills": [
       "sovereign_form",
       "heavy_slam",
-      "scorching_breath"
+      "crystal_heart"
     ]
   },
   {
@@ -2950,7 +2950,7 @@
     },
     "grantSkills": [
       "venom_bite",
-      "acid_spit"
+      "lethal_venom"
     ]
   },
   {
@@ -3003,7 +3003,7 @@
       "WIS": 3
     },
     "grantSkills": [
-      "acid_spit",
+      "lethal_venom",
       "necro_toxin"
     ]
   },
@@ -3097,7 +3097,7 @@
     },
     "grantSkills": [
       "necro_toxin",
-      "plague_mist"
+      "toxic_cloud"
     ]
   },
   {
@@ -3116,7 +3116,7 @@
     },
     "grantSkills": [
       "necro_toxin",
-      "plague_mist"
+      "toxic_cloud"
     ]
   },
   {
@@ -3277,7 +3277,7 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "plague_mist",
+      "toxic_cloud",
       "decay_curse"
     ]
   },
@@ -3312,7 +3312,7 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "plague_mist",
+      "toxic_cloud",
       "decay_curse"
     ]
   },
@@ -3330,7 +3330,7 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "plague_mist",
+      "toxic_cloud",
       "decay_curse"
     ]
   },
