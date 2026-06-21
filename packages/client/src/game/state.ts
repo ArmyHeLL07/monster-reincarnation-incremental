@@ -1,4 +1,4 @@
-import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot } from '@mri/shared';
+import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot, EnemyBehavior } from '@mri/shared';
 
 /** Bag capacity for humanoid races (slot-based; materials/stacks are a future extension). */
 export const MAX_INVENTORY = 20;
@@ -93,6 +93,8 @@ export interface EnemyInstance {
   icon?: string;
   /** Spawned by a wrong boss-riddle guess — its death returns to the riddle, doesn't advance. */
   riddleGuard?: boolean;
+  /** Special combat behaviour copied from the archetype (regen/double-strike/enrage/armour/…). */
+  behavior?: EnemyBehavior;
 }
 
 export const MAX_HUNGER = 100;

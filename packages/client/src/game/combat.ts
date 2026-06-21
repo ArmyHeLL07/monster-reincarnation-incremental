@@ -362,6 +362,11 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     if (state.enemy.atkCd <= 0) {
       state.enemy.atkCd = ENEMY_ATK_INTERVAL;
       enemyAttack(state, content, log, b);
+      if (state.enemy?.behavior?.doubleStrike && state.hp > 0) enemyAttack(state, content, log, b); // strikes twice
+      if (state.enemy?.behavior?.regen) {
+        const heal = Math.round(state.enemy.maxHp * state.enemy.behavior.regen);
+        state.enemy.hp = Math.min(state.enemy.maxHp, state.enemy.hp + heal);
+      }
     }
   }
   if (state.hp <= 0) onDeath(state, content, log, b);
@@ -577,6 +582,7 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
     icon: def.icon,
+    behavior: def.behavior,
   };
 }
 
@@ -681,7 +687,8 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     if (state.dmgStreak === ADAPT_THRESHOLD) log({ key: 'log.enemy_adapts', params: { type: dmgTypeKey(atkElem) } });
   }
 
-  const dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
+  let dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
+  if (enemy.behavior?.armorPct) dmg = Math.max(1, Math.round(dmg * (1 - enemy.behavior.armorPct))); // armoured hide
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
   state.cooldowns[id] = skillCooldown(def, state);
@@ -784,7 +791,9 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   }
   const resMult = diffDef(state, content).resistMult ?? 1; // Easy trains resistances very slowly
   const types = enemy.damageType2 ? [enemy.damageType, enemy.damageType2] : [enemy.damageType];
-  const share = enemy.attack / types.length;
+  let share = enemy.attack / types.length;
+  if (enemy.behavior?.enrage && enemy.hp < enemy.maxHp * 0.3) share *= 1 + enemy.behavior.enrage; // cornered → fiercer
+  const statusChance = STATUS_CHANCE * (enemy.behavior?.statusBoost ?? 1); // status specialists apply more
   let totalTaken = 0;
   for (const type of types) {
     const reduction = resistReduction(state, content, type);
@@ -794,11 +803,14 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     const resGain = Math.round(taken * resMult);
     if (resGain > 0) addResistExp(state, content, type, resGain, log);
     // Elemental hits may leave a lingering status (poison/fire/…) — resistance shrinks duration & damage.
-    if (taken > 0 && DOT_TYPES.includes(type) && Math.random() < STATUS_CHANCE * (1 - reduction)) {
+    if (taken > 0 && DOT_TYPES.includes(type) && Math.random() < statusChance * (1 - reduction)) {
       applyStatus(state, type, share, reduction, log);
     }
   }
   state.hp = Math.max(0, state.hp - totalTaken);
+  if (enemy.behavior?.lifesteal && totalTaken > 0) {
+    enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.round(totalTaken * enemy.behavior.lifesteal)); // drains your blood
+  }
   state.lastHit = { enemyKey: enemy.locKey, type: enemy.damageType };
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
 }

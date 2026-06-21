@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '0.7.0';
+export const VERSION = '0.8.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '0.8.0',
+    date: '2026-06-21',
+    tr: [
+      'Anime canavarları: 16→26 düşman, 4 kat (Üst/Orta/Alt/Dip)',
+      'Otantik isimler (Elroe Gunerush, Toprak Ejderhası Araba, Taratect…)',
+      'Davranış çeşitliliği: iyileşen, çift-vuran, öfkelenen, zırhlı, can emen düşmanlar',
+      'Düzeltme: zindan derinliği evrime yetişiyor — gatekeeper/rebirth artık erişilebilir',
+    ],
+    en: [
+      'Anime bestiary: 16→26 enemies across 4 strata (Upper/Middle/Lower/Bottom)',
+      'Authentic names (Elroe Gunerush, Earth Dragon Araba, Taratect…)',
+      'Behaviour variety: regen, double-strike, enrage, armoured, lifesteal foes',
+      'Fix: dungeon depth now matches evolution — gatekeeper/rebirth reachable again',
+    ],
+  },
   {
     v: '0.7.0',
     date: '2026-06-21',

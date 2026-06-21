@@ -1,7 +1,99 @@
 {
   "layers": [
-    { "id": 1, "locKey": "layer.1.name", "tierReq": 0, "floors": 7, "roomsPerFloor": 16, "minRooms": 12, "maxRooms": 20, "spDrainMult": 1, "enemyPool": ["cave_pest", "ember_crawler", "venom_toad"], "boss": "cave_lurker", "explorationRate": 0.15 },
-    { "id": 2, "locKey": "layer.2.name", "tierReq": 3, "floors": 7, "roomsPerFloor": 16, "minRooms": 12, "maxRooms": 20, "spDrainMult": 2, "enemyPool": ["frost_mite", "acid_slug", "venom_toad", "cave_lurker"], "boss": "flame_jaw", "element": "fire", "ambient": { "drainPct": 0.004, "resistBoost": 2.5 }, "explorationRate": 0.2 },
-    { "id": 3, "locKey": "layer.3.name", "tierReq": 7, "floors": 7, "roomsPerFloor": 16, "minRooms": 12, "maxRooms": 20, "spDrainMult": 3, "enemyPool": ["spark_wisp", "flame_jaw", "venom_brute", "shade_wraith"], "boss": "bone_render", "gatekeeper": true, "element": "soul", "ambient": { "drainPct": 0.005, "resistBoost": 2.5 }, "explorationRate": 0.2 }
+    {
+      "id": 1,
+      "locKey": "layer.1.name",
+      "tierReq": 0,
+      "floors": 7,
+      "roomsPerFloor": 16,
+      "minRooms": 12,
+      "maxRooms": 20,
+      "spDrainMult": 1,
+      "enemyPool": [
+        "elroe_frog",
+        "elroe_geafrog",
+        "small_lesser_taratect",
+        "small_poison_taratect",
+        "elroe_basilisk",
+        "elroe_pebbluck"
+      ],
+      "boss": "lesser_taratect",
+      "element": "poison",
+      "explorationRate": 0.15
+    },
+    {
+      "id": 2,
+      "locKey": "layer.2.name",
+      "tierReq": 2,
+      "floors": 7,
+      "roomsPerFloor": 16,
+      "minRooms": 12,
+      "maxRooms": 20,
+      "spDrainMult": 2,
+      "enemyPool": [
+        "elroe_gunerush",
+        "elroe_gunerave",
+        "elroe_gunesohka",
+        "elroe_guneseven",
+        "magma_newt",
+        "elroe_cohgou"
+      ],
+      "boss": "flame_jaw",
+      "element": "fire",
+      "ambient": {
+        "drainPct": 0.004,
+        "resistBoost": 2.5
+      },
+      "explorationRate": 0.2
+    },
+    {
+      "id": 3,
+      "locKey": "layer.3.name",
+      "tierReq": 3,
+      "floors": 7,
+      "roomsPerFloor": 16,
+      "minRooms": 12,
+      "maxRooms": 20,
+      "spDrainMult": 3,
+      "enemyPool": [
+        "finjicote",
+        "greater_taratect",
+        "shade_wraith",
+        "venom_brute",
+        "abyss_stalker",
+        "cave_horror"
+      ],
+      "boss": "earth_dragon_araba",
+      "element": "physical",
+      "ambient": {
+        "drainPct": 0.005,
+        "resistBoost": 2.5
+      },
+      "explorationRate": 0.2
+    },
+    {
+      "id": 4,
+      "locKey": "layer.4.name",
+      "tierReq": 4,
+      "floors": 7,
+      "roomsPerFloor": 16,
+      "minRooms": 12,
+      "maxRooms": 20,
+      "spDrainMult": 4,
+      "enemyPool": [
+        "earth_dragon_kaguna",
+        "earth_dragon_rendill",
+        "queen_taratect",
+        "abyss_horror"
+      ],
+      "boss": "system_guardian",
+      "gatekeeper": true,
+      "element": "soul",
+      "ambient": {
+        "drainPct": 0.006,
+        "resistBoost": 3.0
+      },
+      "explorationRate": 0.25
+    }
   ]
 }

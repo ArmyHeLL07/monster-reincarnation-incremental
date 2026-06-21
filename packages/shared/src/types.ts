@@ -206,6 +206,24 @@ export interface Enemy {
   icon?: string;
   /** Skills that can be devoured/absorbed from this enemy. */
   grantSkills?: string[];
+  /** Special combat behaviour — what makes this monster fight differently (not just element/stats). */
+  behavior?: EnemyBehavior;
+}
+
+/** Optional behaviour modifiers that give monsters distinct fight patterns. */
+export interface EnemyBehavior {
+  /** Heals this fraction of max HP on each of its turns (sustain monster). */
+  regen?: number;
+  /** Strikes twice per turn (fast / multi-limbed). */
+  doubleStrike?: boolean;
+  /** Below 30% HP, its attack is multiplied by (1 + enrage). */
+  enrage?: number;
+  /** Reduces incoming player damage by this fraction (armoured / petrified hide). */
+  armorPct?: number;
+  /** Heals by this fraction of the damage it deals (lifesteal). */
+  lifesteal?: number;
+  /** Multiplies its chance to inflict a lingering status (poison/fire/…) — status specialist. */
+  statusBoost?: number;
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */
