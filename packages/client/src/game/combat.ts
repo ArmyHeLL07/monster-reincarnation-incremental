@@ -20,6 +20,7 @@ import {
 } from './riddles';
 import { meditateTick } from './meditation';
 import { diffDef } from './difficulty';
+import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
 
 type Log = (e: LogEvent) => void;
 
@@ -338,6 +339,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     onDeath(state, content, log, b);
     return;
   }
+  sigCombatTick(state);
   applyCombatRegen(state, content, b);
   state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
@@ -382,6 +384,7 @@ function skillCooldown(def: Skill, state: GameState): number {
 
 function restRound(state: GameState, content: Content): void {
   state.enemy = null;
+  sigRestTick(state);
   const b = aggregateBonuses(state, content);
   state.sp = Math.min(state.maxSp, state.sp + Math.round((REST_SP_REGEN + state.spRegenBonus + staminaRegenSum(state, content)) * REST_MULT));
   state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round((REST_MP_REGEN + b.mpRegen) * REST_MULT)));
@@ -600,6 +603,12 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
   if (!enemy) return;
   state.enemy = enemy;
   log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
+  // Spider web trap: discharge accumulated gauge as opening burst damage.
+  const webDmg = sigCombatStart(state);
+  if (webDmg > 0) {
+    state.enemy.hp = Math.max(1, state.enemy.hp - webDmg);
+    log({ key: 'log.sig_web_trap', params: { dmg: webDmg } });
+  }
 }
 
 /** Event outcome: start a specific (non-boss) enemy in this room. */
@@ -694,6 +703,12 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   if (enemy.behavior?.armorPct) dmg = Math.max(1, Math.round(dmg * (1 - enemy.behavior.armorPct))); // armoured hide
   enemy.hp -= dmg;
   log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
+  // Wyrmling heat: each attack builds heat; at max the built-up energy releases as a bonus fire burst.
+  const breathDmg = sigOnAttack(state);
+  if (breathDmg > 0 && enemy.hp > 0) {
+    enemy.hp = Math.max(0, enemy.hp - breathDmg);
+    log({ key: 'log.sig_heat_breath', params: { dmg: breathDmg } });
+  }
   state.cooldowns[id] = skillCooldown(def, state);
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
@@ -801,7 +816,9 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   for (const type of types) {
     const reduction = resistReduction(state, content, type);
     const armorCut = b.armor / types.length;
-    const taken = Math.max(0, Math.round(share * (1 - reduction) - armorCut));
+    // Slime elemental absorption: 30% resist vs the currently absorbed element.
+    const slimeRes = sigSlimeResist(state, type);
+    let taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
     totalTaken += taken;
     const resGain = Math.round(taken * resMult);
     if (resGain > 0) addResistExp(state, content, type, resGain, log);
@@ -810,6 +827,10 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
       applyStatus(state, type, share, reduction, log);
     }
   }
+  // Golem stone skin: absorb a burst of flat damage (all full layers consumed at once).
+  const stoneAbsorb = sigStoneAbsorb(state);
+  totalTaken = Math.max(0, totalTaken - stoneAbsorb);
+  if (stoneAbsorb > 0) log({ key: 'log.sig_stone_absorb', params: { absorbed: stoneAbsorb } });
   state.hp = Math.max(0, state.hp - totalTaken);
   if (enemy.behavior?.lifesteal && totalTaken > 0) {
     enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.round(totalTaken * enemy.behavior.lifesteal)); // drains your blood
@@ -975,6 +996,9 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward));
   state.ep += ep;
   state.kills += 1;
+  state.killedEnemies = state.killedEnemies ?? {};
+  state.killedEnemies[enemy.id] = (state.killedEnemies[enemy.id] ?? 0) + 1;
+  sigOnKill(state, enemy.damageType);
   // Harvest Festival (easter egg): a slime that has reaped enough souls awakens a hidden path.
   if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });
   gainXp(state, ep * XP_PER_EP, log);

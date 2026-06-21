@@ -68,8 +68,8 @@ export interface UiActions {
   onRespec: () => void;
 }
 
-type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'stats' | 'settings';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'stats', 'settings'];
+type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings';
+const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'bestiary', 'stats', 'settings'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -82,6 +82,7 @@ const ICONS: Record<Tab, string> = {
   body: EYE_SVG,
   inventory: svg('<path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/>'),
   lore: svg('<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8"/>'),
+  bestiary: svg('<circle cx="12" cy="8" r="4"/><path d="M8 16s0-4 4-4 4 4 4 4"/><path d="M5 20h14"/><path d="M9 12l-1 2M15 12l1 2"/>'),
   stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
   settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
 };
@@ -485,6 +486,9 @@ function renderTab(): void {
       el.innerHTML = loreTab(CURSTATE);
       wireLore(el);
       break;
+    case 'bestiary':
+      el.innerHTML = bestiaryTab(CURSTATE);
+      break;
     case 'stats':
       el.innerHTML = statsTab(CURSTATE);
       wireStats(el);
@@ -756,6 +760,71 @@ function bossRiddlePanel(state: GameState): string {
     </div></section>`;
 }
 
+/** Race signature gauge line shown inside the combat panel (empty string if race has no active sig). */
+function raceSigLine(state: GameState): string {
+  const sig = state.sig ?? 0;
+  switch (state.raceId) {
+    case 'spider': {
+      if (sig <= 0) return '';
+      const pct = Math.round(sig);
+      return `<p class="sig-line">🕸 ${t('sig.spider')}: ${pct}%</p>`;
+    }
+    case 'wyrmling': {
+      if (sig <= 0) return '';
+      return `<p class="sig-line">🔥 ${t('sig.wyrmling')}: ${Math.floor(sig)}/10</p>`;
+    }
+    case 'skeleton': {
+      if (sig <= 0) return '';
+      return `<p class="sig-line">🦴 ${t('sig.skeleton')}: ${Math.floor(sig)}/20</p>`;
+    }
+    case 'slime': {
+      if (!state.sigAbsorb) return '';
+      return `<p class="sig-line">🫧 ${t('sig.slime')}: ${t(`dmgtype.${state.sigAbsorb.type}`)} (${state.sigAbsorb.ticks}t)</p>`;
+    }
+    case 'golem': {
+      const layers = Math.floor(sig);
+      if (layers <= 0) return '';
+      return `<p class="sig-line">🪨 ${t('sig.golem')}: ${layers}/5</p>`;
+    }
+    default:
+      return '';
+  }
+}
+
+const BEHAVIOR_KEYS = ['regen', 'doubleStrike', 'enrage', 'armorPct', 'lifesteal', 'statusBoost'] as const;
+
+function bestiaryTab(state: GameState): string {
+  const enemies = [...CONTENT.enemies.values()];
+  const tier = appraisalTier(state);
+  const killed = state.killedEnemies ?? {};
+  const known = enemies.filter((e) => (killed[e.id] ?? 0) > 0).length;
+
+  const cards = enemies.map((e) => {
+    const n = killed[e.id] ?? 0;
+    if (n === 0) {
+      return `<div class="bestiary-card unknown"><div class="bc-icon">?</div><div class="bc-name">${t('ui.bestiary_unknown')}</div></div>`;
+    }
+    const reveal = n >= 5 || tier >= 1;
+    const behTags = reveal && e.behavior
+      ? BEHAVIOR_KEYS.filter((k) => (e.behavior as Record<string, unknown>)[k] !== undefined)
+          .map((k) => `<span class="beh-tag">${t(`ui.beh_${k}`)}</span>`)
+          .join('')
+      : '';
+    const icon = e.icon ?? '🐾';
+    return `<div class="bestiary-card">
+      <div class="bc-icon">${icon}</div>
+      <div class="bc-name">${t(e.locKey)}</div>
+      <div class="bc-meta">${t(`dmgtype.${e.damageType}`)} · EP ${e.ep} · ×${n}</div>
+      ${behTags ? `<div class="bc-tags">${behTags}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `<section class="panel">
+    <h2>${t('tab.bestiary')} <span class="muted">(${known}/${enemies.length})</span></h2>
+    <div class="bestiary-grid">${cards}</div>
+  </section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -785,11 +854,13 @@ function combatTab(state: GameState): string {
         .map((s) => `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
         .join(' · ')}</p>`
     : '';
+  const sigIndicator = raceSigLine(state);
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
       ${statusLine}
+      ${sigIndicator}
     </section>
     <div class="controls">
       ${act('combat', t('ui.fight'))}

@@ -249,6 +249,16 @@ export interface GameState {
   equipment: Record<EquipSlot, LootItem | null>;
   /** Stat points the player has manually allocated this life (per stat) — refunded on respec. */
   allocated: Record<StatKey, number>;
+
+  // --- bestiary ---------------------------------------------------------------
+  /** Kill count per enemy archetype — unlocks the Bestiary reveal ladder. */
+  killedEnemies: Record<string, number>;
+
+  // --- race signature mechanic ------------------------------------------------
+  /** Race-specific gauge: spider=web(0-100), wyrmling=heat(0-10), skeleton=bone(0-20), golem=stone(0-5). */
+  sig: number;
+  /** Slime elemental absorption — active element + remaining ticks (null = no absorb active). */
+  sigAbsorb: { type: DamageType; ticks: number } | null;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -377,6 +387,9 @@ export function newGame(): GameState {
     raceConfirmed: false,
     inventoryItems: [],
     equipment: emptyEquipment(),
+    killedEnemies: {},
+    sig: 0,
+    sigAbsorb: null,
     allocated: emptyAllocated(),
   };
   recomputeMaxes(state);

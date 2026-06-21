@@ -1257,5 +1257,21 @@
   "skill.raphael.desc": "Bilgelik Lordu — tanrısal hesap gücü: büyük XP/hasar bonusu ve hayatta kalma.",
   "form.demon_slime.name": "İblis Slime",
   "form.rimuru_tempest.name": "Rimuru Tempest",
-  "form.demon_lord_rimuru.name": "Demon Lord Rimuru"
+  "form.demon_lord_rimuru.name": "Demon Lord Rimuru",
+  "tab.bestiary": "Yaratıklar",
+  "ui.bestiary_unknown": "???",
+  "ui.beh_regen": "Yenileniyor",
+  "ui.beh_doubleStrike": "Çift Vuruş",
+  "ui.beh_enrage": "Öfkeleniyor",
+  "ui.beh_armorPct": "Zırhlı",
+  "ui.beh_lifesteal": "Kan Emici",
+  "ui.beh_statusBoost": "Statü Uzmanı",
+  "sig.spider": "Ağ Tuzağı",
+  "sig.wyrmling": "Isı",
+  "sig.skeleton": "Kemik",
+  "sig.slime": "Emilim",
+  "sig.golem": "Taş Zırh",
+  "log.sig_web_trap": "🕸 Ağ tuzağı: -{dmg} hasar",
+  "log.sig_heat_breath": "🔥 Isı patlaması: -{dmg} ateş",
+  "log.sig_stone_absorb": "🪨 Taş zırh {absorbed} hasarı emdi"
 }

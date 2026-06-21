@@ -1257,5 +1257,21 @@
   "skill.raphael.desc": "Lord of Wisdom — god-tier computation: huge XP/damage bonus and survival.",
   "form.demon_slime.name": "Demon Slime",
   "form.rimuru_tempest.name": "Rimuru Tempest",
-  "form.demon_lord_rimuru.name": "Demon Lord Rimuru"
+  "form.demon_lord_rimuru.name": "Demon Lord Rimuru",
+  "tab.bestiary": "Bestiary",
+  "ui.bestiary_unknown": "???",
+  "ui.beh_regen": "Regenerates",
+  "ui.beh_doubleStrike": "Double Strike",
+  "ui.beh_enrage": "Enrages",
+  "ui.beh_armorPct": "Armoured",
+  "ui.beh_lifesteal": "Lifesteal",
+  "ui.beh_statusBoost": "Status Boost",
+  "sig.spider": "Web Trap",
+  "sig.wyrmling": "Heat",
+  "sig.skeleton": "Bones",
+  "sig.slime": "Absorb",
+  "sig.golem": "Stone Skin",
+  "log.sig_web_trap": "🕸 Web trap: -{dmg} damage",
+  "log.sig_heat_breath": "🔥 Heat burst: -{dmg} fire",
+  "log.sig_stone_absorb": "🪨 Stone skin absorbed {absorbed} damage"
 }

@@ -2216,7 +2216,8 @@
     "evolvesTo": [],
     "damage": 10,
     "damageType": "fire",
-    "element": "fire"
+    "element": "fire",
+    "mpCost": 5
   },
   {
     "id": "unyielding_core",

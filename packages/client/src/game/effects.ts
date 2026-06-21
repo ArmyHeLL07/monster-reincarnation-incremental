@@ -1,5 +1,6 @@
 import type { Content } from './content';
 import type { GameState } from './state';
+import { sigBoneArmor } from './signature';
 
 /** Aggregated passive/ruler modifiers, summed live each time they're needed. */
 export interface Bonuses {
@@ -84,6 +85,9 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     else if (tier >= 2) { b.dmgMult += 0.12; b.armor += 5; b.dodgeBonus += 0.03; }
     else if (tier >= 1) { b.dmgMult += 0.05; b.armor += 2; }
   }
+
+  // Race signature: skeleton bone stacks add flat armor.
+  b.armor += sigBoneArmor(state);
 
   // Ruler powers (sins/virtues already granted) — full value, no level.
   for (const def of content.ruler) {
