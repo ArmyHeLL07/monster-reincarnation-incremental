@@ -1233,5 +1233,6 @@
   "log.autoequip": "Auto-equipped {n} item(s).",
   "log.scrap_all": "Melted common gear: +{ep} EP",
   "log.respec": "Stats respecced — points refunded.",
-  "log.search_chest": "📦 Chest! Found {rarity} {item}."
+  "log.search_chest": "📦 Chest! Found {rarity} {item}.",
+  "ui.changelog": "Changelog"
 }

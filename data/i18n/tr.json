@@ -1233,5 +1233,6 @@
   "log.autoequip": "{n} parça otomatik kuşanıldı.",
   "log.scrap_all": "Sıradan eşyalar eritildi: +{ep} EP",
   "log.respec": "Statlar sıfırlandı — puanlar iade edildi.",
-  "log.search_chest": "📦 Sandık! {rarity} {item} buldun."
+  "log.search_chest": "📦 Sandık! {rarity} {item} buldun.",
+  "ui.changelog": "Güncellemeler"
 }

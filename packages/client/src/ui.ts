@@ -13,6 +13,7 @@ import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respec
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
+import { VERSION, CHANGELOG } from './changelog';
 
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
@@ -351,13 +352,29 @@ function statBarSkel(id: string, label: string, color: string): string {
 }
 
 /** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
+/** Version badge (top bar) — hover/tap to reveal the changelog popover. */
+function versionBadge(): string {
+  const lang = CURSTATE?.lang === 'en' ? 'en' : 'tr';
+  const entries = CHANGELOG.map((e, i) => {
+    const items = (lang === 'en' ? e.en : e.tr).map((x) => `<li>${x}</li>`).join('');
+    return `<div class="cl-entry${i === 0 ? ' cl-latest' : ''}"><div class="cl-ver">v${e.v} <span class="muted">${e.date}</span></div><ul>${items}</ul></div>`;
+  }).join('');
+  return `<div class="version-badge" tabindex="0" aria-label="changelog">
+      <span class="ver-ic">✦</span><span class="ver-num">v${VERSION}</span>
+      <div class="version-pop"><div class="cl-title">${t('ui.changelog')}</div>${entries}</div>
+    </div>`;
+}
+
 function topbarHtml(): string {
   return `
     <div class="brand-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
       <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
-      <button id="fs-toggle" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.6rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
-        <span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.fullscreen')}</span>
-      </button>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        ${versionBadge()}
+        <button id="fs-toggle" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.6rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
+          <span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.fullscreen')}</span>
+        </button>
+      </div>
     </div>
     <p class="sub" id="tb-sub"></p>
     <div class="bars">
