@@ -1258,7 +1258,7 @@ function evolutionTree(state: GameState): string {
       const pathClass = isPathUnlocked ? 'unlocked' : 'locked';
 
       const midY = (fromCoord.y + toCoord.y) / 2;
-      pathsHtml += `<path class="evo-path ${pathClass}" d="M ${fromCoord.x}% ${fromCoord.y}% C ${fromCoord.x}% ${midY}%, ${toCoord.x}% ${midY}%, ${toCoord.x}% ${toCoord.y}%" />`;
+      pathsHtml += `<path class="evo-path ${pathClass}" d="M ${fromCoord.x} ${fromCoord.y} C ${fromCoord.x} ${midY}, ${toCoord.x} ${midY}, ${toCoord.x} ${toCoord.y}" />`;
     }
   }
 
@@ -1288,7 +1288,7 @@ function evolutionTree(state: GameState): string {
   return `
     <div class="evotree-viewport">
       <div class="evotree-container">
-        <svg class="evotree-svg">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="evotree-svg">
           ${pathsHtml}
         </svg>
         ${nodesHtml}
