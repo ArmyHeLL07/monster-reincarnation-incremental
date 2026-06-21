@@ -1,6 +1,6 @@
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { newGame } from './state';
+import { newGame, recomputeMaxes } from './state';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
 
@@ -48,11 +48,8 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.riddleLimits = {}; // …and riddle attempt-locks reset for the fresh run.
   // formHistory is reset AFTER applyRace below, using the race's real starting form.
 
-  // --- base stats reset, then keep the permanent boon -----------------------
-  state.stats = { ...fresh.stats };
-  for (const k of Object.keys(state.stats) as (keyof typeof state.stats)[]) {
-    state.stats[k] += boon; // +1 per rebirth to every stat, permanently
-  }
+  // --- base stats reset (race-specific base applied by applyRace below) -----
+  state.stats = { ...fresh.stats }; // default; applyRace overrides for races with startStats
 
   // --- upper hierarchy: PRESERVED -------------------------------------------
   // raceId, ruler (sin/virtue/taboo/powers), meditationUnlocked, hellClears,
@@ -63,8 +60,16 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.unlocks.push(`rebirth_${state.rebirthCount}`);
 
   applyDifficultyStart(state, content, state.difficulty);
-  // Re-apply race-specific starting config so rebirths start with the correct race skills/form.
+  // Re-apply race-specific starting config so rebirths start with the correct race skills/form/stats.
   applyRace(state, savedRaceId, content);
+  // The permanent boon is added AFTER the race base stats so it's never wiped by applyRace.
+  for (const k of Object.keys(state.stats) as (keyof typeof state.stats)[]) {
+    state.stats[k] += boon; // +1 per rebirth to every stat, permanently
+  }
+  recomputeMaxes(state);
+  state.hp = state.maxHp;
+  state.mp = state.maxMp;
+  state.sp = state.maxSp;
   state.formHistory = [state.formId]; // lineage starts at THIS race's start form (set by applyRace; seenForms = knowledge, preserved)
 
   log({ key: 'log.rebirth_msg' });

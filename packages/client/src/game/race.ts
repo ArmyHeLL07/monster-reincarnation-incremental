@@ -12,6 +12,11 @@ export function applyRace(state: GameState, raceId: string, content: Content): v
 
   state.raceId = raceId;
 
+  // Race-defined starting stats (overrides the default 5/5/5/5/5/5); spider keeps the default.
+  if (race.startStats) {
+    state.stats = { ...race.startStats };
+  }
+
   // First evolution form for this race (levelReq 1 = starting form)
   const startForm = [...content.forms.values()].find((f) => f.raceId === raceId && f.levelReq === 1);
   if (startForm) state.formId = startForm.id;

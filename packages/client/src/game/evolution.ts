@@ -27,6 +27,19 @@ export function evolutionReady(state: GameState, content: Content): boolean {
   return availableEvolutions(state, content).some((f) => canEvolve(state, f));
 }
 
+/** True if the player owns the base skill OR any of its in-place evolved forms (whole lineage). */
+function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
+  const line = new Set<string>();
+  const stack = [baseId];
+  while (stack.length) {
+    const id = stack.pop()!;
+    if (line.has(id)) continue;
+    line.add(id);
+    for (const n of content.skills.get(id)?.evolvesTo ?? []) stack.push(n);
+  }
+  return state.skills.some((s) => line.has(s.id));
+}
+
 /** Evolve into a branch: gated by character level; applies stat bonus, grants skills, heals. */
 export function evolve(state: GameState, content: Content, formId: string, log: Log): boolean {
   const cur = content.forms.get(state.formId);
@@ -41,7 +54,9 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   }
   if (form.grantSkills) {
     for (const id of form.grantSkills) {
-      if (!state.skills.some((s) => s.id === id)) state.skills.push({ id, level: 1, exp: 0 });
+      // Lineage-aware: don't re-grant a base skill the player already owns in an evolved form
+      // (skills level up in-place to a new id), which would otherwise pile up duplicate slots.
+      if (!ownsSkillLine(state, content, id)) state.skills.push({ id, level: 1, exp: 0 });
     }
   }
   state.formId = formId;

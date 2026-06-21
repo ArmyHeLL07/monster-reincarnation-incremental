@@ -50,6 +50,8 @@ export interface Race {
   startSkills?: string[];
   /** Starting resistance ids granted at the start of a fresh run. */
   startResistances?: string[];
+  /** Starting base stats for a fresh run of this race (overrides the default 5/5/5/5/5/5). */
+  startStats?: Record<StatKey, number>;
 }
 
 /** A node in a race's (branching) evolution tree. Choosing a branch is permanent. */
