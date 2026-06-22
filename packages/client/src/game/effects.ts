@@ -28,6 +28,8 @@ export interface Bonuses {
   mpRegen: number;
   /** Flat attack power from an equipped weapon (added to raw damage). */
   weaponPower: number;
+  /** Pain Nullification: fraction of incoming damage ignored below half HP (Kumo). */
+  painNull: number;
 }
 
 /** A skill's effect scales with its level (full value at lvMax); ruler powers are full value. */
@@ -49,6 +51,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     surviveChance: 0,
     mpRegen: 0,
     weaponPower: 0,
+    painNull: 0,
   };
 
   for (const slot of state.skills) {
@@ -66,6 +69,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.mpRegen) b.mpRegen += def.mpRegen * s;
     if (def.hungerMult) b.hungerMult *= def.hungerMult;
     if (def.surviveChance) b.surviveChance = Math.max(b.surviveChance, def.surviveChance * s);
+    if (def.painNull) b.painNull = Math.min(0.8, b.painNull + def.painNull * s); // cap at 80% ignored
   }
 
   // Equipped loot (humanoid races) — flat sums; statBonus is handled separately via effStat.

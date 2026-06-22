@@ -73,7 +73,7 @@
     "grantSkills": [
       "chitin_hide"
     ],
-    "damageType2": "acid",
+    "damageType2": "petrify",
     "behavior": {
       "armorPct": 0.3,
       "statusBoost": 1.4
@@ -204,6 +204,7 @@
       "fist_strike",
       "pounce"
     ],
+    "damageType2": "stun",
     "behavior": {
       "doubleStrike": true
     }
@@ -290,6 +291,7 @@
       "venom_bite",
       "maul"
     ],
+    "damageType2": "acid",
     "behavior": {
       "lifesteal": 0.15
     }

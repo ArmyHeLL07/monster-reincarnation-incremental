@@ -13,7 +13,7 @@ E = [
   ('elroe_geafrog', 'Elroe Dev Kurbağası', 'Elroe Geafrog', 16, 3, 'poison', None, 12, 2, '🐸', None, ['venom_bite'], {'statusBoost': 1.6}),
   ('small_lesser_taratect', 'Küçük Alt Taratect', 'Small Lesser Taratect', 14, 3, 'poison', None, 10, 2, '🕷️', 'spider', ['venom_bite', 'silk_thread'], {}),
   ('small_poison_taratect', 'Küçük Zehir Taratect', 'Small Poison Taratect', 18, 3, 'poison', None, 12, 2, '🕷️', 'spider', ['venom_bite', 'sticky_coat'], {'statusBoost': 1.7}),
-  ('elroe_basilisk', 'Elroe Basilisk', 'Elroe Basilisk', 22, 4, 'physical', 'acid', 14, 3, '🦎', None, ['chitin_hide'], {'armorPct': 0.3, 'statusBoost': 1.4}),
+  ('elroe_basilisk', 'Elroe Basilisk', 'Elroe Basilisk', 22, 4, 'physical', 'petrify', 14, 3, '🦎', None, ['chitin_hide'], {'armorPct': 0.3, 'statusBoost': 1.4}),
   ('elroe_pebbluck', 'Elroe Kaya Kaplumbağası', 'Elroe Pebbluck', 30, 3, 'physical', None, 16, 3, '🐢', None, ['chitin_hide'], {'armorPct': 0.5}),
   ('lesser_taratect', 'Alt Taratect', 'Lesser Taratect', 42, 6, 'poison', None, 22, 6, '🕷️', 'spider', ['venom_bite', 'binding_silk'], {'regen': 0.03}),  # Upper boss
   # --- MIDDLE STRATUM (Orta Kat) — magma / fire ---
@@ -22,13 +22,13 @@ E = [
   ('elroe_gunesohka', 'Elroe Gunesohka', 'Elroe Gunesohka', 55, 10, 'fire', None, 28, 6, '🔥', None, ['fire_breath'], {'enrage': 0.5}),
   ('elroe_guneseven', 'Elroe Guneseven', 'Elroe Guneseven', 60, 11, 'fire', 'physical', 30, 6, '🔥', None, ['fire_breath'], {'lifesteal': 0.2}),
   ('magma_newt', 'Magma Semenderi', 'Magma Newt', 48, 9, 'fire', None, 24, 5, '🦎', None, ['flame_bolt'], {'armorPct': 0.25}),
-  ('elroe_cohgou', 'Elroe Mağara Maymunu', 'Elroe Cave Ape', 52, 10, 'physical', None, 26, 5, '🐒', None, ['fist_strike', 'pounce'], {'doubleStrike': True}),
+  ('elroe_cohgou', 'Elroe Mağara Maymunu', 'Elroe Cave Ape', 52, 10, 'physical', 'stun', 26, 5, '🐒', None, ['fist_strike', 'pounce'], {'doubleStrike': True}),
   ('flame_jaw', 'Alev Çene', 'Flame Jaw', 95, 16, 'fire', None, 34, 11, '🐲', None, ['fire_breath'], {'enrage': 0.6}),  # Middle boss
   # --- LOWER STRATUM (Alt Kat) — powerful swarms ---
   ('finjicote', 'Finjicote', 'Finjicote', 110, 20, 'pierce', None, 40, 12, '🐝', None, ['sharp_claw'], {'doubleStrike': True, 'statusBoost': 1.5}),
   ('greater_taratect', 'Büyük Taratect', 'Greater Taratect', 140, 22, 'poison', 'physical', 46, 14, '🕸️', 'spider', ['necro_toxin', 'cutting_wire'], {'regen': 0.04}),
   ('shade_wraith', 'Gölge Tayfı', 'Shade Wraith', 120, 24, 'soul', None, 42, 13, '👻', None, ['shadow_bolt', 'soul_gaze'], {'statusBoost': 1.5}),
-  ('venom_brute', 'Zehir Devi', 'Venom Brute', 130, 21, 'poison', None, 44, 13, '🦂', None, ['venom_bite', 'maul'], {'lifesteal': 0.15}),
+  ('venom_brute', 'Zehir Devi', 'Venom Brute', 130, 21, 'poison', 'acid', 44, 13, '🦂', None, ['venom_bite', 'maul'], {'lifesteal': 0.15}),
   ('abyss_stalker', 'Uçurum Avcısı', 'Abyss Stalker', 125, 23, 'pierce', None, 42, 13, '🦂', None, ['reaper_edge'], {'doubleStrike': True}),
   ('cave_horror', 'Mağara Dehşeti', 'Cave Horror', 135, 25, 'fear', 'frost', 46, 14, '👹', None, ['shadow_bolt'], {'statusBoost': 1.8}),
   ('earth_dragon_araba', 'Toprak Ejderhası Araba', 'Earth Dragon Araba', 210, 30, 'physical', None, 60, 22, '🐲', None, ['heavy_slam', 'shattering_strike'], {'armorPct': 0.35, 'enrage': 0.5}),  # Lower boss

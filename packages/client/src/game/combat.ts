@@ -35,6 +35,8 @@ const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
 /** Souls (kills) a slime must reap in one life to awaken the hidden Demon Slime / Rimuru path. */
 const SECRET_HARVEST_SOULS = 666;
+/** Kills a spider must survive in one life to awaken the hidden Kumoko (Zoa Ele → Arachne) path. */
+const SECRET_LABYRINTH_KILLS = 500;
 const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
 const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player
@@ -52,6 +54,7 @@ const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
 const STATUS_CHANCE = 0.3; // base chance an elemental enemy hit also applies a lingering status
 const DOT_TYPES: DamageType[] = ['poison', 'fire', 'acid', 'lightning', 'frost']; // types that linger as DoT
+const CONTROL_TYPES: DamageType[] = ['petrify', 'stun']; // status conditions that stop the player from acting (Kumo)
 
 /** Effective level = how deep the mastery climb is (tier*10 + level); T2 Lv1 reads as "level 11". */
 export function effectiveLevel(state: GameState): number {
@@ -349,8 +352,10 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     const cd = state.cooldowns[id] ?? 0;
     if (cd > 0) state.cooldowns[id] = cd - 1;
   }
+  // Petrify/stun lock the player out: no skills, no gaze this tick — but the enemy still strikes.
+  const locked = isControlled(state);
   // AUTO: fire each equipped skill that's off cooldown. (MANUAL: player taps cast buttons instead.)
-  if (state.combatMode === 'auto') {
+  if (!locked && state.combatMode === 'auto') {
     for (const id of state.equipped) {
       if (!state.enemy) break;
       if (castSkill(state, content, id, log, b, isOffline) && state.enemy.hp <= 0) {
@@ -359,7 +364,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
       }
     }
   }
-  if (state.enemy) fireGaze(state, content, log);
+  if (!locked && state.enemy) fireGaze(state, content, log);
   if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b, isOffline);
   // Enemy strikes on its own cadence (paced in both modes).
   if (state.enemy) {
@@ -790,6 +795,7 @@ export function sacrificeSkill(state: GameState, content: Content, id: string, l
 /** Manual cast from a tapped skill button (combat only, equipped only, respects cooldown). */
 export function useSkillManual(state: GameState, content: Content, id: string, log: Log): void {
   if (state.action !== 'combat' || !state.enemy || !state.equipped.includes(id)) return;
+  if (isControlled(state)) { log({ key: 'log.controlled' }); return; } // petrified/stunned — can't act
   const b = aggregateBonuses(state, content);
   if (castSkill(state, content, id, log, b) && state.enemy && state.enemy.hp <= 0) {
     onKill(state, content, log, b);
@@ -815,10 +821,17 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   let totalTaken = 0;
   for (const type of types) {
     const reduction = resistReduction(state, content, type);
+    // Control hits (petrify/stun) lock the player out of acting — they deal no direct damage.
+    // Resistance shrinks both the chance to be controlled and the lockout duration (Kumo).
+    if (CONTROL_TYPES.includes(type)) {
+      if (reduction > 0) addResistExp(state, content, type, Math.max(1, Math.round(share * resMult)), log);
+      if (Math.random() < statusChance * (1 - reduction)) applyControl(state, type, reduction, log);
+      continue;
+    }
     const armorCut = b.armor / types.length;
     // Slime elemental absorption: 30% resist vs the currently absorbed element.
     const slimeRes = sigSlimeResist(state, type);
-    let taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
+    const taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
     totalTaken += taken;
     const resGain = Math.round(taken * resMult);
     if (resGain > 0) addResistExp(state, content, type, resGain, log);
@@ -831,6 +844,10 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   const stoneAbsorb = sigStoneAbsorb(state);
   totalTaken = Math.max(0, totalTaken - stoneAbsorb);
   if (stoneAbsorb > 0) log({ key: 'log.sig_stone_absorb', params: { absorbed: stoneAbsorb } });
+  // Pain Nullification (Kumo): below half HP, ignore a fraction of incoming damage (don't feel it).
+  if (b.painNull > 0 && state.hp < state.maxHp * 0.5 && totalTaken > 0) {
+    totalTaken = Math.max(0, Math.round(totalTaken * (1 - b.painNull)));
+  }
   state.hp = Math.max(0, state.hp - totalTaken);
   if (enemy.behavior?.lifesteal && totalTaken > 0) {
     enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.round(totalTaken * enemy.behavior.lifesteal)); // drains your blood
@@ -851,6 +868,25 @@ function applyStatus(state: GameState, type: DamageType, share: number, reductio
     state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
     log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
   }
+}
+
+/** Apply a control condition (petrify/stun): a no-damage lockout that prevents the player from acting.
+ *  Petrify locks longer than stun; resistance shrinks the duration. */
+function applyControl(state: GameState, type: DamageType, reduction: number, log: Log): void {
+  const base = type === 'petrify' ? 4 : 2;
+  const dur = Math.max(1, Math.round(base * (1 - reduction)));
+  const existing = state.statusEffects.find((s) => s.type === type);
+  if (existing) {
+    existing.ticksLeft = Math.max(existing.ticksLeft, dur);
+  } else {
+    state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick: 0, control: true });
+    log({ key: 'log.control_on', params: { type: dmgTypeKey(type), sec: dur } });
+  }
+}
+
+/** True while the player is locked out by a control condition (petrify/stun). */
+function isControlled(state: GameState): boolean {
+  return state.statusEffects.some((s) => s.control && s.ticksLeft > 0);
 }
 
 /** Tick all active statuses: deal DoT, train the matching resistance, expire at 0. Returns damage dealt. */
@@ -1001,6 +1037,8 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   sigOnKill(state, enemy.damageType);
   // Harvest Festival (easter egg): a slime that has reaped enough souls awakens a hidden path.
   if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });
+  // The Labyrinth (easter egg): a spider that survives enough kills awakens the hidden Kumoko path.
+  if (state.kills === SECRET_LABYRINTH_KILLS && state.raceId === 'spider') log({ key: 'log.labyrinth_awakening' });
   gainXp(state, ep * XP_PER_EP, log);
   // Passive, util, and eye skills gain XP upon defeating enemies (since they cannot be actively cast).
   for (const slot of state.skills) {

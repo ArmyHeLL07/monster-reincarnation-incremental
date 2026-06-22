@@ -15,7 +15,9 @@ export type DamageType =
   | 'frost'
   | 'magic'
   | 'fear'
-  | 'soul';
+  | 'soul'
+  | 'petrify'
+  | 'stun';
 
 /** Game difficulty (GDD §8.5). Normal is the balance reference; others are deviations. */
 export type Difficulty = 'easy' | 'normal' | 'hard' | 'hell';
@@ -162,6 +164,8 @@ export interface Skill {
   hungerMult?: number;
   /** Chance to survive an otherwise-lethal hit at 1 HP (Undying Husk). */
   surviveChance?: number;
+  /** Pain Nullification (Kumo): fraction of incoming damage ignored while below half HP. */
+  painNull?: number;
   /** Marks a hidden/meta skill discovered off the normal path (Stillness, Forbidden Knowledge). */
   hidden?: boolean;
   /** Localization key explaining HOW this skill is obtained (acquisition path), shown in the UI. */

@@ -2319,5 +2319,89 @@
     "xpMult": 0.3,
     "dmgMult": 0.15,
     "surviveChance": 0.15
+  },
+  {
+    "id": "pain_resistance",
+    "locKeyName": "skill.pain_resistance.name",
+    "locKeyDesc": "skill.pain_resistance.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "pain_nullification"
+    ],
+    "painNull": 0.15
+  },
+  {
+    "id": "pain_nullification",
+    "locKeyName": "skill.pain_nullification.name",
+    "locKeyDesc": "skill.pain_nullification.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "painNull": 0.35,
+    "surviveChance": 0.1
+  },
+  {
+    "id": "spatial_maneuver",
+    "locKeyName": "skill.spatial_maneuver.name",
+    "locKeyDesc": "skill.spatial_maneuver.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "flash_step"
+    ],
+    "dodgeBonus": 0.05
+  },
+  {
+    "id": "flash_step",
+    "locKeyName": "skill.flash_step.name",
+    "locKeyDesc": "skill.flash_step.desc",
+    "kind": "util",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.1
+  },
+  {
+    "id": "sage_mind",
+    "locKeyName": "skill.sage_mind.name",
+    "locKeyDesc": "skill.sage_mind.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "wisdom"
+    ],
+    "xpMult": 0.2,
+    "dmgMult": 0.05
+  },
+  {
+    "id": "wisdom",
+    "locKeyName": "skill.wisdom.name",
+    "locKeyDesc": "skill.wisdom.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.4,
+    "dmgMult": 0.15,
+    "surviveChance": 0.15
   }
 ]

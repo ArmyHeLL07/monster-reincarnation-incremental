@@ -2943,7 +2943,8 @@
     "locKey": "form.venom_weaver.name",
     "evolvesTo": [
       "greater_weaver",
-      "dread_weaver"
+      "dread_weaver",
+      "zoa_ele"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -2979,7 +2980,8 @@
     "locKey": "form.greater_weaver.name",
     "evolvesTo": [
       "colossal_weaver",
-      "broodmother"
+      "broodmother",
+      "zoa_ele"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -3542,6 +3544,94 @@
       "raphael",
       "beelzebuth",
       "sovereign_form"
+    ],
+    "humanoid": true
+  },
+  {
+    "id": "zoa_ele",
+    "raceId": "spider",
+    "locKey": "form.zoa_ele.name",
+    "evolvesTo": [
+      "ede_saine"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "AGI": 5,
+      "WIS": 4,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "sage_mind",
+      "spatial_maneuver",
+      "pain_resistance"
+    ],
+    "secret": {
+      "kills": 500
+    }
+  },
+  {
+    "id": "ede_saine",
+    "raceId": "spider",
+    "locKey": "form.ede_saine.name",
+    "evolvesTo": [
+      "arachne"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "AGI": 6,
+      "WIS": 6,
+      "VIT": 4,
+      "LUCK": 3
+    },
+    "grantSkills": [
+      "wisdom",
+      "flash_step",
+      "pain_nullification"
+    ]
+  },
+  {
+    "id": "arachne",
+    "raceId": "spider",
+    "locKey": "form.arachne.name",
+    "evolvesTo": [
+      "zana_horowa"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 9,
+      "AGI": 7,
+      "WIS": 7,
+      "VIT": 5,
+      "STR": 4,
+      "LUCK": 4
+    },
+    "grantSkills": [
+      "wisdom",
+      "spatial_rift",
+      "dissolving_touch"
+    ],
+    "humanoid": true
+  },
+  {
+    "id": "zana_horowa",
+    "raceId": "spider",
+    "locKey": "form.zana_horowa.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 11,
+      "WIS": 9,
+      "AGI": 8,
+      "VIT": 6,
+      "STR": 5,
+      "LUCK": 6
+    },
+    "grantSkills": [
+      "wisdom",
+      "sovereign_form",
+      "raphael"
     ],
     "humanoid": true
   }

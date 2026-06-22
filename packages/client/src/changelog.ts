@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.1.0';
+export const VERSION = '1.2.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,26 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.2.0',
+    date: '2026-06-22',
+    tr: [
+      'Durum etkileri: Taşlaşma + Sersemletme — düşman uygularsa bir süre saldıramazsın',
+      'Yeni dirençler: Taşlaşma/Sersemletme Direnci (12 direnç oldu)',
+      'Ağrı İptali skill zinciri (Kumo): düşük canda gelen hasarı yok sayar',
+      'Uzaysal Manevra + Şimşek Adım (kaçınma skilleri)',
+      'Örümceğe gizli Kumoko yolu: 500 öldürmede Zoa Ele → Ede Saine → Arachne → Zana Horowa (Arachne insansı, envanter açılır)',
+      'Bazilisk taşlaştırır, Mağara Maymunu sersemletir — durum uygulayan düşmanlar',
+    ],
+    en: [
+      'Status conditions: Petrify + Stun — enemies can lock you out of acting for a few seconds',
+      'New resistances: Petrify/Stun Resistance (now 12 total)',
+      'Pain Nullification skill chain (Kumo): ignores incoming damage at low HP',
+      'Spatial Maneuver + Flash Step (dodge skills)',
+      'Hidden Kumoko path for spiders: at 500 kills, Zoa Ele → Ede Saine → Arachne → Zana Horowa (Arachne is humanoid, unlocks inventory)',
+      'Basilisk petrifies, Cave Ape stuns — status-applying enemies',
+    ],
+  },
   {
     v: '1.1.0',
     date: '2026-06-22',

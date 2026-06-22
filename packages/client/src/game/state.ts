@@ -69,6 +69,8 @@ export interface StatusEffect {
   ticksLeft: number;
   /** HP lost per tick (already scaled by the inflicting hit and the player's resistance). */
   dmgPerTick: number;
+  /** Control condition (petrify/stun): the player cannot act while this is active (Kumo). */
+  control?: boolean;
 }
 
 /** A spawned enemy — stats are snapshot here (scaled by dungeon depth) so combat is data-free. */

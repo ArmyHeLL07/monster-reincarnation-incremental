@@ -121,7 +121,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival',
+  'log.harvest_festival', 'log.labyrinth_awakening',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -869,7 +869,9 @@ function combatTab(state: GameState): string {
   const searchBtn = `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>`;
   const statusLine = state.statusEffects.length
     ? `<p class="muted" style="margin:.4rem 0 0">⚠ ${t('ui.status')}: ${state.statusEffects
-        .map((s) => `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
+        .map((s) => s.control
+          ? `<b style="color:#9a8a6a">🪨 ${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s`
+          : `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
         .join(' · ')}</p>`
     : '';
   const sigPanel = raceSigPanel(state);
