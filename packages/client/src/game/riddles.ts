@@ -70,7 +70,8 @@ export function bossRiddleChance(state: GameState): number {
 
 /** The riddle gating a given boss archetype, if any. */
 export function pickBossRiddle(content: Content, bossId: string): BossRiddle | null {
-  return content.bossRiddles.get(bossId) ?? null;
+  // bossRiddles is keyed by riddle id, so match the boss by its bossId field.
+  return [...content.bossRiddles.values()].find((r) => r.bossId === bossId) ?? null;
 }
 
 /** Is the typed answer correct (Turkish-folded tolerance)? */

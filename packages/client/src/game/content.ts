@@ -66,7 +66,8 @@ export async function loadContent(base: string): Promise<Content> {
     difficulties: byId(difficulties),
     elements,
     events: byId(events),
-    bossRiddles: new Map(bossRiddles.map((r) => [r.bossId, r])),
+    // Keyed by riddle id (state.bossRiddle.riddleId looks up by id); pickBossRiddle maps boss→riddle.
+    bossRiddles: new Map(bossRiddles.map((r) => [r.id, r])),
   };
 }
 

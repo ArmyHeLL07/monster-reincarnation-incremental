@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.4.0';
+export const VERSION = '1.4.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.4.1',
+    date: '2026-06-22',
+    tr: [
+      'Düzeltme: boss bilmece odasında savaş ekranının boş kalması giderildi',
+      'Bilmece verisi yanlış anahtarla aranıyordu — artık doğru eşleşiyor',
+      'Güvenlik: bilmece yüklenemezse ekran boş kalmaz, normal savaşa döner',
+    ],
+    en: [
+      'Fix: blank combat screen at boss riddle rooms',
+      'Riddle data was looked up by the wrong key — now matched correctly',
+      'Safety: if a riddle fails to load, the screen no longer blanks — falls back to normal combat',
+    ],
+  },
   {
     v: '1.4.0',
     date: '2026-06-22',

@@ -848,7 +848,12 @@ function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
   // An unanswered boss riddle (no guard fighting) takes over too.
-  if (state.bossRiddle && !state.enemy) return bossRiddlePanel(state);
+  // Defensive: if the riddle can't render (missing/corrupt data) don't blank the screen —
+  // fall through to the normal combat view instead of returning an empty string.
+  if (state.bossRiddle && !state.enemy) {
+    const panel = bossRiddlePanel(state);
+    if (panel) return panel;
+  }
   const resists = state.resistances
     .map((r) => {
       const def = CONTENT.resistances.get(r.id);
