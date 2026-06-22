@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.7.1';
+export const VERSION = '1.7.2';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.7.2',
+    date: '2026-06-22',
+    tr: [
+      'Düşman portrelerindeki kenar beyazlığı (halo) tamamen temizlendi',
+      'İki aşamalı defringe: küçültme öncesi + sonrası kenar temizliği',
+    ],
+    en: [
+      'Fully cleaned the leftover white edge halo on enemy portraits',
+      'Two-pass defringe: edge cleanup before and after downscaling',
+    ],
+  },
   {
     v: '1.7.1',
     date: '2026-06-22',
