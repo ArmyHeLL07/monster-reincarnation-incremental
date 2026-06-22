@@ -426,11 +426,13 @@
       .rest-stage { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.4rem 0 0.2rem; }
       .rest-stage .rest-aura { border-radius: 50%; display: inline-flex; }
       .rest-stage .head { max-width: 116px; margin: 0; }
+      .rest-stage .rest-portrait { width: 132px; height: 132px; object-fit: contain; display: block;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
       .rest-stage .rest-label { font-family: var(--disp); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.74rem; }
-      .rest-stage.resting    .head     { animation: rest-breathe 1s ease-in-out; }
+      .rest-stage.resting    .head, .rest-stage.resting    .rest-portrait { animation: rest-breathe 1s ease-in-out; }
       .rest-stage.resting    .rest-aura{ animation: rest-aura 1s ease-in-out; }
       .rest-stage.resting    .rest-label { color: var(--venom); }
-      .rest-stage.meditating .head     { animation: med-float 1s ease-in-out; }
+      .rest-stage.meditating .head, .rest-stage.meditating .rest-portrait { animation: med-float 1s ease-in-out; }
       .rest-stage.meditating .rest-aura{ animation: med-aura 1s ease-in-out; }
       .rest-stage.meditating .rest-label { color: var(--mp); }
       @keyframes rest-breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.045) translateY(-3px); } }

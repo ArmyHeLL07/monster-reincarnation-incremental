@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.8.0';
+export const VERSION = '1.8.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,16 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.8.1',
+    date: '2026-06-22',
+    tr: [
+      'Dinlenme/meditasyon ekranında artık ırkının gerçek portresi nefes alan aurayla görünüyor',
+    ],
+    en: [
+      'Resting/meditation screen now shows your race portrait with a breathing aura',
+    ],
+  },
   {
     v: '1.8.0',
     date: '2026-06-22',

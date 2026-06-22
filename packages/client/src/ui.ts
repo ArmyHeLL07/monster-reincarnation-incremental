@@ -686,10 +686,17 @@ function assetUrl(rel: string): string {
   return base.endsWith('/') ? base + rel : `${base}/${rel}`;
 }
 
-/** Animated player presence while resting / meditating — the race head with a breathing aura. */
+/** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
+const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human']);
+
+/** Animated player presence while resting / meditating — the race portrait with a breathing aura. */
 function restStage(state: GameState): string {
   const kind = state.action === 'meditate' ? 'meditating' : 'resting';
-  return `<div class="rest-stage ${kind}"><span class="rest-aura">${headSvg(state)}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span></div>`;
+  // Show the chosen race's portrait if we have art for it; otherwise the procedural head SVG.
+  const figure = RACE_PORTRAITS.has(state.raceId)
+    ? `<img class="rest-portrait" src="${assetUrl(`races/${state.raceId}.png`)}" alt="" />`
+    : headSvg(state);
+  return `<div class="rest-stage ${kind}"><span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span></div>`;
 }
 
 function enemyView(state: GameState): string {
