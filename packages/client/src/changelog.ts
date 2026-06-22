@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.8.1';
+export const VERSION = '1.9.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.0',
+    date: '2026-06-22',
+    tr: [
+      'Skill Ağacı: Beceriler Liste ve Ağaç görünümü arasında geçiş yapılabilir (Ağaç sekmesi)',
+      'Skill sıralama sistemi (F/E/D/C/B/A/S/SS): üst beceriler daha yavaş XP kazanır',
+      'Türetme (Derivation): birden fazla skili yeterli seviyeye getirince gizli skill otomatik açılır',
+      'İlerici keşif: yalnızca sahip olduğun/komşu skilleri ağaçta görürsün; geri kalanı ??? kalır',
+      'İnsan Yolu: T0 LV10 insan ırkı — Savaşçı/Büyücü/Suikastçı/Şifacı uzmanlaşması seçimi',
+      'Oda öldürme kotası: normal odalarda 10 öldürme yapmadan ilerleme yapılamaz (boss odası hariç)',
+      'Eşik Dayanıklılığı: hayatta kalma becerisiyle çok yakın ölümlerden kalıcı VIT kazanımı',
+      'True Sight ve Plague Weaver: türetme yoluyla açılan iki yeni gizli skill',
+    ],
+    en: [
+      'Skill Tree: skills tab now has List / Tree view toggle',
+      'Skill rank system (F/E/D/C/B/A/S/SS): higher-rank skills gain XP slower',
+      'Derivation: raise multiple skills to threshold levels to auto-unlock hidden skills',
+      'Progressive reveal: only owned/adjacent skills visible in tree; rest stays ???',
+      'Human Path: T0 LV10 human race — choose Warrior/Mage/Assassin/Healer specialization',
+      'Room kill quota: must defeat 10 enemies per room before advancing (boss rooms exempt)',
+      'Threshold Endurance: near-death events with the right skill grant permanent VIT bonus',
+      'True Sight and Plague Weaver: two new hidden skills unlocked via derivation',
+    ],
+  },
   {
     v: '1.8.1',
     date: '2026-06-22',

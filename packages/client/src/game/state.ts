@@ -263,6 +263,30 @@ export interface GameState {
   sig: number;
   /** Slime elemental absorption — active element + remaining ticks (null = no absorb active). */
   sigAbsorb: { type: DamageType; ticks: number } | null;
+
+  // --- Human Path (Tier-0 LV10 specialisation) ------------------------------
+  /** Chosen path id ('tank'|'mage'|'assassin'|'healer'); undefined until chosen. */
+  humanPath?: string;
+  /** True when the human player hit LV10 T0 and must choose a path before continuing. */
+  pendingHumanPath: boolean;
+
+  // --- Room progression (10-kill quota before advance) -----------------------
+  /** Enemies killed in the current room; resets on room advance. */
+  roomKillCount: number;
+  /** Enemy archetype locked for this room on first spawn; null in boss rooms, cleared on advance. */
+  roomEnemyId: string | null;
+
+  // --- Skill tree reveal (progressive discovery) ------------------------------
+  /** Skill IDs seen by the player — names stay visible once revealed. Resets on race change. */
+  seenSkillIds: string[];
+
+  // --- Threshold Endurance (SS rank secret skill) ----------------------------
+  /** How many times the player has survived an otherwise-lethal hit this race life. Resets on race change. */
+  nearDeathCount: number;
+  /** Accumulated VIT endurance XP (each near-death adds skill_lv × 3). Resets on race change. */
+  vitEnduranceXP: number;
+  /** Permanent VIT bonus earned from Threshold Endurance this race life. Cap = tier × 2. Resets on race change. */
+  vitEndurancePerm: number;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -395,6 +419,14 @@ export function newGame(): GameState {
     sig: 0,
     sigAbsorb: null,
     allocated: emptyAllocated(),
+    humanPath: undefined,
+    pendingHumanPath: false,
+    roomKillCount: 0,
+    roomEnemyId: null,
+    seenSkillIds: [],
+    nearDeathCount: 0,
+    vitEnduranceXP: 0,
+    vitEndurancePerm: 0,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
