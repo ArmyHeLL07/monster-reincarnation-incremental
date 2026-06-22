@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.7.0';
+export const VERSION = '1.7.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.7.1',
+    date: '2026-06-22',
+    tr: [
+      'Düşman portrelerinin gömülü beyaz/kareli arka planı temizlendi — artık gerçekten şeffaf',
+      'Kenardan flood-fill: canavarın içindeki açık detaylar (kemik, kristal, zırh) korundu',
+    ],
+    en: [
+      'Removed the baked-in white/checkered background from enemy portraits — now truly transparent',
+      'Edge flood-fill: light details inside the creature (bone, crystal, armor) are preserved',
+    ],
+  },
   {
     v: '1.7.0',
     date: '2026-06-22',
