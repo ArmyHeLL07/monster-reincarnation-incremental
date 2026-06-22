@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.6.1';
+export const VERSION = '1.7.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.7.0',
+    date: '2026-06-22',
+    tr: [
+      '16 düşman artık elle çizilmiş portre resmiyle görünüyor (emoji yerine)',
+      'Savaş ekranında ve Yaratıklar (Bestiary) sekmesinde gösteriliyor',
+      'Resmi olmayan düşmanlar emoji ile devam ediyor',
+    ],
+    en: [
+      '16 enemies now show hand-drawn portrait art (instead of emoji)',
+      'Shown in the combat screen and the Bestiary tab',
+      'Enemies without art keep their emoji',
+    ],
+  },
   {
     v: '1.6.1',
     date: '2026-06-22',

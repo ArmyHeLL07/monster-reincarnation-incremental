@@ -6,6 +6,14 @@ import json
 
 SKILLS = {s['id'] for s in json.load(open('data/skills.json', encoding='utf-8'))}
 
+# Enemies with a hand-drawn portrait in data/monsters/<id>.png (else the emoji icon is used).
+IMAGE_IDS = {
+    'system_guardian', 'cave_horror', 'abyss_horror', 'flame_jaw', 'shade_wraith', 'lesser_taratect',
+    'small_lesser_taratect', 'venom_brute', 'earth_dragon_kaguna', 'earth_dragon_rendill',
+    'small_poison_taratect', 'elroe_basilisk', 'greater_taratect', 'elroe_geafrog', 'magma_newt',
+    'earth_dragon_araba',
+}
+
 # (id, tr, en, hp, atk, dmg, dmg2|None, satiety, ep, icon, race|None, [skills], behavior|{})
 E = [
   # --- UPPER STRATUM (Üst Kat) — weak, poison + status ---
@@ -55,6 +63,8 @@ for (eid, tr, en, hp, atk, dmg, dmg2, sat, ep, icon, race, skills, beh) in E:
         obj['race'] = race
     if beh:
         obj['behavior'] = beh
+    if eid in IMAGE_IDS:  # hand-drawn portrait available (data/monsters/<id>.png)
+        obj['image'] = f'monsters/{eid}.png'
     enemies.append(obj)
     tr_names[f'enemy.{eid}.name'] = tr
     en_names[f'enemy.{eid}.name'] = en

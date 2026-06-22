@@ -93,6 +93,8 @@ export interface EnemyInstance {
   race?: string;
   /** Visual skin (emoji/glyph) for the enemy portrait. */
   icon?: string;
+  /** Optional portrait image path (relative to asset base) — used over the emoji when present. */
+  image?: string;
   /** Spawned by a wrong boss-riddle guess — its death returns to the riddle, doesn't advance. */
   riddleGuard?: boolean;
   /** Special combat behaviour copied from the archetype (regen/double-strike/enrage/armour/…). */

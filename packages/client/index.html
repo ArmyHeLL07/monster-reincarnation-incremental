@@ -397,6 +397,12 @@
         background: radial-gradient(circle at 50% 38%, #23202e, #0e0c14);
       }
       .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; }
+      /* Hand-drawn portraits: larger frame, image fills it (transparent PNGs). */
+      .eportrait.has-img { width: 84px; height: 84px; overflow: hidden; }
+      .eportrait.boss.has-img { width: 104px; height: 104px; }
+      .eportrait-img { width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
+      .bc-img { width: 100%; height: 100%; object-fit: contain; }
+      .bestiary-card .bc-icon:has(.bc-img) { height: 64px; }
 
       /* --- combat & rest stage animations -------------------------------------
          The combat tab re-renders every game tick (1000ms). Any animation whose

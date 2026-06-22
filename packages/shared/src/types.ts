@@ -212,6 +212,8 @@ export interface Enemy {
   race?: string;
   /** Visual "skin" — an emoji/glyph shown as the enemy portrait (framed by its element colour). */
   icon?: string;
+  /** Optional portrait image path (relative to the asset base, e.g. "monsters/venom_brute.png"). */
+  image?: string;
   /** Skills that can be devoured/absorbed from this enemy. */
   grantSkills?: string[];
   /** Special combat behaviour — what makes this monster fight differently (not just element/stats). */

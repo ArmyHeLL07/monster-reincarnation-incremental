@@ -672,8 +672,18 @@ function enemyPortrait(inst: NonNullable<GameState['enemy']>, active: boolean): 
   const color = DMG_COLORS[inst.damageType] ?? '#989384';
   const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : '';
   const anim = active ? ' combat-active' : ' idle-foe';
+  // A hand-drawn portrait when available; otherwise the emoji glyph.
+  const inner = inst.image
+    ? `<img class="eportrait-img" src="${assetUrl(inst.image)}" alt="" loading="lazy" />`
+    : (inst.icon ?? '❓');
   // color:${color} so the boss-glow keyframe's currentColor matches the element's element-colour.
-  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${anim}" style="border-color:${color};color:${color};${glow}">${inst.icon ?? '❓'}</div>`;
+  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
+}
+
+/** Resolve an asset path under the Vite base (handles the GitHub Pages "/<repo>/" base). */
+function assetUrl(rel: string): string {
+  const base = import.meta.env.BASE_URL || '/';
+  return base.endsWith('/') ? base + rel : `${base}/${rel}`;
 }
 
 /** Animated player presence while resting / meditating — the race head with a breathing aura. */
@@ -829,9 +839,11 @@ function bestiaryTab(state: GameState): string {
           .map((k) => `<span class="beh-tag">${t(`ui.beh_${k}`)}</span>`)
           .join('')
       : '';
-    const icon = e.icon ?? '🐾';
+    const iconHtml = e.image
+      ? `<div class="bc-icon"><img class="bc-img" src="${assetUrl(e.image)}" alt="" loading="lazy" /></div>`
+      : `<div class="bc-icon">${e.icon ?? '🐾'}</div>`;
     return `<div class="bestiary-card">
-      <div class="bc-icon">${icon}</div>
+      ${iconHtml}
       <div class="bc-name">${t(e.locKey)}</div>
       <div class="bc-meta">${t(`dmgtype.${e.damageType}`)} · EP ${e.ep} · ×${n}</div>
       ${behTags ? `<div class="bc-tags">${behTags}</div>` : ''}

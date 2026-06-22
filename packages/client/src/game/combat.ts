@@ -616,6 +616,7 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
     icon: def.icon,
+    image: def.image,
     behavior: def.behavior,
   };
 }
