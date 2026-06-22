@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.5.0';
+export const VERSION = '1.6.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.6.0',
+    date: '2026-06-22',
+    tr: [
+      'Zirve formlar artık güçlü bir "ultimate" skill veriyor (rol bazlı)',
+      'Kardeş zirveler farklı ultimate alır — her evrim yolu benzersiz',
+      'Örn: Ruh Hükümdarı → Ölüm Tırpanı, Reaper Tanrısı → Ruh Yutan Bakış',
+    ],
+    en: [
+      'Pinnacle forms now grant a powerful "ultimate" skill (role-based)',
+      'Sibling pinnacles get different ultimates — every path is unique',
+      'E.g. Soul Sovereign → Death Scythe, Reaper God → Soul Devour Gaze',
+    ],
+  },
   {
     v: '1.5.0',
     date: '2026-06-22',

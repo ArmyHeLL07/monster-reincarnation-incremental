@@ -63,6 +63,38 @@ ROLES = {
     'sp_horror':  ('VIT', 'INT', 'LUCK', ['hp_regen', 'regeneration', 'undying_will', 'undying_husk', 'regenerative_core', 'phase_body']),
 }
 
+# Tier-3 "ultimate" skills granted at the T5 pinnacle, per role. Two entries = the two siblings
+# (variant 0/1) get different ultimates, so reaching the apex is rewarding AND each apex is distinct.
+ULTIMATE = {
+    # slime
+    'acid':    ['plague_fang', 'infernal_breath'],
+    'crystal': ['fortress_body', 'titan_carapace'],
+    'venom':   ['plague_fang', 'soul_devour_gaze'],
+    'mirror':  ['dimension_collapse', 'null_field'],
+    # skeleton
+    'bonewar': ['cataclysm_strike', 'ossuary_bastion'],
+    'archer':  ['arrow_storm', 'assassinate'],
+    'necro':   ['death_scythe', 'soul_devour_gaze'],
+    'dark':    ['nightmare_gaze', 'death_scythe'],
+    # wyrmling
+    'flame':   ['infernal_breath', 'meteor'],
+    'magma':   ['cataclysm_strike', 'infernal_breath'],
+    'storm':   ['thunderstorm', 'tempest_blade'],
+    'shadow':  ['dimension_collapse', 'soul_devour_gaze'],
+    # golem
+    'iron':    ['fortress_body', 'aegis_eternal'],
+    'magmag':  ['cataclysm_strike', 'meteor'],
+    'arcaneg': ['dimension_collapse', 'null_field'],
+    'crystalg':['titan_carapace', 'aegis_eternal'],
+    # spider
+    'sp_venom':   ['plague_fang', 'soul_devour_gaze'],
+    'sp_web':     ['assassinate', 'tempest_blade'],
+    'sp_blade':   ['death_scythe', 'cataclysm_strike'],
+    'sp_stealth': ['assassinate', 'nightmare_gaze'],
+    'sp_carapace':['titan_carapace', 'fortress_body'],
+    'sp_horror':  ['deathless', 'eternal_regen'],
+}
+
 # 'shadow_drake'/'storm' skill ids that don't exist get filtered later; keep pools loose.
 
 # Each race: startStats, signature skills for the T1 gateway, and the tree.
@@ -265,7 +297,10 @@ def build_race(race, cfg):
             win = min(idx + v, len(pool) - 2)
             skills = [s for s in pool[win:win + 2] if s in SKILLS]
             if t == 5:
-                skills = ['sovereign_form'] + skills
+                # Pinnacle: sovereign form + a variant-specific tier-3 ultimate + one pool skill.
+                ult = ULTIMATE.get(role, [None, None])[v]
+                ults = [ult] if ult in SKILLS else []
+                skills = ['sovereign_form'] + ults + skills[:1]
         forms.append({
             'id': fid, 'raceId': race, 'locKey': f'form.{fid}.name',
             'evolvesTo': children, 'levelReq': 1 if t == 0 else 10,

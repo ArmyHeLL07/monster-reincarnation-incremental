@@ -1060,8 +1060,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "decay_curse",
-      "soul_gaze"
+      "plague_fang",
+      "decay_curse"
     ]
   },
   {
@@ -1078,8 +1078,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "soul_gaze",
-      "dissolving_touch"
+      "soul_devour_gaze",
+      "soul_gaze"
     ]
   },
   {
@@ -1096,8 +1096,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "decay_curse",
-      "soul_gaze"
+      "plague_fang",
+      "decay_curse"
     ]
   },
   {
@@ -1114,8 +1114,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "necro_toxin",
-      "plague_mist"
+      "infernal_breath",
+      "necro_toxin"
     ]
   },
   {
@@ -1132,8 +1132,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dissolving_touch",
-      "necro_toxin"
+      "plague_fang",
+      "dissolving_touch"
     ]
   },
   {
@@ -1150,8 +1150,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "void_barrier",
-      "spatial_rift"
+      "null_field",
+      "void_barrier"
     ]
   },
   {
@@ -1168,8 +1168,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dissolving_touch",
-      "necro_toxin"
+      "plague_fang",
+      "dissolving_touch"
     ]
   },
   {
@@ -1186,8 +1186,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "void_barrier"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -1204,8 +1204,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "mana_mastery",
-      "void_barrier"
+      "dimension_collapse",
+      "mana_mastery"
     ]
   },
   {
@@ -1222,8 +1222,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "void_barrier"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -1240,8 +1240,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "mana_mastery",
-      "void_barrier"
+      "dimension_collapse",
+      "mana_mastery"
     ]
   },
   {
@@ -1258,8 +1258,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "void_barrier"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -1276,8 +1276,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "adamant_plating",
-      "obsidian_carapace"
+      "fortress_body",
+      "adamant_plating"
     ]
   },
   {
@@ -1294,8 +1294,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "necro_toxin",
-      "plague_mist"
+      "infernal_breath",
+      "necro_toxin"
     ]
   },
   {
@@ -1312,8 +1312,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "mana_mastery",
-      "void_barrier"
+      "dimension_collapse",
+      "mana_mastery"
     ]
   },
   {
@@ -1330,8 +1330,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "void_barrier"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -1639,8 +1639,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "bone_armor",
-      "bone_fortress"
+      "cataclysm_strike",
+      "bone_armor"
     ]
   },
   {
@@ -1657,8 +1657,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "bone_fortress",
-      "battle_cry"
+      "ossuary_bastion",
+      "bone_fortress"
     ]
   },
   {
@@ -1675,8 +1675,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "undying_husk",
-      "soul_gaze"
+      "nightmare_gaze",
+      "undying_husk"
     ]
   },
   {
@@ -1693,8 +1693,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "soul_gaze",
-      "domination_gaze"
+      "death_scythe",
+      "soul_gaze"
     ]
   },
   {
@@ -1710,8 +1710,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "heavy_gaze",
-      "apex_predator"
+      "arrow_storm",
+      "heavy_gaze"
     ]
   },
   {
@@ -1727,8 +1727,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "apex_predator",
-      "reaper_edge"
+      "assassinate",
+      "apex_predator"
     ]
   },
   {
@@ -1744,8 +1744,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "heavy_gaze",
-      "apex_predator"
+      "arrow_storm",
+      "heavy_gaze"
     ]
   },
   {
@@ -1761,8 +1761,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "apex_predator",
-      "reaper_edge"
+      "assassinate",
+      "apex_predator"
     ]
   },
   {
@@ -1779,8 +1779,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "unholy_heart",
-      "rend_soul_gaze"
+      "death_scythe",
+      "unholy_heart"
     ]
   },
   {
@@ -1797,8 +1797,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "rend_soul_gaze",
-      "domination_gaze"
+      "soul_devour_gaze",
+      "rend_soul_gaze"
     ]
   },
   {
@@ -1815,8 +1815,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "unholy_heart",
-      "rend_soul_gaze"
+      "death_scythe",
+      "unholy_heart"
     ]
   },
   {
@@ -1833,8 +1833,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "rend_soul_gaze",
-      "domination_gaze"
+      "soul_devour_gaze",
+      "rend_soul_gaze"
     ]
   },
   {
@@ -1851,8 +1851,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "undying_husk",
-      "soul_gaze"
+      "nightmare_gaze",
+      "undying_husk"
     ]
   },
   {
@@ -1869,8 +1869,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "soul_gaze",
-      "domination_gaze"
+      "death_scythe",
+      "soul_gaze"
     ]
   },
   {
@@ -1887,8 +1887,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "undying_husk",
-      "soul_gaze"
+      "nightmare_gaze",
+      "undying_husk"
     ]
   },
   {
@@ -1905,8 +1905,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "soul_gaze",
-      "domination_gaze"
+      "death_scythe",
+      "soul_gaze"
     ]
   },
   {
@@ -2214,8 +2214,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "scorching_breath",
-      "dragon_heart"
+      "infernal_breath",
+      "scorching_breath"
     ]
   },
   {
@@ -2232,8 +2232,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dragon_heart",
-      "magma_fist"
+      "meteor",
+      "dragon_heart"
     ]
   },
   {
@@ -2250,8 +2250,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "scorching_breath",
-      "dragon_heart"
+      "infernal_breath",
+      "scorching_breath"
     ]
   },
   {
@@ -2268,8 +2268,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dragon_heart",
-      "magma_fist"
+      "meteor",
+      "dragon_heart"
     ]
   },
   {
@@ -2286,8 +2286,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "scorching_breath",
-      "dragon_scale"
+      "cataclysm_strike",
+      "scorching_breath"
     ]
   },
   {
@@ -2304,8 +2304,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dragon_scale",
-      "dragon_heart"
+      "infernal_breath",
+      "dragon_scale"
     ]
   },
   {
@@ -2322,8 +2322,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "scorching_breath",
-      "dragon_scale"
+      "cataclysm_strike",
+      "scorching_breath"
     ]
   },
   {
@@ -2340,8 +2340,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "dragon_scale",
-      "dragon_heart"
+      "infernal_breath",
+      "dragon_scale"
     ]
   },
   {
@@ -2358,8 +2358,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "wind_blade",
-      "spatial_rift"
+      "thunderstorm",
+      "wind_blade"
     ]
   },
   {
@@ -2376,8 +2376,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_rift",
-      "dragon_heart"
+      "tempest_blade",
+      "spatial_rift"
     ]
   },
   {
@@ -2394,8 +2394,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "wind_blade",
-      "spatial_rift"
+      "thunderstorm",
+      "wind_blade"
     ]
   },
   {
@@ -2412,8 +2412,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_rift",
-      "dragon_heart"
+      "tempest_blade",
+      "spatial_rift"
     ]
   },
   {
@@ -2429,8 +2429,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_rift",
-      "domination_gaze"
+      "dimension_collapse",
+      "spatial_rift"
     ]
   },
   {
@@ -2446,8 +2446,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "domination_gaze",
-      "soul_gaze"
+      "soul_devour_gaze",
+      "domination_gaze"
     ]
   },
   {
@@ -2463,8 +2463,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_rift",
-      "domination_gaze"
+      "dimension_collapse",
+      "spatial_rift"
     ]
   },
   {
@@ -2480,8 +2480,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "domination_gaze",
-      "soul_gaze"
+      "soul_devour_gaze",
+      "domination_gaze"
     ]
   },
   {
@@ -2789,8 +2789,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_rift",
-      "crystal_heart"
+      "dimension_collapse",
+      "spatial_rift"
     ]
   },
   {
@@ -2807,8 +2807,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "crystal_heart",
-      "void_barrier"
+      "null_field",
+      "crystal_heart"
     ]
   },
   {
@@ -2825,8 +2825,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "unyielding_core"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -2843,8 +2843,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "unyielding_core",
-      "void_barrier"
+      "aegis_eternal",
+      "unyielding_core"
     ]
   },
   {
@@ -2861,8 +2861,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "shield_wall",
-      "obsidian_carapace"
+      "fortress_body",
+      "shield_wall"
     ]
   },
   {
@@ -2879,8 +2879,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "bastion"
+      "aegis_eternal",
+      "obsidian_carapace"
     ]
   },
   {
@@ -2897,8 +2897,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "shield_wall",
-      "obsidian_carapace"
+      "fortress_body",
+      "shield_wall"
     ]
   },
   {
@@ -2915,8 +2915,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "bastion"
+      "aegis_eternal",
+      "obsidian_carapace"
     ]
   },
   {
@@ -2933,8 +2933,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "heavy_slam",
-      "crystal_heart"
+      "cataclysm_strike",
+      "heavy_slam"
     ]
   },
   {
@@ -2951,8 +2951,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "crystal_heart",
-      "unyielding_core"
+      "meteor",
+      "crystal_heart"
     ]
   },
   {
@@ -2969,8 +2969,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "heavy_slam",
-      "crystal_heart"
+      "cataclysm_strike",
+      "heavy_slam"
     ]
   },
   {
@@ -2987,8 +2987,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "crystal_heart",
-      "unyielding_core"
+      "meteor",
+      "crystal_heart"
     ]
   },
   {
@@ -3005,8 +3005,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "unyielding_core"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -3023,8 +3023,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "unyielding_core",
-      "void_barrier"
+      "aegis_eternal",
+      "unyielding_core"
     ]
   },
   {
@@ -3041,8 +3041,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "unyielding_core"
+      "titan_carapace",
+      "obsidian_carapace"
     ]
   },
   {
@@ -3059,8 +3059,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "unyielding_core",
-      "void_barrier"
+      "aegis_eternal",
+      "unyielding_core"
     ]
   },
   {
@@ -3369,8 +3369,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_web",
-      "snare_field"
+      "assassinate",
+      "spatial_web"
     ]
   },
   {
@@ -3386,8 +3386,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "snare_field",
-      "binding_silk"
+      "tempest_blade",
+      "snare_field"
     ]
   },
   {
@@ -3403,8 +3403,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "spatial_web",
-      "snare_field"
+      "assassinate",
+      "spatial_web"
     ]
   },
   {
@@ -3420,8 +3420,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "snare_field",
-      "binding_silk"
+      "tempest_blade",
+      "snare_field"
     ]
   },
   {
@@ -3438,8 +3438,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "toxic_cloud",
-      "decay_curse"
+      "plague_fang",
+      "toxic_cloud"
     ]
   },
   {
@@ -3455,8 +3455,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "regenerative_core",
-      "phase_body"
+      "eternal_regen",
+      "regenerative_core"
     ]
   },
   {
@@ -3473,8 +3473,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "toxic_cloud",
-      "decay_curse"
+      "plague_fang",
+      "toxic_cloud"
     ]
   },
   {
@@ -3491,8 +3491,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "decay_curse",
-      "soul_gaze"
+      "soul_devour_gaze",
+      "decay_curse"
     ]
   },
   {
@@ -3508,8 +3508,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "silent_step",
-      "phantom_presence"
+      "assassinate",
+      "silent_step"
     ]
   },
   {
@@ -3525,8 +3525,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "phantom_presence",
-      "lethal_lunge"
+      "nightmare_gaze",
+      "phantom_presence"
     ]
   },
   {
@@ -3542,8 +3542,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "undying_husk",
-      "regenerative_core"
+      "deathless",
+      "undying_husk"
     ]
   },
   {
@@ -3559,8 +3559,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "regenerative_core",
-      "phase_body"
+      "eternal_regen",
+      "regenerative_core"
     ]
   },
   {
@@ -3577,8 +3577,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "adamant_plating",
-      "obsidian_carapace"
+      "titan_carapace",
+      "adamant_plating"
     ]
   },
   {
@@ -3595,8 +3595,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "obsidian_carapace",
-      "carapace_lord"
+      "fortress_body",
+      "obsidian_carapace"
     ]
   },
   {
@@ -3613,8 +3613,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "rend",
-      "maul"
+      "death_scythe",
+      "rend"
     ]
   },
   {
@@ -3631,8 +3631,8 @@
     },
     "grantSkills": [
       "sovereign_form",
-      "maul",
-      "blade_dance"
+      "cataclysm_strike",
+      "maul"
     ]
   }
 ]
