@@ -760,31 +760,49 @@ function bossRiddlePanel(state: GameState): string {
     </div></section>`;
 }
 
-/** Race signature gauge line shown inside the combat panel (empty string if race has no active sig). */
-function raceSigLine(state: GameState): string {
+/** One signature gauge block: icon + label + value text + filled bar + effect hint. */
+function sigBlock(icon: string, label: string, valueText: string, value: number, max: number, color: string, hint: string): string {
+  return `<div class="sig-block">
+    <div class="row"><span>${icon} ${label}</span><span class="sig-val">${valueText}</span></div>
+    ${bar(value, max, color)}
+    <div class="sig-hint">${hint}</div>
+  </div>`;
+}
+
+/** Race signature gauge panel shown in the combat tab — always visible for races that have a signature,
+ *  so the player can read exactly how much is built up, the effect, and (slime) seconds remaining. */
+function raceSigPanel(state: GameState): string {
   const sig = state.sig ?? 0;
   switch (state.raceId) {
     case 'spider': {
-      if (sig <= 0) return '';
       const pct = Math.round(sig);
-      return `<p class="sig-line">🕸 ${t('sig.spider')}: ${pct}%</p>`;
+      const dmg = Math.round((sig / 100) * (state.stats.STR * 2 + state.level));
+      return sigBlock('🕸', t('sig.spider'), `${pct}%`, sig, 100, '#8ab23f',
+        sig > 0 ? t('sig.spider_hint', { dmg }) : t('sig.spider_empty'));
     }
     case 'wyrmling': {
-      if (sig <= 0) return '';
-      return `<p class="sig-line">🔥 ${t('sig.wyrmling')}: ${Math.floor(sig)}/10</p>`;
+      const burst = Math.round(state.stats.INT * 3 + state.level * 2);
+      return sigBlock('🔥', t('sig.wyrmling'), `${Math.floor(sig)}/10`, sig, 10, '#e0683c',
+        t('sig.wyrmling_hint', { burst }));
     }
     case 'skeleton': {
-      if (sig <= 0) return '';
-      return `<p class="sig-line">🦴 ${t('sig.skeleton')}: ${Math.floor(sig)}/20</p>`;
+      const armor = Math.floor(sig);
+      return sigBlock('🦴', t('sig.skeleton'), `${armor}/20`, sig, 20, '#cdc6b0',
+        t('sig.skeleton_hint', { armor }));
     }
     case 'slime': {
-      if (!state.sigAbsorb) return '';
-      return `<p class="sig-line">🫧 ${t('sig.slime')}: ${t(`dmgtype.${state.sigAbsorb.type}`)} (${state.sigAbsorb.ticks}t)</p>`;
+      if (!state.sigAbsorb) {
+        return sigBlock('🫧', t('sig.slime'), t('sig.slime_none'), 0, 120, '#5fa8d0', t('sig.slime_empty'));
+      }
+      const sec = state.sigAbsorb.ticks;
+      const elem = t(`dmgtype.${state.sigAbsorb.type}`);
+      return sigBlock('🫧', t('sig.slime'), `${elem} · ${sec}s`, sec, 120, '#5fa8d0',
+        t('sig.slime_hint', { elem }));
     }
     case 'golem': {
       const layers = Math.floor(sig);
-      if (layers <= 0) return '';
-      return `<p class="sig-line">🪨 ${t('sig.golem')}: ${layers}/5</p>`;
+      return sigBlock('🪨', t('sig.golem'), `${layers}/5`, sig, 5, '#9a8a6a',
+        t('sig.golem_hint', { absorb: layers * 3 }));
     }
     default:
       return '';
@@ -854,14 +872,14 @@ function combatTab(state: GameState): string {
         .map((s) => `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
         .join(' · ')}</p>`
     : '';
-  const sigIndicator = raceSigLine(state);
+  const sigPanel = raceSigPanel(state);
   return `
     <section class="panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
       ${statusLine}
-      ${sigIndicator}
     </section>
+    ${sigPanel ? `<section class="panel sig-panel"><h2>${t('sig.title')}</h2>${sigPanel}</section>` : ''}
     <div class="controls">
       ${act('combat', t('ui.fight'))}
       ${act('rest', t('ui.rest'))}

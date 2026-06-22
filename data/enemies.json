@@ -73,6 +73,7 @@
     "grantSkills": [
       "chitin_hide"
     ],
+    "damageType2": "acid",
     "behavior": {
       "armorPct": 0.3,
       "statusBoost": 1.4
@@ -321,6 +322,7 @@
     "grantSkills": [
       "shadow_bolt"
     ],
+    "damageType2": "frost",
     "behavior": {
       "statusBoost": 1.8
     }
@@ -355,6 +357,7 @@
     "grantSkills": [
       "shattering_strike"
     ],
+    "damageType2": "lightning",
     "behavior": {
       "armorPct": 0.4,
       "regen": 0.03
@@ -383,7 +386,7 @@
     "locKey": "enemy.queen_taratect.name",
     "hp": 320,
     "attack": 40,
-    "damageType": "poison",
+    "damageType": "magic",
     "satiety": 80,
     "ep": 32,
     "icon": "👑",
@@ -391,7 +394,7 @@
       "necro_toxin",
       "spatial_web"
     ],
-    "damageType2": "physical",
+    "damageType2": "poison",
     "race": "spider",
     "behavior": {
       "regen": 0.05,

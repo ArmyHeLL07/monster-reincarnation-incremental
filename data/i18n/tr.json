@@ -1273,5 +1273,14 @@
   "sig.golem": "Taş Zırh",
   "log.sig_web_trap": "🕸 Ağ tuzağı: -{dmg} hasar",
   "log.sig_heat_breath": "🔥 Isı patlaması: -{dmg} ateş",
-  "log.sig_stone_absorb": "🪨 Taş zırh {absorbed} hasarı emdi"
+  "log.sig_stone_absorb": "🪨 Taş zırh {absorbed} hasarı emdi",
+  "sig.title": "Irk Gücü",
+  "sig.spider_hint": "Sonraki düşmana açılışta ≈{dmg} hasar",
+  "sig.spider_empty": "Dinlenirken ağ örülür — savaşta tuzak patlar",
+  "sig.wyrmling_hint": "Doluyken sonraki saldırı +{burst} ateş patlatır",
+  "sig.skeleton_hint": "+{armor} zırf (her öldürmede artar, savaşta yavaş aşınır)",
+  "sig.slime_none": "Boş",
+  "sig.slime_empty": "Elementli düşman öldür → o elemente direnç emersin",
+  "sig.slime_hint": "{elem} hasarına %30 direnç",
+  "sig.golem_hint": "Vurulunca {absorb} hasar taş zırhla emilir"
 }

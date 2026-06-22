@@ -1273,5 +1273,14 @@
   "sig.golem": "Stone Skin",
   "log.sig_web_trap": "🕸 Web trap: -{dmg} damage",
   "log.sig_heat_breath": "🔥 Heat burst: -{dmg} fire",
-  "log.sig_stone_absorb": "🪨 Stone skin absorbed {absorbed} damage"
+  "log.sig_stone_absorb": "🪨 Stone skin absorbed {absorbed} damage",
+  "sig.title": "Race Power",
+  "sig.spider_hint": "≈{dmg} opening damage to the next enemy",
+  "sig.spider_empty": "Weaves web while resting — bursts as a trap in combat",
+  "sig.wyrmling_hint": "When full, the next attack erupts for +{burst} fire",
+  "sig.skeleton_hint": "+{armor} armor (grows per kill, slowly erodes in combat)",
+  "sig.slime_none": "Empty",
+  "sig.slime_empty": "Kill an elemental enemy → absorb resistance to that element",
+  "sig.slime_hint": "30% resistance to {elem} damage",
+  "sig.golem_hint": "Absorbs {absorb} damage with stone skin when hit"
 }

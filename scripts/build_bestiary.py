@@ -13,7 +13,7 @@ E = [
   ('elroe_geafrog', 'Elroe Dev Kurbağası', 'Elroe Geafrog', 16, 3, 'poison', None, 12, 2, '🐸', None, ['venom_bite'], {'statusBoost': 1.6}),
   ('small_lesser_taratect', 'Küçük Alt Taratect', 'Small Lesser Taratect', 14, 3, 'poison', None, 10, 2, '🕷️', 'spider', ['venom_bite', 'silk_thread'], {}),
   ('small_poison_taratect', 'Küçük Zehir Taratect', 'Small Poison Taratect', 18, 3, 'poison', None, 12, 2, '🕷️', 'spider', ['venom_bite', 'sticky_coat'], {'statusBoost': 1.7}),
-  ('elroe_basilisk', 'Elroe Basilisk', 'Elroe Basilisk', 22, 4, 'physical', None, 14, 3, '🦎', None, ['chitin_hide'], {'armorPct': 0.3, 'statusBoost': 1.4}),
+  ('elroe_basilisk', 'Elroe Basilisk', 'Elroe Basilisk', 22, 4, 'physical', 'acid', 14, 3, '🦎', None, ['chitin_hide'], {'armorPct': 0.3, 'statusBoost': 1.4}),
   ('elroe_pebbluck', 'Elroe Kaya Kaplumbağası', 'Elroe Pebbluck', 30, 3, 'physical', None, 16, 3, '🐢', None, ['chitin_hide'], {'armorPct': 0.5}),
   ('lesser_taratect', 'Alt Taratect', 'Lesser Taratect', 42, 6, 'poison', None, 22, 6, '🕷️', 'spider', ['venom_bite', 'binding_silk'], {'regen': 0.03}),  # Upper boss
   # --- MIDDLE STRATUM (Orta Kat) — magma / fire ---
@@ -30,12 +30,12 @@ E = [
   ('shade_wraith', 'Gölge Tayfı', 'Shade Wraith', 120, 24, 'soul', None, 42, 13, '👻', None, ['shadow_bolt', 'soul_gaze'], {'statusBoost': 1.5}),
   ('venom_brute', 'Zehir Devi', 'Venom Brute', 130, 21, 'poison', None, 44, 13, '🦂', None, ['venom_bite', 'maul'], {'lifesteal': 0.15}),
   ('abyss_stalker', 'Uçurum Avcısı', 'Abyss Stalker', 125, 23, 'pierce', None, 42, 13, '🦂', None, ['reaper_edge'], {'doubleStrike': True}),
-  ('cave_horror', 'Mağara Dehşeti', 'Cave Horror', 135, 25, 'fear', None, 46, 14, '👹', None, ['shadow_bolt'], {'statusBoost': 1.8}),
+  ('cave_horror', 'Mağara Dehşeti', 'Cave Horror', 135, 25, 'fear', 'frost', 46, 14, '👹', None, ['shadow_bolt'], {'statusBoost': 1.8}),
   ('earth_dragon_araba', 'Toprak Ejderhası Araba', 'Earth Dragon Araba', 210, 30, 'physical', None, 60, 22, '🐲', None, ['heavy_slam', 'shattering_strike'], {'armorPct': 0.35, 'enrage': 0.5}),  # Lower boss
   # --- BOTTOM STRATUM (Dip Kat) — Earth Dragon guardians, System Core ---
-  ('earth_dragon_kaguna', 'Toprak Ejderhası Kaguna', 'Earth Dragon Kaguna', 280, 38, 'physical', None, 70, 28, '🐉', None, ['shattering_strike'], {'armorPct': 0.4, 'regen': 0.03}),
+  ('earth_dragon_kaguna', 'Toprak Ejderhası Kaguna', 'Earth Dragon Kaguna', 280, 38, 'physical', 'lightning', 70, 28, '🐉', None, ['shattering_strike'], {'armorPct': 0.4, 'regen': 0.03}),
   ('earth_dragon_rendill', 'Ateş Ejderhası Rendill', 'Fire Dragon Rendill', 300, 42, 'fire', None, 72, 30, '🐉', None, ['fire_breath', 'scorching_breath'], {'enrage': 0.6, 'lifesteal': 0.2}),
-  ('queen_taratect', 'Kraliçe Taratect', 'Queen Taratect', 320, 40, 'poison', 'physical', 80, 32, '👑', 'spider', ['necro_toxin', 'spatial_web'], {'regen': 0.05, 'statusBoost': 1.6}),
+  ('queen_taratect', 'Kraliçe Taratect', 'Queen Taratect', 320, 40, 'magic', 'poison', 80, 32, '👑', 'spider', ['necro_toxin', 'spatial_web'], {'regen': 0.05, 'statusBoost': 1.6}),
   ('abyss_horror', 'Uçurum Kâbusu', 'Abyss Horror', 290, 44, 'soul', None, 74, 30, '👁️', None, ['shadow_bolt', 'soul_gaze'], {'statusBoost': 2.0}),
   ('system_guardian', 'Sistem Bekçisi', 'System Guardian', 460, 55, 'physical', 'soul', 100, 45, '🐲', None, ['shattering_strike', 'soul_gaze'], {'armorPct': 0.4, 'enrage': 0.5, 'regen': 0.04}),  # Bottom boss / GATEKEEPER
 ]
