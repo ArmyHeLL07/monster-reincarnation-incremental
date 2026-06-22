@@ -190,7 +190,7 @@
   "skill.cutting_wire.name": "Kesici Tel",
   "skill.cutting_wire.desc": "İplik artık keser; bağlarken hasar verir.",
   "skill.parallel_minds.name": "Paralel Zihinler",
-  "skill.parallel_minds.desc": "Aynı anda çok işlem; INT tavanı.",
+  "skill.parallel_minds.desc": "Zihnini ikiye bölersin — bir zihin daha. Her zihin turda bekleme süresini yok sayarak EKSTRA bir skill ateşler, ayrıca savaşırken labirenti okuyup MP/SP yeniler. (+1 skill slotu)",
   "skill.regeneration.name": "Rejenerasyon",
   "skill.regeneration.desc": "Güçlü yenilenme; uzuv ve yara onarır.",
   "skill.endurance.name": "Dayanıklılık",
@@ -1307,5 +1307,10 @@
   "form.zoa_ele.name": "Zoa Ele",
   "form.ede_saine.name": "Ede Saine",
   "form.arachne.name": "Arachne",
-  "form.zana_horowa.name": "Zana Horowa"
+  "form.zana_horowa.name": "Zana Horowa",
+  "skill.parallel_will.name": "Paralel İrade",
+  "skill.parallel_will.desc": "İki paralel zihin: aynı anda iki ekstra eylem (saldırı/büyü), daha fazla pasif regen ve keşif. (+2 skill slotu)",
+  "skill.parallel_existence.name": "Paralel Varoluş",
+  "skill.parallel_existence.desc": "Üç paralel zihin birden işler — üç ekstra eylem, güçlü pasif regen ve sürekli keşif. Kumoko gibi düşün. (+3 skill slotu)",
+  "log.parallel_search": "🧠 Bir paralel zihin labirenti okudu — bir parça buldu"
 }

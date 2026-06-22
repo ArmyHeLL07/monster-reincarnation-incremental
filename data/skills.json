@@ -543,7 +543,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "parallel_will"
+    ],
     "xpMult": 0.2
   },
   {
@@ -2403,5 +2405,33 @@
     "xpMult": 0.4,
     "dmgMult": 0.15,
     "surviveChance": 0.15
+  },
+  {
+    "id": "parallel_will",
+    "locKeyName": "skill.parallel_will.name",
+    "locKeyDesc": "skill.parallel_will.desc",
+    "kind": "util",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "parallel_existence"
+    ],
+    "xpMult": 0.3
+  },
+  {
+    "id": "parallel_existence",
+    "locKeyName": "skill.parallel_existence.name",
+    "locKeyDesc": "skill.parallel_existence.desc",
+    "kind": "util",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "xpMult": 0.4
   }
 ]

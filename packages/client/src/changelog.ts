@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.2.0';
+export const VERSION = '1.3.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.3.0',
+    date: '2026-06-22',
+    tr: [
+      'Paralel Zihin yeniden tasarlandı (Kumo): Paralel Zihin → İrade → Varoluş (1/2/3 zihin)',
+      'Çoklu eylem: her paralel zihin turda bekleme süresini yok sayıp EKSTRA bir skill ateşler',
+      'Paralel görev: savaşırken pasif MP/SP regen + nadir parça bulma (bir zihin labirenti okur)',
+      'Her paralel zihin ayrıca +1 skill slotu verir (kademeli)',
+    ],
+    en: [
+      'Parallel Minds redesigned (Kumo): Parallel Minds → Will → Existence (1/2/3 minds)',
+      'Multi-action: each parallel mind fires an EXTRA skill per turn, ignoring cooldown',
+      'Parallel tasking: passive MP/SP regen + rare fragment finds while fighting',
+      'Each parallel mind also grants +1 skill slot (scaling)',
+    ],
+  },
   {
     v: '1.2.0',
     date: '2026-06-22',

@@ -365,6 +365,29 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     }
   }
   if (!locked && state.enemy) fireGaze(state, content, log);
+  // Parallel Minds (Kumo): each independent mind fires one extra equipped skill this turn, bypassing
+  // cooldown — so 3 minds can attack + cast + cast simultaneously. Autonomous in both auto & manual.
+  if (!locked && state.enemy) {
+    const minds = parallelMinds(state);
+    for (let i = 0; i < minds && state.enemy; i++) {
+      const id = state.equipped[i % Math.max(1, state.equipped.length)];
+      if (!id) break;
+      if (castSkill(state, content, id, log, b, isOffline, true) && state.enemy.hp <= 0) {
+        onKill(state, content, log, b, isOffline);
+        break;
+      }
+    }
+    // Parallel tasking: while one mind fights, another reads the labyrinth — extra regen + rare finds.
+    if (state.enemy && minds > 0) {
+      state.mp = Math.min(state.maxMp, state.mp + minds);
+      state.sp = Math.min(state.maxSp, state.sp + minds);
+      if (!isOffline && Math.random() < 0.01 * minds) {
+        if (Math.random() < 0.5) state.mapFragments += 1;
+        else state.loreFragments += 1;
+        log({ key: 'log.parallel_search' });
+      }
+    }
+  }
   if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b, isOffline);
   // Enemy strikes on its own cadence (paced in both modes).
   if (state.enemy) {
@@ -664,14 +687,15 @@ export function chooseEvent(state: GameState, content: Content, choiceIndex: num
   return true;
 }
 
-/** Cast one specific equipped skill at the current enemy (shared by auto & manual). True if it fired. */
-function castSkill(state: GameState, content: Content, id: string, log: Log, b: Bonuses, isOffline = false): boolean {
+/** Cast one specific equipped skill at the current enemy (shared by auto & manual). True if it fired.
+ *  `ignoreCd`: a parallel mind acts independently — it bypasses (and never sets) the cooldown timer. */
+function castSkill(state: GameState, content: Content, id: string, log: Log, b: Bonuses, isOffline = false, ignoreCd = false): boolean {
   const enemy = state.enemy;
   if (!enemy) return false;
   const slot = state.skills.find((s) => s.id === id);
   const def = content.skills.get(id);
   if (!slot || !def || def.damage === undefined) return false;
-  if ((state.cooldowns[id] ?? 0) > 0) return false;
+  if (!ignoreCd && (state.cooldowns[id] ?? 0) > 0) return false;
   if (def.kind === 'magic' && (def.mpCost ?? 0) > state.mp) return false;
   const diff = diffDef(state, content);
 
@@ -714,7 +738,7 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     enemy.hp = Math.max(0, enemy.hp - breathDmg);
     log({ key: 'log.sig_heat_breath', params: { dmg: breathDmg } });
   }
-  state.cooldowns[id] = skillCooldown(def, state);
+  if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state);
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
   addSkillExp(content, slot, gain, log, b.xpMult, isOffline);
@@ -733,9 +757,18 @@ function fireGaze(state: GameState, content: Content, log: Log): void {
   }
 }
 
-/** Skill-slot capacity — Parallel Minds grants an extra slot (the "act in parallel" idea). */
+/** Number of parallel minds (Kumo): 0 normally, 1/2/3 along the Parallel Minds → Will → Existence chain.
+ *  Each parallel mind is an independent thought that acts on its own each turn. */
+export function parallelMinds(state: GameState): number {
+  if (state.skills.some((s) => s.id === 'parallel_existence')) return 3;
+  if (state.skills.some((s) => s.id === 'parallel_will')) return 2;
+  if (state.skills.some((s) => s.id === 'parallel_minds')) return 1;
+  return 0;
+}
+
+/** Skill-slot capacity — each parallel mind grants an extra equipped-skill slot. */
 export function skillSlots(state: GameState): number {
-  return 4 + (state.skills.some((s) => s.id === 'parallel_minds') ? 1 : 0);
+  return 4 + parallelMinds(state);
 }
 
 /** Keep `equipped` valid: only owned active-damage skills, within capacity; auto-fill spare slots. */
