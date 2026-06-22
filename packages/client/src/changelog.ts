@@ -18,12 +18,14 @@ export const CHANGELOG: ChangelogEntry[] = [
     tr: [
       'Denge: slime/iskelet/golem/insan artık 2 saldırı skiliyle başlıyor (eskiden 1)',
       'Erken oyun çok yavaştı — başlangıç DPS\'i ~2 katına çıktı',
-      'Slime: Asit Tükürüğü + Zehir Bulutu; yeni oyun/rebirth\'te geçerli',
+      'Slime: Asit Tükürüğü + Zehir Bulutu',
+      'Mevcut karakterlere de eksik 2. saldırı skili otomatik ekleniyor',
     ],
     en: [
       'Balance: slime/skeleton/golem/human now start with 2 attack skills (was 1)',
       'Early game was too slow — opening DPS roughly doubled',
-      'Slime: Acid Spit + Toxic Cloud; applies on new game/rebirth',
+      'Slime: Acid Spit + Toxic Cloud',
+      'Existing characters auto-receive the missing 2nd attack skill',
     ],
   },
   {

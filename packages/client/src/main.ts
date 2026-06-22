@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -482,9 +482,29 @@ function migrate(s: GameState): void {
  *   1. dedupeSkills — collapse duplicate skill slots from the old in-place-evolution grant bug.
  *   2. remapRemovedForms — point saves stuck on a deleted form onto the new binary tree.
  */
+/** v1.6.1 balance: the 2nd starting attack skill each single-attack race now gets. */
+const RACE_SECOND_ATTACK: Record<string, string> = {
+  slime: 'toxic_cloud', skeleton: 'sword_slash', golem: 'heavy_slam', human: 'sword_slash',
+};
+
+/** One-time backfill of the new 2nd starting attack skill onto existing characters (v1.6.1).
+ *  Flagged in `unlocks` so it runs once; skips if the player already owns it (or an evolved form),
+ *  so deleting it later won't re-grant it. */
+function applyStartSkillFix(state: GameState, content: Content): void {
+  if (state.unlocks.includes('v161_startskill')) return;
+  state.unlocks.push('v161_startskill');
+  const skill = RACE_SECOND_ATTACK[state.raceId];
+  if (!skill || hasSkillLine(state, content, skill)) return;
+  state.skills.push({ id: skill, level: 1, exp: 0 });
+  if (state.equipped.length < skillSlots(state) && !state.equipped.includes(skill)) {
+    state.equipped.push(skill);
+  }
+}
+
 function repairSave(state: GameState, content: Content): void {
   dedupeSkills(state, content);
   remapRemovedForms(state, content);
+  applyStartSkillFix(state, content);
 }
 
 /** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
