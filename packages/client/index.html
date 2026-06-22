@@ -615,6 +615,26 @@
       .sig-block .row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem; }
       .sig-val { color: var(--bone); font-weight: 600; }
       .sig-hint { font-size: 0.72rem; color: var(--ash); margin-top: 0.25rem; }
+
+      /* Skill tree */
+      .sk-tree { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.4rem 0; }
+      .sk-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem; }
+      .sk-arrow { color: var(--ash); margin: 0 0.1rem; }
+      .sk-node { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.8rem; border: 1px solid transparent; }
+      .sk-node.sk-owned    { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
+      .sk-node.sk-available { background: #2a2038; border-color: var(--bone); color: var(--bone); }
+      .sk-node.sk-locked   { background: #1a1525; border-color: #444; color: var(--ash); }
+      .sk-node.sk-seen     { background: #1a1525; border-color: #555; color: #888; font-style: italic; }
+      .sk-node.sk-hidden   { background: #111; border-color: #333; color: #444; font-style: italic; }
+      .sk-rank { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 0 0.25rem; margin-right: 0.2rem; border-radius: 4px; background: rgba(0,0,0,0.3); }
+      .sk-rank-SS { color: #e6c449; }
+      .sk-rank-S  { color: #c678e6; }
+      .sk-rank-A  { color: #e66e6e; }
+      .sk-rank-B  { color: #e6a34a; }
+      .sk-rank-C  { color: #4ac8e6; }
+      .sk-derived-title { font-size: 0.75rem; border-top: 1px solid #333; padding-top: 0.4rem; margin-top: 0.4rem; }
+      .human-path-btn { background: #1a1525; border: 1px solid var(--chitin); border-radius: 8px; padding: 0.6rem 0.8rem; width: 100%; transition: border-color 0.15s; }
+      .human-path-btn:hover { border-color: var(--venom); }
     </style>
   </head>
   <body>

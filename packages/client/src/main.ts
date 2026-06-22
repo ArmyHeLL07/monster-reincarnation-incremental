@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -11,6 +11,7 @@ import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { load, save, clear } from './game/save';
+import { markSeenSkills } from './game/skill_tree';
 import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, type UiActions } from './ui';
 import type { Difficulty } from '@mri/shared';
 
@@ -341,6 +342,11 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onChooseHumanPath: (pathId) => {
+      chooseHumanPath(state, content, pathId, logFn);
+      save(state);
+      render(state);
+    },
   };
 
   mount(state, content, actions);
@@ -348,6 +354,7 @@ async function init(): Promise<void> {
   let ticks = 0;
   const clock = new GameClock(1000, () => {
     tick(state, content, logFn);
+    markSeenSkills(state, content);
     ticks += 1;
     if (ticks % Math.max(1, state.autosaveMin * 60) === 0) save(state);
     live(state);
@@ -474,6 +481,15 @@ function migrate(s: GameState): void {
   if (!Number.isFinite(s.hp)) s.hp = Number.isFinite(s.maxHp) ? s.maxHp : 1;
   if (!Number.isFinite(s.mp)) s.mp = Number.isFinite(s.maxMp) ? s.maxMp : 0;
   if (!Number.isFinite(s.sp)) s.sp = Number.isFinite(s.maxSp) ? s.maxSp : 0;
+  // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
+  s.humanPath ??= undefined;
+  s.pendingHumanPath ??= false;
+  s.roomKillCount ??= 0;
+  s.roomEnemyId ??= null;
+  s.seenSkillIds ??= [];
+  s.nearDeathCount ??= 0;
+  s.vitEnduranceXP ??= 0;
+  s.vitEndurancePerm ??= 0;
 }
 
 /**

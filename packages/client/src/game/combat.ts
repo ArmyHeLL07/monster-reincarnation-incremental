@@ -242,7 +242,7 @@ export function deepRead(state: GameState, content: Content, log: Log): void {
   // Detail is shown ON the enemy panel (not dumped to the action log): mark this foe as analyzed.
   enemy.analyzed = true;
   const slot = state.skills.find((s) => s.id === 'appraisal' || s.id === 'insight' || s.id === 'all_sight');
-  if (slot) addSkillExp(content, slot, DEEP_READ_XP, log, 1);
+  if (slot) addSkillExp(state, content, slot, DEEP_READ_XP, log, 1);
   log({ key: 'log.analyzed', params: { enemy: enemy.locKey } }); // single, concise confirmation
 }
 
@@ -297,10 +297,19 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 // ---- rounds ----------------------------------------------------------------
 
 /** After a kill: auto-advance to the next room, or stay and FARM this room (manual). */
+const ROOM_KILL_QUOTA = 10;
+
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
+  state.roomKillCount = (state.roomKillCount ?? 0) + 1;
+  // Room clears only after the kill quota is met (boss rooms are exempt — boss kill ends immediately).
+  const layer = currentLayer(state, content);
+  const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
+  if (!isBossRoom && state.roomKillCount < ROOM_KILL_QUOTA) return; // keep farming this room
+  state.roomKillCount = 0;
+  state.roomEnemyId = null;
   if (state.autoAdvance) advancePosition(state, content, log);
-  // manual: don't advance — combatRound respawns an enemy in the same room (farm in place)
+  else state.roomCleared = true;
 }
 
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, isOffline: boolean = false): void {
@@ -627,7 +636,15 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
   const R = roomsOf(state, layer, state.pos.floor);
   recordExplored(state); // light the room on the map as we enter it
   const isBoss = state.pos.room >= R;
-  const archId = isBoss ? layer.boss : layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+  // Non-boss rooms lock to one enemy type for the whole kill-quota run.
+  let archId: string;
+  if (isBoss) {
+    archId = layer.boss;
+    state.roomEnemyId = null;
+  } else {
+    if (!state.roomEnemyId) state.roomEnemyId = layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+    archId = state.roomEnemyId;
+  }
   const enemy = makeEnemy(state, content, archId, isBoss);
   if (!enemy) return;
   state.enemy = enemy;
@@ -742,7 +759,7 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state);
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
-  addSkillExp(content, slot, gain, log, b.xpMult, isOffline);
+  addSkillExp(state, content, slot, gain, log, b.xpMult, isOffline);
   return true;
 }
 
@@ -951,6 +968,12 @@ function gainXp(state: GameState, amount: number, log: Log): void {
   if (state.level >= LEVEL_CAP) {
     state.xp = 0;
     log({ key: 'log.cap', params: { lv: LEVEL_CAP } });
+    // Human Path: at T0 LV10 without a chosen path, pause combat and prompt the player.
+    if (state.raceId === 'human' && state.tier === 0 && !state.humanPath) {
+      state.pendingHumanPath = true;
+      state.action = 'idle';
+      log({ key: 'log.human_path_choose' });
+    }
   }
   recomputeMaxes(state); // levels nudge max HP/MP/SP up a little (auto growth)
 }
@@ -1080,7 +1103,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
     const def = content.skills.get(slot.id);
     if (def && (def.kind === 'passive' || def.kind === 'util' || def.kind === 'eye')) {
       const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.15)) * b.xpMult * 0.5));
-      addSkillExp(content, slot, gain, log, b.xpMult, isOffline);
+      addSkillExp(state, content, slot, gain, log, b.xpMult, isOffline);
     }
   }
   // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
@@ -1156,6 +1179,8 @@ export function advanceRoom(state: GameState, content: Content, log: Log): void 
   if (state.action !== 'combat') return;
   if (state.pendingEvent) return; // can't advance past an unresolved event
   state.roomCleared = false;
+  state.roomKillCount = 0;
+  state.roomEnemyId = null;
   state.enemy = null; // leave the current room (whether mid-fight or after clearing)
   advancePosition(state, content, log);
 }
@@ -1193,6 +1218,18 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   // Undying Husk / Undying Will — a chance to cling to life at 1 HP (§A2).
   if (b.surviveChance > 0 && Math.random() < b.surviveChance) {
     state.hp = 1;
+    // Threshold Endurance: each near-death earns permanent VIT (SS rank path).
+    state.nearDeathCount = (state.nearDeathCount ?? 0) + 1;
+    const vitSlot = state.skills.find((s) => s.id === 'threshold_endurance');
+    const vitGain = vitSlot ? vitSlot.level * 3 : 3;
+    state.vitEnduranceXP = (state.vitEnduranceXP ?? 0) + vitGain;
+    const permCap = (state.tier + 1) * 2;
+    if ((state.vitEndurancePerm ?? 0) < permCap) {
+      const add = Math.min(1, permCap - (state.vitEndurancePerm ?? 0));
+      state.vitEndurancePerm = (state.vitEndurancePerm ?? 0) + add;
+      state.stats.VIT += add;
+      recomputeMaxes(state);
+    }
     log({ key: 'log.survive' });
     return;
   }
@@ -1238,10 +1275,42 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
   state.enemy = null;
 }
 
-function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number, isOffline = false): void {
+const RANK_XP_MULT: Record<string, number> = {
+  F: 0.8, E: 1.0, D: 1.2, C: 1.5, B: 2.0, A: 3.0, S: 5.0, SS: 10.0,
+};
+
+function parseDeriveToken(token: string): { skillId: string; minLevel: number } {
+  const [skillId, lvStr] = token.split(':');
+  return { skillId: skillId ?? token, minLevel: parseInt(lvStr ?? '1', 10) };
+}
+
+function checkDerivations(state: GameState, content: Content, log: Log): void {
+  for (const slot of state.skills) {
+    const def = content.skills.get(slot.id);
+    if (!def?.derivesTo || !def.deriveCondition) continue;
+    const targetId = def.derivesTo;
+    if (state.skills.some((s) => s.id === targetId)) continue;
+    const allMet = def.deriveCondition.requiresAll
+      .map(parseDeriveToken)
+      .every((c) => {
+        const s = state.skills.find((sk) => sk.id === c.skillId);
+        return s !== undefined && s.level >= c.minLevel;
+      });
+    if (!allMet) continue;
+    const derivedDef = content.skills.get(targetId);
+    if (!derivedDef) continue;
+    state.skills.push({ id: targetId, level: 1, exp: 0 });
+    log({ key: 'log.skill_derived', params: { skill: derivedDef.locKeyName } });
+  }
+}
+
+function addSkillExp(state: GameState, content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number, isOffline = false): void {
   const def = content.skills.get(slot.id);
   if (!def) return;
-  slot.exp += Math.max(1, Math.round(amount * (slot.id === 'larder' ? 1 : xpMult)));
+  const rankMult = RANK_XP_MULT[def.rank ?? 'E'] ?? 1.0;
+  slot.exp += slot.id === 'larder'
+    ? amount
+    : Math.max(1, Math.round(amount * xpMult / rankMult));
   while (slot.level < def.lvMax && slot.exp >= skillExpToNext(slot.level)) {
     slot.exp -= skillExpToNext(slot.level);
     slot.level += 1;
@@ -1264,6 +1333,7 @@ function addSkillExp(content: Content, slot: SkillSlot, amount: number, log: Log
       slot.exp = 0;
     }
   }
+  checkDerivations(state, content, log);
 }
 
 // ---- skill lineage (evolution-chain aware ownership) -----------------------
@@ -1377,4 +1447,36 @@ function addResistExp(state: GameState, content: Content, type: DamageType, amou
     slot.nullified = true;
     log({ key: 'log.nullity', params: { res: def.locKey, nullity: def.nullityKey } });
   }
+}
+
+// ---- Human Path (Faz 3) -------------------------------------------------------
+
+/** Path bonus applied once when the player chooses (permanent bonuses to stats and unlock). */
+const HUMAN_PATH_BONUS: Record<string, { stat: string; amount: number; skills: string[] }> = {
+  tank:     { stat: 'VIT', amount: 3, skills: ['iron_will', 'provoke'] },
+  mage:     { stat: 'INT', amount: 3, skills: ['mana_surge', 'arcane_barrier'] },
+  assassin: { stat: 'AGI', amount: 3, skills: ['shadow_step', 'vital_strike'] },
+  healer:   { stat: 'WIS', amount: 3, skills: ['holy_light', 'regeneration'] },
+};
+
+/** Player chooses their Human Path at T0 LV10. Grants stat bonus + path skills. */
+export function chooseHumanPath(state: GameState, content: Content, pathId: string, log: Log): boolean {
+  if (state.raceId !== 'human') return false;
+  if (!state.pendingHumanPath) return false;
+  const bonus = HUMAN_PATH_BONUS[pathId];
+  if (!bonus) return false;
+  state.humanPath = pathId;
+  state.pendingHumanPath = false;
+  state.action = 'combat';
+  // Apply stat bonus
+  (state.stats as Record<string, number>)[bonus.stat] = ((state.stats as Record<string, number>)[bonus.stat] ?? 5) + bonus.amount;
+  recomputeMaxes(state);
+  // Grant path-specific skills (if not already owned)
+  for (const sid of bonus.skills) {
+    if (!state.skills.some((s) => s.id === sid) && content.skills.has(sid)) {
+      state.skills.push({ id: sid, level: 1, exp: 0 });
+    }
+  }
+  log({ key: 'log.human_path_chosen', params: { path: `human.path.${pathId}` } });
+  return true;
 }

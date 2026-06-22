@@ -38,6 +38,16 @@ export function applyRace(state: GameState, raceId: string, content: Content): v
   state.eyeAssignments = {};
   for (const eye of race.head.eyes) state.eyeAssignments[eye.id] = null;
 
+  // Reset race-life-scoped counters (Faz 3/4)
+  state.humanPath        = undefined;
+  state.pendingHumanPath = false;
+  state.roomKillCount    = 0;
+  state.roomEnemyId      = null;
+  state.seenSkillIds     = [];
+  state.nearDeathCount   = 0;
+  state.vitEnduranceXP   = 0;
+  state.vitEndurancePerm = 0;
+
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.mp = state.maxMp;

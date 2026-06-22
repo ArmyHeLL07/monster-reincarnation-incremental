@@ -10,6 +10,7 @@ import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost } from './game/combat';
+import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -67,6 +68,7 @@ export interface UiActions {
   onAutoEquip: () => void;
   onScrapCommon: () => void;
   onRespec: () => void;
+  onChooseHumanPath: (pathId: string) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings';
@@ -98,6 +100,8 @@ let selectedEye: string | null = null;
 let selectedEyeA: string | null = null;
 let selectedEyeB: string | null = null;
 let activeSkillPart: 'arm' | 'leg' | 'body' | 'eye' = 'arm';
+let activeSkillView: 'list' | 'tree' = 'list';
+let activeSkillTreeCat: string = 'all';
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 let selectedEvoNodeId: string | null = null;
@@ -1206,7 +1210,77 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
 }
 
+/** Human Path selection panel — shown when T0 human hits LV10 and must choose a specialization. */
+function humanPathPanel(): string {
+  const paths = ['tank', 'mage', 'assassin', 'healer'];
+  const cards = paths.map((p) =>
+    `<button class="human-path-btn panel" data-path="${p}" style="cursor:pointer;text-align:left;margin:.3rem 0">
+      <b>${t(`human.path.${p}`)}</b>
+      <p class="muted" style="margin:.2rem 0 0">${t(`human.path.${p}.desc`)}</p>
+     </button>`,
+  ).join('');
+  return `<section class="panel" style="border-color:#d98324">
+    <h2>${t('ui.human_path_title')}</h2>
+    <p class="muted">${t('ui.human_path_intro')}</p>
+    ${cards}
+  </section>`;
+}
+
+/** Skill tree view — chains of evolvesTo nodes with status badges. */
+function skillTreePanel(state: GameState): string {
+  const cats = ['all', 'arm', 'leg', 'body', 'eye'];
+  const catTabs = cats.map((c) =>
+    `<button class="subtab${c === activeSkillTreeCat ? ' active' : ''}" data-treecat="${c}">${t(`ui.skill_cat_${c}`)}</button>`,
+  ).join('');
+  const chains = buildSkillChains(CONTENT, activeSkillTreeCat);
+  const renderNode = (id: string): string => {
+    const def = CONTENT.skills.get(id);
+    const status = skillNodeStatus(state, CONTENT, id);
+    if (status === 'hidden') return `<span class="sk-node sk-hidden">${t('ui.skill_node_hidden')}</span>`;
+    const name = def ? t(def.locKeyName) : id;
+    const slot = state.skills.find((s) => s.id === id);
+    const lvLabel = slot ? ` LV${slot.level}` : '';
+    const rankBadge = def?.rank ? `<span class="sk-rank sk-rank-${def.rank}">${def.rank}</span>` : '';
+    return `<span class="sk-node sk-${status}">${rankBadge}${name}${lvLabel}</span>`;
+  };
+  const chainHtml = chains.map((chain) =>
+    `<div class="sk-chain">${chain.map((id, i) => (i > 0 ? '<span class="sk-arrow">→</span>' : '') + renderNode(id)).join('')}</div>`,
+  ).join('');
+  const derived = derivedSkillsView(CONTENT, activeSkillTreeCat);
+  const derivedHtml = derived.length
+    ? `<div class="sk-derived-title muted" style="margin-top:.6rem">${t('ui.skill_derived_title')}</div>` +
+      derived.map((d) => {
+        const def = CONTENT.skills.get(d.id);
+        const status = skillNodeStatus(state, CONTENT, d.id);
+        const name = def ? t(def.locKeyName) : d.id;
+        const slot = state.skills.find((s) => s.id === d.id);
+        const lvLabel = slot ? ` LV${slot.level}` : '';
+        return `<div class="sk-chain"><span class="sk-node sk-${status}">${name}${lvLabel}</span><span class="muted" style="font-size:.78rem"> (${t('ui.skill_node_derive')}: ${d.conditionText})</span></div>`;
+      }).join('')
+    : '';
+  return `<section class="panel">
+    <div class="row"><h2 style="margin:0">${t('ui.skill_tab_tree')}</h2></div>
+    <div class="subtabs">${catTabs}</div>
+    <div class="sk-tree">${chainHtml}${derivedHtml}</div>
+  </section>`;
+}
+
 function skillsTab(state: GameState): string {
+  // Human Path selection takes priority — blocks everything else until chosen
+  if (state.pendingHumanPath) {
+    return humanPathPanel();
+  }
+
+  // Liste / Ağaç toggle
+  const viewToggle = `<div class="subtabs" style="margin-bottom:.4rem">
+    <button class="subtab${activeSkillView === 'list' ? ' active' : ''}" id="skill-view-list">${t('ui.skill_tab_list')}</button>
+    <button class="subtab${activeSkillView === 'tree' ? ' active' : ''}" id="skill-view-tree">${t('ui.skill_tab_tree')}</button>
+  </div>`;
+
+  if (activeSkillView === 'tree') {
+    return viewToggle + skillTreePanel(state);
+  }
+
   // Category sub-tabs (Kol/Bacak/Vücut/Göz) — only one group shown at a time so the list stays scannable.
   const counts: Record<string, number> = {};
   for (const p of SKILL_PARTS) counts[p] = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === p).length;
@@ -1257,12 +1331,39 @@ function skillsTab(state: GameState): string {
       </ul>
     </section>`;
   return `
+    ${viewToggle}
     <div class="skillscols">${listPanel}${fusionPanel}</div>
     ${acquireGuide}
   `;
 }
 
 function wireSkills(el: HTMLElement): void {
+  // Human path choice
+  el.querySelectorAll<HTMLButtonElement>('.human-path-btn[data-path]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const path = b.getAttribute('data-path');
+      if (path) ACTIONS.onChooseHumanPath(path);
+    });
+  });
+
+  // Liste / Ağaç view toggle
+  el.querySelector<HTMLButtonElement>('#skill-view-list')?.addEventListener('click', () => {
+    activeSkillView = 'list';
+    renderTab();
+  });
+  el.querySelector<HTMLButtonElement>('#skill-view-tree')?.addEventListener('click', () => {
+    activeSkillView = 'tree';
+    renderTab();
+  });
+
+  // Tree category tabs
+  el.querySelectorAll<HTMLButtonElement>('.subtab[data-treecat]').forEach((b) => {
+    b.addEventListener('click', () => {
+      activeSkillTreeCat = b.getAttribute('data-treecat') ?? 'all';
+      renderTab();
+    });
+  });
+
   el.querySelector<HTMLSelectElement>('#fa')?.addEventListener('change', (e) => {
     selectedA = (e.target as HTMLSelectElement).value;
   });

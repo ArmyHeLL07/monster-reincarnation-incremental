@@ -116,6 +116,16 @@ export interface EvolutionForm {
   humanoid?: boolean;
 }
 
+export interface SkillRequirement {
+  skillId: string;
+  minLevel: number;
+}
+
+export interface DeriveCondition {
+  /** Each token: "skillId:minLevel", e.g. "appraisal:10" */
+  requiresAll: string[];
+}
+
 /** A data-driven skill. Player-facing text is referenced by localization key, never inlined. */
 export interface Skill {
   id: string;
@@ -174,6 +184,14 @@ export interface Skill {
   part?: 'arm' | 'eye' | 'leg' | 'body';
   /** A slotted eye ability's combat effect, for gaze eyes (fear/charm/petrify…). */
   gaze?: GazeEffect;
+  // --- Skill rank & progression gate (Faz 4) --------------------------------
+  /** Mastery rank — higher = slower XP gain (F < E < D < C < B < A < S < SS). Default: E. */
+  rank?: 'F' | 'E' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SS';
+  /** Prerequisites: must own these skills at the given level before this skill can be naturally acquired. */
+  requires?: SkillRequirement[];
+  /** If set, when deriveCondition is fully met, automatically grant this skill (integration system). */
+  derivesTo?: string;
+  deriveCondition?: DeriveCondition;
 }
 
 /** Eye-gaze combat effect (GDD §B6). */
