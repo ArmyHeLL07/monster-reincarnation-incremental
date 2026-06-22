@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.4.2';
+export const VERSION = '1.5.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,24 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.5.0',
+    date: '2026-06-22',
+    tr: [
+      '27 yeni üst-kademe skill evrimi — skiller artık daha derin gelişiyor',
+      'Büyüler: Meteor, Buzul Mızrağı, Yıldırım Fırtınası, Cehennem Nefesi…',
+      'Saldırılar: Ölüm Tırpanı, Suikast, Felaket Darbesi, Ok Fırtınası…',
+      'Gözler: Medusa Bakışı, Kâbus Bakışı, Tiran Bakışı (daha güçlü)',
+      'Pasifler: Kale Beden, İlksel Kalp, Ölümsüz, Ebedi Kalkan…',
+    ],
+    en: [
+      '27 new tier-3 skill evolutions — skills now grow deeper',
+      'Spells: Meteor, Glacier Spike, Thunderstorm, Infernal Breath…',
+      'Strikes: Death Scythe, Assassinate, Cataclysm Strike, Arrow Storm…',
+      'Eyes: Medusa Gaze, Nightmare Gaze, Tyrant Gaze (stronger)',
+      'Passives: Fortress Body, Primordial Heart, Deathless, Aegis Eternal…',
+    ],
+  },
   {
     v: '1.4.2',
     date: '2026-06-22',

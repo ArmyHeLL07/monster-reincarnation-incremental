@@ -43,7 +43,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "plague_fang"
+    ],
     "damage": 8,
     "damageType": "poison",
     "element": "poison"
@@ -154,7 +156,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "death_scythe"
+    ],
     "damage": 10,
     "damageType": "pierce",
     "element": "pierce"
@@ -203,7 +207,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "cataclysm_strike"
+    ],
     "damage": 10,
     "damageType": "physical",
     "element": "physical"
@@ -252,7 +258,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "assassinate"
+    ],
     "damage": 9,
     "damageType": "pierce",
     "element": "pierce"
@@ -283,7 +291,9 @@
       "STR"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "rampage"
+    ],
     "damage": 8,
     "damageType": "physical",
     "element": "physical"
@@ -640,7 +650,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "meteor"
+    ],
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
@@ -672,7 +684,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "glacier_spike"
+    ],
     "damage": 9,
     "damageType": "frost",
     "element": "frost",
@@ -704,7 +718,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "tectonic_crush"
+    ],
     "damage": 10,
     "damageType": "physical",
     "element": "earth",
@@ -736,7 +752,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "tempest_blade"
+    ],
     "damage": 8,
     "damageType": "pierce",
     "element": "wind",
@@ -768,7 +786,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "thunderstorm"
+    ],
     "damage": 12,
     "damageType": "lightning",
     "element": "lightning",
@@ -801,7 +821,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "dimension_collapse"
+    ],
     "damage": 11,
     "damageType": "magic",
     "element": "void",
@@ -910,7 +932,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "medusa_gaze"
+    ],
     "eyeModes": [
       "active"
     ],
@@ -947,7 +971,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "nightmare_gaze"
+    ],
     "eyeModes": [
       "passive"
     ],
@@ -986,7 +1012,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "soul_devour_gaze"
+    ],
     "eyeModes": [
       "active"
     ],
@@ -1023,7 +1051,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "tyrant_gaze"
+    ],
     "eyeModes": [
       "active"
     ],
@@ -1233,7 +1263,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "fortress_body"
+    ],
     "armor": 6
   },
   {
@@ -1454,7 +1486,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "titan_carapace"
+    ],
     "armor": 4
   },
   {
@@ -1478,7 +1512,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "eternal_regen"
+    ],
     "hpRegen": 2,
     "regenMult": 0.4
   },
@@ -1505,7 +1541,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "deathless"
+    ],
     "surviveChance": 0.2,
     "acquireKey": "skill.undying_husk.acq"
   },
@@ -1706,7 +1744,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "aegis_eternal"
+    ],
     "armor": 6
   },
   {
@@ -1737,7 +1777,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "holy_judgment"
+    ],
     "damage": 10,
     "damageType": "magic",
     "element": "magic",
@@ -1939,7 +1981,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "ossuary_bastion"
+    ],
     "armor": 6
   },
   {
@@ -2001,7 +2045,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "arrow_storm"
+    ],
     "damage": 8,
     "damageType": "pierce",
     "element": "physical"
@@ -2046,7 +2092,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "wyrm_devastation"
+    ],
     "damage": 6,
     "damageType": "physical",
     "element": "physical"
@@ -2079,7 +2127,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "infernal_breath"
+    ],
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
@@ -2120,7 +2170,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "primordial_heart"
+    ],
     "hpRegen": 2,
     "regenMult": 0.4
   },
@@ -2133,7 +2185,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "null_field"
+    ],
     "dodgeBonus": 0.06
   },
   {
@@ -2433,5 +2487,399 @@
     "lvMax": 10,
     "evolvesTo": [],
     "xpMult": 0.4
+  },
+  {
+    "id": "meteor",
+    "locKeyName": "skill.meteor.name",
+    "locKeyDesc": "skill.meteor.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "fire",
+    "element": "fire",
+    "damage": 20,
+    "mpCost": 13
+  },
+  {
+    "id": "glacier_spike",
+    "locKeyName": "skill.glacier_spike.name",
+    "locKeyDesc": "skill.glacier_spike.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "frost",
+    "element": "frost",
+    "damage": 20,
+    "mpCost": 13
+  },
+  {
+    "id": "tectonic_crush",
+    "locKeyName": "skill.tectonic_crush.name",
+    "locKeyDesc": "skill.tectonic_crush.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "physical",
+    "element": "earth",
+    "damage": 20,
+    "mpCost": 13
+  },
+  {
+    "id": "tempest_blade",
+    "locKeyName": "skill.tempest_blade.name",
+    "locKeyDesc": "skill.tempest_blade.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "pierce",
+    "element": "wind",
+    "damage": 18,
+    "mpCost": 11
+  },
+  {
+    "id": "thunderstorm",
+    "locKeyName": "skill.thunderstorm.name",
+    "locKeyDesc": "skill.thunderstorm.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "lightning",
+    "element": "lightning",
+    "damage": 24,
+    "mpCost": 17
+  },
+  {
+    "id": "dimension_collapse",
+    "locKeyName": "skill.dimension_collapse.name",
+    "locKeyDesc": "skill.dimension_collapse.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "magic",
+    "element": "void",
+    "damage": 22,
+    "mpCost": 16
+  },
+  {
+    "id": "holy_judgment",
+    "locKeyName": "skill.holy_judgment.name",
+    "locKeyDesc": "skill.holy_judgment.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "magic",
+    "element": "magic",
+    "damage": 20,
+    "mpCost": 13
+  },
+  {
+    "id": "infernal_breath",
+    "locKeyName": "skill.infernal_breath.name",
+    "locKeyDesc": "skill.infernal_breath.desc",
+    "kind": "magic",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "fire",
+    "element": "fire",
+    "damage": 20,
+    "mpCost": 13
+  },
+  {
+    "id": "plague_fang",
+    "locKeyName": "skill.plague_fang.name",
+    "locKeyDesc": "skill.plague_fang.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "poison",
+    "element": "poison",
+    "damage": 16
+  },
+  {
+    "id": "death_scythe",
+    "locKeyName": "skill.death_scythe.name",
+    "locKeyDesc": "skill.death_scythe.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "pierce",
+    "element": "pierce",
+    "damage": 18
+  },
+  {
+    "id": "cataclysm_strike",
+    "locKeyName": "skill.cataclysm_strike.name",
+    "locKeyDesc": "skill.cataclysm_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "physical",
+    "element": "physical",
+    "damage": 18
+  },
+  {
+    "id": "assassinate",
+    "locKeyName": "skill.assassinate.name",
+    "locKeyDesc": "skill.assassinate.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "pierce",
+    "element": "pierce",
+    "damage": 18
+  },
+  {
+    "id": "rampage",
+    "locKeyName": "skill.rampage.name",
+    "locKeyDesc": "skill.rampage.desc",
+    "kind": "active",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "physical",
+    "element": "physical",
+    "damage": 16
+  },
+  {
+    "id": "arrow_storm",
+    "locKeyName": "skill.arrow_storm.name",
+    "locKeyDesc": "skill.arrow_storm.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "pierce",
+    "element": "physical",
+    "damage": 16
+  },
+  {
+    "id": "wyrm_devastation",
+    "locKeyName": "skill.wyrm_devastation.name",
+    "locKeyDesc": "skill.wyrm_devastation.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damageType": "physical",
+    "element": "physical",
+    "damage": 16
+  },
+  {
+    "id": "medusa_gaze",
+    "locKeyName": "skill.medusa_gaze.name",
+    "locKeyDesc": "skill.medusa_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "gaze": {
+      "negateChance": 0.32
+    },
+    "eyeModes": [
+      "active"
+    ]
+  },
+  {
+    "id": "nightmare_gaze",
+    "locKeyName": "skill.nightmare_gaze.name",
+    "locKeyDesc": "skill.nightmare_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "gaze": {
+      "negateChance": 0.3
+    },
+    "eyeModes": [
+      "active"
+    ]
+  },
+  {
+    "id": "soul_devour_gaze",
+    "locKeyName": "skill.soul_devour_gaze.name",
+    "locKeyDesc": "skill.soul_devour_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "gaze": {
+      "negateChance": 0.32
+    },
+    "eyeModes": [
+      "active"
+    ]
+  },
+  {
+    "id": "tyrant_gaze",
+    "locKeyName": "skill.tyrant_gaze.name",
+    "locKeyDesc": "skill.tyrant_gaze.desc",
+    "kind": "eye",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "gaze": {
+      "negateChance": 0.35
+    },
+    "eyeModes": [
+      "active"
+    ]
+  },
+  {
+    "id": "fortress_body",
+    "locKeyName": "skill.fortress_body.name",
+    "locKeyDesc": "skill.fortress_body.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 10
+  },
+  {
+    "id": "titan_carapace",
+    "locKeyName": "skill.titan_carapace.name",
+    "locKeyDesc": "skill.titan_carapace.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 8
+  },
+  {
+    "id": "ossuary_bastion",
+    "locKeyName": "skill.ossuary_bastion.name",
+    "locKeyDesc": "skill.ossuary_bastion.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 10
+  },
+  {
+    "id": "primordial_heart",
+    "locKeyName": "skill.primordial_heart.name",
+    "locKeyDesc": "skill.primordial_heart.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "hpRegen": 4,
+    "regenMult": 0.6
+  },
+  {
+    "id": "null_field",
+    "locKeyName": "skill.null_field.name",
+    "locKeyDesc": "skill.null_field.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 8,
+    "dodgeBonus": 0.06
+  },
+  {
+    "id": "eternal_regen",
+    "locKeyName": "skill.eternal_regen.name",
+    "locKeyDesc": "skill.eternal_regen.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "regenMult": 0.6,
+    "hpRegen": 3
+  },
+  {
+    "id": "aegis_eternal",
+    "locKeyName": "skill.aegis_eternal.name",
+    "locKeyDesc": "skill.aegis_eternal.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 10
+  },
+  {
+    "id": "deathless",
+    "locKeyName": "skill.deathless.name",
+    "locKeyDesc": "skill.deathless.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "surviveChance": 0.25
   }
 ]
