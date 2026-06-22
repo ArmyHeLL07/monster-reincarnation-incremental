@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.3.1';
+export const VERSION = '1.4.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.4.0',
+    date: '2026-06-22',
+    tr: [
+      'Düzeltme: kardeş evrim formları artık birbirinden farklı',
+      'Her dallanmada iki seçenek gerçek bir tercih: biri primary-stat ağırlıklı, diğeri secondary + farklı skiller',
+      'Tüm ırkları etkiledi (örn. Kadim Lich INT/saldırı, Ruh Biçen WIS/ruh)',
+    ],
+    en: [
+      'Fix: sibling evolution forms are now actually different from each other',
+      'Each branch is a real choice: one leans primary-stat, the other secondary + different skills',
+      'Affects all races (e.g. Ancient Lich INT/offense, Soul Reaper WIS/soul)',
+    ],
+  },
   {
     v: '1.3.1',
     date: '2026-06-22',

@@ -10,8 +10,12 @@ from collections import deque
 
 SKILLS = {s['id'] for s in json.load(open('data/skills.json', encoding='utf-8'))}
 
-# tier -> statBonus template given (primary, secondary, tertiary) stat keys
-def stats_for(tier, pri, sec, ter):
+# tier -> statBonus template given (primary, secondary, tertiary) stat keys.
+# `variant` distinguishes the two siblings of a branch: variant 1 swaps the primary/secondary
+# emphasis so the two children of one parent are a REAL choice, not a renamed duplicate.
+def stats_for(tier, pri, sec, ter, variant=0):
+    if variant == 1:
+        pri, sec = sec, pri  # the "B" sibling leans on the other stat
     if tier == 0:
         return {}
     if tier == 1:
@@ -239,11 +243,17 @@ def bfs_tiers(tree, root):
 def build_race(race, cfg):
     tree, root, t1 = cfg['tree'], cfg['root'], cfg['t1']
     tier = bfs_tiers(tree, root)
+    # sibling variant: a form's index in its parent's children (0 = "A", 1 = "B").
+    variant = {root: 0}
+    for fid, (children, _role) in tree.items():
+        for i, c in enumerate(children):
+            variant[c] = i
     forms = []
     for fid, (children, role) in tree.items():
         t = tier[fid]
+        v = variant.get(fid, 0)
         pri, sec, ter, pool = ROLES[role]
-        sb = stats_for(t, pri, sec, ter)
+        sb = stats_for(t, pri, sec, ter, v)
         # skills
         if t == 0:
             skills = []
@@ -251,7 +261,9 @@ def build_race(race, cfg):
             skills = list(cfg['sig'])
         else:
             idx = t - 2  # T2->0 ... T5->3
-            skills = [s for s in pool[idx:idx + 2] if s in SKILLS]
+            # variant B shifts the pool window by 1 so siblings learn different skills.
+            win = min(idx + v, len(pool) - 2)
+            skills = [s for s in pool[win:win + 2] if s in SKILLS]
             if t == 5:
                 skills = ['sovereign_form'] + skills
         forms.append({
@@ -262,11 +274,20 @@ def build_race(race, cfg):
     return forms, tier
 
 
+# Hidden easter-egg forms (Rimuru for slime, Kumoko for spider) live OUTSIDE the binary tree.
+# They are preserved as-is, and their parent forms get the secret child re-linked after the rebuild.
+SECRET_IDS = {'demon_slime', 'rimuru_tempest', 'demon_lord_rimuru', 'zoa_ele', 'ede_saine', 'arachne', 'zana_horowa'}
+SECRET_LINKS = {  # tree form id -> secret child to re-append to its evolvesTo
+    'ooze_spawn': 'demon_slime', 'devourer_slime': 'demon_slime',
+    'venom_weaver': 'zoa_ele', 'greater_weaver': 'zoa_ele',
+}
+
+
 def main():
     evos = json.load(open('data/evolutions.json', encoding='utf-8'))
     target_races = set(RACES)
-    # keep forms from races we are NOT rebuilding (human, spider)
-    kept = [e for e in evos if e.get('raceId') not in target_races]
+    # keep forms from races we are NOT rebuilding (human) AND the hidden easter-egg forms
+    kept = [e for e in evos if e.get('raceId') not in target_races or e['id'] in SECRET_IDS]
 
     all_new = []
     problems = []
@@ -293,8 +314,8 @@ def main():
             for sk in f['grantSkills']:
                 if sk not in SKILLS:
                     problems.append(f'{race}: {f["id"]} grants unknown skill {sk}')
-        # check all old ids reused
-        old = {e['id'] for e in evos if e.get('raceId') == race}
+        # check all old ids reused (the hidden easter-egg forms live outside the tree by design)
+        old = {e['id'] for e in evos if e.get('raceId') == race} - SECRET_IDS
         dropped = old - ids
         if dropped:
             problems.append(f'{race}: DROPPED old ids {sorted(dropped)}')
@@ -305,6 +326,13 @@ def main():
         for p in problems:
             print('  -', p)
         raise SystemExit('Aborting: fix problems above.')
+
+    # Re-link the hidden easter-egg forms to their tree parents (after binary validation).
+    kept_ids = {e['id'] for e in kept}
+    for f in all_new:
+        child = SECRET_LINKS.get(f['id'])
+        if child and child in kept_ids and child not in f['evolvesTo']:
+            f['evolvesTo'].append(child)
 
     out = kept + all_new
     json.dump(out, open('data/evolutions.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
