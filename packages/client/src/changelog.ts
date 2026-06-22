@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.4.1';
+export const VERSION = '1.4.2';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.4.2',
+    date: '2026-06-22',
+    tr: [
+      'KRİTİK düzeltme: Can/MP "NaN" gösterip bozulması giderildi (eski kayıtlarda ırk gücü alanı eksikti)',
+      'Eski kayıtlar otomatik onarılıyor; bozulmuş Can/MP/SP değerleri geri yükleniyor',
+    ],
+    en: [
+      'CRITICAL fix: HP/MP showing "NaN" and breaking (old saves lacked the race-signature field)',
+      'Old saves auto-repair; corrupted HP/MP/SP values are restored',
+    ],
+  },
   {
     v: '1.4.1',
     date: '2026-06-22',

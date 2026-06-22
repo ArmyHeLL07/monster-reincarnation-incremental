@@ -773,7 +773,7 @@ function sigBlock(icon: string, label: string, valueText: string, value: number,
 /** Race signature gauge panel shown in the combat tab — always visible for races that have a signature,
  *  so the player can read exactly how much is built up, the effect, and (slime) seconds remaining. */
 function raceSigPanel(state: GameState): string {
-  const sig = state.sig ?? 0;
+  const sig = Number.isFinite(state.sig) ? state.sig : 0;
   switch (state.raceId) {
     case 'spider': {
       const pct = Math.round(sig);

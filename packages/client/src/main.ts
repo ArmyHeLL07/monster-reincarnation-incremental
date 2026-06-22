@@ -464,6 +464,16 @@ function migrate(s: GameState): void {
   s.inventoryItems ??= [];
   s.equipment ??= emptyEquipment();
   s.allocated ??= emptyAllocated();
+  // v7 fields — race signature mechanics + bestiary. CRITICAL: missing `sig` made `sig + 1` = NaN
+  // on the first kill, which cascaded into armor → damage → hp/mp turning NaN. Sanitize aggressively.
+  if (!Number.isFinite(s.sig)) s.sig = 0;
+  s.sigAbsorb ??= null;
+  s.killedEnemies ??= {};
+  // Repair any NaN that an earlier build already persisted into core pools.
+  if (!Number.isFinite(s.scars)) s.scars = 0;
+  if (!Number.isFinite(s.hp)) s.hp = Number.isFinite(s.maxHp) ? s.maxHp : 1;
+  if (!Number.isFinite(s.mp)) s.mp = Number.isFinite(s.maxMp) ? s.maxMp : 0;
+  if (!Number.isFinite(s.sp)) s.sp = Number.isFinite(s.maxSp) ? s.maxSp : 0;
 }
 
 /**

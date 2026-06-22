@@ -13,14 +13,19 @@ export const SIG_MAX: Record<string, number> = {
 
 const GOLEM_BUILD_RATE = 1 / 60; // one full stone layer per 60 rest ticks (~1 min)
 
+/** Current signature gauge, hardened against undefined/NaN from old saves (NaN ?? 0 is still NaN). */
+function sigCur(state: GameState): number {
+  return Number.isFinite(state.sig) ? state.sig : 0;
+}
+
 /** Called each REST tick — build passive resources. */
 export function sigRestTick(state: GameState): void {
   switch (state.raceId) {
     case 'spider':
-      state.sig = Math.min(SIG_MAX.spider, state.sig + 2);
+      state.sig = Math.min(SIG_MAX.spider, sigCur(state) + 2);
       break;
     case 'golem':
-      state.sig = Math.min(SIG_MAX.golem, state.sig + GOLEM_BUILD_RATE);
+      state.sig = Math.min(SIG_MAX.golem, sigCur(state) + GOLEM_BUILD_RATE);
       break;
     case 'slime':
       if (state.sigAbsorb) {
@@ -36,7 +41,7 @@ export function sigCombatTick(state: GameState): void {
   switch (state.raceId) {
     case 'skeleton':
       // Bones slowly crumble in the heat of battle (~1 bone per 200 ticks)
-      if (state.sig > 0 && Math.random() < 0.005) state.sig = Math.max(0, state.sig - 1);
+      if (sigCur(state) > 0 && Math.random() < 0.005) state.sig = Math.max(0, sigCur(state) - 1);
       break;
     case 'slime':
       if (state.sigAbsorb) {
@@ -51,7 +56,7 @@ export function sigCombatTick(state: GameState): void {
 export function sigOnKill(state: GameState, enemyDmgType: DamageType): void {
   switch (state.raceId) {
     case 'skeleton':
-      state.sig = Math.min(SIG_MAX.skeleton, state.sig + 1);
+      state.sig = Math.min(SIG_MAX.skeleton, sigCur(state) + 1);
       break;
     case 'slime':
       // Absorb the element of whoever was just defeated (physical is everywhere — skip it)
@@ -61,7 +66,7 @@ export function sigOnKill(state: GameState, enemyDmgType: DamageType): void {
       break;
     case 'golem':
       // Pulverising an enemy rewards a sliver of stone
-      state.sig = Math.min(SIG_MAX.golem, state.sig + 0.1);
+      state.sig = Math.min(SIG_MAX.golem, sigCur(state) + 0.1);
       break;
   }
 }
@@ -71,8 +76,8 @@ export function sigOnKill(state: GameState, enemyDmgType: DamageType): void {
  * Returns bonus trap damage to apply to the freshly spawned enemy.
  */
 export function sigCombatStart(state: GameState): number {
-  if (state.raceId !== 'spider' || state.sig <= 0) return 0;
-  const dmg = Math.round((state.sig / 100) * (state.stats.STR * 2 + state.level));
+  if (state.raceId !== 'spider' || sigCur(state) <= 0) return 0;
+  const dmg = Math.round((sigCur(state) / 100) * (state.stats.STR * 2 + state.level));
   state.sig = 0; // web discharged
   return dmg;
 }
@@ -83,7 +88,7 @@ export function sigCombatStart(state: GameState): number {
  */
 export function sigOnAttack(state: GameState): number {
   if (state.raceId !== 'wyrmling') return 0;
-  state.sig = Math.min(SIG_MAX.wyrmling, state.sig + 1);
+  state.sig = Math.min(SIG_MAX.wyrmling, sigCur(state) + 1);
   if (state.sig >= SIG_MAX.wyrmling) {
     state.sig = 0;
     return Math.round(state.stats.INT * 3 + state.level * 2);
@@ -93,7 +98,7 @@ export function sigOnAttack(state: GameState): number {
 
 /** Flat armor bonus from skeleton bone stacks — fed into aggregateBonuses. */
 export function sigBoneArmor(state: GameState): number {
-  return state.raceId === 'skeleton' ? Math.floor(state.sig) : 0;
+  return state.raceId === 'skeleton' ? Math.floor(sigCur(state)) : 0;
 }
 
 /**
@@ -102,9 +107,9 @@ export function sigBoneArmor(state: GameState): number {
  */
 export function sigStoneAbsorb(state: GameState): number {
   if (state.raceId !== 'golem') return 0;
-  const layers = Math.floor(state.sig);
+  const layers = Math.floor(sigCur(state));
   if (layers <= 0) return 0;
-  state.sig = state.sig - layers; // keep fractional build progress
+  state.sig = sigCur(state) - layers; // keep fractional build progress
   return layers * 3;
 }
 
