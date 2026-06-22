@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.6.0';
+export const VERSION = '1.6.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.6.1',
+    date: '2026-06-22',
+    tr: [
+      'Denge: slime/iskelet/golem/insan artık 2 saldırı skiliyle başlıyor (eskiden 1)',
+      'Erken oyun çok yavaştı — başlangıç DPS\'i ~2 katına çıktı',
+      'Slime: Asit Tükürüğü + Zehir Bulutu; yeni oyun/rebirth\'te geçerli',
+    ],
+    en: [
+      'Balance: slime/skeleton/golem/human now start with 2 attack skills (was 1)',
+      'Early game was too slow — opening DPS roughly doubled',
+      'Slime: Acid Spit + Toxic Cloud; applies on new game/rebirth',
+    ],
+  },
   {
     v: '1.6.0',
     date: '2026-06-22',

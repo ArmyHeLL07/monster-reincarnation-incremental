@@ -84,6 +84,7 @@
     "locKey": "race.human.name",
     "startSkills": [
       "fist_strike",
+      "sword_slash",
       "quick_thought",
       "hp_regen"
     ],
@@ -124,6 +125,7 @@
     "locKey": "race.slime.name",
     "startSkills": [
       "acid_spit",
+      "toxic_cloud",
       "sticky_coat",
       "predator_instinct"
     ],
@@ -157,6 +159,7 @@
     "locKey": "race.skeleton.name",
     "startSkills": [
       "bone_arrow",
+      "sword_slash",
       "undead_vigor",
       "bone_armor"
     ],
@@ -236,6 +239,7 @@
     "locKey": "race.golem.name",
     "startSkills": [
       "stone_spike",
+      "heavy_slam",
       "toughness",
       "stone_nature"
     ],
