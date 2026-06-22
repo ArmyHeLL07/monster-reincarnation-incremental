@@ -771,18 +771,19 @@ export function skillSlots(state: GameState): number {
   return 4 + parallelMinds(state);
 }
 
-/** Keep `equipped` valid: only owned active-damage skills, within capacity; auto-fill spare slots. */
+/** Keep `equipped` valid: drop removed/non-damage skills and trim to capacity. Does NOT auto-fill
+ *  spare slots — the player controls their loadout (auto-fill made the slot counter misleading). */
 export function ensureEquipped(state: GameState, content: Content): void {
   state.equipped = state.equipped.filter(
     (id) => state.skills.some((s) => s.id === id) && content.skills.get(id)?.damage !== undefined,
   );
   const slots = skillSlots(state);
   if (state.equipped.length > slots) state.equipped.length = slots;
-  for (const s of state.skills) {
-    if (state.equipped.length >= slots) break;
-    const def = content.skills.get(s.id);
-    if (def?.damage !== undefined && !state.equipped.includes(s.id)) state.equipped.push(s.id);
-  }
+}
+
+/** Unequip every active skill at once (manual loadout reset). */
+export function unequipAll(state: GameState): void {
+  state.equipped = [];
 }
 
 /** Equip / unequip an active skill (manual loadout, capped by skillSlots). */

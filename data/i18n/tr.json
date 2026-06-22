@@ -1312,5 +1312,6 @@
   "skill.parallel_will.desc": "İki paralel zihin: aynı anda iki ekstra eylem (saldırı/büyü), daha fazla pasif regen ve keşif. (+2 skill slotu)",
   "skill.parallel_existence.name": "Paralel Varoluş",
   "skill.parallel_existence.desc": "Üç paralel zihin birden işler — üç ekstra eylem, güçlü pasif regen ve sürekli keşif. Kumoko gibi düşün. (+3 skill slotu)",
-  "log.parallel_search": "🧠 Bir paralel zihin labirenti okudu — bir parça buldu"
+  "log.parallel_search": "🧠 Bir paralel zihin labirenti okudu — bir parça buldu",
+  "ui.unequip_all": "Tümünü bırak"
 }

@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -70,6 +70,11 @@ async function init(): Promise<void> {
     },
     onToggleEquip: (id) => {
       toggleEquip(state, content, id);
+      save(state);
+      render(state);
+    },
+    onUnequipAll: () => {
+      unequipAll(state);
       save(state);
       render(state);
     },

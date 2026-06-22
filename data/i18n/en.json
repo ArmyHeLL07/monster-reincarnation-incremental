@@ -1312,5 +1312,6 @@
   "skill.parallel_will.desc": "Two parallel minds: two extra simultaneous actions (attack/cast), more passive regen and finds. (+2 skill slots)",
   "skill.parallel_existence.name": "Parallel Existence",
   "skill.parallel_existence.desc": "Three parallel minds at once — three extra actions, strong passive regen, constant discovery. Think like Kumoko. (+3 skill slots)",
-  "log.parallel_search": "🧠 A parallel mind read the labyrinth — found a fragment"
+  "log.parallel_search": "🧠 A parallel mind read the labyrinth — found a fragment",
+  "ui.unequip_all": "Unequip all"
 }

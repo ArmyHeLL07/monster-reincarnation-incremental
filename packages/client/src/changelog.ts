@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.3.0';
+export const VERSION = '1.3.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.3.1',
+    date: '2026-06-22',
+    tr: [
+      'Düzeltme: skill slot sayacı artık doğru — boş slotlar sessizce otomatik dolmuyor',
+      'Yeni "Tümünü bırak" butonu: tüm takılı skilleri tek tıkla çıkar',
+    ],
+    en: [
+      'Fix: skill slot counter is now accurate — empty slots no longer silently auto-fill',
+      'New "Unequip all" button: clear your whole loadout in one tap',
+    ],
+  },
   {
     v: '1.3.0',
     date: '2026-06-22',

@@ -23,6 +23,7 @@ export interface UiActions {
   onAdvance: () => void;
   onToggleAutoAdvance: () => void;
   onToggleEquip: (id: string) => void;
+  onUnequipAll: () => void;
   onDeleteSkill: (id: string) => void;
   onSacrificeSkill: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
@@ -1191,7 +1192,10 @@ function skillsTab(state: GameState): string {
   ).join('');
   const partItems = state.skills.filter((s) => skillPart(CONTENT.skills.get(s.id)) === activeSkillPart);
   const rows = partItems.length ? partItems.map((s) => skillRow(state, s)).join('') : `<li class="muted">${t('ui.empty')}</li>`;
-  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul></section>`;
+  const unequipAllBtn = state.equipped.length > 0
+    ? `<button id="unequip-all" class="ghost" style="font-size:.72rem;padding:.2rem .5rem">${t('ui.unequip_all')}</button>`
+    : '';
+  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)} ${unequipAllBtn}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul></section>`;
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
   if (!selectedB && fusableSkills(state)[1]) selectedB = fusableSkills(state)[1].id;
   const opts = (sel: string | null) =>
@@ -1250,6 +1254,7 @@ function wireSkills(el: HTMLElement): void {
       if (id) ACTIONS.onToggleEquip(id);
     });
   });
+  el.querySelector<HTMLButtonElement>('#unequip-all')?.addEventListener('click', () => ACTIONS.onUnequipAll());
   el.querySelectorAll<HTMLButtonElement>('.subtab[data-part]').forEach((b) => {
     b.addEventListener('click', () => {
       activeSkillPart = (b.getAttribute('data-part') as 'arm' | 'leg' | 'body' | 'eye') ?? 'arm';
