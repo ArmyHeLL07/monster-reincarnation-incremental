@@ -1754,8 +1754,10 @@ function raceSelectScreen(state: GameState): string {
           return s ? t(s.locKeyName) : id;
         })
         .join(', ');
+      // The race's own portrait fills the card behind a dark gradient (keeps text legible).
+      const bg = `linear-gradient(180deg, rgba(14,12,20,0.15) 0%, rgba(14,12,20,0.55) 55%, rgba(14,12,20,0.92) 100%), url('${assetUrl(`races/${r.id}.png`)}')`;
       return `
-        <button class="race-card${active ? ' race-card-active' : ''}" data-race="${r.id}">
+        <button class="race-card${active ? ' race-card-active' : ''}" data-race="${r.id}" style="background-image:${bg}">
           <div class="race-card-name">${t(r.locKey)}</div>
           <div class="muted">${t('ui.eyes')}: ${eyeCount}</div>
           ${startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}

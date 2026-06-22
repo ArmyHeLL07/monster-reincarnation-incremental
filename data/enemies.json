@@ -10,7 +10,8 @@
     "icon": "🐸",
     "grantSkills": [
       "pounce"
-    ]
+    ],
+    "image": "monsters/elroe_frog.png"
   },
   {
     "id": "elroe_geafrog",
@@ -97,7 +98,8 @@
     ],
     "behavior": {
       "armorPct": 0.5
-    }
+    },
+    "image": "monsters/elroe_pebbluck.png"
   },
   {
     "id": "lesser_taratect",
@@ -129,7 +131,8 @@
     "icon": "🐉",
     "grantSkills": [
       "flame_bolt"
-    ]
+    ],
+    "image": "monsters/elroe_gunerush.png"
   },
   {
     "id": "elroe_gunerave",
@@ -145,7 +148,8 @@
     ],
     "behavior": {
       "doubleStrike": true
-    }
+    },
+    "image": "monsters/elroe_gunerave.png"
   },
   {
     "id": "elroe_gunesohka",
@@ -161,7 +165,8 @@
     ],
     "behavior": {
       "enrage": 0.5
-    }
+    },
+    "image": "monsters/elroe_gunesohka.png"
   },
   {
     "id": "elroe_guneseven",
@@ -178,7 +183,8 @@
     "damageType2": "physical",
     "behavior": {
       "lifesteal": 0.2
-    }
+    },
+    "image": "monsters/elroe_guneseven.png"
   },
   {
     "id": "magma_newt",
@@ -213,7 +219,8 @@
     "damageType2": "stun",
     "behavior": {
       "doubleStrike": true
-    }
+    },
+    "image": "monsters/elroe_cohgou.png"
   },
   {
     "id": "flame_jaw",
@@ -247,7 +254,8 @@
     "behavior": {
       "doubleStrike": true,
       "statusBoost": 1.5
-    }
+    },
+    "image": "monsters/finjicote.png"
   },
   {
     "id": "greater_taratect",
@@ -320,7 +328,8 @@
     ],
     "behavior": {
       "doubleStrike": true
-    }
+    },
+    "image": "monsters/abyss_stalker.png"
   },
   {
     "id": "cave_horror",
@@ -415,7 +424,8 @@
     "behavior": {
       "regen": 0.05,
       "statusBoost": 1.6
-    }
+    },
+    "image": "monsters/queen_taratect.png"
   },
   {
     "id": "abyss_horror",

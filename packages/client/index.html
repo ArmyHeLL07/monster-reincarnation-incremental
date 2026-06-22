@@ -587,12 +587,16 @@
       .race-card {
         display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
         background: linear-gradient(180deg, #1e1a2c, #151220); border: 1px solid var(--chitin);
-        border-radius: 10px; padding: 0.7rem 0.85rem; min-height: 80px; text-align: left;
-        cursor: pointer; transition: border-color 0.15s, background 0.15s;
+        border-radius: 10px; padding: 0.7rem 0.85rem; min-height: 168px; text-align: left;
+        cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+        /* the race portrait sits behind, a dark gradient keeps the text readable */
+        background-size: cover; background-position: center 22%; background-repeat: no-repeat;
+        justify-content: flex-end; position: relative; overflow: hidden;
       }
       .race-card:hover { border-color: var(--venom-dim); }
-      .race-card-active { border-color: var(--venom) !important; background: linear-gradient(180deg, #232040, #18152e) !important; box-shadow: 0 0 12px rgba(138, 178, 63, 0.3); }
-      .race-card-name { font-family: var(--disp); font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone); font-weight: 600; }
+      .race-card-active { border-color: var(--venom) !important; box-shadow: 0 0 14px rgba(138, 178, 63, 0.45); }
+      .race-card-name { font-family: var(--disp); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone); font-weight: 600; text-shadow: 0 1px 3px #000; }
+      .race-card .muted { text-shadow: 0 1px 3px #000; }
       .racepick { flex: 1 1 auto; }
       /* Bestiary grid */
       .bestiary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }

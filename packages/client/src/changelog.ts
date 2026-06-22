@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.7.2';
+export const VERSION = '1.8.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.8.0',
+    date: '2026-06-22',
+    tr: [
+      'Artık 26 düşmanın HEPSİ portre resimli (kalan 10 da eklendi)',
+      'Irk seçim ekranı yenilendi: her kartın arka planında o ırkın görseli',
+      'Tüm yeni resimler şeffaflaştırıldı (beyaz kare arka plan temizlendi)',
+    ],
+    en: [
+      'All 26 enemies now have portrait art (the last 10 added)',
+      'Race select screen revamped: each card shows that race behind it',
+      'All new images made transparent (white checkered background removed)',
+    ],
+  },
   {
     v: '1.7.2',
     date: '2026-06-22',
