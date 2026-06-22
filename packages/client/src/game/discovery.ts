@@ -89,9 +89,17 @@ export function readBook(state: GameState, content: Content, bookId: string, log
   const book = content.books.get(bookId);
   if (!book || !state.booksFound.includes(bookId)) return;
   log({ key: 'log.book_lore', params: { lore: book.locKeyLore } });
+  // Surface read always grants a small EP reward — knowledge has tangible value.
+  state.ep += 5;
+  log({ key: 'log.book_ep', params: { ep: 5 } });
   if (state.stats.INT >= book.intReq) {
     log({ key: 'log.book_deep', params: { deep: book.locKeyDeep } });
-    if (!state.discoveries.includes(bookId)) state.discoveries.push(bookId);
+    const firstTime = !state.discoveries.includes(bookId);
+    if (firstTime) {
+      state.discoveries.push(bookId);
+      state.ep += book.intReq; // deep insight EP scales with how hard the knowledge is to unlock
+      log({ key: 'log.book_insight', params: { ep: book.intReq } });
+    }
   } else {
     log({ key: 'log.book_too_deep', params: { int: book.intReq } });
   }

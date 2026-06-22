@@ -6,9 +6,10 @@ import { recomputeMaxes } from './state';
 
 type Log = (e: LogEvent) => void;
 
-/** Only active-damage skills may fuse — fusing eyes/utilities made nonsense ("banespike"). */
+/** Eye-kind skills have their own dedicated fusion system and cannot enter the skill fusion lab. */
 export function canFuse(content: Content, id: string): boolean {
-  return content.skills.get(id)?.damage !== undefined;
+  const def = content.skills.get(id);
+  return !!def && def.kind !== 'eye';
 }
 
 const CLASSES: FusionClass[] = ['synergy', 'quirk', 'backfire'];

@@ -296,20 +296,32 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 
 // ---- rounds ----------------------------------------------------------------
 
-/** After a kill: auto-advance to the next room, or stay and FARM this room (manual). */
-const ROOM_KILL_QUOTA = 10;
+/** Minimum kills required before the Advance button unlocks (non-boss rooms only). */
+export const ROOM_KILL_QUOTA = 10;
 
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
-  state.roomKillCount = (state.roomKillCount ?? 0) + 1;
-  // Room clears only after the kill quota is met (boss rooms are exempt — boss kill ends immediately).
   const layer = currentLayer(state, content);
   const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
-  if (!isBossRoom && state.roomKillCount < ROOM_KILL_QUOTA) return; // keep farming this room
-  state.roomKillCount = 0;
-  state.roomEnemyId = null;
-  if (state.autoAdvance) advancePosition(state, content, log);
-  else state.roomCleared = true;
+
+  if (isBossRoom) {
+    // Boss kill: advance or hold for the "Advance" tap. Reset room lock.
+    state.roomKillCount = 0;
+    state.roomEnemyId = null;
+    if (state.autoAdvance) advancePosition(state, content, log);
+    else state.roomCleared = true;
+    return;
+  }
+
+  // Non-boss rooms: track the kill count and unlock the Advance button at quota.
+  // Enemies KEEP spawning after quota — player farms freely until they press Advance.
+  state.roomKillCount = (state.roomKillCount ?? 0) + 1;
+  if (state.roomKillCount >= ROOM_KILL_QUOTA && state.autoAdvance) {
+    state.roomKillCount = 0;
+    state.roomEnemyId = null;
+    advancePosition(state, content, log);
+  }
+  // No roomCleared = enemies respawn. Advance button appears in UI when quota met.
 }
 
 function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, isOffline: boolean = false): void {

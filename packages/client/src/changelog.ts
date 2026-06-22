@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.0';
+export const VERSION = '1.9.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.1',
+    date: '2026-06-23',
+    tr: [
+      'Füzyon: artık kol skilleri yanında bacak/vücut skilleri de seçilebilir (göz hariç)',
+      'Lore okuma: yüzey lore +5 EP, ilk derin okuma +intReq EP kazandırıyor',
+      'Log panelleri tıklanabilir aç/kapat başlıklara dönüştürüldü',
+      'Ayrı LORE logu: kitap içerikleri keşif/savaş loguna karışmaz, kalıcı olarak saklanır',
+      'Oda sayacı: düşman paneli sağ üstte 1/10 göstergesi (kota dolunca yeşile döner)',
+      'Normal odalarda oda-temizlendi ekranı kaldırıldı; 10 öldürme sonrası İlerle butonu açılır ama dövüşmeye devam edebilirsin',
+      'Boss odalarında yenildi mesajı ayrıca gösteriliyor',
+      'Tüm kitap lore metinleri daha atmosferik ve mekanik ipuçlu hale getirildi',
+    ],
+    en: [
+      'Fusion: leg/body skills now selectable in addition to arm (eye skills excluded)',
+      'Lore reading: surface lore grants +5 EP, first deep read grants +intReq EP',
+      'Log panels converted to collapsible click-to-open/close headers',
+      'Separate LORE log: book content no longer mixed with discovery/combat, stored permanently',
+      'Room kill counter: enemy panel shows 1/10 in top-right (turns green when quota met)',
+      'Non-boss rooms no longer show "room cleared" screen; Advance button unlocks at 10 kills but combat continues',
+      'Boss defeated message shown separately for boss rooms',
+      'All book lore texts improved: more atmospheric, more actionable mechanic hints',
+    ],
+  },
   {
     v: '1.9.0',
     date: '2026-06-22',

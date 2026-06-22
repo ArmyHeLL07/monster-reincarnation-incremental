@@ -9,7 +9,7 @@ import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type Ev
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
@@ -106,11 +106,16 @@ let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 let selectedEvoNodeId: string | null = null;
 let selectedItemUid: string | null = null;
-type LogCat = 'combat' | 'discovery' | 'loot';
-const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [] };
+type LogCat = 'combat' | 'discovery' | 'loot' | 'lore';
+const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [], lore: [] };
+/** Lore log is persistent — never cleared (player reads books there). */
+const LORE_LOG_CAP = 200;
+/** Whether each log panel is expanded (default: combat open, rest collapsed). */
+const logOpen: Record<LogCat, boolean> = { combat: true, discovery: false, loot: false, lore: false };
 
 /** Route a log line to its stream so combat spam never buries loot/discovery. */
 function logCategory(key: string): LogCat {
+  if (key === 'log.book_lore' || key === 'log.book_deep' || key === 'log.book_ep' || key === 'log.book_insight') return 'lore';
   if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
   if (key === 'log.loot_drop' || key === 'log.loot_full' || key === 'log.scrapped') return 'loot';
   if (key === 'log.forged' || key === 'log.scrap_all' || key === 'log.autoequip' || key === 'log.search_chest') return 'loot';
@@ -133,7 +138,8 @@ export function pushLog(key: string, params?: Record<string, string | number>): 
   const cat = logCategory(key);
   const text = tmsg(key, params);
   logs[cat].unshift(text);
-  if (logs[cat].length > LOG_CAP) logs[cat].length = LOG_CAP;
+  const cap = cat === 'lore' ? LORE_LOG_CAP : LOG_CAP;
+  if (logs[cat].length > cap) logs[cat].length = cap;
   if (key.startsWith('log.discover') || TOAST_KEYS.has(key)) pushToast(text);
 }
 
@@ -167,6 +173,7 @@ export function resetUi(): void {
   logs.combat.length = 0;
   logs.discovery.length = 0;
   logs.loot.length = 0;
+  // Lore log is intentionally NOT cleared on reset — player keeps their read lore history.
 }
 
 function bar(value: number, max: number, color: string): string {
@@ -203,9 +210,14 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       </nav>
       <main id="content" class="content"></main>
       <section class="logpanel">
-        <div class="logcol"><h3>${t('ui.log_combat')}</h3><div class="log" id="log-combat"></div></div>
-        <div class="logcol"><h3>${t('ui.log_discovery')}</h3><div class="log" id="log-discovery"></div></div>
-        <div class="logcol"><h3>${t('ui.log_loot')}</h3><div class="log" id="log-loot"></div></div>
+        ${(['combat', 'discovery', 'loot', 'lore'] as LogCat[]).map((cat) => `
+        <div class="logcol">
+          <div class="logcol-header" data-logcat="${cat}">
+            <h3>${t(`ui.log_${cat}`)}</h3>
+            <span class="logcol-toggle">${logOpen[cat] ? '▲' : '▼'}</span>
+          </div>
+          <ul class="logcol-body${cat === 'lore' ? ' lore-body' : ' short-body'}${logOpen[cat] ? '' : ' collapsed'}" id="log-${cat}"></ul>
+        </div>`).join('')}
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
     </div>
@@ -214,6 +226,18 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     b.addEventListener('click', () => {
       activeTab = (b.getAttribute('data-tab') as Tab) ?? 'combat';
       renderTab();
+    });
+  });
+  // Log panel collapse/expand
+  app.querySelectorAll<HTMLElement>('.logcol-header[data-logcat]').forEach((hdr) => {
+    hdr.addEventListener('click', () => {
+      const cat = hdr.getAttribute('data-logcat') as LogCat;
+      if (!cat) return;
+      logOpen[cat] = !logOpen[cat];
+      const body = hdr.nextElementSibling as HTMLElement | null;
+      const toggle = hdr.querySelector<HTMLElement>('.logcol-toggle');
+      if (body) body.classList.toggle('collapsed', !logOpen[cat]);
+      if (toggle) toggle.textContent = logOpen[cat] ? '▲' : '▼';
     });
   });
   renderTab();
@@ -263,9 +287,9 @@ export function live(state: GameState): void {
     if (!mini.firstElementChild) mini.innerHTML = miniStatusHtml();
     updateMini(state);
   }
-  for (const cat of ['combat', 'discovery', 'loot'] as LogCat[]) {
+  for (const cat of ['combat', 'discovery', 'loot', 'lore'] as LogCat[]) {
     const el = document.querySelector<HTMLElement>(`#log-${cat}`);
-    if (el) el.innerHTML = logs[cat].map((l) => `<div>${l}</div>`).join('');
+    if (el) el.innerHTML = logs[cat].map((l) => `<li>${l}</li>`).join('');
   }
   if (activeTab === 'combat' || activeTab === 'map') {
     // Don't wipe the boss-riddle input while the player is typing in it.
@@ -707,7 +731,7 @@ function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) {
     if (state.action === 'rest' || state.action === 'meditate') return restStage(state);
-    if (state.action === 'combat' && state.roomCleared) return `<p class="muted">✓ ${t('ui.room_cleared')}</p>`;
+    if (state.action === 'combat' && state.roomCleared) return `<p class="muted">${t('ui.boss_cleared')}</p>`;
     return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   }
   const portrait = enemyPortrait(inst, state.action === 'combat');
@@ -729,7 +753,12 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return `<div class="erow">${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
+  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
+  const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
+  const killBadge = (!isBossRoom && state.action === 'combat')
+    ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= ROOM_KILL_QUOTA ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${ROOM_KILL_QUOTA}</span>`
+    : '';
+  return `<div class="erow" style="position:relative">${killBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */
@@ -932,11 +961,11 @@ function combatTab(state: GameState): string {
   `;
 }
 
-/** Manual map progression: an "Advance" button when a room is cleared + the auto-advance toggle. */
+/** Manual map progression: Advance button unlocks at quota (non-boss) or on room cleared (boss/explore). */
 function advanceControls(state: GameState): string {
-  // Manual mode farms in place; "Advance" is always available to step to the next room.
-  const advBtn =
-    state.action === 'combat' && !state.autoAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
+  const quotaMet = (state.roomKillCount ?? 0) >= ROOM_KILL_QUOTA;
+  const canManualAdvance = state.action === 'combat' && !state.autoAdvance && (state.roomCleared || quotaMet);
+  const advBtn = canManualAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
   const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
   return `<div class="controls">${advBtn}${autoBtn}</div>`;
 }
@@ -1170,8 +1199,8 @@ function wireMap(el: HTMLElement): void {
 // ---- SKILLS (+ fusion) -----------------------------------------------------
 
 function fusableSkills(state: GameState) {
-  // Only active-damage skills can fuse — keeps results sensible (no eye/util "banespike").
-  return state.skills.filter((s) => CONTENT.skills.get(s.id)?.damage !== undefined);
+  // All skills except eye-kind can fuse (eyes have their own dedicated fusion system).
+  return state.skills.filter((s) => CONTENT.skills.get(s.id)?.kind !== 'eye');
 }
 
 /** Body-part category for the tidy grouped list — explicit `part`, else derived from kind/effects. */
