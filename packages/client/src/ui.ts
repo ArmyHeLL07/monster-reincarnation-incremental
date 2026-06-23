@@ -11,6 +11,7 @@ import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
+import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
@@ -69,6 +70,9 @@ export interface UiActions {
   onScrapCommon: () => void;
   onRespec: () => void;
   onChooseHumanPath: (pathId: string) => void;
+  onForage: () => void;
+  onForageEat: () => void;
+  onForageDiscard: () => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings';
@@ -896,6 +900,24 @@ function bestiaryTab(state: GameState): string {
   </section>`;
 }
 
+function foragePanel(state: GameState): string {
+  if (!state.pendingForage) return '';
+  const reveal = forageReveal(state, CONTENT);
+  if (!reveal) return '';
+  const name = reveal.name === 'ui.forage_unknown' ? `<span class="muted">${t('ui.forage_unknown')}</span>` : `<b>${t(reveal.name)}</b>`;
+  const satLine = reveal.satiety !== null ? `<span>${t('ui.forage_satiety', { sat: reveal.satiety })}</span>` : '';
+  const dangerLine = reveal.dangerIcon !== null ? `<span>${reveal.dangerIcon}</span>` : '';
+  return `
+    <section class="panel forage-panel">
+      <h2>${t('ui.forage_panel_title')}</h2>
+      <div class="forage-info">${name}${satLine ? ' · ' + satLine : ''}${dangerLine ? ' · ' + dangerLine : ''}</div>
+      <div class="controls" style="margin-top:.5rem">
+        <button id="forage-eat">${t('ui.forage_eat')}</button>
+        <button id="forage-discard" class="ghost">${t('ui.forage_discard')}</button>
+      </div>
+    </section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -925,6 +947,11 @@ function combatTab(state: GameState): string {
   const courtBtn = loreUnlocked(state, 'brink') ? `<button id="courtdeath" class="ghost">${t('ui.court_death')}</button>` : '';
   const searched = state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const searchBtn = `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>`;
+  const forageReady = state.forageCD <= 0 && !state.pendingForage;
+  const forgageCdSec = (state.forageCD / 1000).toFixed(1);
+  const forageBtn = state.pendingForage
+    ? ''
+    : `<button id="forage-btn"${forageReady ? '' : ' disabled'}>🍃 ${forageReady ? t('ui.forage_btn') : forgageCdSec + 'sn'}</button>`;
   const statusLine = state.statusEffects.length
     ? `<p class="muted" style="margin:.4rem 0 0">⚠ ${t('ui.status')}: ${state.statusEffects
         .map((s) => s.control
@@ -952,8 +979,10 @@ function combatTab(state: GameState): string {
     <div class="controls">
       ${deepBtn}
       ${searchBtn}
+      ${forageBtn}
       ${courtBtn}
     </div>
+    ${foragePanel(state)}
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
       <ul>${resists}</ul>
@@ -1005,6 +1034,9 @@ function wireCombat(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#deepread')?.addEventListener('click', ACTIONS.onDeepRead);
   el.querySelector<HTMLButtonElement>('#meditate')?.addEventListener('click', ACTIONS.onMeditate);
   el.querySelector<HTMLButtonElement>('#search')?.addEventListener('click', ACTIONS.onSearch);
+  el.querySelector<HTMLButtonElement>('#forage-btn')?.addEventListener('click', ACTIONS.onForage);
+  el.querySelector<HTMLButtonElement>('#forage-eat')?.addEventListener('click', ACTIONS.onForageEat);
+  el.querySelector<HTMLButtonElement>('#forage-discard')?.addEventListener('click', ACTIONS.onForageDiscard);
   el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
   el.querySelectorAll<HTMLButtonElement>('.evchoice').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onChooseEvent(Number(b.dataset.evchoice))),

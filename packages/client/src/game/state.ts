@@ -287,6 +287,12 @@ export interface GameState {
   vitEnduranceXP: number;
   /** Permanent VIT bonus earned from Threshold Endurance this race life. Cap = tier × 2. Resets on race change. */
   vitEndurancePerm: number;
+
+  // --- Yemek Ara (forage mechanic) -------------------------------------------
+  /** Cooldown remaining in ms before the forage button is usable again (0 = ready). */
+  forageCD: number;
+  /** Found food waiting for player decision (eat or discard). Null if nothing pending. */
+  pendingForage: { foodId: string } | null;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -427,6 +433,8 @@ export function newGame(): GameState {
     nearDeathCount: 0,
     vitEnduranceXP: 0,
     vitEndurancePerm: 0,
+    forageCD: 0,
+    pendingForage: null,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

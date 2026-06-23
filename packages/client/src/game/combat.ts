@@ -148,6 +148,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     restRound(state, content);
   }
   growStaminaRegen(state); // training raises SP regen (more in combat / low HP)
+  if (state.forageCD > 0) state.forageCD = Math.max(0, state.forageCD - 1000);
   state.lastSeen = Date.now();
 }
 

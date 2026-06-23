@@ -10,6 +10,7 @@ import { evolve, remapRemovedForms } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
+import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
 import { markSeenSkills } from './game/skill_tree';
 import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, type UiActions } from './ui';
@@ -197,6 +198,21 @@ async function init(): Promise<void> {
     },
     onSearch: () => {
       search(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onForage: () => {
+      forage(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onForageEat: () => {
+      eatFoundFood(state, content, logFn);
+      save(state);
+      render(state);
+    },
+    onForageDiscard: () => {
+      discardFoundFood(state, logFn);
       save(state);
       render(state);
     },
@@ -490,6 +506,9 @@ function migrate(s: GameState): void {
   s.nearDeathCount ??= 0;
   s.vitEnduranceXP ??= 0;
   s.vitEndurancePerm ??= 0;
+  // v9 fields — Yemek Ara forage mechanic
+  s.forageCD ??= 0;
+  s.pendingForage ??= null;
 }
 
 /**

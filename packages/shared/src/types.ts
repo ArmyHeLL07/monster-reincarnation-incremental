@@ -432,6 +432,24 @@ export interface BossRiddle {
   reward: { kind: 'skill' | 'stat' | 'unlock' | 'ep' | 'fragment'; value: string | number; amount?: number };
 }
 
+/** A forageable food item found via the "Yemek Ara" button (GDD survival mechanic). */
+export interface ForageableFood {
+  id: string;
+  locKey: string;
+  /** Layer element this food belongs to, or 'neutral' (appears in any layer). */
+  element: DamageType | 'neutral';
+  satiety: number;
+  dangerLevel: 'safe' | 'risky' | 'toxic' | 'lethal';
+  dangerEffect?: {
+    type: DamageType | 'damage';
+    dmg?: number;
+    duration?: number;
+  };
+  rarity: 'common' | 'uncommon' | 'rare' | 'very_rare';
+  /** Minimum layer depth required (default 1). very_rare items require >= 2. */
+  minDepth?: number;
+}
+
 /** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */
 export interface RulerDef {
   id: string;

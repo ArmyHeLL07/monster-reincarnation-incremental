@@ -13,6 +13,7 @@ import type {
   ElementChart,
   EventDef,
   BossRiddle,
+  ForageableFood,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -32,10 +33,12 @@ export interface Content {
   events: Map<string, EventDef>;
   /** Boss riddles keyed by the boss enemy id they gate. */
   bossRiddles: Map<string, BossRiddle>;
+  /** Forageable food items keyed by id (Yemek Ara mechanic). */
+  forageableFoods: Map<string, ForageableFood>;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -51,6 +54,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<ElementChart>(`${base}elements.json`),
       fetchJson<EventDef[]>(`${base}events.json`),
       fetchJson<BossRiddle[]>(`${base}boss_riddles.json`),
+      fetchJson<ForageableFood[]>(`${base}forageable_foods.json`),
     ]);
   return {
     skills: byId(skills),
@@ -68,6 +72,7 @@ export async function loadContent(base: string): Promise<Content> {
     events: byId(events),
     // Keyed by riddle id (state.bossRiddle.riddleId looks up by id); pickBossRiddle maps boss→riddle.
     bossRiddles: new Map(bossRiddles.map((r) => [r.id, r])),
+    forageableFoods: byId(forageableFoods),
   };
 }
 
