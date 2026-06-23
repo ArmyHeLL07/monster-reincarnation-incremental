@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.3';
+export const VERSION = '1.9.4';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.4',
+    date: '2026-06-23',
+    tr: [
+      'Düzeltme: İnsan Yolu uzmanlaşması artık söz verilen skilleri gerçekten veriyor (6 skill eksikti — Büyücü/Suikastçı hiç almıyordu)',
+      'Düzeltme: forage yiyeceklerindeki geçersiz hasar tipi (damage) tematik tiplere çevrildi (poison/fire/acid…)',
+    ],
+    en: [
+      'Fix: Human Path specialization now actually grants its skills (6 were missing — Mage/Assassin got none)',
+      'Fix: invalid forage food damage type ("damage") replaced with thematic types (poison/fire/acid…)',
+    ],
+  },
   {
     v: '1.9.3',
     date: '2026-06-23',

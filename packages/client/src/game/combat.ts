@@ -1467,10 +1467,10 @@ function addResistExp(state: GameState, content: Content, type: DamageType, amou
 
 /** Path bonus applied once when the player chooses (permanent bonuses to stats and unlock). */
 const HUMAN_PATH_BONUS: Record<string, { stat: string; amount: number; skills: string[] }> = {
-  tank:     { stat: 'VIT', amount: 3, skills: ['iron_will', 'provoke'] },
-  mage:     { stat: 'INT', amount: 3, skills: ['mana_surge', 'arcane_barrier'] },
-  assassin: { stat: 'AGI', amount: 3, skills: ['shadow_step', 'vital_strike'] },
-  healer:   { stat: 'WIS', amount: 3, skills: ['holy_light', 'regeneration'] },
+  tank:     { stat: 'VIT', amount: 3, skills: ['iron_will', 'battle_cry'] },
+  mage:     { stat: 'INT', amount: 3, skills: ['mana_control', 'mana_shield'] },
+  assassin: { stat: 'AGI', amount: 3, skills: ['stealth', 'ambush_strike'] },
+  healer:   { stat: 'WIS', amount: 3, skills: ['divine_recovery', 'regeneration'] },
 };
 
 /** Player chooses their Human Path at T0 LV10. Grants stat bonus + path skills. */
