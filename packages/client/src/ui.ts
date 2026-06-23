@@ -17,6 +17,7 @@ import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
 import { VERSION, CHANGELOG } from './changelog';
+import { TUTORIAL_STEPS, type TutorialStep } from './tutorial';
 
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
@@ -233,6 +234,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         </div>`).join('')}
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
+      <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -327,6 +329,7 @@ export function render(state: GameState): void {
   CURSTATE = state;
   renderTab();
   live(state);
+  updateTutorialOverlay(state);
 }
 
 /** One-shot evolution celebration: a fullscreen light burst + the new form name. Auto-removed.
@@ -2145,6 +2148,71 @@ function wireStats(el: HTMLElement): void {
   });
 }
 
+// ---- TUTORIAL OVERLAY ------------------------------------------------------
+
+function updateTutorialOverlay(state: GameState): void {
+  const overlay = document.querySelector<HTMLElement>('#tutorial-overlay');
+  if (!overlay) return;
+
+  const step = state.tutorialStep;
+
+  if (step === 'done' || step === 'skipped' || !state.raceConfirmed) {
+    overlay.classList.add('hidden');
+    return;
+  }
+
+  if (typeof step !== 'number') { overlay.classList.add('hidden'); return; }
+
+  const def: TutorialStep | undefined = TUTORIAL_STEPS[step];
+  if (!def) { overlay.classList.add('hidden'); return; }
+
+  const total = TUTORIAL_STEPS.length;
+  const gotoBtn = def.targetTab
+    ? `<button class="ghost tut-goto tutorial-goto" data-tab="${def.targetTab}" data-sel="${def.targetSelector ?? ''}">${t('tut.goto')}</button>`
+    : '';
+  const isLast = step === total - 1;
+
+  overlay.innerHTML = `
+    <div class="tutorial-box">
+      <div class="tutorial-step-count">${t('tut.step')} ${step + 1} ${t('tut.of')} ${total}</div>
+      <h2>${t(`${def.i18nPrefix}.title`)}</h2>
+      <p>${t(`${def.i18nPrefix}.body`)}</p>
+      <div class="tutorial-actions">
+        ${gotoBtn}
+        <button class="ghost tut-skip">${t('tut.skip_all')}</button>
+        <button class="actbtn active tut-next">${isLast ? t('tut.done') : t('tut.next')}</button>
+      </div>
+    </div>`;
+
+  overlay.classList.remove('hidden');
+  wireTutorialOverlay(overlay);
+}
+
+function wireTutorialOverlay(overlay: HTMLElement): void {
+  overlay.querySelector<HTMLButtonElement>('.tut-next')?.addEventListener('click', () => {
+    ACTIONS.onTutorialNext();
+  });
+  overlay.querySelector<HTMLButtonElement>('.tut-skip')?.addEventListener('click', () => {
+    ACTIONS.onTutorialSkip();
+  });
+  overlay.querySelectorAll<HTMLButtonElement>('.tut-goto').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab') as Tab | null;
+      const sel = btn.getAttribute('data-sel');
+      if (tab) {
+        activeTab = tab;
+        renderTab();
+        if (sel) {
+          setTimeout(() => {
+            const el = document.querySelector<HTMLElement>(sel);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      }
+    });
+  });
+}
+
 // ---- GUIDE TAB -------------------------------------------------------------
 
 let raceHintsCache: Record<string, Record<string, Record<string, string>>> | null = null;
@@ -2245,6 +2313,9 @@ function settingsTab(state: GameState): string {
         <button id="suggest">${t('ui.suggest')}</button>
         <button id="reset" class="ghost">${t('ui.reset')}</button>
       </div>
+      <div class="controls">
+        <button id="tutorial-reopen">${t('tut.reopen')}</button>
+      </div>
     </section>
   `;
 }
@@ -2266,4 +2337,5 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#bugreport')?.addEventListener('click', ACTIONS.onBugReport);
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
+  el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
 }

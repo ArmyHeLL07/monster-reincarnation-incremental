@@ -673,6 +673,23 @@
       .forage-panel { border: 1px solid var(--venom); background: #0e1208; margin-top: .5rem; }
       .forage-panel h2 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--venom); margin: 0 0 .4rem; }
       .forage-info { font-size: .9rem; display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+      .tutorial-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(0,0,0,0.55); display: flex;
+        align-items: center; justify-content: center;
+        padding: 1rem;
+      }
+      .tutorial-overlay.hidden { display: none; }
+      .tutorial-box {
+        background: var(--panel, #1a1725); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px; padding: 1.5rem; max-width: 480px; width: 100%;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      }
+      .tutorial-box h2 { margin: 0 0 0.75rem; font-size: 1.1rem; color: var(--venom, #6fae53); }
+      .tutorial-box p { margin: 0 0 1.2rem; line-height: 1.6; color: rgba(255,255,255,0.85); font-size:0.92rem; }
+      .tutorial-step-count { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; }
+      .tutorial-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+      .tutorial-goto { margin-right: auto; }
     </style>
   </head>
   <body>
