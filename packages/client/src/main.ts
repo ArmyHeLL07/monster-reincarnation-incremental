@@ -25,7 +25,7 @@ async function init(): Promise<void> {
   const base = import.meta.env.BASE_URL;
   let state = load() ?? newGame();
   migrate(state);
-  const lang = state.lang ?? (navigator.language.startsWith('tr') ? 'tr' : 'en');
+  const lang = state.lang ?? 'en';
   await loadI18n(base, lang);
   const content = await loadContent(base);
   recomputeMaxes(state);

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.4';
+export const VERSION = '1.9.5';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,18 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.5',
+    date: '2026-06-23',
+    tr: [
+      'Rusça dil desteği eklendi (Русский) — Ayarlar → Dil',
+      'Varsayılan dil artık İngilizce (kayıtlı tercihi olmayan yeni oyuncular için)',
+    ],
+    en: [
+      'Russian language support added (Русский) — Settings → Language',
+      'Default language is now English (for new players without a saved preference)',
+    ],
+  },
   {
     v: '1.9.4',
     date: '2026-06-23',
@@ -38,6 +50,26 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Soul gain is performance-based: the deeper you reach, the more Souls',
       '7 upgrades: Predator Soul, Ancient Armor, Greed, Sleepless Mind, Wisdom, Soul Luck, Extra Slot',
       'Soul panel in the Stats tab (unlocks after the first rebirth)',
+    ],
+  },
+  {
+    v: '1.9.2',
+    date: '2026-06-23',
+    tr: [
+      'Yemek Ara butonu: savaş ekranında 5 sn bekleme süresiyle yemek ara',
+      'Element bazlı yemek havuzu: nötr + bulunduğun katmanın elementine göre yemek çıkar',
+      'Appraisala bağlı bilgi açılımı: tier 0 = ???, tier 1 = isim, tier 3 = +tokluk, tier 5 = tehlike ikonu',
+      '24 yemek türü: 9 farklı element (nötr/zehir/ateş/fizik/asit/buz/yıldırım/delici/büyü/ruh)',
+      'Tehlike seviyeleri: güvenli / riskli / toksik / ölümcül',
+      'Bulunan yemeği Ye veya Bırak seçeneği ile yönet',
+    ],
+    en: [
+      'Search Food button: forage for food in combat with a 5s cooldown',
+      'Element-based food pool: neutral + current layer element determines what you find',
+      'Appraisal-gated reveal: tier 0 = ???, tier 1 = name, tier 3 = +satiety, tier 5 = danger icon',
+      '24 food types across 9 elements (neutral/poison/fire/physical/acid/frost/lightning/pierce/magic/soul)',
+      'Danger levels: safe / risky / toxic / lethal',
+      'Manage found food with Eat or Discard',
     ],
   },
   {

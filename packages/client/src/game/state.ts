@@ -128,7 +128,7 @@ export interface GameState {
   /** Autosave interval in minutes (player choice). */
   autosaveMin: number;
   /** Chosen language ('tr' | 'en'); undefined = auto-detect. */
-  lang?: 'tr' | 'en';
+  lang?: 'tr' | 'en' | 'ru';
   /** 0 = full, MAX_HUNGER = starving. */
   hunger: number;
   /** Stored corpses (from kills) — auto-eaten when hunger crosses the threshold; they decay. */

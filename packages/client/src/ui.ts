@@ -42,7 +42,7 @@ export interface UiActions {
   onEat: (index: number) => void;
   onToggleAutoEat: () => void;
   onSetAutosave: (min: number) => void;
-  onSetLang: (lang: 'tr' | 'en') => void;
+  onSetLang: (lang: 'tr' | 'en' | 'ru') => void;
   onSaveNow: () => void;
   onExportSave: () => void;
   onImportSave: () => void;
@@ -1854,7 +1854,7 @@ function evolutionInfoCard(state: GameState): string {
   const levelReqMet = state.level >= n.levelReq;
   const levelColor = levelReqMet ? 'var(--venom)' : 'var(--blood)';
   const statusLabel = evoStatusText(n.status, state.lang || 'tr');
-  const currentLabel = state.lang === 'tr' ? 'Mevcut' : 'Current';
+  const currentLabel = state.lang === 'tr' ? 'Mevcut' : state.lang === 'ru' ? 'Текущий' : 'Current';
 
   const actionBtn =
     n.status === 'available'
@@ -2087,8 +2087,9 @@ function settingsTab(state: GameState): string {
   const autosave = [5, 10, 15]
     .map((m) => `<button class="autosave${state.autosaveMin === m ? ' active' : ''}" data-min="${m}">${m}</button>`)
     .join('');
-  const langs = (['tr', 'en'] as const)
-    .map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${l === 'tr' ? 'Türkçe' : 'English'}</button>`)
+  const LANG_LABEL: Record<string, string> = { tr: 'Türkçe', en: 'English', ru: 'Русский' };
+  const langs = (['tr', 'en', 'ru'] as const)
+    .map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${LANG_LABEL[l]}</button>`)
     .join('');
   const diffs = [...CONTENT.difficulties.values()]
     .map((d) => `<button class="diff${state.difficulty === d.id ? ' active' : ''}" data-diff="${d.id}">${t(d.locKey)}</button>`)
@@ -2127,7 +2128,7 @@ function wireSettings(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onSetAutosave(Number(b.getAttribute('data-min'))));
   });
   el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
-    b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en'));
+    b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en' | 'ru'));
   });
   el.querySelectorAll<HTMLButtonElement>('.diff').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetDifficulty(b.getAttribute('data-diff') as Difficulty));
