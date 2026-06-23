@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.7';
+export const VERSION = '1.9.8';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.8',
+    date: '2026-06-23',
+    tr: [
+      'Düzeltme: Rimuru formlarında çift Raphael/Beelzebuth skili (aynı yetenek 2 kez listede)',
+      'Skill verme artık tüm soy zincirini kontrol ediyor (ata + torun) — kopya üretmiyor',
+      'Rimuru formları benzersiz skiller veriyor; Raphael/Beelzebuth doğal evrimle geliyor',
+      'Mevcut bozuk kayıtlar sayfa yenilenince otomatik birleştirilir',
+    ],
+    en: [
+      'Fix: duplicate Raphael/Beelzebuth on Rimuru forms (same skill listed twice)',
+      'Skill granting now checks the whole lineage (ancestors + descendants) — no more dupes',
+      'Rimuru forms grant unique skills; Raphael/Beelzebuth come from natural evolution',
+      'Existing corrupted saves auto-merge on reload',
+    ],
+    ru: [
+      'Исправление: дублирующиеся Рафаэль/Вельзевул на формах Римуру (один навык дважды)',
+      'Выдача навыков теперь проверяет всю линию развития (предки + потомки) — без дублей',
+      'Формы Римуру дают уникальные навыки; Рафаэль/Вельзевул приходят через эволюцию',
+      'Существующие повреждённые сохранения авто-объединяются при перезагрузке',
+    ],
+  },
   {
     v: '1.9.7',
     date: '2026-06-23',

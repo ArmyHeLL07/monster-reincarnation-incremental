@@ -39,10 +39,26 @@ export function evolutionReady(state: GameState, content: Content): boolean {
   return availableEvolutions(state, content).some((f) => canEvolve(state, f));
 }
 
-/** True if the player owns the base skill OR any of its in-place evolved forms (whole lineage). */
+/** True if the player owns ANY skill in baseId's whole lineage — its ancestors OR descendants.
+ *  Walks UP to the root first (so granting `raphael` sees an owned `great_sage`), then DOWN over
+ *  the full evolvesTo tree. Prevents granting a skill the player already holds in a different form. */
 function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
+  // 1) climb to the lineage root (the skill nothing evolves into baseId from).
+  let root = baseId;
+  const climbed = new Set<string>();
+  for (;;) {
+    if (climbed.has(root)) break; // cycle safety
+    climbed.add(root);
+    let parent: string | undefined;
+    for (const def of content.skills.values()) {
+      if (def.evolvesTo.includes(root)) { parent = def.id; break; }
+    }
+    if (!parent) break;
+    root = parent;
+  }
+  // 2) collect the whole lineage forward from the root.
   const line = new Set<string>();
-  const stack = [baseId];
+  const stack = [root];
   while (stack.length) {
     const id = stack.pop()!;
     if (line.has(id)) continue;

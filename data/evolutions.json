@@ -638,9 +638,9 @@
       "STR": 3
     },
     "grantSkills": [
-      "great_sage",
-      "raphael",
-      "mana_shield"
+      "mana_control",
+      "mana_shield",
+      "regeneration"
     ],
     "humanoid": true
   },
@@ -659,9 +659,9 @@
       "STR": 4
     },
     "grantSkills": [
-      "raphael",
-      "beelzebuth",
-      "sovereign_form"
+      "sovereign_form",
+      "void_barrier",
+      "undying_vitality"
     ],
     "humanoid": true
   },
