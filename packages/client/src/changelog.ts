@@ -8,6 +8,8 @@ export interface ChangelogEntry {
   date: string; // YYYY-MM-DD
   tr: string[];
   en: string[];
+  /** Optional Russian text; falls back to `en` when absent (so future entries never break the build). */
+  ru?: string[];
 }
 
 /** Newest first. The first entry is treated as "this version". */
@@ -23,6 +25,10 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Russian language support added (Русский) — Settings → Language',
       'Default language is now English (for new players without a saved preference)',
     ],
+    ru: [
+      'Добавлена поддержка русского языка (Русский) — Настройки → Язык',
+      'Язык по умолчанию теперь английский (для новых игроков без сохранённого выбора)',
+    ],
   },
   {
     v: '1.9.4',
@@ -34,6 +40,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     en: [
       'Fix: Human Path specialization now actually grants its skills (6 were missing — Mage/Assassin got none)',
       'Fix: invalid forage food damage type ("damage") replaced with thematic types (poison/fire/acid…)',
+    ],
+    ru: [
+      'Исправление: специализация Пути Человека теперь действительно даёт свои навыки (6 отсутствовали — Маг/Убийца не получали ничего)',
+      'Исправление: недопустимый тип урона еды собирательства ("damage") заменён тематическими типами (яд/огонь/кислота…)',
     ],
   },
   {
@@ -50,6 +60,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Soul gain is performance-based: the deeper you reach, the more Souls',
       '7 upgrades: Predator Soul, Ancient Armor, Greed, Sleepless Mind, Wisdom, Soul Luck, Extra Slot',
       'Soul panel in the Stats tab (unlocks after the first rebirth)',
+    ],
+    ru: [
+      'Новое: Древо Душ — перерождение теперь открывает систему постоянных улучшений',
+      'Получение Душ зависит от результата: чем глубже доберёшься, тем больше Душ',
+      '7 улучшений: Душа Хищника, Древняя Броня, Жадность, Неспящий Разум, Мудрость, Удача Душ, Доп. Слот',
+      'Панель Душ во вкладке Статы (открывается после первого перерождения)',
     ],
   },
   {
@@ -70,6 +86,14 @@ export const CHANGELOG: ChangelogEntry[] = [
       '24 food types across 9 elements (neutral/poison/fire/physical/acid/frost/lightning/pierce/magic/soul)',
       'Danger levels: safe / risky / toxic / lethal',
       'Manage found food with Eat or Discard',
+    ],
+    ru: [
+      'Кнопка Поиск еды: ищи еду в бою с перезарядкой 5 сек',
+      'Пул еды по стихии: нейтральная + стихия текущего слоя определяют находки',
+      'Раскрытие через Оценку: тир 0 = ???, тир 1 = имя, тир 3 = +сытость, тир 5 = иконка опасности',
+      '24 вида еды по 9 стихиям (нейтр/яд/огонь/физ/кислота/мороз/молния/колющий/магия/душа)',
+      'Уровни опасности: безопасно / рискованно / токсично / смертельно',
+      'Управляй найденной едой: Съесть или Выбросить',
     ],
   },
   {
@@ -95,6 +119,16 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Boss defeated message shown separately for boss rooms',
       'All book lore texts improved: more atmospheric, more actionable mechanic hints',
     ],
+    ru: [
+      'Слияние: помимо навыков рук теперь можно выбирать навыки ног/тела (кроме глаз)',
+      'Чтение знаний: поверхностное знание даёт +5 ОЭ, первое глубокое чтение даёт +intReq ОЭ',
+      'Панели журнала превращены в сворачиваемые заголовки по клику',
+      'Отдельный журнал ЗНАНИЙ: содержимое книг не смешивается с открытиями/боем, хранится постоянно',
+      'Счётчик комнаты: панель врага показывает 1/10 справа вверху (зеленеет при выполнении квоты)',
+      'Обычные комнаты больше не показывают экран "комната зачищена"; кнопка Дальше открывается на 10 убийствах, но бой продолжается',
+      'Сообщение о победе над боссом показывается отдельно для комнат боссов',
+      'Все тексты знаний книг улучшены: атмосфернее, с более полезными подсказками по механикам',
+    ],
   },
   {
     v: '1.9.0',
@@ -119,6 +153,16 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Threshold Endurance: near-death events with the right skill grant permanent VIT bonus',
       'True Sight and Plague Weaver: two new hidden skills unlocked via derivation',
     ],
+    ru: [
+      'Древо навыков: вкладка навыков теперь имеет переключатель Список / Древо',
+      'Система рангов навыков (F/E/D/C/B/A/S/SS): навыки высокого ранга получают опыт медленнее',
+      'Выведение: подними несколько навыков до пороговых уровней, чтобы авто-открыть скрытые навыки',
+      'Прогрессивное раскрытие: в древе видны только твои/соседние навыки; остальное остаётся ???',
+      'Путь Человека: раса человек T0 LV10 — выбор специализации Воин/Маг/Убийца/Целитель',
+      'Квота убийств в комнате: нужно победить 10 врагов в комнате до продвижения (комнаты боссов исключены)',
+      'Пороговая Стойкость: события на краю смерти с нужным навыком дают постоянный бонус ВЫН',
+      'Истинное зрение и Чумной ткач: два новых скрытых навыка через выведение',
+    ],
   },
   {
     v: '1.8.1',
@@ -128,6 +172,9 @@ export const CHANGELOG: ChangelogEntry[] = [
     ],
     en: [
       'Resting/meditation screen now shows your race portrait with a breathing aura',
+    ],
+    ru: [
+      'Экран отдыха/медитации теперь показывает портрет твоей расы с дышащей аурой',
     ],
   },
   {
@@ -143,6 +190,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Race select screen revamped: each card shows that race behind it',
       'All new images made transparent (white checkered background removed)',
     ],
+    ru: [
+      'Теперь у ВСЕХ 26 врагов есть портреты (добавлены последние 10)',
+      'Экран выбора расы обновлён: на каждой карте видна эта раса позади',
+      'Все новые изображения сделаны прозрачными (убран бело-клетчатый фон)',
+    ],
   },
   {
     v: '1.7.2',
@@ -155,6 +207,10 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Fully cleaned the leftover white edge halo on enemy portraits',
       'Two-pass defringe: edge cleanup before and after downscaling',
     ],
+    ru: [
+      'Полностью убран остаточный белый ореол по краю портретов врагов',
+      'Двухпроходный дефриндж: очистка краёв до и после уменьшения',
+    ],
   },
   {
     v: '1.7.1',
@@ -166,6 +222,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     en: [
       'Removed the baked-in white/checkered background from enemy portraits — now truly transparent',
       'Edge flood-fill: light details inside the creature (bone, crystal, armor) are preserved',
+    ],
+    ru: [
+      'Убран запечённый бело-клетчатый фон с портретов врагов — теперь по-настоящему прозрачные',
+      'Заливка от края: светлые детали внутри существа (кость, кристалл, броня) сохранены',
     ],
   },
   {
@@ -180,6 +240,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       '16 enemies now show hand-drawn portrait art (instead of emoji)',
       'Shown in the combat screen and the Bestiary tab',
       'Enemies without art keep their emoji',
+    ],
+    ru: [
+      '16 врагов теперь показаны нарисованными от руки портретами (вместо эмодзи)',
+      'Показываются в экране боя и во вкладке Бестиарий',
+      'Враги без изображения сохраняют свой эмодзи',
     ],
   },
   {
@@ -197,6 +262,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Slime: Acid Spit + Toxic Cloud',
       'Existing characters auto-receive the missing 2nd attack skill',
     ],
+    ru: [
+      'Баланс: слизь/скелет/голем/человек теперь начинают с 2 атакующими навыками (было 1)',
+      'Ранняя игра была слишком медленной — стартовый урон примерно удвоен',
+      'Слизь: Кислотный плевок + Токсичное облако',
+      'Существующие персонажи авто-получают недостающий 2-й атакующий навык',
+    ],
   },
   {
     v: '1.6.0',
@@ -210,6 +281,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Pinnacle forms now grant a powerful "ultimate" skill (role-based)',
       'Sibling pinnacles get different ultimates — every path is unique',
       'E.g. Soul Sovereign → Death Scythe, Reaper God → Soul Devour Gaze',
+    ],
+    ru: [
+      'Вершинные формы теперь дают мощный "ультимативный" навык (по роли)',
+      'Родственные вершины получают разные ультимейты — каждый путь уникален',
+      'Напр.: Владыка душ → Коса смерти, Бог-жнец → Взгляд пожирания души',
     ],
   },
   {
@@ -229,6 +305,13 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Eyes: Medusa Gaze, Nightmare Gaze, Tyrant Gaze (stronger)',
       'Passives: Fortress Body, Primordial Heart, Deathless, Aegis Eternal…',
     ],
+    ru: [
+      '27 новых эволюций навыков 3-го тира — навыки теперь развиваются глубже',
+      'Заклинания: Метеор, Ледниковый шип, Гроза, Адское дыхание…',
+      'Удары: Коса смерти, Убийство, Удар катаклизма, Буря стрел…',
+      'Глаза: Взгляд Медузы, Кошмарный взгляд, Взгляд тирана (сильнее)',
+      'Пассивы: Тело-крепость, Первозданное сердце, Бессмертный, Вечная эгида…',
+    ],
   },
   {
     v: '1.4.2',
@@ -240,6 +323,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     en: [
       'CRITICAL fix: HP/MP showing "NaN" and breaking (old saves lacked the race-signature field)',
       'Old saves auto-repair; corrupted HP/MP/SP values are restored',
+    ],
+    ru: [
+      'КРИТИЧЕСКОЕ исправление: ОЗ/ОМ показывали "NaN" и ломались (в старых сохранениях не было поля силы расы)',
+      'Старые сохранения авто-чинятся; повреждённые значения ОЗ/ОМ/ОВ восстанавливаются',
     ],
   },
   {
@@ -255,6 +342,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Riddle data was looked up by the wrong key — now matched correctly',
       'Safety: if a riddle fails to load, the screen no longer blanks — falls back to normal combat',
     ],
+    ru: [
+      'Исправление: пустой экран боя в комнатах загадок боссов',
+      'Данные загадки искались по неверному ключу — теперь сопоставляются правильно',
+      'Безопасность: если загадка не загрузилась, экран не пустеет — откат к обычному бою',
+    ],
   },
   {
     v: '1.4.0',
@@ -269,6 +361,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Each branch is a real choice: one leans primary-stat, the other secondary + different skills',
       'Affects all races (e.g. Ancient Lich INT/offense, Soul Reaper WIS/soul)',
     ],
+    ru: [
+      'Исправление: родственные формы эволюции теперь действительно отличаются друг от друга',
+      'Каждое ветвление — реальный выбор: одна склоняется к основному стату, другая — к вторичному + другие навыки',
+      'Затронуло все расы (напр. Древний лич ИНТ/атака, Жнец душ МДР/душа)',
+    ],
   },
   {
     v: '1.3.1',
@@ -280,6 +377,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     en: [
       'Fix: skill slot counter is now accurate — empty slots no longer silently auto-fill',
       'New "Unequip all" button: clear your whole loadout in one tap',
+    ],
+    ru: [
+      'Исправление: счётчик слотов навыков теперь точен — пустые слоты больше не заполняются молча сами',
+      'Новая кнопка "Снять всё": очисти всю экипировку одним нажатием',
     ],
   },
   {
@@ -296,6 +397,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Multi-action: each parallel mind fires an EXTRA skill per turn, ignoring cooldown',
       'Parallel tasking: passive MP/SP regen + rare fragment finds while fighting',
       'Each parallel mind also grants +1 skill slot (scaling)',
+    ],
+    ru: [
+      'Параллельные разумы переработаны (Кумо): Параллельные разумы → Воля → Существование (1/2/3 разума)',
+      'Мультидействие: каждый параллельный разум запускает ДОПОЛНИТЕЛЬНЫЙ навык за ход, игнорируя перезарядку',
+      'Параллельные задачи: пассивный реген ОМ/ОВ + находки редких фрагментов во время боя',
+      'Каждый параллельный разум также даёт +1 слот навыка (масштабируется)',
     ],
   },
   {
@@ -317,6 +424,14 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Hidden Kumoko path for spiders: at 500 kills, Zoa Ele → Ede Saine → Arachne → Zana Horowa (Arachne is humanoid, unlocks inventory)',
       'Basilisk petrifies, Cave Ape stuns — status-applying enemies',
     ],
+    ru: [
+      'Состояния: Окаменение + Оглушение — враги могут лишить тебя действий на несколько секунд',
+      'Новые сопротивления: Сопротивление окаменению/оглушению (теперь 12 всего)',
+      'Цепочка навыков Отрицание боли (Кумо): игнорирует входящий урон на низком ОЗ',
+      'Пространственный манёвр + Молниеносный шаг (навыки уклонения)',
+      'Скрытый путь Кумоко для пауков: на 500 убийствах Зоа Эле → Эде Сайне → Арахна → Зана Хорова (Арахна — гуманоид, открывает инвентарь)',
+      'Василиск окаменяет, Пещерная обезьяна оглушает — враги, накладывающие состояния',
+    ],
   },
   {
     v: '1.1.0',
@@ -331,6 +446,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Enemy element variety: basilisk acid, Kaguna lightning, Cave Horror frost, Queen magic',
       'All 10 resistances now matter (frost/acid/lightning/magic were previously dead)',
     ],
+    ru: [
+      'Панель Силы расы: индикатор-полоса во вкладке боя — показывает накопленный жар/паутину/кости, секунды поглощения слизи + эффект',
+      'Разнообразие стихий врагов: василиск кислота, Кагуна молния, Пещерный ужас мороз, Королева магия',
+      'Теперь все 10 сопротивлений важны (мороз/кислота/молния/магия раньше были мертвы)',
+    ],
   },
   {
     v: '1.0.0',
@@ -344,6 +464,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Bestiary tab: tracks 26 enemy kills; reveals behaviour tags after 5 kills or Appraisal',
       'Race Signature Mechanics: spider=web trap, wyrmling=heat burst, skeleton=bone armour, slime=element absorb, golem=stone skin',
       'Magic fix: magma_fist now costs 5 MP (was 0)',
+    ],
+    ru: [
+      'Бестиарий: отслеживает 26 убийств врагов; раскрывает теги поведения после 5 убийств или Оценки',
+      'Сигнатурные механики рас: паук=ловушка-паутина, дракончик=всплеск жара, скелет=костяная броня, слизь=поглощение стихии, голем=каменная кожа',
+      'Исправление магии: magma_fist теперь стоит 5 ОМ (было 0)',
     ],
   },
   {
@@ -361,6 +486,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Predator / Gluttony / Beelzebuth and Great Sage / Raphael skill chains',
       'Harvest Festival toast notification on the 666th kill',
     ],
+    ru: [
+      'Секретная пасхалка Тенсура: раса Слизь открывает гуманоидный путь на 666 убийствах',
+      'Формы Демоническая слизь → Римуру Темпест → Демон-лорд Римуру (с инвентарём + снаряжением)',
+      'Цепочки навыков Хищник / Чревоугодие / Вельзевул и Великий мудрец / Рафаэль',
+      'Тост-уведомление Праздник урожая на 666-м убийстве',
+    ],
   },
   {
     v: '0.8.1',
@@ -374,6 +505,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Race-thematic skills: skeleton now uses Bone Arrow/Armor (not Sharp Claw)',
       'Dragon uses Fire Breath (not Flame Bolt) + Dragon Claw',
       'Golem/spider skill pools made coherent',
+    ],
+    ru: [
+      'Тематические навыки рас: скелет теперь использует Костяную стрелу/броню (не Острый коготь)',
+      'Дракон использует Огненное дыхание (не Огненный снаряд) + Драконий коготь',
+      'Пулы навыков голема/паука сделаны согласованными',
     ],
   },
   {
@@ -390,6 +526,12 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Authentic names (Elroe Gunerush, Earth Dragon Araba, Taratect…)',
       'Behaviour variety: regen, double-strike, enrage, armoured, lifesteal foes',
       'Fix: dungeon depth now matches evolution — gatekeeper/rebirth reachable again',
+    ],
+    ru: [
+      'Аниме-бестиарий: 16→26 врагов по 4 пластам (Верхний/Средний/Нижний/Донный)',
+      'Аутентичные имена (Эльроэский гунераш, Земляной дракон Араба, Таратект…)',
+      'Разнообразие поведения: регенерация, двойной удар, ярость, бронированные, вампиризм',
+      'Исправление: глубина подземелья теперь соответствует эволюции — привратник/перерождение снова достижимы',
     ],
   },
   {
@@ -411,6 +553,14 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Chest loot: searching while resting can find gear',
       'Quick buttons: auto-equip best / scrap commons',
     ],
+    ru: [
+      'Глубина добычи: требования экипировки (оружие→СИЛ, броня→ВЫН…)',
+      'Бонус комплекта — носи 3/6/9 редких+ предметов для растущих бонусов',
+      'Ковка: трать ОЭ для повышения предмета на одну ступень редкости',
+      'Перераспределение статов: возврат вложенных очков за ОЭ',
+      'Добыча из сундуков: поиск во время отдыха может найти снаряжение',
+      'Быстрые кнопки: авто-надеть лучшее / распылить обычное',
+    ],
   },
   {
     v: '0.6.0',
@@ -424,6 +574,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Inventory + equipment system (humanoid races only: human, skeleton)',
       'Procedural loot: 9 equip slots, rarity colours, prefixes/suffixes',
       'Enemies/chests drop gear; legendaries persist through rebirth',
+    ],
+    ru: [
+      'Система инвентаря + экипировки (только гуманоидные расы: человек, скелет)',
+      'Процедурная добыча: 9 слотов экипировки, цвета редкости, префиксы/суффиксы',
+      'Враги/сундуки роняют снаряжение; легендарные сохраняются через перерождение',
     ],
   },
   {
@@ -439,6 +594,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Breathing aura while resting/meditating',
       'Fullscreen bursts for evolution and rebirth',
     ],
+    ru: [
+      'Анимации: атака/свечение врага в бою',
+      'Дышащая аура во время отдыха/медитации',
+      'Полноэкранные всплески для эволюции и перерождения',
+    ],
   },
   {
     v: '0.4.0',
@@ -452,6 +612,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Pure binary evolution tree for all races (32 forms, each splits in 2)',
       'Thematic starting stats per race',
       'Skills no longer auto-evolve offline (happens in active play)',
+    ],
+    ru: [
+      'Чистое бинарное древо эволюции для всех рас (32 формы, каждая делится на 2)',
+      'Тематические стартовые статы для каждой расы',
+      'Навыки больше не авто-эволюционируют офлайн (происходит в активной игре)',
     ],
   },
 ];

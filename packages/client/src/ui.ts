@@ -391,9 +391,11 @@ function statBarSkel(id: string, label: string, color: string): string {
 /** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
 /** Version badge (top bar) — hover/tap to reveal the changelog popover. */
 function versionBadge(): string {
-  const lang = CURSTATE?.lang === 'en' ? 'en' : 'tr';
+  // Match the app's language exactly (default English when no saved preference); ru falls back to en.
+  const lang = CURSTATE?.lang ?? 'en';
   const entries = CHANGELOG.map((e, i) => {
-    const items = (lang === 'en' ? e.en : e.tr).map((x) => `<li>${x}</li>`).join('');
+    const lines = lang === 'tr' ? e.tr : lang === 'ru' ? (e.ru ?? e.en) : e.en;
+    const items = lines.map((x) => `<li>${x}</li>`).join('');
     return `<div class="cl-entry${i === 0 ? ' cl-latest' : ''}"><div class="cl-ver">v${e.v} <span class="muted">${e.date}</span></div><ul>${items}</ul></div>`;
   }).join('');
   return `<div class="version-badge" tabindex="0" aria-label="changelog">
