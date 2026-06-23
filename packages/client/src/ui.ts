@@ -82,8 +82,8 @@ export interface UiActions {
   onNavigateGuide: (anchor: string) => void;
 }
 
-type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'bestiary', 'stats', 'settings'];
+type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
+const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'bestiary', 'stats', 'settings', 'guide'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -99,6 +99,7 @@ const ICONS: Record<Tab, string> = {
   bestiary: svg('<circle cx="12" cy="8" r="4"/><path d="M8 16s0-4 4-4 4 4 4 4"/><path d="M5 20h14"/><path d="M9 12l-1 2M15 12l1 2"/>'),
   stats: svg('<path d="M5 21V11M12 21V4M19 21v-7"/>'),
   settings: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
+  guide: svg('<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8M8 16h4"/>'),
 };
 
 let CONTENT: Content;
@@ -210,6 +211,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
   CONTENT = content;
   ACTIONS = actions;
   CURSTATE = state;
+  void loadRaceHints(import.meta.env.BASE_URL);
   const app = document.querySelector<HTMLDivElement>('#app');
   if (!app) return;
   app.innerHTML = `
@@ -538,6 +540,10 @@ function renderTab(): void {
     case 'settings':
       el.innerHTML = settingsTab(CURSTATE);
       wireSettings(el);
+      break;
+    case 'guide':
+      el.innerHTML = guideTab(CURSTATE);
+      wireGuide(el);
       break;
   }
 }
@@ -2137,6 +2143,68 @@ function wireStats(el: HTMLElement): void {
       if (r) ACTIONS.onSelectRace(r);
     });
   });
+}
+
+// ---- GUIDE TAB -------------------------------------------------------------
+
+let raceHintsCache: Record<string, Record<string, Record<string, string>>> | null = null;
+
+async function loadRaceHints(base: string): Promise<void> {
+  try {
+    raceHintsCache = await fetch(`${base}race_hints.json`).then((r) => r.json());
+  } catch {
+    raceHintsCache = {};
+  }
+}
+
+function raceHintPanel(raceId: string, lang: string): string {
+  if (!raceHintsCache) return '';
+  const hint = raceHintsCache[raceId];
+  if (!hint) return '';
+  const l = (hint[lang] ?? hint['en'] ?? {}) as Record<string, string>;
+  return `
+    <div class="race-hint-panel" style="margin-top:0.8rem; padding:0.8rem; background:rgba(255,255,255,0.04); border-radius:6px; font-size:0.85rem; line-height:1.5;">
+      ${l.strength ? `<div><span style="color:var(--venom)">⬆ ${t('race_hint.strength')}:</span> ${l.strength}</div>` : ''}
+      ${l.weakness ? `<div><span style="color:var(--blood)">⬇ ${t('race_hint.weakness')}:</span> ${l.weakness}</div>` : ''}
+      ${l.growth ? `<div><span class="muted">🌱 ${t('race_hint.growth')}:</span> ${l.growth}</div>` : ''}
+      ${l.note ? `<div><span class="muted">✦ ${t('race_hint.note')}:</span> ${l.note}</div>` : ''}
+    </div>`;
+}
+
+const GUIDE_SECTIONS = [
+  'basics', 'combat', 'skills', 'map', 'hunger', 'stats',
+  'inventory', 'soul', 'fusion', 'human_path', 'lore', 'races',
+] as const;
+
+function guideSectionHtml(section: string, state: GameState): string {
+  const isRaces = section === 'races';
+  const racesExtra = isRaces
+    ? [...(CONTENT?.races?.values() ?? [])].map((r) => {
+        const hint = raceHintPanel(r.id, state.lang ?? 'en');
+        return hint
+          ? `<div style="margin-top:1rem;"><b>${t(r.locKey)}</b>${hint}</div>`
+          : '';
+      }).join('')
+    : '';
+  return `
+    <section class="panel" id="guide-${section}" style="scroll-margin-top:1rem;">
+      <h3 style="margin-bottom:0.5rem;">${t(`guide.${section}.title`)}</h3>
+      <p class="muted" style="line-height:1.6;">${t(`guide.${section}.body`)}</p>
+      ${racesExtra}
+    </section>`;
+}
+
+function guideTab(state: GameState): string {
+  const sections = GUIDE_SECTIONS.map((s) => guideSectionHtml(s, state)).join('');
+  return `
+    <div style="padding:0.5rem 0;">
+      <h2 style="margin-bottom:1rem;">${t('guide.title')}</h2>
+      ${sections}
+    </div>`;
+}
+
+function wireGuide(_el: HTMLElement): void {
+  // Guide sekmesi tamamen statik HTML — etkileşim yok.
 }
 
 // ---- SETTINGS --------------------------------------------------------------
