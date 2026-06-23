@@ -1459,5 +1459,6 @@
   "ui.kills_total": "toplam",
   "ui.harvest_progress": "Ruh Hasadı",
   "ui.labyrinth_progress": "Labirent Uyanışı",
-  "ui.next_milestone": "Sonraki kilometre taşı"
+  "ui.next_milestone": "Sonraki kilometre taşı",
+  "ui.live_bonus": "Şu an"
 }

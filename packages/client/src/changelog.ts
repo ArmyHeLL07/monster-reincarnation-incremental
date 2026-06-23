@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.8';
+export const VERSION = '1.9.9';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.9',
+    date: '2026-06-23',
+    tr: [
+      'Pasif skiller artık açınca canlı bonus gösteriyor (örn. Raphael: 📘+%30 XP · ⚔+%15 · ✨%15)',
+      'Düşman paneli sabit yükseklik: canavar ölünce/gelince arayüz artık zıplamıyor',
+    ],
+    en: [
+      'Passive skills now show a live bonus readout when expanded (e.g. Raphael: 📘+30% XP · ⚔+15% · ✨15%)',
+      'Enemy panel fixed height: UI no longer jumps when a foe dies/spawns',
+    ],
+    ru: [
+      'Пассивные навыки теперь показывают текущий бонус при раскрытии (напр. Рафаэль: 📘+30% опыта · ⚔+15% · ✨15%)',
+      'Фиксированная высота панели врага: интерфейс больше не прыгает при смерти/появлении врага',
+    ],
+  },
   {
     v: '1.9.8',
     date: '2026-06-23',

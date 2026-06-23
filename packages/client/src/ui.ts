@@ -965,7 +965,7 @@ function combatTab(state: GameState): string {
     : '';
   const sigPanel = raceSigPanel(state);
   return `
-    <section class="panel">
+    <section class="panel enemy-panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
       ${statusLine}
@@ -1271,8 +1271,32 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   const actions = exp
     ? `<div class="controls" style="margin:.2rem 0 .5rem 1rem"><button class="delskill ghost" data-del="${s.id}">${t('ui.delete_skill')}</button>${sacBtn}</div>`
     : '';
-  const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${acq}${actions}` : '';
+  const liveBonus = exp && def && !active ? skillLiveBonus(def, s.level) : '';
+  const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${liveBonus}${acq}${actions}` : '';
   return `<li><span class="skillrow" data-skill="${s.id}">${exp ? '▾' : '▸'} <b>${name}</b> — ${tierTag}${t('ui.lv')} ${s.level} · ${s.exp} xp</span> ${equipBtn}${desc}</li>`;
+}
+
+/** Live, level-scaled bonus readout for a passive skill (symbols are language-free). */
+function skillLiveBonus(def: Skill, level: number): string {
+  const sc = Math.min(1, level / Math.max(1, def.lvMax));
+  const pct = (v: number) => Math.round(v * sc * 100);
+  const flat = (v: number) => (v * sc).toFixed(1).replace(/\.0$/, '');
+  const p: string[] = [];
+  if (def.xpMult) p.push(`📘 +${pct(def.xpMult)}% XP`);
+  if (def.dmgMult) p.push(`⚔ +${pct(def.dmgMult)}%`);
+  if (def.lootMult) p.push(`💰 +${pct(def.lootMult)}%`);
+  if (def.regenMult) p.push(`♻ +${pct(def.regenMult)}%`);
+  if (def.idleMult) p.push(`🌙 +${pct(def.idleMult)}%`);
+  if (def.dodgeBonus) p.push(`💨 +${pct(def.dodgeBonus)}%`);
+  if (def.armor) p.push(`🛡 +${flat(def.armor)}`);
+  if (def.surviveChance) p.push(`✨ ${pct(def.surviveChance)}%`);
+  if (def.painNull) p.push(`🩹 ${pct(def.painNull)}%`);
+  if (def.overdrawFrac) p.push(`🔥 +${pct(def.overdrawFrac)}%`);
+  if (def.mpRegen) p.push(`🔷 +${flat(def.mpRegen)}`);
+  if (def.hpRegen) p.push(`❤ +${flat(def.hpRegen)}`);
+  if (def.spRegen) p.push(`⚡ +${flat(def.spRegen)}`);
+  if (def.hungerMult && def.hungerMult < 1) p.push(`🍖 -${Math.round((1 - def.hungerMult) * 100)}%`);
+  return p.length ? `<div class="skilldesc" style="opacity:.85">${t('ui.live_bonus')}: ${p.join(' · ')}</div>` : '';
 }
 
 /** Human Path selection panel — shown when T0 human hits LV10 and must choose a specialization. */
