@@ -75,6 +75,11 @@ export interface UiActions {
   onForage: () => void;
   onForageEat: () => void;
   onForageDiscard: () => void;
+  onTutorialNext: () => void;
+  onTutorialSkip: () => void;
+  onTutorialReopen: () => void;
+  onMarkHintSeen: (id: string) => void;
+  onNavigateGuide: (anchor: string) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings';

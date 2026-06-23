@@ -225,6 +225,31 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onTutorialNext: () => {
+      if (typeof state.tutorialStep === 'number') {
+        const nextStep = state.tutorialStep + 1;
+        state.tutorialStep = nextStep >= 8 ? 'done' : nextStep;
+      }
+      save(state);
+      render(state);
+    },
+    onTutorialSkip: () => {
+      state.tutorialStep = 'skipped';
+      save(state);
+      render(state);
+    },
+    onTutorialReopen: () => {
+      state.tutorialStep = 0;
+      save(state);
+      render(state);
+    },
+    onMarkHintSeen: (id: string) => {
+      if (!state.seenHints.includes(id)) state.seenHints.push(id);
+      save(state);
+    },
+    onNavigateGuide: (_anchor: string) => {
+      save(state);
+    },
     onCourtDeath: () => {
       courtDeath(state, content, logFn);
       save(state);
