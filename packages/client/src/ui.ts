@@ -9,7 +9,7 @@ import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type Ev
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
@@ -1886,6 +1886,25 @@ function evolutionInfoCard(state: GameState): string {
   `;
 }
 
+/** Kill counter + (slime/spider) progress toward their hidden evolution path. */
+function killStatsHtml(state: GameState): string {
+  const kills = state.kills ?? 0;
+  const totalKilled = Object.values(state.killedEnemies ?? {}).reduce((s, n) => s + (n ?? 0), 0);
+  let line = `<p class="muted kill-line">⚔ ${t('ui.kills_life')}: <b>${kills}</b> · ${t('ui.kills_total')}: ${totalKilled}</p>`;
+  // Hidden path progress — only for the race that has one, and only until it's unlocked.
+  const secret = state.raceId === 'slime'
+    ? { goal: SECRET_HARVEST_SOULS, label: t('ui.harvest_progress'), color: '#9a7fd0' }
+    : state.raceId === 'spider'
+      ? { goal: SECRET_LABYRINTH_KILLS, label: t('ui.labyrinth_progress'), color: '#8ab23f' }
+      : null;
+  if (secret && kills < secret.goal) {
+    line += `<div class="row" style="margin-top:.3rem;font-size:.8rem"><span>${secret.label}</span><span>${kills}/${secret.goal}</span></div>${bar(kills, secret.goal, secret.color)}`;
+  } else if (secret) {
+    line += `<p class="kill-line" style="color:${secret.color};font-size:.82rem">✦ ${secret.label} ✓</p>`;
+  }
+  return line;
+}
+
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
@@ -1899,6 +1918,7 @@ function statsTab(state: GameState): string {
       <div class="row"><span>${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level}/${LEVEL_CAP}</span><span>${state.level >= LEVEL_CAP ? t('ui.evolution_ready') : `${t('ui.xp')} ${state.xp}/${xpToNext(state.level)}`}</span></div>
       ${bar(state.level >= LEVEL_CAP ? 1 : state.xp, state.level >= LEVEL_CAP ? 1 : xpToNext(state.level), '#6d44d9')}
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints} · ${t('ui.auto_power')}: +${Math.round((levelPower(state) - 1) * 100)}%</p>
+      ${killStatsHtml(state)}
       <ul>${statRows}</ul>
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>

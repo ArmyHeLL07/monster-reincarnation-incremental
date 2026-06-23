@@ -35,9 +35,9 @@ const DEEP_READ_XP = 5;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
 /** Souls (kills) a slime must reap in one life to awaken the hidden Demon Slime / Rimuru path. */
-const SECRET_HARVEST_SOULS = 666;
+export const SECRET_HARVEST_SOULS = 666;
 /** Kills a spider must survive in one life to awaken the hidden Kumoko (Zoa Ele → Arachne) path. */
-const SECRET_LABYRINTH_KILLS = 500;
+export const SECRET_LABYRINTH_KILLS = 500;
 const EYE_DISCOVER_CHANCE = 0.03;
 const EYE_DISCOVER_LEVEL = 5;
 const APPRAISAL_DISCOVER_CHANCE = 0.05; // the basic "seeing eye" — found early, then slotted by the player

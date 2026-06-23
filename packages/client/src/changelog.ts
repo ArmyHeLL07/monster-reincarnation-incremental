@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.5';
+export const VERSION = '1.9.6';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.6',
+    date: '2026-06-23',
+    tr: [
+      'Stats sekmesinde öldürme sayacı: bu hayattaki + toplam öldürme',
+      'Slime/Örümcek için gizli yol ilerleme çubuğu (Ruh Hasadı 666 / Labirent 500)',
+    ],
+    en: [
+      'Kill counter in Stats tab: this-life + total kills',
+      'Hidden-path progress bar for Slime/Spider (Soul Harvest 666 / Labyrinth 500)',
+    ],
+    ru: [
+      'Счётчик убийств во вкладке Статы: за эту жизнь + всего',
+      'Полоса прогресса скрытого пути для Слизи/Паука (Жатва Душ 666 / Лабиринт 500)',
+    ],
+  },
   {
     v: '1.9.5',
     date: '2026-06-23',

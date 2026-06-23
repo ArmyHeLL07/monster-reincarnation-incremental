@@ -1454,5 +1454,9 @@
   "soul.soul_luck.name": "Ruh Şansı",
   "soul.soul_luck.desc": "Her seviye yeniden doğuşta kazanılan Ruhu +%6 artırır.",
   "soul.extra_slot.name": "Ekstra Yuva",
-  "soul.extra_slot.desc": "+1 aktif skill yuvası (pahalı, sınırlı)."
+  "soul.extra_slot.desc": "+1 aktif skill yuvası (pahalı, sınırlı).",
+  "ui.kills_life": "Öldürme (bu hayat)",
+  "ui.kills_total": "toplam",
+  "ui.harvest_progress": "Ruh Hasadı",
+  "ui.labyrinth_progress": "Labirent Uyanışı"
 }
