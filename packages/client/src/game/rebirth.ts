@@ -4,6 +4,7 @@ import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated } from './state
 import type { LootItem } from '@mri/shared';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
+import { computeSoulGain } from './soul';
 
 type Log = (e: LogEvent) => void;
 
@@ -23,6 +24,10 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   const fresh = newGame();
   const boon = state.rebirthBoon + 1;
   const savedRaceId = state.raceId; // race persists through rebirth (upper hierarchy)
+
+  // --- Soul prestige: award Souls for how far this run reached (BEFORE the reset wipes depth) ---
+  const earnedSouls = computeSoulGain(state);
+  state.souls = (state.souls ?? 0) + earnedSouls;
 
   // --- lower hierarchy: reset to a fresh weak start --------------------------
   state.skills = fresh.skills.map((s) => ({ ...s }));
@@ -83,5 +88,6 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
 
   log({ key: 'log.rebirth_msg' });
   log({ key: 'log.rebirth_done', params: { n: state.rebirthCount } });
+  log({ key: 'log.soul_gain', params: { souls: earnedSouls, total: state.souls } });
   return true;
 }

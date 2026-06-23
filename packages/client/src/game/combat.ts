@@ -21,6 +21,7 @@ import {
 import { meditateTick } from './meditation';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
+import { soulLevel } from './soul';
 
 type Log = (e: LogEvent) => void;
 
@@ -797,9 +798,9 @@ export function parallelMinds(state: GameState): number {
   return 0;
 }
 
-/** Skill-slot capacity — each parallel mind grants an extra equipped-skill slot. */
+/** Skill-slot capacity — each parallel mind + each Extra Slot soul upgrade grants one more. */
 export function skillSlots(state: GameState): number {
-  return 4 + parallelMinds(state);
+  return 4 + parallelMinds(state) + soulLevel(state, 'extra_slot');
 }
 
 /** Keep `equipped` valid: drop removed/non-damage skills and trim to capacity. Does NOT auto-fill

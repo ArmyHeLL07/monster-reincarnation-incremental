@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.1';
+export const VERSION = '1.9.3';
 
 export interface ChangelogEntry {
   v: string;
@@ -12,6 +12,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.3',
+    date: '2026-06-23',
+    tr: [
+      'Yeni: Ruh Ağacı — yeniden doğuş artık kalıcı bir yükseltme sistemi açıyor',
+      'Ruh kazanımı performansa bağlı: ne kadar derine inersen o kadar Ruh',
+      '7 yükseltme: Yırtıcı Ruh, Kadim Zırh, Açgözlülük, Uykusuz Zihin, Bilgelik, Ruh Şansı, Ekstra Yuva',
+      'Stats sekmesinde Ruh paneli (ilk yeniden doğuştan sonra açılır)',
+    ],
+    en: [
+      'New: Soul Tree — rebirth now unlocks a permanent upgrade system',
+      'Soul gain is performance-based: the deeper you reach, the more Souls',
+      '7 upgrades: Predator Soul, Ancient Armor, Greed, Sleepless Mind, Wisdom, Soul Luck, Extra Slot',
+      'Soul panel in the Stats tab (unlocks after the first rebirth)',
+    ],
+  },
   {
     v: '1.9.1',
     date: '2026-06-23',

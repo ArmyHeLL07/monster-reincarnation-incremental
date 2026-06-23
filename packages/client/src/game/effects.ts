@@ -1,6 +1,7 @@
 import type { Content } from './content';
 import type { GameState } from './state';
 import { sigBoneArmor } from './signature';
+import { soulLevel } from './soul';
 
 /** Aggregated passive/ruler modifiers, summed live each time they're needed. */
 export interface Bonuses {
@@ -92,6 +93,13 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
 
   // Race signature: skeleton bone stacks add flat armor.
   b.armor += sigBoneArmor(state);
+
+  // Soul prestige tree (permanent, bought with rebirth Souls).
+  b.xpMult += soulLevel(state, 'predator_soul') * 0.08;   // Predator Soul: faster XP
+  b.armor += soulLevel(state, 'ancient_armor') * 3;       // Ancient Armor: flat defense
+  b.regenMult += soulLevel(state, 'ancient_armor') * 0.06; // …and a little regen
+  b.lootMult += soulLevel(state, 'greed_soul') * 0.10;    // Greed: more loot/EP
+  b.idleMult += soulLevel(state, 'sleepless') * 0.12;     // Sleepless: better offline/idle yield
 
   // Ruler powers (sins/virtues already granted) — full value, no level.
   for (const def of content.ruler) {

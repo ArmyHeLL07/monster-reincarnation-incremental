@@ -9,6 +9,8 @@ import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
+import { buySoulUpgrade } from './game/soul';
+import { aggregateBonuses } from './game/effects';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
@@ -79,6 +81,13 @@ async function init(): Promise<void> {
       unequipAll(state);
       save(state);
       render(state);
+    },
+    onBuySoul: (id) => {
+      if (buySoulUpgrade(state, id)) {
+        recomputeMaxes(state);
+        save(state);
+        render(state);
+      }
     },
     onDeleteSkill: (id) => {
       if (!window.confirm(t('ui.delete_confirm'))) return;
@@ -492,6 +501,9 @@ function migrate(s: GameState): void {
   if (!Number.isFinite(s.sig)) s.sig = 0;
   s.sigAbsorb ??= null;
   s.killedEnemies ??= {};
+  // v8 fields — Soul prestige tree
+  if (!Number.isFinite(s.souls)) s.souls = 0;
+  s.soulUpgrades ??= {};
   // Repair any NaN that an earlier build already persisted into core pools.
   if (!Number.isFinite(s.scars)) s.scars = 0;
   if (!Number.isFinite(s.hp)) s.hp = Number.isFinite(s.maxHp) ? s.maxHp : 1;
@@ -550,6 +562,9 @@ function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => 
   const beforeEp = state.ep;
   const silent: (e: LogEvent) => void = () => {};
   for (let i = 0; i < ticks; i++) tick(state, content, silent, true);
+  // Sleepless Mind (soul) / Sloth (ruler): idle yield multiplier — extra EP on top of what was simulated.
+  const idleBonus = aggregateBonuses(state, content).idleMult - 1;
+  if (idleBonus > 0) state.ep += Math.round((state.ep - beforeEp) * idleBonus);
   log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - beforeEp } });
 }
 

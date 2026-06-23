@@ -13,6 +13,7 @@ import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respec
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
+import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
 import { VERSION, CHANGELOG } from './changelog';
@@ -52,6 +53,7 @@ export interface UiActions {
   onSearch: () => void;
   onCourtDeath: () => void;
   onRebirth: () => void;
+  onBuySoul: (id: string) => void;
   onReadBook: (id: string) => void;
   onAnswerRoom: (answer: string) => void;
   onChooseEvent: (i: number) => void;
@@ -135,7 +137,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival', 'log.labyrinth_awakening',
+  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -2012,7 +2014,35 @@ function rebirthPanel(state: GameState): string {
         ? `<p>${t('ui.rebirth_ready')}</p><button id="rebirth">${t('ui.rebirth_do')}</button>`
         : `<p class="muted">${t('ui.rebirth_locked')}</p>`}
     </section>
+    ${soulTreePanel(state)}
   `;
+}
+
+/** The Soul prestige tree — spend Souls earned at rebirth on permanent, strategy-shaping upgrades. */
+function soulTreePanel(state: GameState): string {
+  const souls = Math.floor(state.souls ?? 0);
+  // Hidden until the player has earned their first Souls (keeps early game uncluttered).
+  if (souls <= 0 && (state.rebirthCount ?? 0) === 0 && Object.keys(state.soulUpgrades ?? {}).length === 0) return '';
+  const rows = SOUL_UPGRADES.map((u) => {
+    const lvl = soulLevel(state, u.id);
+    const cost = soulUpgradeCost(state, u.id);
+    const maxed = !Number.isFinite(cost);
+    const afford = souls >= cost;
+    const lvlText = u.maxLevel > 0 ? `${lvl}/${u.maxLevel}` : `${lvl}`;
+    const btn = maxed
+      ? `<span class="soul-max">${t('ui.soul_max')}</span>`
+      : `<button class="soul-buy${afford ? '' : ' disabled'}" data-soul="${u.id}"${afford ? '' : ' disabled'}>${t('ui.soul_buy')} · ${cost}✦</button>`;
+    return `<li class="soul-row">
+      <div class="soul-head"><b>${u.icon} ${t(u.locKey)}</b> <span class="muted">${t('ui.lv')} ${lvlText}</span></div>
+      <div class="muted soul-desc">${t(u.locKeyDesc)}</div>
+      <div class="soul-act">${btn}</div>
+    </li>`;
+  }).join('');
+  return `<section class="panel soul-panel">
+    <div class="row"><h2 style="margin:0">${t('ui.soul_tree')}</h2><span class="soul-bal">✦ ${souls}</span></div>
+    <p class="muted" style="font-size:0.8rem">${t('ui.soul_info')}</p>
+    <ul class="soul-list">${rows}</ul>
+  </section>`;
 }
 
 function wireStats(el: HTMLElement): void {
@@ -2037,6 +2067,12 @@ function wireStats(el: HTMLElement): void {
   });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
   el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
+  el.querySelectorAll<HTMLButtonElement>('.soul-buy[data-soul]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const id = b.getAttribute('data-soul');
+      if (id) ACTIONS.onBuySoul(id);
+    });
+  });
   el.querySelectorAll<HTMLButtonElement>('.racepick').forEach((b) => {
     b.addEventListener('click', () => {
       const r = b.getAttribute('data-race');

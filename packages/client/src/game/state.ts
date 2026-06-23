@@ -189,6 +189,10 @@ export interface GameState {
   gatekeeperCleared: boolean;
   /** Permanent starting-stat boon accumulated across rebirths (the small kindness, §7.5.4). */
   rebirthBoon: number;
+  /** Spendable Soul currency, earned at rebirth based on that run's depth/kills (prestige meta). */
+  souls: number;
+  /** Permanent Soul-tree upgrade levels (id → level). Bought with souls, persist forever. */
+  soulUpgrades: Record<string, number>;
 
   // --- ruler axis + taboo (GDD §C) ------------------------------------------
   ruler: RulerState;
@@ -398,6 +402,8 @@ export function newGame(): GameState {
     kills: 0,
     gatekeeperCleared: false,
     rebirthBoon: 0,
+    souls: 0,
+    soulUpgrades: {},
     ruler: { sin: 0, virtue: 0, taboo: 0, powers: [] },
     meditation: 0,
     meditationUnlocked: false,
