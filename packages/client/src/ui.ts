@@ -17,7 +17,7 @@ import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
 import { diffDef } from './game/difficulty';
 import { t, tmsg } from './i18n';
 import { VERSION, CHANGELOG } from './changelog';
-import { TUTORIAL_STEPS, type TutorialStep } from './tutorial';
+import { TUTORIAL_STEPS, HINT_DEFS, shouldShowHint, markHintSeen, type TutorialStep } from './tutorial';
 
 export interface UiActions {
   onSetAction: (a: 'idle' | 'combat' | 'rest') => void;
@@ -172,6 +172,56 @@ function pushToast(text: string): void {
   while (host.children.length > 6 && host.firstChild) host.removeChild(host.firstChild);
   setTimeout(dismiss, 30000); // long fallback so ignored toasts eventually clear
 }
+function pushHintToast(hintId: string, targetTab: string | null, guideAnchor: string): void {
+  const host = document.querySelector<HTMLElement>('#toasts');
+  if (!host) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.style.cssText = 'cursor:default; padding: 0.6rem 0.8rem;';
+
+  const gotoHtml = targetTab
+    ? `<button class="ghost hint-goto" data-tab="${targetTab}" data-anchor="${guideAnchor}" style="margin-top:0.4rem;font-size:0.78rem;padding:0.2rem 0.6rem;">${t('hint.goto')}</button>`
+    : '';
+
+  el.innerHTML = `
+    <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.2rem;">${t(`hint.${hintId}.title`)}</div>
+    <div style="font-size:0.82rem;opacity:0.85;">${t(`hint.${hintId}.body`)}</div>
+    ${gotoHtml}`;
+
+  const dismiss = (): void => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 350);
+  };
+  el.querySelector('.hint-goto')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const btn = e.currentTarget as HTMLElement;
+    const tab = btn.getAttribute('data-tab') as Tab | null;
+    const anchor = btn.getAttribute('data-anchor') ?? '';
+    if (tab) {
+      activeTab = tab;
+      renderTab();
+      setTimeout(() => {
+        const target = document.querySelector<HTMLElement>(`#${anchor}`);
+        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+    dismiss();
+  });
+  el.addEventListener('click', dismiss);
+  host.appendChild(el);
+  while (host.children.length > 6 && host.firstChild) host.removeChild(host.firstChild);
+  setTimeout(dismiss, 12000);
+}
+
+function checkAndShowHints(state: GameState): void {
+  for (const def of HINT_DEFS) {
+    if (!shouldShowHint(def.id, state)) continue;
+    markHintSeen(def.id, state);
+    ACTIONS.onMarkHintSeen(def.id);
+    pushHintToast(def.id, def.targetTab, def.guideAnchor);
+  }
+}
+
 export function setLastFusion(r: FusionResult): void {
   lastFusion = r;
 }
@@ -329,6 +379,7 @@ export function render(state: GameState): void {
   CURSTATE = state;
   renderTab();
   live(state);
+  checkAndShowHints(state);
   updateTutorialOverlay(state);
 }
 
