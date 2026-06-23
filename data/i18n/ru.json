@@ -289,9 +289,9 @@
   "ui.evolve": "Эволюция",
   "ui.evo_tree": "Древо эволюции",
   "ui.evo_lineage": "Родословная",
-  "ui.evo_locked": "Нужен Ур {lv}",
-  "ui.evo_missed": "недостижимо",
-  "ui.evo_hidden": "неоткрытая эволюция",
+  "ui.evo_locked": "Заблокировано",
+  "ui.evo_missed": "Упущено",
+  "ui.evo_hidden": "Скрыто",
   "ui.ev_title": "Событие",
   "ui.ev_requires": "заблокировано",
   "log.ev_locked": "Этот вариант закрыт для тебя.",
@@ -1460,5 +1460,9 @@
   "soul.extra_slot.name": "Доп. Слот",
   "soul.extra_slot.desc": "+1 слот активного навыка (дорого, ограничено).",
   "ui.next_milestone": "Следующая веха",
-  "ui.live_bonus": "Сейчас"
+  "ui.live_bonus": "Сейчас",
+  "ui.evo_past": "Прошлая Форма",
+  "ui.evo_current": "Текущая Форма",
+  "ui.evo_available": "Доступно",
+  "ui.evo_current_short": "Текущий"
 }

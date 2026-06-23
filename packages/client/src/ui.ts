@@ -1722,16 +1722,11 @@ function wireLore(el: HTMLElement): void {
 
 // ---- STATS (+ evolution) ---------------------------------------------------
 
-function evoStatusText(status: EvoNodeStatus, lang: string): string {
-  switch (status) {
-    case 'past':      return lang === 'tr' ? 'Geçmiş Form'  : lang === 'ru' ? 'Прошлая Форма'    : 'Past Form';
-    case 'current':   return lang === 'tr' ? 'Mevcut Form'  : lang === 'ru' ? 'Текущая Форма'    : 'Current Form';
-    case 'available': return lang === 'tr' ? 'Evrilebilir'  : lang === 'ru' ? 'Доступно'         : 'Available';
-    case 'locked':    return lang === 'tr' ? 'Kilitli'      : lang === 'ru' ? 'Заблокировано'    : 'Locked';
-    case 'missed':    return lang === 'tr' ? 'Kaçırıldı'    : lang === 'ru' ? 'Упущено'          : 'Missed';
-    case 'hidden':    return lang === 'tr' ? 'Gizli'        : lang === 'ru' ? 'Скрыто'           : 'Hidden';
-    default: return status;
-  }
+/** Evolution node status label — uses the loaded i18n dict (not state.lang, which may be unset). */
+function evoStatusText(status: EvoNodeStatus): string {
+  const key = `ui.evo_${status}`;
+  const s = t(key);
+  return s === key ? status : s; // unknown status → raw
 }
 
 /** Dikey dallanan evrim ağacı (alttan-yukarı dairesel düğümler ve SVG bağlantıları) */
@@ -1884,8 +1879,8 @@ function evolutionInfoCard(state: GameState): string {
 
   const levelReqMet = state.level >= n.levelReq;
   const levelColor = levelReqMet ? 'var(--venom)' : 'var(--blood)';
-  const statusLabel = evoStatusText(n.status, state.lang || 'tr');
-  const currentLabel = state.lang === 'tr' ? 'Mevcut' : state.lang === 'ru' ? 'Текущий' : 'Current';
+  const statusLabel = evoStatusText(n.status);
+  const currentLabel = t('ui.evo_current_short');
 
   const actionBtn =
     n.status === 'available'

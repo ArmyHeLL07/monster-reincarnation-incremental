@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.10.0';
+export const VERSION = '1.10.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.10.1',
+    date: '2026-06-24',
+    tr: [
+      'Düzeltme: evrim ağacındaki form durumları (Geçmiş/Mevcut/Kilitli…) İngilizce/Rusça\'da artık doğru çevriliyor',
+    ],
+    en: [
+      'Fix: evolution tree form statuses (Past/Current/Locked…) now translate correctly in EN/RU',
+    ],
+    ru: [
+      'Исправление: статусы форм в древе эволюции (Прошлая/Текущая/Заблокировано…) теперь корректно переводятся',
+    ],
+  },
   {
     v: '1.10.0',
     date: '2026-06-23',

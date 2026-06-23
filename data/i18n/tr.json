@@ -289,9 +289,9 @@
   "ui.evolve": "Evrimleş",
   "ui.evo_tree": "Evrim Ağacı",
   "ui.evo_lineage": "Soyun",
-  "ui.evo_locked": "Lv {lv} gerek",
-  "ui.evo_missed": "ulaşılamaz",
-  "ui.evo_hidden": "keşfedilmemiş evrim",
+  "ui.evo_locked": "Kilitli",
+  "ui.evo_missed": "Kaçırıldı",
+  "ui.evo_hidden": "Gizli",
   "ui.ev_title": "Bir Olay",
   "ui.ev_requires": "kilitli",
   "log.ev_locked": "Bu seçenek sana kapalı.",
@@ -1460,5 +1460,9 @@
   "ui.harvest_progress": "Ruh Hasadı",
   "ui.labyrinth_progress": "Labirent Uyanışı",
   "ui.next_milestone": "Sonraki kilometre taşı",
-  "ui.live_bonus": "Şu an"
+  "ui.live_bonus": "Şu an",
+  "ui.evo_past": "Geçmiş Form",
+  "ui.evo_current": "Mevcut Form",
+  "ui.evo_available": "Evrilebilir",
+  "ui.evo_current_short": "Mevcut"
 }

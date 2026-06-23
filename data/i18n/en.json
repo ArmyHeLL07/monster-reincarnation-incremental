@@ -289,9 +289,9 @@
   "ui.evolve": "Evolve",
   "ui.evo_tree": "Evolution Tree",
   "ui.evo_lineage": "Lineage",
-  "ui.evo_locked": "Needs Lv {lv}",
-  "ui.evo_missed": "unreachable",
-  "ui.evo_hidden": "undiscovered evolution",
+  "ui.evo_locked": "Locked",
+  "ui.evo_missed": "Missed",
+  "ui.evo_hidden": "Hidden",
   "ui.ev_title": "An Event",
   "ui.ev_requires": "locked",
   "log.ev_locked": "That option is closed to you.",
@@ -1460,5 +1460,9 @@
   "ui.harvest_progress": "Soul Harvest",
   "ui.labyrinth_progress": "Labyrinth Awakening",
   "ui.next_milestone": "Next milestone",
-  "ui.live_bonus": "Now"
+  "ui.live_bonus": "Now",
+  "ui.evo_past": "Past Form",
+  "ui.evo_current": "Current Form",
+  "ui.evo_available": "Available",
+  "ui.evo_current_short": "Current"
 }
