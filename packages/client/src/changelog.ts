@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.6';
+export const VERSION = '1.9.7';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.9.7',
+    date: '2026-06-23',
+    tr: [
+      'Öldürme ilerleme çubuğu artık TÜM ırklarda: gizli yolu olmayanlar için kilometre taşı hedefi (100/250/500/1000…)',
+    ],
+    en: [
+      'Kill progress bar now on ALL races: milestone target for races without a hidden path (100/250/500/1000…)',
+    ],
+    ru: [
+      'Полоса прогресса убийств теперь у ВСЕХ рас: веха-цель для рас без скрытого пути (100/250/500/1000…)',
+    ],
+  },
   {
     v: '1.9.6',
     date: '2026-06-23',

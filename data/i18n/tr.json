@@ -1458,5 +1458,6 @@
   "ui.kills_life": "Öldürme (bu hayat)",
   "ui.kills_total": "toplam",
   "ui.harvest_progress": "Ruh Hasadı",
-  "ui.labyrinth_progress": "Labirent Uyanışı"
+  "ui.labyrinth_progress": "Labirent Uyanışı",
+  "ui.next_milestone": "Sonraki kilometre taşı"
 }

@@ -1458,5 +1458,6 @@
   "ui.kills_life": "Kills (this life)",
   "ui.kills_total": "total",
   "ui.harvest_progress": "Soul Harvest",
-  "ui.labyrinth_progress": "Labyrinth Awakening"
+  "ui.labyrinth_progress": "Labyrinth Awakening",
+  "ui.next_milestone": "Next milestone"
 }

@@ -1899,8 +1899,15 @@ function killStatsHtml(state: GameState): string {
       : null;
   if (secret && kills < secret.goal) {
     line += `<div class="row" style="margin-top:.3rem;font-size:.8rem"><span>${secret.label}</span><span>${kills}/${secret.goal}</span></div>${bar(kills, secret.goal, secret.color)}`;
-  } else if (secret) {
-    line += `<p class="kill-line" style="color:${secret.color};font-size:.82rem">✦ ${secret.label} ✓</p>`;
+  } else {
+    if (secret) line += `<p class="kill-line" style="color:${secret.color};font-size:.82rem">✦ ${secret.label} ✓</p>`;
+    // Every race gets a generic kill milestone bar (next round target) for a sense of progress.
+    const MILESTONES = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
+    const next = MILESTONES.find((m) => totalKilled < m);
+    if (next) {
+      const prev = MILESTONES[MILESTONES.indexOf(next) - 1] ?? 0;
+      line += `<div class="row" style="margin-top:.3rem;font-size:.8rem"><span>${t('ui.next_milestone')}</span><span>${totalKilled}/${next}</span></div>${bar(totalKilled - prev, next - prev, '#c8a23f')}`;
+    }
   }
   return line;
 }
