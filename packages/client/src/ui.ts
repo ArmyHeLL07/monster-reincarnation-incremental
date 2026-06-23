@@ -725,13 +725,19 @@ function assetUrl(rel: string): string {
 /** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
 const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human']);
 
-/** Animated player presence while resting / meditating — the race portrait with a breathing aura. */
+/** Animated player presence while resting / meditating — the current form's portrait (if any),
+ *  else the race portrait, else the procedural head SVG. So the character changes per evolution. */
 function restStage(state: GameState): string {
   const kind = state.action === 'meditate' ? 'meditating' : 'resting';
-  // Show the chosen race's portrait if we have art for it; otherwise the procedural head SVG.
-  const figure = RACE_PORTRAITS.has(state.raceId)
-    ? `<img class="rest-portrait" src="${assetUrl(`races/${state.raceId}.png`)}" alt="" />`
-    : headSvg(state);
+  const form = currentForm(state, CONTENT);
+  let figure: string;
+  if (form?.image) {
+    figure = `<img class="rest-portrait" src="${assetUrl(form.image)}" alt="" />`;
+  } else if (RACE_PORTRAITS.has(state.raceId)) {
+    figure = `<img class="rest-portrait" src="${assetUrl(`races/${state.raceId}.png`)}" alt="" />`;
+  } else {
+    figure = headSvg(state);
+  }
   return `<div class="rest-stage ${kind}"><span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span></div>`;
 }
 

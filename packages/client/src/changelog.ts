@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.9.9';
+export const VERSION = '1.10.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.10.0',
+    date: '2026-06-23',
+    tr: [
+      'Evrim formlarına görsel desteği: her formun kendi portresi olabilir (data/forms/<id>.png)',
+      'Dinlenme/meditasyon ekranı artık MEVCUT FORMUN görselini gösteriyor — her evrimde değişir',
+      'Görseli olmayan formlar ırk portresine düşer (sorunsuz)',
+    ],
+    en: [
+      'Evolution forms now support art: each form can have its own portrait (data/forms/<id>.png)',
+      'Rest/meditation screen shows the CURRENT FORM image — changes on every evolution',
+      'Forms without art fall back to the race portrait (seamless)',
+    ],
+    ru: [
+      'Формы эволюции теперь поддерживают арт: у каждой формы свой портрет (data/forms/<id>.png)',
+      'Экран отдыха/медитации показывает изображение ТЕКУЩЕЙ ФОРМЫ — меняется при каждой эволюции',
+      'Формы без арта используют портрет расы (бесшовно)',
+    ],
+  },
   {
     v: '1.9.9',
     date: '2026-06-23',

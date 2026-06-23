@@ -114,6 +114,9 @@ export interface EvolutionForm {
   secret?: { kills?: number };
   /** This form is humanoid even if the race isn't (unlocks equipment — e.g. a slime's Rimuru form). */
   humanoid?: boolean;
+  /** Optional portrait image path (relative to asset base, e.g. "forms/venom_weaver.png").
+   *  Shown as the player's character in the rest/meditation stage; falls back to the race portrait. */
+  image?: string;
 }
 
 export interface SkillRequirement {
