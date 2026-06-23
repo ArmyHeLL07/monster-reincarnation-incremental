@@ -521,6 +521,9 @@ function migrate(s: GameState): void {
   // v9 fields — Yemek Ara forage mechanic
   s.forageCD ??= 0;
   s.pendingForage ??= null;
+  // v10 fields — tutorial sistemi
+  s.tutorialStep ??= 0;
+  s.seenHints ??= [];
 }
 
 /**

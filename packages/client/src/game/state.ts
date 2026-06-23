@@ -297,6 +297,12 @@ export interface GameState {
   forageCD: number;
   /** Found food waiting for player decision (eat or discard). Null if nothing pending. */
   pendingForage: { foodId: string } | null;
+
+  // --- tutorial sistemi (Faz 5) -----------------------------------------------
+  /** Tutorial sihirbazı mevcut adım. 0 = henüz başlamadı, 'done' = tamamlandı, 'skipped' = atlandı. */
+  tutorialStep: number | 'done' | 'skipped';
+  /** Gösterilmiş hint ID'leri — aynı hint tekrar çıkmaz. */
+  seenHints: string[];
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -441,6 +447,8 @@ export function newGame(): GameState {
     vitEndurancePerm: 0,
     forageCD: 0,
     pendingForage: null,
+    tutorialStep: 0,
+    seenHints: [],
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
