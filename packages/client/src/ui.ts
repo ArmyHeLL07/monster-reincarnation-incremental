@@ -1693,14 +1693,13 @@ function wireLore(el: HTMLElement): void {
 // ---- STATS (+ evolution) ---------------------------------------------------
 
 function evoStatusText(status: EvoNodeStatus, lang: string): string {
-  const isTr = lang === 'tr';
   switch (status) {
-    case 'past': return isTr ? 'Geçmiş Form' : 'Past Form';
-    case 'current': return isTr ? 'Mevcut Form' : 'Current Form';
-    case 'available': return isTr ? 'Evrilebilir' : 'Available';
-    case 'locked': return isTr ? 'Kilitli' : 'Locked';
-    case 'missed': return isTr ? 'Kaçırıldı' : 'Missed';
-    case 'hidden': return isTr ? 'Gizli' : 'Hidden';
+    case 'past':      return lang === 'tr' ? 'Geçmiş Form'  : lang === 'ru' ? 'Прошлая Форма'    : 'Past Form';
+    case 'current':   return lang === 'tr' ? 'Mevcut Form'  : lang === 'ru' ? 'Текущая Форма'    : 'Current Form';
+    case 'available': return lang === 'tr' ? 'Evrilebilir'  : lang === 'ru' ? 'Доступно'         : 'Available';
+    case 'locked':    return lang === 'tr' ? 'Kilitli'      : lang === 'ru' ? 'Заблокировано'    : 'Locked';
+    case 'missed':    return lang === 'tr' ? 'Kaçırıldı'    : lang === 'ru' ? 'Упущено'          : 'Missed';
+    case 'hidden':    return lang === 'tr' ? 'Gizli'        : lang === 'ru' ? 'Скрыто'           : 'Hidden';
     default: return status;
   }
 }
