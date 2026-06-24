@@ -65,7 +65,9 @@
     ],
     "damage": 4,
     "damageType": "acid",
-    "element": "acid"
+    "element": "acid",
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "caustic_spray",
@@ -80,7 +82,9 @@
     "evolvesTo": [],
     "damage": 7,
     "damageType": "acid",
-    "element": "acid"
+    "element": "acid",
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "toxic_cloud",
@@ -96,7 +100,9 @@
     ],
     "damage": 3,
     "damageType": "poison",
-    "element": "poison"
+    "element": "poison",
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "plague_mist",
@@ -110,7 +116,9 @@
     "evolvesTo": [],
     "damage": 7,
     "damageType": "poison",
-    "element": "poison"
+    "element": "poison",
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "sharp_claw",
@@ -313,7 +321,9 @@
     ],
     "damage": 1,
     "damageType": "physical",
-    "element": "silk"
+    "element": "silk",
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "binding_silk",
@@ -330,7 +340,9 @@
     ],
     "damage": 2,
     "damageType": "physical",
-    "element": "silk"
+    "element": "silk",
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "cutting_wire",
@@ -347,7 +359,9 @@
     ],
     "damage": 4,
     "damageType": "physical",
-    "element": "silk"
+    "element": "silk",
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "spatial_web",
@@ -363,7 +377,9 @@
     "damage": 7,
     "damageType": "physical",
     "element": "silk",
-    "dodgeBonus": 0.05
+    "dodgeBonus": 0.05,
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "web_trap",
@@ -395,7 +411,9 @@
     ],
     "damage": 4,
     "damageType": "physical",
-    "element": "silk"
+    "element": "silk",
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "sticky_coat",
@@ -639,7 +657,8 @@
     "damage": 5,
     "damageType": "fire",
     "element": "fire",
-    "mpCost": 3
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "fire_lance",
@@ -656,7 +675,8 @@
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
-    "mpCost": 6
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "frost_shard",
@@ -673,7 +693,8 @@
     "damage": 4,
     "damageType": "frost",
     "element": "frost",
-    "mpCost": 3
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "ice_spear",
@@ -690,7 +711,8 @@
     "damage": 9,
     "damageType": "frost",
     "element": "frost",
-    "mpCost": 6
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "stone_spike",
@@ -707,7 +729,8 @@
     "damage": 5,
     "damageType": "physical",
     "element": "earth",
-    "mpCost": 3
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "earth_pillar",
@@ -724,7 +747,8 @@
     "damage": 10,
     "damageType": "physical",
     "element": "earth",
-    "mpCost": 6
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "gale_cut",
@@ -741,7 +765,8 @@
     "damage": 4,
     "damageType": "pierce",
     "element": "wind",
-    "mpCost": 2
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "wind_blade",
@@ -758,7 +783,8 @@
     "damage": 8,
     "damageType": "pierce",
     "element": "wind",
-    "mpCost": 5
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "spark",
@@ -775,7 +801,8 @@
     "damage": 6,
     "damageType": "lightning",
     "element": "lightning",
-    "mpCost": 4
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "lightning_strike",
@@ -792,7 +819,8 @@
     "damage": 12,
     "damageType": "lightning",
     "element": "lightning",
-    "mpCost": 8
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "void_step",
@@ -809,8 +837,9 @@
     "damage": 5,
     "damageType": "magic",
     "element": "void",
-    "mpCost": 4,
-    "dodgeBonus": 0.03
+    "mpCost": 12,
+    "dodgeBonus": 0.03,
+    "mpFloor": 5
   },
   {
     "id": "spatial_rift",
@@ -827,8 +856,9 @@
     "damage": 11,
     "damageType": "magic",
     "element": "void",
-    "mpCost": 8,
-    "dodgeBonus": 0.05
+    "mpCost": 22,
+    "dodgeBonus": 0.05,
+    "mpFloor": 10
   },
   {
     "id": "piercing_gaze",
@@ -2050,7 +2080,9 @@
     ],
     "damage": 8,
     "damageType": "pierce",
-    "element": "physical"
+    "element": "physical",
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "unholy_heart",
@@ -2115,7 +2147,8 @@
     "damage": 5,
     "damageType": "fire",
     "element": "fire",
-    "mpCost": 3
+    "mpCost": 12,
+    "mpFloor": 5
   },
   {
     "id": "scorching_breath",
@@ -2133,7 +2166,8 @@
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
-    "mpCost": 6
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "dragon_scale",
@@ -2273,7 +2307,8 @@
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
-    "mpCost": 5
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "unyielding_core",
@@ -2501,7 +2536,8 @@
     "damageType": "fire",
     "element": "fire",
     "damage": 20,
-    "mpCost": 13
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "glacier_spike",
@@ -2516,7 +2552,8 @@
     "damageType": "frost",
     "element": "frost",
     "damage": 20,
-    "mpCost": 13
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "tectonic_crush",
@@ -2531,7 +2568,8 @@
     "damageType": "physical",
     "element": "earth",
     "damage": 20,
-    "mpCost": 13
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "tempest_blade",
@@ -2546,7 +2584,8 @@
     "damageType": "pierce",
     "element": "wind",
     "damage": 18,
-    "mpCost": 11
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "thunderstorm",
@@ -2561,7 +2600,8 @@
     "damageType": "lightning",
     "element": "lightning",
     "damage": 24,
-    "mpCost": 17
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "dimension_collapse",
@@ -2576,7 +2616,8 @@
     "damageType": "magic",
     "element": "void",
     "damage": 22,
-    "mpCost": 16
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "holy_judgment",
@@ -2592,7 +2633,8 @@
     "damageType": "magic",
     "element": "magic",
     "damage": 20,
-    "mpCost": 13
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "infernal_breath",
@@ -2608,7 +2650,8 @@
     "damageType": "fire",
     "element": "fire",
     "damage": 20,
-    "mpCost": 13
+    "mpCost": 38,
+    "mpFloor": 20
   },
   {
     "id": "plague_fang",
@@ -2697,7 +2740,9 @@
     "evolvesTo": [],
     "damageType": "pierce",
     "element": "physical",
-    "damage": 16
+    "damage": 16,
+    "mpCost": 22,
+    "mpFloor": 10
   },
   {
     "id": "wyrm_devastation",
@@ -2887,7 +2932,9 @@
     "locKeyName": "skill.true_sight.name",
     "locKeyDesc": "skill.true_sight.desc",
     "kind": "passive",
-    "stats": ["INT"],
+    "stats": [
+      "INT"
+    ],
     "part": "eye",
     "lvMax": 10,
     "evolvesTo": [],
@@ -2895,7 +2942,10 @@
     "derivesTo": null,
     "deriveCondition": null,
     "requires": [
-      { "skillId": "appraisal", "minLevel": 10 }
+      {
+        "skillId": "appraisal",
+        "minLevel": 10
+      }
     ]
   },
   {
@@ -2903,7 +2953,10 @@
     "locKeyName": "skill.plague_weaver.name",
     "locKeyDesc": "skill.plague_weaver.desc",
     "kind": "passive",
-    "stats": ["VIT", "INT"],
+    "stats": [
+      "VIT",
+      "INT"
+    ],
     "part": "arm",
     "lvMax": 10,
     "evolvesTo": [],
@@ -2911,8 +2964,14 @@
     "derivesTo": null,
     "deriveCondition": null,
     "requires": [
-      { "skillId": "venom_bite", "minLevel": 5 },
-      { "skillId": "silk_thread", "minLevel": 5 }
+      {
+        "skillId": "venom_bite",
+        "minLevel": 5
+      },
+      {
+        "skillId": "silk_thread",
+        "minLevel": 5
+      }
     ]
   }
 ]

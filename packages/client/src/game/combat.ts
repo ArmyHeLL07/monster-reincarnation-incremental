@@ -428,9 +428,14 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   if (state.hp <= 0) onDeath(state, content, log, b);
 }
 
-/** Ticks before a skill can fire again — lower with higher AGI; data `cooldown` sets the base. */
-function skillCooldown(def: Skill, state: GameState): number {
-  return Math.max(1, (def.cooldown ?? 3) - Math.floor(state.stats.AGI / 30));
+/** Ticks before a skill can fire again. Base scales with skill level (Lv1=10, Lv10=3).
+ *  AGI reduces for all skills; INT also reduces for magic skills. */
+function skillCooldown(def: Skill, state: GameState, lv: number): number {
+  const lvMax = def.lvMax ?? 10;
+  const baseCd = 3 + Math.round(7 * (lvMax - lv) / Math.max(1, lvMax - 1));
+  const agiReduce = Math.floor(state.stats.AGI / 30);
+  const intReduce = def.kind === 'magic' ? Math.floor(state.stats.INT / 30) : 0;
+  return Math.max(1, baseCd - agiReduce - intReduce);
 }
 
 function restRound(state: GameState, content: Content): void {
@@ -729,12 +734,22 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
   const def = content.skills.get(id);
   if (!slot || !def || def.damage === undefined) return false;
   if (!ignoreCd && (state.cooldowns[id] ?? 0) > 0) return false;
-  if (def.kind === 'magic' && (def.mpCost ?? 0) > state.mp) return false;
+
+  // Level-scaled MP cost — applies to any skill with mpCost > 0 (magic AND active)
+  const mpBase = def.mpCost ?? 0;
+  if (mpBase > 0) {
+    const lv = slot.level;
+    const lvMax = def.lvMax ?? 10;
+    const mpFloor = def.mpFloor ?? 5;
+    const effectiveMp = mpFloor + Math.round((mpBase - mpFloor) * (lvMax - lv) / Math.max(1, lvMax - 1));
+    if (effectiveMp > state.mp) return false;
+    state.mp = Math.max(0, state.mp - effectiveMp);
+  }
+
   const diff = diffDef(state, content);
 
   let raw: number;
   if (def.kind === 'magic') {
-    state.mp = Math.max(0, state.mp - (def.mpCost ?? 0));
     raw = (def.damage ?? 0) + effStat(state, 'INT') * 0.6;
   } else {
     raw = (def.damage ?? 0) + Math.floor(effStat(state, 'STR') / 3);
@@ -771,7 +786,7 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     enemy.hp = Math.max(0, enemy.hp - breathDmg);
     log({ key: 'log.sig_heat_breath', params: { dmg: breathDmg } });
   }
-  if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state);
+  if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state, slot.level);
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
   addSkillExp(state, content, slot, gain, log, b.xpMult, isOffline);

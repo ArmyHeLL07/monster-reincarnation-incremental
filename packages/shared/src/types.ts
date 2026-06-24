@@ -154,6 +154,8 @@ export interface Skill {
   // --- magic (kind: 'magic') -------------------------------------------------
   /** MP spent per cast; magic skills scale extra damage with INT. */
   mpCost?: number;
+  /** Minimum MP cost at max level (proficiency floor). Default 5 for active, 0 if unset means magic-kind default. */
+  mpFloor?: number;
   // --- passive / ruler / util effect modifiers (all optional, summed live) ---
   /** Flat damage multiplier added to the player's outgoing damage (e.g. Pride/Wrath). */
   dmgMult?: number;

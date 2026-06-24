@@ -1107,7 +1107,15 @@ function skillBar(state: GameState): string {
       const def = CONTENT.skills.get(id);
       const cd = state.cooldowns[id] ?? 0;
       const name = def ? t(def.locKeyName) : id;
-      return `<button class="castbtn" data-cast="${id}"${cd > 0 ? ' disabled' : ''}>${name}${cd > 0 ? ` <span class="cd">${cd}</span>` : ''}</button>`;
+      const mpBase = def?.mpCost ?? 0;
+      const lv = state.skills.find((s) => s.id === id)?.level ?? 1;
+      const lvMax = def?.lvMax ?? 10;
+      const mpFloor = def?.mpFloor ?? (mpBase > 0 ? 5 : 0);
+      const effectiveMp = mpBase > 0
+        ? mpFloor + Math.round((mpBase - mpFloor) * (lvMax - lv) / Math.max(1, lvMax - 1))
+        : 0;
+      const mpTag = effectiveMp > 0 ? ` <span class="muted" style="font-size:0.7em">${effectiveMp}MP</span>` : '';
+      return `<button class="castbtn" data-cast="${id}"${cd > 0 ? ' disabled' : ''}>${name}${mpTag}${cd > 0 ? ` <span class="cd">${cd}</span>` : ''}</button>`;
     })
     .join('');
   return `
