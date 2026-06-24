@@ -19,6 +19,8 @@ import {
   RIDDLE_FIGHT_MULTS,
 } from './riddles';
 import { meditateTick } from './meditation';
+import { forage } from './forage';
+import { search } from './discovery';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
 import { soulLevel } from './soul';
@@ -447,6 +449,21 @@ function restRound(state: GameState, content: Content): void {
   state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round((REST_MP_REGEN + b.mpRegen) * REST_MULT)));
   const hp = (passiveHpRegen(state, content) * (1 + (b.regenMult - 1)) + 1) * REST_MULT;
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
+
+  // Auto-search (forage + explore) — SP yeterliyse tetikle
+  if (state.autoSearchUnlocked) {
+    if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0) {
+      forage(state, content, log);
+    }
+    if (state.autoSearchExplore && state.sp >= 25 && (state.searchCD ?? 0) <= 0) {
+      search(state, content, log);
+    }
+  }
+
+  // Auto-event kararı
+  if (state.autoEventDecision && state.pendingEvent && state.stats.INT >= 50) {
+    autoChooseEvent(state, content, log);
+  }
 }
 
 /**
@@ -683,6 +700,50 @@ export function spawnEventEnemy(state: GameState, content: Content, enemyId: str
   if (!enemy) return;
   state.enemy = enemy;
   log({ key: 'log.ev_spawn', params: { enemy: enemy.locKey } });
+}
+
+/**
+ * Otomatik event kararı: INT >= 50 gerekir.
+ * Boss riddle için puzzleMode'a bakılır.
+ * Normal event için kilitsiz ilk seçenek seçilir.
+ */
+export function autoChooseEvent(state: GameState, content: Content, log: Log): void {
+  if (state.stats.INT < 50) return;
+
+  // Boss riddle — ayrı sistem (text-answer tabanlı)
+  if (state.bossRiddle) {
+    if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= 100) {
+      // Auto-solve: riddle'ı çözmüş gibi sayıyoruz; ödül boss defeat flow'unda
+      state.bossRiddle = null;
+      log({ key: 'log.room_solved', params: { room: 'boss_puzzle' } });
+    } else {
+      // Skip: riddle'ı atla
+      state.bossRiddle = null;
+      log({ key: 'log.search_empty' });
+    }
+    return;
+  }
+
+  // Normal bekleyen event
+  const pe = state.pendingEvent;
+  if (!pe) return;
+  const def = content.events.get(pe.id);
+  if (!def) return;
+
+  // Kilitsiz ilk seçeneği bul (genellikle en iyi)
+  let bestIdx = -1;
+  for (let i = 0; i < def.choices.length; i++) {
+    const c = def.choices[i];
+    if (condMet(state, c.requires)) {
+      bestIdx = i;
+      break;
+    }
+  }
+  if (bestIdx === -1) {
+    // Tümü kilitli — son seçenek (genellikle geri çekil/güvenli)
+    bestIdx = def.choices.length - 1;
+  }
+  chooseEvent(state, content, bestIdx, log);
 }
 
 /**
