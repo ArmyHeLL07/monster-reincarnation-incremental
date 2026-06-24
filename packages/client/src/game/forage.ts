@@ -5,6 +5,8 @@ import { appraisalTier } from './eyes';
 type Log = (e: LogEvent) => void;
 
 export const FORAGE_CD_MS = 5000;
+export const SEARCH_SP_COST = 25;
+const AUTO_SEARCH_UNLOCK = 100;
 
 /** Base rarity weights; LUCK nudges rare/very_rare upward. */
 const RARITY_BASE: Record<string, number> = {
@@ -34,7 +36,14 @@ function weightedPick<T extends { rarity: string; id: string }>(pool: T[], luck:
 /** Player clicks "Yemek Ara" — rolls for a found item and sets pendingForage. */
 export function forage(state: GameState, content: Content, log: Log): void {
   if (state.forageCD > 0) return;
+  if (state.sp < SEARCH_SP_COST) { log({ key: 'auto.sp_low' }); return; }
+  state.sp = Math.max(0, state.sp - SEARCH_SP_COST);
   state.forageCD = FORAGE_CD_MS;
+  state.totalSearchCount += 1;
+  if (!state.autoSearchUnlocked && state.totalSearchCount >= AUTO_SEARCH_UNLOCK) {
+    state.autoSearchUnlocked = true;
+    log({ key: 'auto.unlocked_toast' });
+  }
 
   const layer = content.dungeon.layers.find((l) => l.id === state.pos.layer);
   const element = layer?.element ?? 'neutral';

@@ -12,8 +12,14 @@ type Log = (e: LogEvent) => void;
 /** Cost in EP to mend one point of fusion scar (GDD §5.0.4 — repairable but real). */
 const SCAR_REPAIR_EP = 20;
 
+export const SEARCH_SP_COST = 25;
+export const SEARCH_CD_MS = 5000;
+const AUTO_SEARCH_UNLOCK = 100;
+
 /** Knowledge-based exploration (GDD §8.2): roll for fragments, books, or perceiving a room. */
 export function search(state: GameState, content: Content, log: Log): void {
+  if ((state.searchCD ?? 0) > 0) return;
+  if (state.sp < SEARCH_SP_COST) { log({ key: 'auto.sp_low' }); return; }
   // One search per room in combat — but while RESTING you may comb the room repeatedly (you have time).
   const posKey = `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   if (state.action !== 'rest') {
@@ -22,6 +28,13 @@ export function search(state: GameState, content: Content, log: Log): void {
       return;
     }
     state.lastSearchPos = posKey;
+  }
+  state.sp = Math.max(0, state.sp - SEARCH_SP_COST);
+  state.searchCD = SEARCH_CD_MS;
+  state.totalSearchCount += 1;
+  if (!state.autoSearchUnlocked && state.totalSearchCount >= AUTO_SEARCH_UNLOCK) {
+    state.autoSearchUnlocked = true;
+    log({ key: 'auto.unlocked_toast' });
   }
 
   const tier = appraisalTier(state);
