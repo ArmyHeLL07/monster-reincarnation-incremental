@@ -392,7 +392,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   }
   sigCombatTick(state);
   applyCombatRegen(state, content, b);
-  state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
+  state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round(COMBAT_MP_REGEN + b.mpRegen)));
   drainStamina(state, content);
   tryLearnRegen(state, content, log, false);
   // Per-skill cooldowns pace attacks — no more "every skill every tick".
@@ -707,6 +707,9 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     if (!state.roomEnemyId) state.roomEnemyId = layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
     archId = state.roomEnemyId;
   }
+  // New enemy hasn't seen any previous attacks — reset adaptation streak.
+  state.dmgStreak = 0;
+  state.dmgStreakType = undefined;
   const enemy = makeEnemy(state, content, archId, isBoss);
   if (!enemy) return;
   state.enemy = enemy;
@@ -1283,7 +1286,11 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
     state.inventory.push({ enemyId: enemy.id, satiety, decay: 0 });
     state.larderFullNotified = false;
   } else {
+    const hungerBefore = state.hunger;
     state.hunger = Math.max(0, state.hunger - satiety);
+    // Satiety that couldn't reduce hunger (already full) converts to EP at 50% rate.
+    const overflow = satiety - (hungerBefore - state.hunger);
+    if (overflow > 0) state.ep += Math.round(overflow * 0.5);
     if (!state.larderFullNotified) {
       log({ key: 'log.larder_full' });
       state.larderFullNotified = true;
