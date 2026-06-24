@@ -693,6 +693,7 @@ export function chooseEvent(state: GameState, content: Content, choiceIndex: num
     log({ key: 'log.ev_locked' });
     return false;
   }
+  log({ key: choice.locKey });
   const outcomes = outcomesFor(choice);
   let spawned = false;
   for (const o of outcomes) {
