@@ -145,7 +145,14 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
   }
 
   if (state.action === 'meditate') {
-    meditateTick(state, content, log); // hidden zen gauge + virtue; world otherwise frozen
+    meditateTick(state, content, log); // hidden zen gauge + virtue
+    const b = aggregateBonuses(state, content);
+    state.sp = Math.min(state.maxSp, state.sp + Math.round((REST_SP_REGEN + state.spRegenBonus + staminaRegenSum(state, content)) * REST_MULT));
+    state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round((REST_MP_REGEN + b.mpRegen) * REST_MULT)));
+    const hpRegen = (passiveHpRegen(state, content) * (1 + (b.regenMult - 1)) + 1) * REST_MULT;
+    state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hpRegen)));
+    decayFood(state);
+    if (state.autoEat) autoEat(state, content, log);
     state.lastSeen = Date.now();
     return;
   }
@@ -479,6 +486,9 @@ function restRound(state: GameState, content: Content, log: Log): void {
   if (state.autoEventDecision && state.pendingEvent && state.stats.INT >= 50) {
     autoChooseEvent(state, content, log);
   }
+
+  decayFood(state);
+  if (state.autoEat) autoEat(state, content, log);
 }
 
 /**

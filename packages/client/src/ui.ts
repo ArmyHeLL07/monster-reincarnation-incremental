@@ -275,14 +275,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       <nav id="sidebar" class="sidebar">
         <aside id="ministatus" class="ministatus" aria-label="status"></aside>
         ${TABS.map((tb) => {
-          const anchorMap: Partial<Record<Tab, string>> = {
-            combat: 'guide-combat', map: 'guide-map', skills: 'guide-skills',
-            inventory: 'guide-inventory', lore: 'guide-lore', bestiary: 'guide-lore',
-            stats: 'guide-stats',
-          };
-          const anchor = anchorMap[tb];
-          const helpBtn = anchor ? guideLink(anchor) : '';
-          return `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span>${helpBtn}</button>`;
+          return `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`;
         }).join('')}
       </nav>
       <main id="content" class="content"></main>
@@ -504,7 +497,7 @@ function topbarHtml(): string {
     <p class="sub" id="tb-sub"></p>
     <div class="bars">
       <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem;font-size:0.78rem;color:rgba(255,255,255,0.4);">
-        ${t('ui.hp')}/${t('ui.mp')}/${t('ui.sp')} ${guideLink('guide-basics')}
+        ${t('ui.hp')}/${t('ui.mp')}/${t('ui.sp')}
       </div>
       ${statBarSkel('tb-hp', t('ui.hp'), '#6fae53')}
       ${statBarSkel('tb-mp', t('ui.mp'), '#4f86c2')}
@@ -842,13 +835,13 @@ function enemyView(state: GameState): string {
     return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   }
   const portrait = enemyPortrait(inst, state.action === 'combat');
-  const tier = appraisalTier(state);
+  const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
     return `<div class="erow">${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
   }
-  const baseName = tier >= 1 ? t(inst.locKey) : t('ui.unknown');
+  const baseName = t(inst.locKey);
   const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
   const et = tier + (inst.analyzed ? 1 : 0); // a deep-read (Analyze) reveals one tier deeper, on the enemy
   const bits: string[] = [`<b>${name}</b>`];
@@ -2323,11 +2316,6 @@ function wireTutorialOverlay(overlay: HTMLElement): void {
       }
     });
   });
-}
-
-/** Kılavuz sekmesinin belirtilen anchor'ına navigate eden küçük ? butonu. */
-function guideLink(anchor: string): string {
-  return `<button class="guide-link" data-guide="${anchor}" title="${t('guide.title')}">?</button>`;
 }
 
 // ---- GUIDE TAB -------------------------------------------------------------

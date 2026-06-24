@@ -3,7 +3,7 @@
     {
       "id": 1,
       "locKey": "layer.1.name",
-      "tierReq": 0,
+      "tierReq": 3,
       "floors": 7,
       "roomsPerFloor": 16,
       "minRooms": 12,
@@ -24,7 +24,7 @@
     {
       "id": 2,
       "locKey": "layer.2.name",
-      "tierReq": 2,
+      "tierReq": 5,
       "floors": 7,
       "roomsPerFloor": 16,
       "minRooms": 12,
@@ -49,7 +49,7 @@
     {
       "id": 3,
       "locKey": "layer.3.name",
-      "tierReq": 3,
+      "tierReq": 7,
       "floors": 7,
       "roomsPerFloor": 16,
       "minRooms": 12,
@@ -74,7 +74,7 @@
     {
       "id": 4,
       "locKey": "layer.4.name",
-      "tierReq": 4,
+      "tierReq": 10,
       "floors": 7,
       "roomsPerFloor": 16,
       "minRooms": 12,
