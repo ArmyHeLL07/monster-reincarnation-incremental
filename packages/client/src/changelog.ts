@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.11.0';
+export const VERSION = '1.12.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,31 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.12.0',
+    date: '2026-06-24',
+    tr: [
+      'Otomatik arama sistemi: 100 aramadan sonra açılır, SP harcar',
+      'Forage ve Ara butonları otomatikleştirilebilir (rest sırasında çalışır)',
+      'Manuel forage ve arama artık 25 SP harcar',
+      'Otomatik event kararı: INT ≥ 50 ise karakter AFK\'da event seçer',
+      'Bulmaca modu: atla (direkt savaş) veya otomatik çöz (INT ≥ 100)',
+    ],
+    en: [
+      'Auto-search system: unlocks after 100 searches, costs SP',
+      'Forage and Explore buttons can be automated (runs during rest)',
+      'Manual forage and search now cost 25 SP',
+      'Auto event decision: INT ≥ 50 picks best event choice while AFK',
+      'Puzzle mode: skip (fight directly) or auto-solve (INT ≥ 100)',
+    ],
+    ru: [
+      'Авто-поиск: открывается после 100 поисков, тратит SP',
+      'Кнопки Поиск Еды и Исследование можно автоматизировать',
+      'Ручной поиск теперь тратит 25 SP',
+      'Авто-решение событий: INT ≥ 50 выбирает лучший вариант',
+      'Режим загадок: пропустить или авто-решить (INT ≥ 100)',
+    ],
+  },
   {
     v: '1.11.0',
     date: '2026-06-24',
