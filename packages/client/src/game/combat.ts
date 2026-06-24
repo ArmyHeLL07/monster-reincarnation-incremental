@@ -75,6 +75,21 @@ function skillExpToNext(level: number): number {
 function resistExpToNext(level: number): number {
   return 8 + level * 22; // cheaper early levels (gains feel bigger at the base), steeper later
 }
+
+/** XP required per level for a resistance chain skill at the given tier (1–5).
+ *  Total XP to complete a tier: T1=200, T2=400, T3=700, T4=1200.
+ *  lvMax=5 per tier → xpPerLevel = totalXP/5. */
+function resistChainExpToNext(tier: number): number {
+  const totals = [0, 200, 400, 700, 1200, 2000];
+  return (totals[Math.min(tier, 5)] ?? 2000) / 5;
+}
+
+/** XP required per level for a Nullification skill (group or ultimate).
+ *  Lv1→2: 2000, each subsequent level +800. */
+function nullExpToNext(level: number): number {
+  return 2000 + (level - 1) * 800;
+}
+
 export function xpToNext(level: number): number {
   return level * 50;
 }
@@ -1408,22 +1423,25 @@ function checkDerivations(state: GameState, content: Content, log: Log): void {
   }
 }
 
-function addSkillExp(state: GameState, content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number, isOffline = false): void {
+/** Level-up loop for a skill slot — used both by addSkillExp and the resistance chain XP path. */
+function skillLevelUp(slot: SkillSlot, state: GameState, content: Content, log: Log, isOffline: boolean): void {
   const def = content.skills.get(slot.id);
   if (!def) return;
-  const rankMult = RANK_XP_MULT[def.rank ?? 'E'] ?? 1.0;
-  slot.exp += slot.id === 'larder'
-    ? amount
-    : Math.max(1, Math.round(amount * xpMult / rankMult));
-  while (slot.level < def.lvMax && slot.exp >= skillExpToNext(slot.level)) {
-    slot.exp -= skillExpToNext(slot.level);
+  // Resistance chain skills and nullification skills use their own XP formula.
+  const isResChain = def.kind === 'resistance' && !!def.resistType;
+  const isNullSkill = def.kind === 'resistance' && !def.resistType;
+  const xpFn = isResChain
+    ? () => resistChainExpToNext(slot.tier ?? 1)
+    : isNullSkill
+      ? () => nullExpToNext(slot.level)
+      : () => skillExpToNext(slot.level);
+  while (slot.level < def.lvMax && slot.exp >= xpFn()) {
+    slot.exp -= xpFn();
     slot.level += 1;
     log({ key: 'log.skill_up', params: { skill: def.locKeyName, lvLabel: LV_LABEL, lv: slot.level } });
   }
-  // Skill evolution is held back while OFFLINE — it should happen in active play (the player sees it,
-  // and can delete/keep the skill first). The skill sits maxed until the next live kill.
   if (isOffline) {
-    if (slot.level >= def.lvMax) slot.exp = Math.min(slot.exp, skillExpToNext(slot.level));
+    if (slot.level >= def.lvMax) slot.exp = Math.min(slot.exp, xpFn());
     return;
   }
   if (slot.level >= def.lvMax && def.evolvesTo.length > 0) {
@@ -1438,6 +1456,16 @@ function addSkillExp(state: GameState, content: Content, slot: SkillSlot, amount
     }
   }
   checkDerivations(state, content, log);
+}
+
+function addSkillExp(state: GameState, content: Content, slot: SkillSlot, amount: number, log: Log, xpMult: number, isOffline = false): void {
+  const def = content.skills.get(slot.id);
+  if (!def) return;
+  const rankMult = RANK_XP_MULT[def.rank ?? 'E'] ?? 1.0;
+  slot.exp += slot.id === 'larder'
+    ? amount
+    : Math.max(1, Math.round(amount * xpMult / rankMult));
+  skillLevelUp(slot, state, content, log, isOffline);
 }
 
 // ---- skill lineage (evolution-chain aware ownership) -----------------------
@@ -1536,11 +1564,46 @@ function resistReduction(state: GameState, content: Content, type: DamageType): 
   return Math.min(slot.level * 0.05, 0.9);
 }
 
+/** Returns true if a nullification skill should receive XP from this damage type. */
+function isRelevantForNull(nullSkillId: string, type: DamageType): boolean {
+  const MAGIC_TYPES: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid'];
+  const PHYSICAL_TYPES: DamageType[] = ['physical', 'pierce'];
+  const STATUS_TYPES: DamageType[] = ['poison', 'stun', 'petrify', 'fear'];
+  if (nullSkillId === 'magic_nullification')    return MAGIC_TYPES.includes(type);
+  if (nullSkillId === 'physical_nullification') return PHYSICAL_TYPES.includes(type);
+  if (nullSkillId === 'status_nullification')   return STATUS_TYPES.includes(type);
+  if (nullSkillId === 'ultimate_nullification') return true; // all damage types (including soul)
+  return false;
+}
+
+/** Grants the T1 chain skill for a damage type if not already owned (any tier). */
+function autoUnlockChainSkill(state: GameState, content: Content, type: DamageType, log: Log): void {
+  const T1_MAP: Partial<Record<DamageType, string>> = {
+    fire: 'fire_resistance',       frost: 'ice_resistance',       lightning: 'lightning_resistance',
+    wind: 'wind_resistance',       earth: 'earth_resistance',     dark: 'dark_resistance',
+    light: 'light_resistance',     acid: 'acid_resistance',       physical: 'impact_resistance',
+    pierce: 'pierce_resistance',   poison: 'poison_resistance',   stun: 'stun_resistance',
+    petrify: 'stun_resistance',    fear: 'fear_resistance',       soul: 'soul_resistance',
+  };
+  const t1Id = T1_MAP[type];
+  if (!t1Id) return;
+  const def = content.skills.get(t1Id);
+  if (!def) return;
+  // Check if any skill in this lineage is already owned.
+  const lineage = skillForwardLine(content, t1Id);
+  const owned = state.skills.some((s) => lineage.has(s.id));
+  if (owned) return;
+  state.skills.push({ id: t1Id, level: 1, exp: 0, tier: 1 });
+  log({ key: 'log.chain_unlock', params: { skill: def.locKeyName } });
+}
+
 function addResistExp(state: GameState, content: Content, type: DamageType, amount: number, log: Log): void {
   const slot = ensureResistSlot(state, content, type);
   if (!slot) return;
   const def = content.resistances.get(slot.id);
   if (!def || slot.nullified) return;
+  // Auto-unlock T1 chain skill on first exposure to this damage type.
+  autoUnlockChainSkill(state, content, type, log);
   slot.exp += amount;
   while (slot.level < def.lvMax && slot.exp >= resistExpToNext(slot.level)) {
     slot.exp -= resistExpToNext(slot.level);
@@ -1550,6 +1613,30 @@ function addResistExp(state: GameState, content: Content, type: DamageType, amou
   if (slot.level >= def.lvMax) {
     slot.nullified = true;
     log({ key: 'log.nullity', params: { res: def.locKey, nullity: def.nullityKey } });
+  }
+  // Distribute XP to resistance chain skills and active nullification skills.
+  // Chain skills (have resistType) receive amount/2 (depth=2: group null + ultimate).
+  // Nullification skills (no resistType) receive amount (depth=1).
+  // Petrify damage also feeds the stun_res chain (shared paralysis chain).
+  const chainResistType = type === 'petrify' ? 'stun_res' : `${type}_res`;
+
+  for (const skillSlot of state.skills) {
+    const skillDef = content.skills.get(skillSlot.id);
+    if (!skillDef || skillDef.kind !== 'resistance') continue;
+
+    if (skillDef.resistType) {
+      // Chain skill: only feeds if resistType matches
+      if (skillDef.resistType !== chainResistType) continue;
+      const chainXp = Math.max(1, Math.floor(amount / 2));
+      skillSlot.exp += chainXp;
+      skillLevelUp(skillSlot, state, content, log, false);
+    } else {
+      // Nullification skill: determine if this damage type is relevant
+      const relevant = isRelevantForNull(skillSlot.id, type);
+      if (!relevant) continue;
+      skillSlot.exp += amount;
+      skillLevelUp(skillSlot, state, content, log, false);
+    }
   }
 }
 

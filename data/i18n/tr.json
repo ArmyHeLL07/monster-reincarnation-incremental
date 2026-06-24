@@ -94,6 +94,7 @@
   "log.evolve": "{from} → {to} evrimleşti!",
   "log.resist_up": "{res} {lvLabel} {lv} oldu.",
   "log.nullity": "{res} → {nullity} (bağışıklık)!",
+  "log.chain_unlock": "Yeni direnç zinciri açıldı: {skill}!",
   "log.no_mp": "MP yetersiz.",
   "log.appraise_name": "Analiz — isim: {enemy}.",
   "log.appraise_type": "  hasar tipi: {type}.",
