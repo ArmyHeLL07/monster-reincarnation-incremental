@@ -70,7 +70,7 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
 
 /** Build a usable active skill from a fusion result (damage = magnitude → class drives power). */
 function fusionSkillDef(content: Content, result: FusionResult): Skill {
-  const parentType = content.skills.get(result.aId)?.damageType;
+  const parentType = content.skills.get(result.aId)?.damageType ?? content.skills.get(result.bId)?.damageType;
   return {
     id: result.id,
     locKeyName: result.locKeyName,

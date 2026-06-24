@@ -132,7 +132,7 @@ function logCategory(key: string): LogCat {
   if (key === 'log.kill' || key === 'log.boss_kill' || key === 'log.larder_full' || key === 'log.offline') return 'loot';
   if (key === 'log.loot_drop' || key === 'log.loot_full' || key === 'log.scrapped') return 'loot';
   if (key === 'log.forged' || key === 'log.scrap_all' || key === 'log.autoequip' || key === 'log.search_chest') return 'loot';
-  if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity/.test(key)) {
+  if (/discover|search|book|room|appraise|ruler|taboo|meditation|gatekeeper|cleared|unlocked|scar|zen|hell|nullity|^ev\./.test(key)) {
     return 'discovery';
   }
   return 'combat';
