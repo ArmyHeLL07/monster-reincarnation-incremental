@@ -81,6 +81,10 @@ export interface UiActions {
   onTutorialReopen: () => void;
   onMarkHintSeen: (id: string) => void;
   onNavigateGuide: (anchor: string) => void;
+  onToggleAutoFood(): void;
+  onToggleAutoExplore(): void;
+  onToggleAutoEvent(): void;
+  onSetPuzzleMode(mode: 'skip' | 'solve'): void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
@@ -1017,6 +1021,24 @@ function foragePanel(state: GameState): string {
     </section>`;
 }
 
+function forageAutoToggle(state: GameState): string {
+  if (!state.autoSearchUnlocked) {
+    return `<span class="muted" style="font-size:0.75rem">${t('auto.locked')} (${state.totalSearchCount}/100)</span>`;
+  }
+  const foodOn = state.autoSearchFood;
+  return `<button class="ghost auto-toggle" id="auto-food-toggle" style="font-size:0.75rem;padding:0.2rem 0.5rem;">
+    ${t('auto.food.label')}: <b>${foodOn ? t('auto.on') : t('auto.off')}</b>
+  </button>`;
+}
+
+function exploreAutoToggle(state: GameState): string {
+  if (!state.autoSearchUnlocked) return '';
+  const on = state.autoSearchExplore;
+  return `<button class="ghost auto-toggle" id="auto-explore-toggle" style="font-size:0.75rem;padding:0.2rem 0.5rem;">
+    ${t('auto.explore.label')}: <b>${on ? t('auto.on') : t('auto.off')}</b>
+  </button>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -1045,12 +1067,16 @@ function combatTab(state: GameState): string {
   const deepBtn = ownsSkill(state, 'insight') ? `<button id="deepread">${t('ui.deepread')}</button>` : '';
   const courtBtn = loreUnlocked(state, 'brink') ? `<button id="courtdeath" class="ghost">${t('ui.court_death')}</button>` : '';
   const searched = state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
-  const searchBtn = `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>`;
+  const searchBtn = state.autoSearchExplore
+    ? exploreAutoToggle(state)
+    : `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>${exploreAutoToggle(state)}`;
   const forageReady = state.forageCD <= 0 && !state.pendingForage;
   const forgageCdSec = (state.forageCD / 1000).toFixed(1);
   const forageBtn = state.pendingForage
-    ? ''
-    : `<button id="forage-btn"${forageReady ? '' : ' disabled'}>🍃 ${forageReady ? t('ui.forage_btn') : forgageCdSec + 'sn'}</button>`;
+    ? forageAutoToggle(state)
+    : state.autoSearchFood
+      ? forageAutoToggle(state)
+      : `<button id="forage-btn"${forageReady ? '' : ' disabled'}>🍃 ${forageReady ? t('ui.forage_btn') : forgageCdSec + 'sn'}</button>${forageAutoToggle(state)}`;
   const statusLine = state.statusEffects.length
     ? `<p class="muted" style="margin:.4rem 0 0">⚠ ${t('ui.status')}: ${state.statusEffects
         .map((s) => s.control
@@ -1144,6 +1170,8 @@ function wireCombat(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#forage-btn')?.addEventListener('click', ACTIONS.onForage);
   el.querySelector<HTMLButtonElement>('#forage-eat')?.addEventListener('click', ACTIONS.onForageEat);
   el.querySelector<HTMLButtonElement>('#forage-discard')?.addEventListener('click', ACTIONS.onForageDiscard);
+  el.querySelector<HTMLButtonElement>('#auto-food-toggle')?.addEventListener('click', ACTIONS.onToggleAutoFood);
+  el.querySelector<HTMLButtonElement>('#auto-explore-toggle')?.addEventListener('click', ACTIONS.onToggleAutoExplore);
   el.querySelector<HTMLButtonElement>('#courtdeath')?.addEventListener('click', ACTIONS.onCourtDeath);
   el.querySelectorAll<HTMLButtonElement>('.evchoice').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onChooseEvent(Number(b.dataset.evchoice))),
@@ -2392,6 +2420,25 @@ function settingsTab(state: GameState): string {
       <div class="controls">${autosave}</div>
     </section>
     <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('auto.event.label')}</h3>
+      <div class="controls">
+        <button id="auto-event-toggle" class="${state.autoEventDecision ? 'actbtn active' : 'ghost'}">
+          ${t('auto.event.label')}: ${state.autoEventDecision ? t('auto.on') : t('auto.off')}
+        </button>
+        <span class="muted" style="font-size:0.78rem">${t('auto.event.hint')}</span>
+      </div>
+      ${state.autoEventDecision ? `
+      <div class="controls" style="margin-top:0.4rem;">
+        <span class="muted" style="font-size:0.8rem">${t('auto.puzzle.label')}:</span>
+        <button id="puzzle-skip" class="${state.autoEventPuzzleMode === 'skip' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">
+          ${t('auto.puzzle.skip')}
+        </button>
+        <button id="puzzle-solve" class="${state.autoEventPuzzleMode === 'solve' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">
+          ${t('auto.puzzle.solve')}
+        </button>
+      </div>` : ''}
+    </section>
+    <section class="panel">
       <div class="controls">
         <button id="savenow" class="ghost">${t('ui.save')}</button>
         <button id="exportsave" class="ghost">${t('ui.export_save')}</button>
@@ -2427,4 +2474,7 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
+  el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
+  el.querySelector<HTMLButtonElement>('#puzzle-skip')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('skip'));
+  el.querySelector<HTMLButtonElement>('#puzzle-solve')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('solve'));
 }

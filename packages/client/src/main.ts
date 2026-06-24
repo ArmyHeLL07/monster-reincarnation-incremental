@@ -250,6 +250,10 @@ async function init(): Promise<void> {
     onNavigateGuide: (_anchor: string) => {
       save(state);
     },
+    onToggleAutoFood: () => { state.autoSearchFood = !state.autoSearchFood; save(state); render(state); },
+    onToggleAutoExplore: () => { state.autoSearchExplore = !state.autoSearchExplore; save(state); render(state); },
+    onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
+    onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
     onCourtDeath: () => {
       courtDeath(state, content, logFn);
       save(state);
