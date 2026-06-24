@@ -81,7 +81,7 @@ function resistExpToNext(level: number): number {
  *  lvMax=5 per tier → xpPerLevel = totalXP/5. */
 function resistChainExpToNext(tier: number): number {
   const totals = [0, 200, 400, 700, 1200, 2000];
-  return (totals[Math.min(tier, 5)] ?? 2000) / 5;
+  return (totals[Math.min(tier, 4)] ?? 1200) / 5;
 }
 
 /** XP required per level for a Nullification skill (group or ultimate).
@@ -990,9 +990,9 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   if (enemy.behavior?.enrage && enemy.hp < enemy.maxHp * 0.3) share *= 1 + enemy.behavior.enrage; // cornered → fiercer
   const statusChance = STATUS_CHANCE * (enemy.behavior?.statusBoost ?? 1); // status specialists apply more
   // Group nullification and Ultimate Nullification reductions (computed once, applied per-hit).
-  const nullBonuses = aggregateBonuses(state, content);
+  // b already contains physNullReduction / magicNullReduction / statusNullReduction / ultimateNullLv.
   const ULT_PCT = [0, 10, 22, 34, 45, 55, 65, 75, 85, 90, 100];
-  const ultLv = nullBonuses.ultimateNullLv;
+  const ultLv = b.ultimateNullLv;
   const ultPct = ULT_PCT[Math.min(ultLv, 10)] ?? 0;
   const isNullifier = (enemy.behavior?.nullifier) ?? false;
   const effectiveUltPct = (ultLv >= 10 && isNullifier)
@@ -1014,7 +1014,7 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     const slimeRes = sigSlimeResist(state, type);
     let taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
     // Group Nullification: reduces damage from matching element group (physical/magic/status).
-    const groupNullPct = getGroupNullPct(nullBonuses, type);
+    const groupNullPct = getGroupNullPct(b, type);
     if (groupNullPct > 0) taken = Math.round(taken * (1 - groupNullPct / 100));
     totalTaken += taken;
     const resGain = Math.round(taken * resMult);
@@ -1604,7 +1604,7 @@ function resistReduction(state: GameState, content: Content, type: DamageType): 
 
 /** Returns the applicable group nullification percentage (0–85) for a damage type. */
 function getGroupNullPct(bonuses: Bonuses, type: DamageType): number {
-  const MAGIC: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid'];
+  const MAGIC: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid', 'magic'];
   const PHYSICAL: DamageType[] = ['physical', 'pierce'];
   const STATUS: DamageType[] = ['poison', 'stun', 'petrify', 'fear'];
   if (MAGIC.includes(type))    return bonuses.magicNullReduction * 100;
@@ -1616,7 +1616,7 @@ function getGroupNullPct(bonuses: Bonuses, type: DamageType): number {
 
 /** Returns true if a nullification skill should receive XP from this damage type. */
 function isRelevantForNull(nullSkillId: string, type: DamageType): boolean {
-  const MAGIC_TYPES: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid'];
+  const MAGIC_TYPES: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid', 'magic'];
   const PHYSICAL_TYPES: DamageType[] = ['physical', 'pierce'];
   const STATUS_TYPES: DamageType[] = ['poison', 'stun', 'petrify', 'fear'];
   if (nullSkillId === 'magic_nullification')    return MAGIC_TYPES.includes(type);
@@ -1665,12 +1665,13 @@ function checkMergerConditions(state: GameState, content: Content, log: Log): vo
 
 /** Removes component skills and spawns the merger skill at Lv1. */
 function applyMerger(state: GameState, content: Content, merger: ResistanceMerger, log: Log): void {
+  // Guard first: if the merger skill definition is missing, abort before touching state.
+  const mergerDef = content.skills.get(merger.id);
+  if (!mergerDef) return;
   // Remove all component skills.
   const toRemove = new Set(merger.requires.map((r) => r.skillId));
   state.skills = state.skills.filter((s) => !toRemove.has(s.id));
   // Add merger skill at Lv1.
-  const mergerDef = content.skills.get(merger.id);
-  if (!mergerDef) return;
   state.skills.push({ id: merger.id, level: 1, exp: 0 });
   log({ key: 'log.merger_unlocked', params: { merger: merger.locKey } });
 }
