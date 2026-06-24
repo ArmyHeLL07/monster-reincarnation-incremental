@@ -2979,9 +2979,13 @@
     "locKeyName": "skill.fire_resistance.name",
     "locKeyDesc": "skill.fire_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["flame_resistance"],
+    "evolvesTo": [
+      "flame_resistance"
+    ],
     "resistType": "fire_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -2991,9 +2995,13 @@
     "locKeyName": "skill.flame_resistance.name",
     "locKeyDesc": "skill.flame_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["magma_resistance"],
+    "evolvesTo": [
+      "magma_resistance"
+    ],
     "resistType": "fire_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3003,9 +3011,13 @@
     "locKeyName": "skill.magma_resistance.name",
     "locKeyDesc": "skill.magma_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["heat_resistance"],
+    "evolvesTo": [
+      "heat_resistance"
+    ],
     "resistType": "fire_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3015,9 +3027,13 @@
     "locKeyName": "skill.heat_resistance.name",
     "locKeyDesc": "skill.heat_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["volcanic_resistance"],
+    "evolvesTo": [
+      "volcanic_resistance"
+    ],
     "resistType": "fire_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3027,7 +3043,9 @@
     "locKeyName": "skill.volcanic_resistance.name",
     "locKeyDesc": "skill.volcanic_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "fire_res",
@@ -3039,9 +3057,13 @@
     "locKeyName": "skill.ice_resistance.name",
     "locKeyDesc": "skill.ice_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["frost_resistance"],
+    "evolvesTo": [
+      "frost_resistance"
+    ],
     "resistType": "frost_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3051,9 +3073,13 @@
     "locKeyName": "skill.frost_resistance.name",
     "locKeyDesc": "skill.frost_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["freeze_resistance"],
+    "evolvesTo": [
+      "freeze_resistance"
+    ],
     "resistType": "frost_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3063,9 +3089,13 @@
     "locKeyName": "skill.freeze_resistance.name",
     "locKeyDesc": "skill.freeze_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["glacial_resistance"],
+    "evolvesTo": [
+      "glacial_resistance"
+    ],
     "resistType": "frost_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3075,9 +3105,13 @@
     "locKeyName": "skill.glacial_resistance.name",
     "locKeyDesc": "skill.glacial_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["blizzard_resistance"],
+    "evolvesTo": [
+      "blizzard_resistance"
+    ],
     "resistType": "frost_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3087,7 +3121,9 @@
     "locKeyName": "skill.blizzard_resistance.name",
     "locKeyDesc": "skill.blizzard_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "frost_res",
@@ -3099,9 +3135,13 @@
     "locKeyName": "skill.lightning_resistance.name",
     "locKeyDesc": "skill.lightning_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["bolt_resistance"],
+    "evolvesTo": [
+      "bolt_resistance"
+    ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3111,9 +3151,13 @@
     "locKeyName": "skill.bolt_resistance.name",
     "locKeyDesc": "skill.bolt_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["storm_resistance"],
+    "evolvesTo": [
+      "storm_resistance"
+    ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3123,9 +3167,13 @@
     "locKeyName": "skill.storm_resistance.name",
     "locKeyDesc": "skill.storm_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["thunder_resistance"],
+    "evolvesTo": [
+      "thunder_resistance"
+    ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3135,9 +3183,13 @@
     "locKeyName": "skill.thunder_resistance.name",
     "locKeyDesc": "skill.thunder_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["tempest_resistance"],
+    "evolvesTo": [
+      "tempest_resistance"
+    ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3147,7 +3199,9 @@
     "locKeyName": "skill.tempest_resistance.name",
     "locKeyDesc": "skill.tempest_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "lightning_res",
@@ -3159,9 +3213,13 @@
     "locKeyName": "skill.wind_resistance.name",
     "locKeyDesc": "skill.wind_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["gale_resistance"],
+    "evolvesTo": [
+      "gale_resistance"
+    ],
     "resistType": "wind_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3171,9 +3229,13 @@
     "locKeyName": "skill.gale_resistance.name",
     "locKeyDesc": "skill.gale_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["whirlwind_resistance"],
+    "evolvesTo": [
+      "whirlwind_resistance"
+    ],
     "resistType": "wind_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3183,9 +3245,13 @@
     "locKeyName": "skill.whirlwind_resistance.name",
     "locKeyDesc": "skill.whirlwind_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["cyclone_resistance"],
+    "evolvesTo": [
+      "cyclone_resistance"
+    ],
     "resistType": "wind_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3195,9 +3261,13 @@
     "locKeyName": "skill.cyclone_resistance.name",
     "locKeyDesc": "skill.cyclone_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["tornado_resistance"],
+    "evolvesTo": [
+      "tornado_resistance"
+    ],
     "resistType": "wind_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3207,7 +3277,9 @@
     "locKeyName": "skill.tornado_resistance.name",
     "locKeyDesc": "skill.tornado_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "wind_res",
@@ -3219,9 +3291,13 @@
     "locKeyName": "skill.earth_resistance.name",
     "locKeyDesc": "skill.earth_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["stone_resistance"],
+    "evolvesTo": [
+      "stone_resistance"
+    ],
     "resistType": "earth_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3231,9 +3307,13 @@
     "locKeyName": "skill.stone_resistance.name",
     "locKeyDesc": "skill.stone_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["boulder_resistance"],
+    "evolvesTo": [
+      "boulder_resistance"
+    ],
     "resistType": "earth_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3243,9 +3323,13 @@
     "locKeyName": "skill.boulder_resistance.name",
     "locKeyDesc": "skill.boulder_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["terrain_resistance"],
+    "evolvesTo": [
+      "terrain_resistance"
+    ],
     "resistType": "earth_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3255,9 +3339,13 @@
     "locKeyName": "skill.terrain_resistance.name",
     "locKeyDesc": "skill.terrain_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["tectonic_resistance"],
+    "evolvesTo": [
+      "tectonic_resistance"
+    ],
     "resistType": "earth_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3267,7 +3355,9 @@
     "locKeyName": "skill.tectonic_resistance.name",
     "locKeyDesc": "skill.tectonic_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "earth_res",
@@ -3279,9 +3369,13 @@
     "locKeyName": "skill.dark_resistance.name",
     "locKeyDesc": "skill.dark_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["shadow_resistance"],
+    "evolvesTo": [
+      "shadow_resistance"
+    ],
     "resistType": "dark_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3291,9 +3385,13 @@
     "locKeyName": "skill.shadow_resistance.name",
     "locKeyDesc": "skill.shadow_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["black_resistance"],
+    "evolvesTo": [
+      "black_resistance"
+    ],
     "resistType": "dark_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3303,9 +3401,13 @@
     "locKeyName": "skill.black_resistance.name",
     "locKeyDesc": "skill.black_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["void_resistance"],
+    "evolvesTo": [
+      "void_resistance"
+    ],
     "resistType": "dark_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3315,9 +3417,13 @@
     "locKeyName": "skill.void_resistance.name",
     "locKeyDesc": "skill.void_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["abyss_resistance"],
+    "evolvesTo": [
+      "abyss_resistance"
+    ],
     "resistType": "dark_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3327,7 +3433,9 @@
     "locKeyName": "skill.abyss_resistance.name",
     "locKeyDesc": "skill.abyss_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "dark_res",
@@ -3339,9 +3447,13 @@
     "locKeyName": "skill.light_resistance.name",
     "locKeyDesc": "skill.light_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["holy_resistance"],
+    "evolvesTo": [
+      "holy_resistance"
+    ],
     "resistType": "light_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3351,9 +3463,13 @@
     "locKeyName": "skill.holy_resistance.name",
     "locKeyDesc": "skill.holy_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["radiant_resistance"],
+    "evolvesTo": [
+      "radiant_resistance"
+    ],
     "resistType": "light_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3363,9 +3479,13 @@
     "locKeyName": "skill.radiant_resistance.name",
     "locKeyDesc": "skill.radiant_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["divine_resistance"],
+    "evolvesTo": [
+      "divine_resistance"
+    ],
     "resistType": "light_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3375,9 +3495,13 @@
     "locKeyName": "skill.divine_resistance.name",
     "locKeyDesc": "skill.divine_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["sacred_resistance"],
+    "evolvesTo": [
+      "sacred_resistance"
+    ],
     "resistType": "light_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3387,7 +3511,9 @@
     "locKeyName": "skill.sacred_resistance.name",
     "locKeyDesc": "skill.sacred_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "light_res",
@@ -3399,9 +3525,13 @@
     "locKeyName": "skill.acid_resistance.name",
     "locKeyDesc": "skill.acid_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["caustic_resistance"],
+    "evolvesTo": [
+      "caustic_resistance"
+    ],
     "resistType": "acid_res",
     "chainGroup": "magic",
     "tierStatBonus": 5
@@ -3411,9 +3541,13 @@
     "locKeyName": "skill.caustic_resistance.name",
     "locKeyDesc": "skill.caustic_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["corrosive_resistance"],
+    "evolvesTo": [
+      "corrosive_resistance"
+    ],
     "resistType": "acid_res",
     "chainGroup": "magic",
     "tierStatBonus": 10
@@ -3423,9 +3557,13 @@
     "locKeyName": "skill.corrosive_resistance.name",
     "locKeyDesc": "skill.corrosive_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["dissolving_resistance"],
+    "evolvesTo": [
+      "dissolving_resistance"
+    ],
     "resistType": "acid_res",
     "chainGroup": "magic",
     "tierStatBonus": 18
@@ -3435,9 +3573,13 @@
     "locKeyName": "skill.dissolving_resistance.name",
     "locKeyDesc": "skill.dissolving_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["melting_resistance"],
+    "evolvesTo": [
+      "melting_resistance"
+    ],
     "resistType": "acid_res",
     "chainGroup": "magic",
     "tierStatBonus": 28
@@ -3447,7 +3589,9 @@
     "locKeyName": "skill.melting_resistance.name",
     "locKeyDesc": "skill.melting_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "acid_res",
@@ -3459,9 +3603,13 @@
     "locKeyName": "skill.impact_resistance.name",
     "locKeyDesc": "skill.impact_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["bludgeon_resistance"],
+    "evolvesTo": [
+      "bludgeon_resistance"
+    ],
     "resistType": "physical_res",
     "chainGroup": "physical",
     "tierStatBonus": 5
@@ -3471,9 +3619,13 @@
     "locKeyName": "skill.bludgeon_resistance.name",
     "locKeyDesc": "skill.bludgeon_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["crush_resistance"],
+    "evolvesTo": [
+      "crush_resistance"
+    ],
     "resistType": "physical_res",
     "chainGroup": "physical",
     "tierStatBonus": 10
@@ -3483,9 +3635,13 @@
     "locKeyName": "skill.crush_resistance.name",
     "locKeyDesc": "skill.crush_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["shatter_resistance"],
+    "evolvesTo": [
+      "shatter_resistance"
+    ],
     "resistType": "physical_res",
     "chainGroup": "physical",
     "tierStatBonus": 18
@@ -3495,9 +3651,13 @@
     "locKeyName": "skill.shatter_resistance.name",
     "locKeyDesc": "skill.shatter_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["devastation_resistance"],
+    "evolvesTo": [
+      "devastation_resistance"
+    ],
     "resistType": "physical_res",
     "chainGroup": "physical",
     "tierStatBonus": 28
@@ -3507,7 +3667,9 @@
     "locKeyName": "skill.devastation_resistance.name",
     "locKeyDesc": "skill.devastation_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "physical_res",
@@ -3519,9 +3681,13 @@
     "locKeyName": "skill.pierce_resistance.name",
     "locKeyDesc": "skill.pierce_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["stab_resistance"],
+    "evolvesTo": [
+      "stab_resistance"
+    ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
     "tierStatBonus": 5
@@ -3531,9 +3697,13 @@
     "locKeyName": "skill.stab_resistance.name",
     "locKeyDesc": "skill.stab_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["impale_resistance"],
+    "evolvesTo": [
+      "impale_resistance"
+    ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
     "tierStatBonus": 10
@@ -3543,9 +3713,13 @@
     "locKeyName": "skill.impale_resistance.name",
     "locKeyDesc": "skill.impale_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["perforate_resistance"],
+    "evolvesTo": [
+      "perforate_resistance"
+    ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
     "tierStatBonus": 18
@@ -3555,9 +3729,13 @@
     "locKeyName": "skill.perforate_resistance.name",
     "locKeyDesc": "skill.perforate_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["annihilation_resistance"],
+    "evolvesTo": [
+      "annihilation_resistance"
+    ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
     "tierStatBonus": 28
@@ -3567,7 +3745,9 @@
     "locKeyName": "skill.annihilation_resistance.name",
     "locKeyDesc": "skill.annihilation_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "pierce_res",
@@ -3579,9 +3759,13 @@
     "locKeyName": "skill.poison_resistance.name",
     "locKeyDesc": "skill.poison_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["venom_resistance"],
+    "evolvesTo": [
+      "venom_resistance"
+    ],
     "resistType": "poison_res",
     "chainGroup": "status",
     "tierStatBonus": 5
@@ -3591,9 +3775,13 @@
     "locKeyName": "skill.venom_resistance.name",
     "locKeyDesc": "skill.venom_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["toxin_resistance"],
+    "evolvesTo": [
+      "toxin_resistance"
+    ],
     "resistType": "poison_res",
     "chainGroup": "status",
     "tierStatBonus": 10
@@ -3603,9 +3791,13 @@
     "locKeyName": "skill.toxin_resistance.name",
     "locKeyDesc": "skill.toxin_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["plague_resistance"],
+    "evolvesTo": [
+      "plague_resistance"
+    ],
     "resistType": "poison_res",
     "chainGroup": "status",
     "tierStatBonus": 18
@@ -3615,9 +3807,13 @@
     "locKeyName": "skill.plague_resistance.name",
     "locKeyDesc": "skill.plague_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["death_venom_resistance"],
+    "evolvesTo": [
+      "death_venom_resistance"
+    ],
     "resistType": "poison_res",
     "chainGroup": "status",
     "tierStatBonus": 28
@@ -3627,7 +3823,9 @@
     "locKeyName": "skill.death_venom_resistance.name",
     "locKeyDesc": "skill.death_venom_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "poison_res",
@@ -3639,9 +3837,13 @@
     "locKeyName": "skill.stun_resistance.name",
     "locKeyDesc": "skill.stun_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["shock_resistance"],
+    "evolvesTo": [
+      "shock_resistance"
+    ],
     "resistType": "stun_res",
     "chainGroup": "status",
     "tierStatBonus": 5
@@ -3651,9 +3853,13 @@
     "locKeyName": "skill.shock_resistance.name",
     "locKeyDesc": "skill.shock_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["bind_resistance"],
+    "evolvesTo": [
+      "bind_resistance"
+    ],
     "resistType": "stun_res",
     "chainGroup": "status",
     "tierStatBonus": 10
@@ -3663,9 +3869,13 @@
     "locKeyName": "skill.bind_resistance.name",
     "locKeyDesc": "skill.bind_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["petrify_resistance"],
+    "evolvesTo": [
+      "petrify_resistance"
+    ],
     "resistType": "stun_res",
     "chainGroup": "status",
     "tierStatBonus": 18
@@ -3675,9 +3885,13 @@
     "locKeyName": "skill.petrify_resistance.name",
     "locKeyDesc": "skill.petrify_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["immobilize_resistance"],
+    "evolvesTo": [
+      "immobilize_resistance"
+    ],
     "resistType": "stun_res",
     "chainGroup": "status",
     "tierStatBonus": 28
@@ -3687,7 +3901,9 @@
     "locKeyName": "skill.immobilize_resistance.name",
     "locKeyDesc": "skill.immobilize_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "stun_res",
@@ -3699,9 +3915,13 @@
     "locKeyName": "skill.fear_resistance.name",
     "locKeyDesc": "skill.fear_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["dread_resistance"],
+    "evolvesTo": [
+      "dread_resistance"
+    ],
     "resistType": "fear_res",
     "chainGroup": "status",
     "tierStatBonus": 5
@@ -3711,9 +3931,13 @@
     "locKeyName": "skill.dread_resistance.name",
     "locKeyDesc": "skill.dread_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["terror_resistance"],
+    "evolvesTo": [
+      "terror_resistance"
+    ],
     "resistType": "fear_res",
     "chainGroup": "status",
     "tierStatBonus": 10
@@ -3723,9 +3947,13 @@
     "locKeyName": "skill.terror_resistance.name",
     "locKeyDesc": "skill.terror_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["horror_resistance"],
+    "evolvesTo": [
+      "horror_resistance"
+    ],
     "resistType": "fear_res",
     "chainGroup": "status",
     "tierStatBonus": 18
@@ -3735,9 +3963,13 @@
     "locKeyName": "skill.horror_resistance.name",
     "locKeyDesc": "skill.horror_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["abyss_fear_resistance"],
+    "evolvesTo": [
+      "abyss_fear_resistance"
+    ],
     "resistType": "fear_res",
     "chainGroup": "status",
     "tierStatBonus": 28
@@ -3747,7 +3979,9 @@
     "locKeyName": "skill.abyss_fear_resistance.name",
     "locKeyDesc": "skill.abyss_fear_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "fear_res",
@@ -3759,9 +3993,13 @@
     "locKeyName": "skill.soul_resistance.name",
     "locKeyDesc": "skill.soul_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["spirit_resistance"],
+    "evolvesTo": [
+      "spirit_resistance"
+    ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
     "tierStatBonus": 5
@@ -3771,9 +4009,13 @@
     "locKeyName": "skill.spirit_resistance.name",
     "locKeyDesc": "skill.spirit_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["ethereal_resistance"],
+    "evolvesTo": [
+      "ethereal_resistance"
+    ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
     "tierStatBonus": 10
@@ -3783,9 +4025,13 @@
     "locKeyName": "skill.ethereal_resistance.name",
     "locKeyDesc": "skill.ethereal_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["phantom_resistance"],
+    "evolvesTo": [
+      "phantom_resistance"
+    ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
     "tierStatBonus": 18
@@ -3795,9 +4041,13 @@
     "locKeyName": "skill.phantom_resistance.name",
     "locKeyDesc": "skill.phantom_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
-    "evolvesTo": ["transcendent_resistance"],
+    "evolvesTo": [
+      "transcendent_resistance"
+    ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
     "tierStatBonus": 28
@@ -3807,7 +4057,9 @@
     "locKeyName": "skill.transcendent_resistance.name",
     "locKeyDesc": "skill.transcendent_resistance.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 5,
     "evolvesTo": [],
     "resistType": "soul_res",
@@ -3819,7 +4071,9 @@
     "locKeyName": "skill.physical_null.name",
     "locKeyDesc": "skill.physical_null.desc",
     "kind": "resistance",
-    "stats": ["VIT"],
+    "stats": [
+      "VIT"
+    ],
     "lvMax": 10,
     "evolvesTo": []
   },
@@ -3828,7 +4082,10 @@
     "locKeyName": "skill.magic_null.name",
     "locKeyDesc": "skill.magic_null.desc",
     "kind": "resistance",
-    "stats": ["VIT", "INT"],
+    "stats": [
+      "VIT",
+      "INT"
+    ],
     "lvMax": 10,
     "evolvesTo": []
   },
@@ -3837,7 +4094,10 @@
     "locKeyName": "skill.status_null.name",
     "locKeyDesc": "skill.status_null.desc",
     "kind": "resistance",
-    "stats": ["VIT", "WIS"],
+    "stats": [
+      "VIT",
+      "WIS"
+    ],
     "lvMax": 10,
     "evolvesTo": []
   },
@@ -3846,8 +4106,343 @@
     "locKeyName": "skill.ultimate_null.name",
     "locKeyDesc": "skill.ultimate_null.desc",
     "kind": "resistance",
-    "stats": ["VIT", "INT", "WIS"],
+    "stats": [
+      "VIT",
+      "INT",
+      "WIS"
+    ],
     "lvMax": 10,
     "evolvesTo": []
+  },
+  {
+    "id": "vision_enhancement",
+    "locKeyName": "skill.vision_enhancement.name",
+    "locKeyDesc": "skill.vision_enhancement.desc",
+    "kind": "passive",
+    "stats": [
+      "LUCK"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "auditory_enhancement"
+    ],
+    "lootMult": 0.05,
+    "dodgeBonus": 0.01
+  },
+  {
+    "id": "auditory_enhancement",
+    "locKeyName": "skill.auditory_enhancement.name",
+    "locKeyDesc": "skill.auditory_enhancement.desc",
+    "kind": "passive",
+    "stats": [
+      "LUCK"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "olfactory_enhancement"
+    ],
+    "lootMult": 0.08,
+    "dodgeBonus": 0.02
+  },
+  {
+    "id": "olfactory_enhancement",
+    "locKeyName": "skill.olfactory_enhancement.name",
+    "locKeyDesc": "skill.olfactory_enhancement.desc",
+    "kind": "passive",
+    "stats": [
+      "LUCK",
+      "WIS"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "five_senses_enhancement"
+    ],
+    "lootMult": 0.12,
+    "dodgeBonus": 0.03
+  },
+  {
+    "id": "five_senses_enhancement",
+    "locKeyName": "skill.five_senses_enhancement.name",
+    "locKeyDesc": "skill.five_senses_enhancement.desc",
+    "kind": "passive",
+    "stats": [
+      "LUCK",
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "five_senses_super"
+    ],
+    "lootMult": 0.18,
+    "dodgeBonus": 0.04
+  },
+  {
+    "id": "five_senses_super",
+    "locKeyName": "skill.five_senses_super.name",
+    "locKeyDesc": "skill.five_senses_super.desc",
+    "kind": "passive",
+    "stats": [
+      "LUCK",
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "lootMult": 0.25,
+    "dodgeBonus": 0.06
+  },
+  {
+    "id": "skill_hit",
+    "locKeyName": "skill.skill_hit.name",
+    "locKeyDesc": "skill.skill_hit.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "skill_evasion"
+    ],
+    "dodgeBonus": 0.03
+  },
+  {
+    "id": "skill_evasion",
+    "locKeyName": "skill.skill_evasion.name",
+    "locKeyDesc": "skill.skill_evasion.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "probability_correction"
+    ],
+    "dodgeBonus": 0.06
+  },
+  {
+    "id": "probability_correction",
+    "locKeyName": "skill.probability_correction.name",
+    "locKeyDesc": "skill.probability_correction.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "LUCK"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "probability_super_correction"
+    ],
+    "dodgeBonus": 0.1
+  },
+  {
+    "id": "probability_super_correction",
+    "locKeyName": "skill.probability_super_correction.name",
+    "locKeyDesc": "skill.probability_super_correction.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "LUCK"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.15
+  },
+  {
+    "id": "intimidation_aura",
+    "locKeyName": "skill.intimidation_aura.name",
+    "locKeyDesc": "skill.intimidation_aura.desc",
+    "kind": "ruler",
+    "stats": [
+      "STR",
+      "WIS"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "tyrant_aura"
+    ],
+    "dmgMult": 0.05
+  },
+  {
+    "id": "tyrant_aura",
+    "locKeyName": "skill.tyrant_aura.name",
+    "locKeyDesc": "skill.tyrant_aura.desc",
+    "kind": "ruler",
+    "stats": [
+      "STR",
+      "WIS"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "emperor_aura"
+    ],
+    "dmgMult": 0.1,
+    "statMult": 0.03
+  },
+  {
+    "id": "emperor_aura",
+    "locKeyName": "skill.emperor_aura.name",
+    "locKeyDesc": "skill.emperor_aura.desc",
+    "kind": "ruler",
+    "stats": [
+      "STR",
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.18,
+    "statMult": 0.05
+  },
+  {
+    "id": "night_vision",
+    "locKeyName": "skill.night_vision.name",
+    "locKeyDesc": "skill.night_vision.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "vision_expansion"
+    ],
+    "dodgeBonus": 0.02,
+    "xpMult": 0.05
+  },
+  {
+    "id": "vision_expansion",
+    "locKeyName": "skill.vision_expansion.name",
+    "locKeyDesc": "skill.vision_expansion.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "perception_expansion"
+    ],
+    "dodgeBonus": 0.04,
+    "xpMult": 0.08
+  },
+  {
+    "id": "perception_expansion",
+    "locKeyName": "skill.perception_expansion.name",
+    "locKeyDesc": "skill.perception_expansion.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "auditory_expansion"
+    ],
+    "dodgeBonus": 0.07,
+    "xpMult": 0.12
+  },
+  {
+    "id": "auditory_expansion",
+    "locKeyName": "skill.auditory_expansion.name",
+    "locKeyDesc": "skill.auditory_expansion.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.1,
+    "xpMult": 0.18
+  },
+  {
+    "id": "dragon_scales",
+    "locKeyName": "skill.dragon_scales.name",
+    "locKeyDesc": "skill.dragon_scales.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "imperial_scales"
+    ],
+    "armor": 8
+  },
+  {
+    "id": "imperial_scales",
+    "locKeyName": "skill.imperial_scales.name",
+    "locKeyDesc": "skill.imperial_scales.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "divine_scales"
+    ],
+    "armor": 18
+  },
+  {
+    "id": "divine_scales",
+    "locKeyName": "skill.divine_scales.name",
+    "locKeyDesc": "skill.divine_scales.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT",
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 30,
+    "regenMult": 0.15
+  },
+  {
+    "id": "immortality_skill",
+    "locKeyName": "skill.immortality_skill.name",
+    "locKeyDesc": "skill.immortality_skill.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT",
+      "WIS"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [],
+    "surviveChance": 0.85,
+    "hidden": true,
+    "acquireKey": "skill.immortality_skill.acquire"
+  },
+  {
+    "id": "athletics",
+    "locKeyName": "skill.athletics.name",
+    "locKeyDesc": "skill.athletics.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 5,
+    "evolvesTo": [
+      "martial_arts_mastery"
+    ],
+    "dmgMult": 0.05,
+    "statMult": 0.02
+  },
+  {
+    "id": "martial_arts_mastery",
+    "locKeyName": "skill.martial_arts_mastery.name",
+    "locKeyDesc": "skill.martial_arts_mastery.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.15,
+    "statMult": 0.05
   }
 ]
