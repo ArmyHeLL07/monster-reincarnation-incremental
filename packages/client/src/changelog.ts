@@ -15,6 +15,34 @@ export interface ChangelogEntry {
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    v: '1.13.0',
+    date: '2026-06-24',
+    tr: [
+      'feat: 14 direnç zinciri (T1→T5 evrim) — ateş, buz, yıldırım, rüzgar, toprak, karanlık, ışık, asit, fiziksel, delici, zehir, felç, korku, ruh',
+      'feat: grup merger sistemi — Physical / Magic / Status Nullification (tüm T5\'ler tamamlanınca otomatik birleşir)',
+      'feat: Ultimate Nullification — Lv10\'da %100 bağışıklık (nullifier düşmanlar hariç)',
+      'feat: 4 yeni hasar/direnç tipi — rüzgar, toprak, karanlık, ışık',
+      'feat: 7 yeni pasif zincir — Beş Duyu, Olasılık Düzeltme, Yıldırım Korku, Gece Görüşü, Ejderha Zırhı, Ölümsüzlük, Atletizm',
+      'feat: otomatik T1 zincir açılışı — ilk kez o hasar tipinden hasar alınca',
+    ],
+    en: [
+      'feat: 14 resistance chains (T1→T5 evolution) — fire, frost, lightning, wind, earth, darkness, light, acid, physical, pierce, poison, paralyze, fear, soul',
+      'feat: group merger system — Physical / Magic / Status Nullification (auto-merges when all T5s complete)',
+      'feat: Ultimate Nullification — Lv10 grants 100% immunity (nullifier enemies exempt)',
+      'feat: 4 new damage/resistance types — wind, earth, darkness, light',
+      'feat: 7 new passive chains — Five Senses, Probability Correction, Thunder Fear, Night Vision, Dragon Armor, Deathless, Athletics',
+      'feat: auto T1 chain unlock — first damage of that type triggers opening',
+    ],
+    ru: [
+      'feat: 14 цепочек сопротивлений (T1→T5 эволюция) — огонь, мороз, молния, ветер, земля, тьма, свет, кислота, физич., пронзание, яд, паралич, страх, душа',
+      'feat: система слияния групп — Physical / Magic / Status Nullification (авто-слияние при завершении всех T5)',
+      'feat: Ultimate Nullification — Lv10 даёт 100% иммунитет (враги-nullifier исключены)',
+      'feat: 4 новых типа урона/сопротивления — ветер, земля, тьма, свет',
+      'feat: 7 новых пассивных цепочек — Пять чувств, Коррекция вероятности, Страх грома, Ночное зрение, Броня дракона, Бессмертный, Атлетизм',
+      'feat: авто-открытие T1 цепочки — первый урон этого типа инициирует открытие',
+    ],
+  },
+  {
     v: '1.12.0',
     date: '2026-06-24',
     tr: [
