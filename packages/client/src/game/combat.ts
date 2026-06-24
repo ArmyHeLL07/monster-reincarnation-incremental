@@ -452,7 +452,7 @@ function restRound(state: GameState, content: Content, log: Log): void {
 
   // Auto-search (forage + explore) — SP yeterliyse tetikle
   if (state.autoSearchUnlocked) {
-    if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0) {
+    if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0 && !state.pendingForage) {
       forage(state, content, log);
     }
     if (state.autoSearchExplore && state.sp >= 25 && (state.searchCD ?? 0) <= 0) {
@@ -712,14 +712,26 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
 
   // Boss riddle — ayrı sistem (text-answer tabanlı)
   if (state.bossRiddle) {
+    const br = state.bossRiddle;
+    const riddle = content.bossRiddles.get(br.riddleId);
+    const layer = currentLayer(state, content);
+    if (!riddle || !layer) { state.bossRiddle = null; return; }
+
     if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= 100) {
-      // Auto-solve: riddle'ı çözmüş gibi sayıyoruz; ödül boss defeat flow'unda
+      // Auto-solve: bilmece ödülünü ver, boss'u atla (gatekeeper/rebirth tetiklenir)
+      applyRiddleReward(state, riddle.reward, log);
+      state.resolvedEvents.push(br.roomKey);
       state.bossRiddle = null;
-      log({ key: 'log.room_solved', params: { room: 'boss_puzzle' } });
+      applyBossClear(state, content, log);
+      if (state.autoAdvance) advancePosition(state, content, log);
+      else state.roomCleared = true;
+      log({ key: 'log.br_skip' });
     } else {
-      // Skip: riddle'ı atla
+      // Skip: boss'la savaş (riddle'ı çözmeden)
+      state.resolvedEvents.push(br.roomKey);
       state.bossRiddle = null;
-      log({ key: 'log.search_empty' });
+      state.enemy = makeEnemy(state, content, layer.boss, true, 1);
+      log({ key: 'log.br_fight' });
     }
     return;
   }
