@@ -17,7 +17,11 @@ export type DamageType =
   | 'fear'
   | 'soul'
   | 'petrify'
-  | 'stun';
+  | 'stun'
+  | 'wind'
+  | 'earth'
+  | 'dark'
+  | 'light';
 
 /** Game difficulty (GDD §8.5). Normal is the balance reference; others are deviations. */
 export type Difficulty = 'easy' | 'normal' | 'hard' | 'hell';
@@ -197,6 +201,13 @@ export interface Skill {
   /** If set, when deriveCondition is fully met, automatically grant this skill (integration system). */
   derivesTo?: string;
   deriveCondition?: DeriveCondition;
+  // --- Resistance chain fields (kind: 'resistance') ---
+  /** Which resistance stat this chain skill boosts (e.g. 'fire_res'). */
+  resistType?: string;
+  /** Nullification merger group this chain belongs to. */
+  chainGroup?: 'physical' | 'magic' | 'status' | 'soul';
+  /** Max flat % bonus this tier adds to resistance reduction at full level (e.g. 5 = +5%). */
+  tierStatBonus?: number;
 }
 
 /** Eye-gaze combat effect (GDD §B6). */
@@ -216,6 +227,17 @@ export interface Resistance {
   damageType: DamageType;
   lvMax: number;
   nullityKey: string;
+}
+
+/** Data-driven merger definition — when all required skill IDs appear in state.skills,
+ *  the merger fires: components are deleted and the merger skill is added at Lv1. */
+export interface ResistanceMerger {
+  id: string;
+  locKey: string;
+  group: 'physical' | 'magic' | 'status' | 'ultimate';
+  lvMax: number;
+  /** Each entry: { skillId: T5 chain or group null id, minLevel?: required level (default any) } */
+  requires: Array<{ skillId: string; minLevel?: number }>;
 }
 
 /** A data-driven enemy. */
@@ -257,6 +279,8 @@ export interface EnemyBehavior {
   lifesteal?: number;
   /** Multiplies its chance to inflict a lingering status (poison/fire/…) — status specialist. */
   statusBoost?: number;
+  /** If true, bypasses Ultimate Nullification Lv10 full immunity — capped at 60% instead. */
+  nullifier?: boolean;
 }
 
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */

@@ -31,6 +31,14 @@ export interface Bonuses {
   weaponPower: number;
   /** Pain Nullification: fraction of incoming damage ignored below half HP (Kumo). */
   painNull: number;
+  /** Physical Nullification reduction fraction (0–0.85). */
+  physNullReduction: number;
+  /** Magic/Elemental Nullification reduction fraction (0–0.85). */
+  magicNullReduction: number;
+  /** Status Nullification reduction fraction (0–0.85). */
+  statusNullReduction: number;
+  /** Ultimate Nullification current level (0–10; 10 = full immunity). */
+  ultimateNullLv: number;
 }
 
 /** A skill's effect scales with its level (full value at lvMax); ruler powers are full value. */
@@ -53,6 +61,10 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     mpRegen: 0,
     weaponPower: 0,
     painNull: 0,
+    physNullReduction: 0,
+    magicNullReduction: 0,
+    statusNullReduction: 0,
+    ultimateNullLv: 0,
   };
 
   for (const slot of state.skills) {
@@ -71,6 +83,18 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.hungerMult) b.hungerMult *= def.hungerMult;
     if (def.surviveChance) b.surviveChance = Math.max(b.surviveChance, def.surviveChance * s);
     if (def.painNull) b.painNull = Math.min(0.8, b.painNull + def.painNull * s); // cap at 80% ignored
+    if (def.kind === 'resistance') {
+      // Group nullification skills have no resistType — they contribute to merger reductions.
+      if (slot.id === 'physical_nullification') {
+        b.physNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+      } else if (slot.id === 'magic_nullification') {
+        b.magicNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+      } else if (slot.id === 'status_nullification') {
+        b.statusNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+      } else if (slot.id === 'ultimate_nullification') {
+        b.ultimateNullLv = slot.level;
+      }
+    }
   }
 
   // Equipped loot (humanoid races) — flat sums; statBonus is handled separately via effStat.
