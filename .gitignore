@@ -28,7 +28,9 @@ Thumbs.db
 # internal Claude operating manual (Marvion strategy, paths) — never publish
 CLAUDE.md
 
-# design docs, plans, specs — private, not part of the shipped game
+# design docs, plans, specs, dev progress — private, not part of the shipped game
 docs/
 mockups/
 graphify-out/
+.superpowers/
+ILERLEME.md
