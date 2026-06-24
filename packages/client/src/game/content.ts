@@ -1,6 +1,7 @@
 import type {
   Skill,
   Resistance,
+  ResistanceMerger,
   Enemy,
   Race,
   EvolutionForm,
@@ -35,10 +36,11 @@ export interface Content {
   bossRiddles: Map<string, BossRiddle>;
   /** Forageable food items keyed by id (Yemek Ara mechanic). */
   forageableFoods: Map<string, ForageableFood>;
+  resistanceMergers: Map<string, ResistanceMerger>;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods, resistanceMergerList] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -55,6 +57,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<EventDef[]>(`${base}events.json`),
       fetchJson<BossRiddle[]>(`${base}boss_riddles.json`),
       fetchJson<ForageableFood[]>(`${base}forageable_foods.json`),
+      fetchJson<ResistanceMerger[]>(`${base}resistance_mergers.json`),
     ]);
   return {
     skills: byId(skills),
@@ -73,6 +76,7 @@ export async function loadContent(base: string): Promise<Content> {
     // Keyed by riddle id (state.bossRiddle.riddleId looks up by id); pickBossRiddle maps boss→riddle.
     bossRiddles: new Map(bossRiddles.map((r) => [r.id, r])),
     forageableFoods: byId(forageableFoods),
+    resistanceMergers: new Map(resistanceMergerList.map((m) => [m.id, m])),
   };
 }
 

@@ -82,5 +82,33 @@
     "damageType": "stun",
     "lvMax": 10,
     "nullityKey": "res.stun_immunity.name"
+  },
+  {
+    "id": "wind_res",
+    "locKey": "res.wind_res.name",
+    "damageType": "wind",
+    "lvMax": 10,
+    "nullityKey": "res.wind_immunity.name"
+  },
+  {
+    "id": "earth_res",
+    "locKey": "res.earth_res.name",
+    "damageType": "earth",
+    "lvMax": 10,
+    "nullityKey": "res.earth_immunity.name"
+  },
+  {
+    "id": "dark_res",
+    "locKey": "res.dark_res.name",
+    "damageType": "dark",
+    "lvMax": 10,
+    "nullityKey": "res.dark_immunity.name"
+  },
+  {
+    "id": "light_res",
+    "locKey": "res.light_res.name",
+    "damageType": "light",
+    "lvMax": 10,
+    "nullityKey": "res.light_immunity.name"
   }
 ]

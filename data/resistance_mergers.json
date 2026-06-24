@@ -1,0 +1,51 @@
+[
+  {
+    "id": "physical_nullification",
+    "locKey": "skill.physical_null.name",
+    "group": "physical",
+    "lvMax": 10,
+    "requires": [
+      { "skillId": "devastation_resistance" },
+      { "skillId": "annihilation_resistance" }
+    ]
+  },
+  {
+    "id": "magic_nullification",
+    "locKey": "skill.magic_null.name",
+    "group": "magic",
+    "lvMax": 10,
+    "requires": [
+      { "skillId": "volcanic_resistance" },
+      { "skillId": "blizzard_resistance" },
+      { "skillId": "tempest_resistance" },
+      { "skillId": "tornado_resistance" },
+      { "skillId": "tectonic_resistance" },
+      { "skillId": "abyss_resistance" },
+      { "skillId": "sacred_resistance" },
+      { "skillId": "melting_resistance" }
+    ]
+  },
+  {
+    "id": "status_nullification",
+    "locKey": "skill.status_null.name",
+    "group": "status",
+    "lvMax": 10,
+    "requires": [
+      { "skillId": "death_venom_resistance" },
+      { "skillId": "immobilize_resistance" },
+      { "skillId": "abyss_fear_resistance" }
+    ]
+  },
+  {
+    "id": "ultimate_nullification",
+    "locKey": "skill.ultimate_null.name",
+    "group": "ultimate",
+    "lvMax": 10,
+    "requires": [
+      { "skillId": "physical_nullification", "minLevel": 10 },
+      { "skillId": "magic_nullification", "minLevel": 10 },
+      { "skillId": "status_nullification", "minLevel": 10 },
+      { "skillId": "transcendent_resistance" }
+    ]
+  }
+]
