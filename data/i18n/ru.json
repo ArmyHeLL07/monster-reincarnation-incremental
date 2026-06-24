@@ -1539,5 +1539,17 @@
   "race_hint.strength": "Сильная сторона",
   "race_hint.weakness": "Слабая сторона",
   "race_hint.growth": "Путь развития",
-  "race_hint.note": "Примечание"
+  "race_hint.note": "Примечание",
+  "auto.food.label": "Авто Поиск Еды",
+  "auto.explore.label": "Авто Исследование",
+  "auto.on": "Авто",
+  "auto.off": "Вручную",
+  "auto.locked": "Открывается после 100 поисков",
+  "auto.unlocked_toast": "Авто-поиск открыт! (100 поисков выполнено)",
+  "auto.sp_low": "Мало SP — ожидание",
+  "auto.event.label": "Авто Решение Событий",
+  "auto.event.hint": "Требует INT ≥ 50",
+  "auto.puzzle.label": "Поведение с Загадками",
+  "auto.puzzle.skip": "Пропустить → Бой",
+  "auto.puzzle.solve": "Авто-Решить (INT ≥ 100)"
 }

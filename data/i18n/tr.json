@@ -1539,5 +1539,17 @@
   "race_hint.strength": "Güçlü Yön",
   "race_hint.weakness": "Zayıf Yön",
   "race_hint.growth": "Gelişim Yolu",
-  "race_hint.note": "Not"
+  "race_hint.note": "Not",
+  "auto.food.label": "Otomatik Yemek Arama",
+  "auto.explore.label": "Otomatik Arama",
+  "auto.on": "Otomatikte",
+  "auto.off": "Manuel",
+  "auto.locked": "100 arama sonrası açılır",
+  "auto.unlocked_toast": "Otomatik arama açıldı! (100 arama tamamlandı)",
+  "auto.sp_low": "SP düşük — bekleniyor",
+  "auto.event.label": "Otomatik Event Kararı",
+  "auto.event.hint": "INT ≥ 50 gerektirir",
+  "auto.puzzle.label": "Bulmaca Davranışı",
+  "auto.puzzle.skip": "Bulmacayı Atla → Savaş",
+  "auto.puzzle.solve": "Otomatik Çöz (INT ≥ 100)"
 }

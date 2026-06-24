@@ -1539,5 +1539,17 @@
   "race_hint.strength": "Strength",
   "race_hint.weakness": "Weakness",
   "race_hint.growth": "Growth Path",
-  "race_hint.note": "Note"
+  "race_hint.note": "Note",
+  "auto.food.label": "Auto Food Search",
+  "auto.explore.label": "Auto Explore",
+  "auto.on": "Auto",
+  "auto.off": "Manual",
+  "auto.locked": "Unlocks after 100 searches",
+  "auto.unlocked_toast": "Auto-search unlocked! (100 searches done)",
+  "auto.sp_low": "SP low — waiting",
+  "auto.event.label": "Auto Event Decision",
+  "auto.event.hint": "Requires INT ≥ 50",
+  "auto.puzzle.label": "Puzzle Behavior",
+  "auto.puzzle.skip": "Skip Puzzle → Fight",
+  "auto.puzzle.solve": "Auto-Solve (INT ≥ 100)"
 }
