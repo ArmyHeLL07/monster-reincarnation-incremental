@@ -989,6 +989,16 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   let share = enemy.attack / types.length;
   if (enemy.behavior?.enrage && enemy.hp < enemy.maxHp * 0.3) share *= 1 + enemy.behavior.enrage; // cornered → fiercer
   const statusChance = STATUS_CHANCE * (enemy.behavior?.statusBoost ?? 1); // status specialists apply more
+  // Group nullification and Ultimate Nullification reductions (computed once, applied per-hit).
+  const nullBonuses = aggregateBonuses(state, content);
+  const ULT_PCT = [0, 10, 22, 34, 45, 55, 65, 75, 85, 90, 100];
+  const ultLv = nullBonuses.ultimateNullLv;
+  const ultPct = ULT_PCT[Math.min(ultLv, 10)] ?? 0;
+  const isNullifier = (enemy.behavior?.nullifier) ?? false;
+  const effectiveUltPct = (ultLv >= 10 && isNullifier)
+    ? Math.min(ultLv * 6, 60) // capped at 60% for nullifier enemies (can never achieve full immunity)
+    : ultPct;
+
   let totalTaken = 0;
   for (const type of types) {
     const reduction = resistReduction(state, content, type);
@@ -1002,7 +1012,10 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     const armorCut = b.armor / types.length;
     // Slime elemental absorption: 30% resist vs the currently absorbed element.
     const slimeRes = sigSlimeResist(state, type);
-    const taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
+    let taken = Math.max(0, Math.round(share * (1 - reduction - slimeRes) - armorCut));
+    // Group Nullification: reduces damage from matching element group (physical/magic/status).
+    const groupNullPct = getGroupNullPct(nullBonuses, type);
+    if (groupNullPct > 0) taken = Math.round(taken * (1 - groupNullPct / 100));
     totalTaken += taken;
     const resGain = Math.round(taken * resMult);
     if (resGain > 0) addResistExp(state, content, type, resGain, log);
@@ -1015,6 +1028,10 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   const stoneAbsorb = sigStoneAbsorb(state);
   totalTaken = Math.max(0, totalTaken - stoneAbsorb);
   if (stoneAbsorb > 0) log({ key: 'log.sig_stone_absorb', params: { absorbed: stoneAbsorb } });
+  // Ultimate Nullification: multiplicative reduction after all other defenses (applied to total).
+  if (effectiveUltPct > 0) totalTaken = Math.round(totalTaken * (1 - effectiveUltPct / 100));
+  // Full immunity at Lv10 (non-nullifier only): block all incoming damage.
+  if (ultLv >= 10 && !isNullifier) totalTaken = 0;
   // Pain Nullification (Kumo): below half HP, ignore a fraction of incoming damage (don't feel it).
   if (b.painNull > 0 && state.hp < state.maxHp * 0.5 && totalTaken > 0) {
     totalTaken = Math.max(0, Math.round(totalTaken * (1 - b.painNull)));
@@ -1561,11 +1578,40 @@ function ensureResistSlot(state: GameState, content: Content, type: DamageType):
   return null;
 }
 
+/** Extra resistance % from the active resistance chain skill for this damage type.
+ *  Returns a fraction (0–0.40) added on top of the stat-based reduction. */
+function chainResistBonus(state: GameState, content: Content, type: DamageType): number {
+  const chainResistType = type === 'petrify' ? 'stun_res' : `${type}_res`;
+  for (const slot of state.skills) {
+    const def = content.skills.get(slot.id);
+    if (!def || def.kind !== 'resistance' || def.resistType !== chainResistType) continue;
+    const bonus = (def.tierStatBonus ?? 0) / 100; // e.g. 40 → 0.40
+    const s = Math.min(1, slot.level / Math.max(1, def.lvMax));
+    return bonus * s;
+  }
+  return 0;
+}
+
 function resistReduction(state: GameState, content: Content, type: DamageType): number {
   const slot = ensureResistSlot(state, content, type);
   if (!slot) return 0;
   if (slot.nullified) return 0.95;
-  return Math.min(slot.level * 0.05, 0.9);
+  const statReduction = Math.min(slot.level * 0.05, 0.9);
+  const chainBonus = chainResistBonus(state, content, type);
+  // Combined cap at 0.95 to reserve 5% floor until Ultimate Nullification
+  return Math.min(statReduction + chainBonus, 0.95);
+}
+
+/** Returns the applicable group nullification percentage (0–85) for a damage type. */
+function getGroupNullPct(bonuses: Bonuses, type: DamageType): number {
+  const MAGIC: DamageType[] = ['fire', 'frost', 'lightning', 'wind', 'earth', 'dark', 'light', 'acid'];
+  const PHYSICAL: DamageType[] = ['physical', 'pierce'];
+  const STATUS: DamageType[] = ['poison', 'stun', 'petrify', 'fear'];
+  if (MAGIC.includes(type))    return bonuses.magicNullReduction * 100;
+  if (PHYSICAL.includes(type)) return bonuses.physNullReduction * 100;
+  if (STATUS.includes(type))   return bonuses.statusNullReduction * 100;
+  if (type === 'soul')         return 0; // Soul has no group null, goes directly to Ultimate
+  return 0;
 }
 
 /** Returns true if a nullification skill should receive XP from this damage type. */
