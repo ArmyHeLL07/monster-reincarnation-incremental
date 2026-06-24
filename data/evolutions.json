@@ -8,7 +8,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "fighter_apprentice",
@@ -29,7 +30,8 @@
       "hp_regen",
       "sword_slash",
       "weapon_mastery"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "warrior_path",
@@ -47,7 +49,8 @@
     "grantSkills": [
       "blade_dance",
       "parry"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "scholar_path",
@@ -65,7 +68,8 @@
     "grantSkills": [
       "mp_regen",
       "mana_sense"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "crusader",
@@ -83,7 +87,8 @@
     "grantSkills": [
       "holy_strike",
       "righteous_strike"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "shadow_warrior",
@@ -101,7 +106,8 @@
     "grantSkills": [
       "piercing_gaze",
       "overdraw"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "elemental_mage",
@@ -119,7 +125,8 @@
     "grantSkills": [
       "flame_bolt",
       "spark"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "dark_scholar",
@@ -138,7 +145,8 @@
     "grantSkills": [
       "soul_gaze",
       "mana_sense"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "paladin",
@@ -157,7 +165,8 @@
     "grantSkills": [
       "shield_guard",
       "divine_recovery"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "champion_human",
@@ -176,7 +185,8 @@
     "grantSkills": [
       "blade_mastery",
       "battle_cry"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "assassin_human",
@@ -195,7 +205,8 @@
     "grantSkills": [
       "piercing_gaze",
       "blade_dance"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "berserker_human",
@@ -214,7 +225,8 @@
     "grantSkills": [
       "overdraw",
       "battle_cry"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "pyromancer",
@@ -233,7 +245,8 @@
     "grantSkills": [
       "flame_bolt",
       "lightning_strike"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "cryomancer",
@@ -252,7 +265,8 @@
     "grantSkills": [
       "mana_shield",
       "mp_regen"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "necromancer_human",
@@ -271,7 +285,8 @@
     "grantSkills": [
       "soul_gaze",
       "memory_palace"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "void_seeker",
@@ -289,7 +304,8 @@
     "grantSkills": [
       "mana_shield",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "divine_champion",
@@ -309,7 +325,8 @@
       "divine_recovery",
       "sovereign_form",
       "all_sight"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "holy_crusader",
@@ -328,7 +345,8 @@
       "sovereign_form",
       "holy_strike",
       "battle_cry"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "grand_champion",
@@ -347,7 +365,8 @@
       "sovereign_form",
       "apex_predator",
       "battle_cry"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "blade_sovereign",
@@ -366,7 +385,8 @@
       "sovereign_form",
       "blade_mastery",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "shadow_lord",
@@ -385,7 +405,8 @@
       "sovereign_form",
       "piercing_gaze",
       "apex_predator"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "phantom_lord",
@@ -404,7 +425,8 @@
       "sovereign_form",
       "domination_gaze",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "blood_warlord",
@@ -423,7 +445,8 @@
       "sovereign_form",
       "overdraw",
       "apex_predator"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "war_deity",
@@ -442,7 +465,8 @@
       "sovereign_form",
       "battle_cry",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "flame_sovereign",
@@ -461,7 +485,8 @@
       "sovereign_form",
       "flame_bolt",
       "all_sight"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "volcano_lord",
@@ -480,7 +505,8 @@
       "sovereign_form",
       "lightning_strike",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "blizzard_sovereign",
@@ -499,7 +525,8 @@
       "sovereign_form",
       "mana_shield",
       "parallel_minds"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "frost_archmage",
@@ -518,7 +545,8 @@
       "sovereign_form",
       "mp_regen",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "lich_master",
@@ -537,7 +565,8 @@
       "sovereign_form",
       "soul_gaze",
       "memory_palace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "death_ascendant",
@@ -556,7 +585,8 @@
       "sovereign_form",
       "all_sight",
       "divine_recovery"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "void_herald",
@@ -575,7 +605,8 @@
       "sovereign_form",
       "spatial_rift",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "chaos_archmage",
@@ -594,7 +625,8 @@
       "sovereign_form",
       "parallel_minds",
       "all_sight"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "demon_slime",
@@ -619,7 +651,8 @@
     "secret": {
       "kills": 666
     },
-    "humanoid": true
+    "humanoid": true,
+    "tierReq": 5
   },
   {
     "id": "rimuru_tempest",
@@ -642,7 +675,8 @@
       "mana_shield",
       "regeneration"
     ],
-    "humanoid": true
+    "humanoid": true,
+    "tierReq": 8
   },
   {
     "id": "demon_lord_rimuru",
@@ -663,7 +697,8 @@
       "void_barrier",
       "undying_vitality"
     ],
-    "humanoid": true
+    "humanoid": true,
+    "tierReq": 10
   },
   {
     "id": "zoa_ele",
@@ -686,7 +721,8 @@
     ],
     "secret": {
       "kills": 500
-    }
+    },
+    "tierReq": 5
   },
   {
     "id": "ede_saine",
@@ -707,7 +743,8 @@
       "wisdom",
       "flash_step",
       "pain_nullification"
-    ]
+    ],
+    "tierReq": 7
   },
   {
     "id": "arachne",
@@ -730,7 +767,8 @@
       "spatial_rift",
       "dissolving_touch"
     ],
-    "humanoid": true
+    "humanoid": true,
+    "tierReq": 8
   },
   {
     "id": "zana_horowa",
@@ -751,7 +789,8 @@
       "sovereign_form",
       "raphael"
     ],
-    "humanoid": true
+    "humanoid": true,
+    "tierReq": 10
   },
   {
     "id": "slime_larva",
@@ -762,7 +801,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "ooze_spawn",
@@ -783,7 +823,8 @@
       "acid_spit",
       "gelatinous_body",
       "hp_regen"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "acid_ooze",
@@ -801,7 +842,8 @@
     "grantSkills": [
       "acid_spit",
       "caustic_spray"
-    ]
+    ],
+    "tierReq": 3
   },
   {
     "id": "crystalline_ooze",
@@ -819,7 +861,8 @@
     "grantSkills": [
       "elastic_shield",
       "primordial_ooze_shield"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "toxic_ooze",
@@ -837,7 +880,8 @@
     "grantSkills": [
       "plague_mist",
       "necro_toxin"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "corrosive_horror",
@@ -855,7 +899,8 @@
     "grantSkills": [
       "acid_deluge",
       "dissolving_touch"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "mirror_ooze",
@@ -873,7 +918,8 @@
     "grantSkills": [
       "mana_control",
       "mana_shield"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "blob_slime",
@@ -891,7 +937,8 @@
     "grantSkills": [
       "primordial_ooze_shield",
       "adamant_plating"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "plague_ooze",
@@ -910,7 +957,8 @@
     "grantSkills": [
       "necro_toxin",
       "decay_curse"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "venom_ooze",
@@ -929,7 +977,8 @@
     "grantSkills": [
       "decay_curse",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "dissolver_ooze",
@@ -948,7 +997,8 @@
     "grantSkills": [
       "acid_deluge",
       "dissolving_touch"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "devourer_slime",
@@ -968,7 +1018,8 @@
     "grantSkills": [
       "dissolving_touch",
       "necro_toxin"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "prism_ooze",
@@ -987,7 +1038,8 @@
     "grantSkills": [
       "mana_shield",
       "mana_mastery"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "reflector_ooze",
@@ -1006,7 +1058,8 @@
     "grantSkills": [
       "mana_mastery",
       "void_barrier"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "diamond_ooze",
@@ -1025,7 +1078,8 @@
     "grantSkills": [
       "primordial_ooze_shield",
       "adamant_plating"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "shard_ooze",
@@ -1044,7 +1098,8 @@
     "grantSkills": [
       "adamant_plating",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "toxic_sovereign",
@@ -1062,7 +1117,8 @@
       "sovereign_form",
       "plague_fang",
       "decay_curse"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "plague_god",
@@ -1080,7 +1136,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "venom_overlord",
@@ -1098,7 +1155,8 @@
       "sovereign_form",
       "plague_fang",
       "decay_curse"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "elder_ooze",
@@ -1116,7 +1174,8 @@
       "sovereign_form",
       "infernal_breath",
       "necro_toxin"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "acid_god",
@@ -1134,7 +1193,8 @@
       "sovereign_form",
       "plague_fang",
       "dissolving_touch"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "void_ooze",
@@ -1152,7 +1212,8 @@
       "sovereign_form",
       "null_field",
       "void_barrier"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "void_devourer",
@@ -1170,7 +1231,8 @@
       "sovereign_form",
       "plague_fang",
       "dissolving_touch"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "primordial_ooze",
@@ -1188,7 +1250,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "crystal_god",
@@ -1206,7 +1269,8 @@
       "sovereign_form",
       "dimension_collapse",
       "mana_mastery"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "primordial_god",
@@ -1224,7 +1288,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "mirror_god",
@@ -1242,7 +1307,8 @@
       "sovereign_form",
       "dimension_collapse",
       "mana_mastery"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "eternal_slime",
@@ -1260,7 +1326,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "adamant_colossus",
@@ -1278,7 +1345,8 @@
       "sovereign_form",
       "fortress_body",
       "adamant_plating"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "ancient_slime",
@@ -1296,7 +1364,8 @@
       "sovereign_form",
       "infernal_breath",
       "necro_toxin"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "slime_ascendant",
@@ -1314,7 +1383,8 @@
       "sovereign_form",
       "dimension_collapse",
       "mana_mastery"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "slime_sovereign",
@@ -1332,7 +1402,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "bone_rattle",
@@ -1343,7 +1414,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "risen_skeleton",
@@ -1363,7 +1435,8 @@
       "bone_arrow",
       "undead_vigor",
       "bone_armor"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "skeleton_warrior",
@@ -1381,7 +1454,8 @@
     "grantSkills": [
       "sword_slash",
       "blade_dance"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "skeleton_sorcerer",
@@ -1399,7 +1473,8 @@
     "grantSkills": [
       "decay_curse",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "bone_lord",
@@ -1417,7 +1492,8 @@
     "grantSkills": [
       "blade_dance",
       "shattering_strike"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "bone_archer",
@@ -1435,7 +1511,8 @@
     "grantSkills": [
       "piercing_gaze",
       "heavy_gaze"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "lich",
@@ -1453,7 +1530,8 @@
     "grantSkills": [
       "decay_curse",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "shade_knight",
@@ -1471,7 +1549,8 @@
     "grantSkills": [
       "decay_curse",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "bone_titan",
@@ -1490,7 +1569,8 @@
     "grantSkills": [
       "shattering_strike",
       "bone_armor"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "dread_reaver",
@@ -1509,7 +1589,8 @@
     "grantSkills": [
       "undying_husk",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "bone_sniper",
@@ -1528,7 +1609,8 @@
     "grantSkills": [
       "piercing_gaze",
       "heavy_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "bone_marksman",
@@ -1547,7 +1629,8 @@
     "grantSkills": [
       "heavy_gaze",
       "apex_predator"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "ancient_lich",
@@ -1566,7 +1649,8 @@
     "grantSkills": [
       "soul_gaze",
       "unholy_heart"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "soul_reaper",
@@ -1585,7 +1669,8 @@
     "grantSkills": [
       "unholy_heart",
       "rend_soul_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "death_knight",
@@ -1604,7 +1689,8 @@
     "grantSkills": [
       "decay_curse",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "wraith_lord",
@@ -1623,7 +1709,8 @@
     "grantSkills": [
       "undying_husk",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "undead_sovereign",
@@ -1641,7 +1728,8 @@
       "sovereign_form",
       "cataclysm_strike",
       "bone_armor"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "bone_colossus",
@@ -1659,7 +1747,8 @@
       "sovereign_form",
       "ossuary_bastion",
       "bone_fortress"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "death_incarnate",
@@ -1677,7 +1766,8 @@
       "sovereign_form",
       "nightmare_gaze",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "carnage_lord",
@@ -1695,7 +1785,8 @@
       "sovereign_form",
       "death_scythe",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "bone_artillery",
@@ -1712,7 +1803,8 @@
       "sovereign_form",
       "arrow_storm",
       "heavy_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "death_archer_king",
@@ -1729,7 +1821,8 @@
       "sovereign_form",
       "assassinate",
       "apex_predator"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "soul_sniper",
@@ -1746,7 +1839,8 @@
       "sovereign_form",
       "arrow_storm",
       "heavy_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "revenant_king",
@@ -1763,7 +1857,8 @@
       "sovereign_form",
       "assassinate",
       "apex_predator"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "death_sovereign",
@@ -1781,7 +1876,8 @@
       "sovereign_form",
       "death_scythe",
       "unholy_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "lich_god",
@@ -1799,7 +1895,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "rend_soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "soul_sovereign_skel",
@@ -1817,7 +1914,8 @@
       "sovereign_form",
       "death_scythe",
       "unholy_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "reaper_god",
@@ -1835,7 +1933,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "rend_soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "death_lord",
@@ -1853,7 +1952,8 @@
       "sovereign_form",
       "nightmare_gaze",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "doom_knight",
@@ -1871,7 +1971,8 @@
       "sovereign_form",
       "death_scythe",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "wraith_god",
@@ -1889,7 +1990,8 @@
       "sovereign_form",
       "nightmare_gaze",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "skeleton_sovereign",
@@ -1907,7 +2009,8 @@
       "sovereign_form",
       "death_scythe",
       "soul_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "wyrmling_hatch",
@@ -1918,7 +2021,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "young_drake",
@@ -1938,7 +2042,8 @@
       "dragon_claw",
       "draconic_blood",
       "fire_breath"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "fire_wyrm",
@@ -1956,7 +2061,8 @@
     "grantSkills": [
       "dragon_claw",
       "fire_breath"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "storm_drake",
@@ -1974,7 +2080,8 @@
     "grantSkills": [
       "gale_cut",
       "lightning_strike"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "elder_drake",
@@ -1992,7 +2099,8 @@
     "grantSkills": [
       "fire_breath",
       "dragon_slash"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "magma_drake",
@@ -2010,7 +2118,8 @@
     "grantSkills": [
       "heavy_slam",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "lightning_wyrm",
@@ -2028,7 +2137,8 @@
     "grantSkills": [
       "gale_cut",
       "lightning_strike"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "shadow_drake",
@@ -2046,7 +2156,8 @@
     "grantSkills": [
       "decay_curse",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "ancient_wyrm",
@@ -2065,7 +2176,8 @@
     "grantSkills": [
       "dragon_slash",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "inferno_wyrm",
@@ -2084,7 +2196,8 @@
     "grantSkills": [
       "scorching_breath",
       "dragon_heart"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "volcanic_dragon",
@@ -2103,7 +2216,8 @@
     "grantSkills": [
       "heavy_slam",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "cinder_wyrm",
@@ -2122,7 +2236,8 @@
     "grantSkills": [
       "scorching_breath",
       "dragon_scale"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "storm_dragon",
@@ -2141,7 +2256,8 @@
     "grantSkills": [
       "lightning_strike",
       "wind_blade"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "tempest_wyrm",
@@ -2160,7 +2276,8 @@
     "grantSkills": [
       "wind_blade",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "void_dragon",
@@ -2179,7 +2296,8 @@
     "grantSkills": [
       "decay_curse",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "nightmare_drake",
@@ -2198,7 +2316,8 @@
     "grantSkills": [
       "spatial_rift",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "elder_dragon",
@@ -2216,7 +2335,8 @@
       "sovereign_form",
       "infernal_breath",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "dragon_sovereign",
@@ -2234,7 +2354,8 @@
       "sovereign_form",
       "meteor",
       "dragon_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "flame_god_dragon",
@@ -2252,7 +2373,8 @@
       "sovereign_form",
       "infernal_breath",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "phoenix_wyrm",
@@ -2270,7 +2392,8 @@
       "sovereign_form",
       "meteor",
       "dragon_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "magma_god",
@@ -2288,7 +2411,8 @@
       "sovereign_form",
       "cataclysm_strike",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "world_serpent",
@@ -2306,7 +2430,8 @@
       "sovereign_form",
       "infernal_breath",
       "dragon_scale"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "ember_sovereign",
@@ -2324,7 +2449,8 @@
       "sovereign_form",
       "cataclysm_strike",
       "scorching_breath"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "ashfall_dragon",
@@ -2342,7 +2468,8 @@
       "sovereign_form",
       "infernal_breath",
       "dragon_scale"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "thunder_god_dragon",
@@ -2360,7 +2487,8 @@
       "sovereign_form",
       "thunderstorm",
       "wind_blade"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "cosmic_dragon",
@@ -2378,7 +2506,8 @@
       "sovereign_form",
       "tempest_blade",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "storm_sovereign",
@@ -2396,7 +2525,8 @@
       "sovereign_form",
       "thunderstorm",
       "wind_blade"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "gale_god",
@@ -2414,7 +2544,8 @@
       "sovereign_form",
       "tempest_blade",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "void_leviathan",
@@ -2431,7 +2562,8 @@
       "sovereign_form",
       "dimension_collapse",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "void_god_dragon",
@@ -2448,7 +2580,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "shadow_god_dragon",
@@ -2465,7 +2598,8 @@
       "sovereign_form",
       "dimension_collapse",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "dragon_god",
@@ -2482,7 +2616,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "domination_gaze"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "pebble_golem",
@@ -2493,7 +2628,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "stone_golem",
@@ -2513,7 +2649,8 @@
       "stone_spike",
       "stone_nature",
       "toughness"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "iron_golem",
@@ -2531,7 +2668,8 @@
     "grantSkills": [
       "toughness",
       "stone_skin"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "lava_golem",
@@ -2549,7 +2687,8 @@
     "grantSkills": [
       "magma_fist",
       "earth_pillar"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "crystal_golem",
@@ -2567,7 +2706,8 @@
     "grantSkills": [
       "crystal_heart",
       "iron_plating"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "steel_golem",
@@ -2585,7 +2725,8 @@
     "grantSkills": [
       "iron_plating",
       "shield_wall"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "magma_colossus",
@@ -2603,7 +2744,8 @@
     "grantSkills": [
       "magma_fist",
       "earth_pillar"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "obsidian_golem",
@@ -2621,7 +2763,8 @@
     "grantSkills": [
       "earth_pillar",
       "heavy_slam"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "arcane_golem",
@@ -2640,7 +2783,8 @@
     "grantSkills": [
       "mana_shield",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "prism_golem",
@@ -2659,7 +2803,8 @@
     "grantSkills": [
       "obsidian_carapace",
       "unyielding_core"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "titan_golem",
@@ -2678,7 +2823,8 @@
     "grantSkills": [
       "iron_plating",
       "shield_wall"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "fortress_golem",
@@ -2697,7 +2843,8 @@
     "grantSkills": [
       "shield_wall",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "inferno_colossus",
@@ -2716,7 +2863,8 @@
     "grantSkills": [
       "earth_pillar",
       "heavy_slam"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "volcano_golem",
@@ -2735,7 +2883,8 @@
     "grantSkills": [
       "heavy_slam",
       "crystal_heart"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "basalt_titan",
@@ -2754,7 +2903,8 @@
     "grantSkills": [
       "iron_plating",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "onyx_colossus",
@@ -2773,7 +2923,8 @@
     "grantSkills": [
       "obsidian_carapace",
       "unyielding_core"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "void_golem",
@@ -2791,7 +2942,8 @@
       "sovereign_form",
       "dimension_collapse",
       "spatial_rift"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "rune_colossus",
@@ -2809,7 +2961,8 @@
       "sovereign_form",
       "null_field",
       "crystal_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "crystal_titan_golem",
@@ -2827,7 +2980,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "diamond_colossus",
@@ -2845,7 +2999,8 @@
       "sovereign_form",
       "aegis_eternal",
       "unyielding_core"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "colossus_prime",
@@ -2863,7 +3018,8 @@
       "sovereign_form",
       "fortress_body",
       "shield_wall"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "world_golem",
@@ -2881,7 +3037,8 @@
       "sovereign_form",
       "aegis_eternal",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "bastion_colossus",
@@ -2899,7 +3056,8 @@
       "sovereign_form",
       "fortress_body",
       "shield_wall"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "ancient_golem",
@@ -2917,7 +3075,8 @@
       "sovereign_form",
       "aegis_eternal",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "magma_god_golem",
@@ -2935,7 +3094,8 @@
       "sovereign_form",
       "cataclysm_strike",
       "heavy_slam"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "lava_sovereign",
@@ -2953,7 +3113,8 @@
       "sovereign_form",
       "meteor",
       "crystal_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "eternal_colossus",
@@ -2971,7 +3132,8 @@
       "sovereign_form",
       "cataclysm_strike",
       "heavy_slam"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "cinder_titan",
@@ -2989,7 +3151,8 @@
       "sovereign_form",
       "meteor",
       "crystal_heart"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "obsidian_god",
@@ -3007,7 +3170,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "golem_ascendant",
@@ -3025,7 +3189,8 @@
       "sovereign_form",
       "aegis_eternal",
       "unyielding_core"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "stone_sovereign",
@@ -3043,7 +3208,8 @@
       "sovereign_form",
       "titan_carapace",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "golem_sovereign",
@@ -3061,7 +3227,8 @@
       "sovereign_form",
       "aegis_eternal",
       "unyielding_core"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "hatchling_spider",
@@ -3072,7 +3239,8 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": []
+    "grantSkills": [],
+    "tierReq": 0
   },
   {
     "id": "lesser_weaver",
@@ -3092,7 +3260,8 @@
       "binding_silk",
       "pounce",
       "carapace"
-    ]
+    ],
+    "tierReq": 0
   },
   {
     "id": "venom_weaver",
@@ -3111,7 +3280,8 @@
     "grantSkills": [
       "venom_bite",
       "lethal_venom"
-    ]
+    ],
+    "tierReq": 3
   },
   {
     "id": "shade_stalker",
@@ -3129,7 +3299,8 @@
     "grantSkills": [
       "ambush_strike",
       "stealth"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "greater_weaver",
@@ -3148,7 +3319,8 @@
     "grantSkills": [
       "web_trap",
       "cutting_wire"
-    ]
+    ],
+    "tierReq": 4
   },
   {
     "id": "dread_weaver",
@@ -3166,7 +3338,8 @@
     "grantSkills": [
       "necro_toxin",
       "toxic_cloud"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "scythe_hunter",
@@ -3184,7 +3357,8 @@
     "grantSkills": [
       "ambush_strike",
       "stealth"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "blade_weaver",
@@ -3202,7 +3376,8 @@
     "grantSkills": [
       "reaper_edge",
       "rend"
-    ]
+    ],
+    "tierReq": 6
   },
   {
     "id": "colossal_weaver",
@@ -3221,7 +3396,8 @@
     "grantSkills": [
       "cutting_wire",
       "spatial_web"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "broodmother",
@@ -3240,7 +3416,8 @@
     "grantSkills": [
       "spatial_web",
       "snare_field"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "toxic_horror",
@@ -3259,7 +3436,8 @@
     "grantSkills": [
       "necro_toxin",
       "toxic_cloud"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "plague_weaver",
@@ -3278,7 +3456,8 @@
     "grantSkills": [
       "toxic_cloud",
       "decay_curse"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "phantom_stalker_sp",
@@ -3297,7 +3476,8 @@
     "grantSkills": [
       "stealth",
       "silent_step"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "undying_horror",
@@ -3316,7 +3496,8 @@
     "grantSkills": [
       "undying_husk",
       "regenerative_core"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "carapace_lord_sp",
@@ -3335,7 +3516,8 @@
     "grantSkills": [
       "hardened_shell",
       "adamant_plating"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "blade_sovereign_sp",
@@ -3354,7 +3536,8 @@
     "grantSkills": [
       "rend",
       "maul"
-    ]
+    ],
+    "tierReq": 8
   },
   {
     "id": "web_lord",
@@ -3371,7 +3554,8 @@
       "sovereign_form",
       "assassinate",
       "spatial_web"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "silk_god",
@@ -3388,7 +3572,8 @@
       "sovereign_form",
       "tempest_blade",
       "snare_field"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "brood_sovereign",
@@ -3405,7 +3590,8 @@
       "sovereign_form",
       "assassinate",
       "spatial_web"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "spider_queen",
@@ -3422,7 +3608,8 @@
       "sovereign_form",
       "tempest_blade",
       "snare_field"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "venom_sovereign_sp",
@@ -3440,7 +3627,8 @@
       "sovereign_form",
       "plague_fang",
       "toxic_cloud"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "revenant_horror",
@@ -3457,7 +3645,8 @@
       "sovereign_form",
       "eternal_regen",
       "regenerative_core"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "plague_god_sp",
@@ -3475,7 +3664,8 @@
       "sovereign_form",
       "plague_fang",
       "toxic_cloud"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "abyssal_sovereign",
@@ -3493,7 +3683,8 @@
       "sovereign_form",
       "soul_devour_gaze",
       "decay_curse"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "shadow_sovereign_sp",
@@ -3510,7 +3701,8 @@
       "sovereign_form",
       "assassinate",
       "silent_step"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "nightmare_spider",
@@ -3527,7 +3719,8 @@
       "sovereign_form",
       "nightmare_gaze",
       "phantom_presence"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "eternal_horror",
@@ -3544,7 +3737,8 @@
       "sovereign_form",
       "deathless",
       "undying_husk"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "wraith_sovereign",
@@ -3561,7 +3755,8 @@
       "sovereign_form",
       "eternal_regen",
       "regenerative_core"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "iron_arachnid",
@@ -3579,7 +3774,8 @@
       "sovereign_form",
       "titan_carapace",
       "adamant_plating"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "elder_sovereign",
@@ -3597,7 +3793,8 @@
       "sovereign_form",
       "fortress_body",
       "obsidian_carapace"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "scythe_sovereign",
@@ -3615,7 +3812,8 @@
       "sovereign_form",
       "death_scythe",
       "rend"
-    ]
+    ],
+    "tierReq": 10
   },
   {
     "id": "arachnid_sovereign",
@@ -3633,6 +3831,7 @@
       "sovereign_form",
       "cataclysm_strike",
       "maul"
-    ]
+    ],
+    "tierReq": 10
   }
 ]

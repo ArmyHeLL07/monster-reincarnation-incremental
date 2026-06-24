@@ -3,7 +3,7 @@ import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
 import { generateLoot, lootDisplayName } from './loot';
-import { isHumanoidForm } from './evolution';
+import { isHumanoidForm, availableEvolutions, canEvolve } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
@@ -1102,8 +1102,25 @@ function processStatuses(state: GameState, content: Content, log: Log): void {
   if (total > 0) state.hp = Math.max(0, state.hp - total);
 }
 
-function gainXp(state: GameState, amount: number, log: Log): void {
-  if (state.level >= LEVEL_CAP) return;
+function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boolean {
+  const avail = availableEvolutions(state, content);
+  if (avail.length === 0) return false; // terminal form reached — truly done
+  if (avail.some((f) => canEvolve(state, f))) return false; // evolution already unlocked, player acts
+  if (state.tier >= 10) return false; // T10 with tierReq still blocking = design gap, don't spiral
+  state.tier = Math.min(10, state.tier + 1);
+  state.level = 1;
+  state.xp = 0;
+  state.statPoints += 1;
+  log({ key: 'log.tier_advance', params: { tier: state.tier } });
+  recomputeMaxes(state);
+  return true;
+}
+
+function gainXp(state: GameState, content: Content, amount: number, log: Log): void {
+  if (state.level >= LEVEL_CAP) {
+    tryAutoTierAdvance(state, content, log);
+    return;
+  }
   state.xp += amount;
   while (state.level < LEVEL_CAP && state.xp >= xpToNext(state.level)) {
     state.xp -= xpToNext(state.level);
@@ -1113,12 +1130,15 @@ function gainXp(state: GameState, amount: number, log: Log): void {
   }
   if (state.level >= LEVEL_CAP) {
     state.xp = 0;
-    log({ key: 'log.cap', params: { lv: LEVEL_CAP } });
-    // Human Path: at T0 LV10 without a chosen path, pause combat and prompt the player.
-    if (state.raceId === 'human' && state.tier === 0 && !state.humanPath) {
-      state.pendingHumanPath = true;
-      state.action = 'idle';
-      log({ key: 'log.human_path_choose' });
+    const advanced = tryAutoTierAdvance(state, content, log);
+    if (!advanced) {
+      log({ key: 'log.cap', params: { lv: LEVEL_CAP } });
+      // Human Path: at T0 LV10 without a chosen path, pause combat and prompt the player.
+      if (state.raceId === 'human' && state.tier === 0 && !state.humanPath) {
+        state.pendingHumanPath = true;
+        state.action = 'idle';
+        log({ key: 'log.human_path_choose' });
+      }
     }
   }
   recomputeMaxes(state); // levels nudge max HP/MP/SP up a little (auto growth)
@@ -1243,7 +1263,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });
   // The Labyrinth (easter egg): a spider that survives enough kills awakens the hidden Kumoko path.
   if (state.kills === SECRET_LABYRINTH_KILLS && state.raceId === 'spider') log({ key: 'log.labyrinth_awakening' });
-  gainXp(state, ep * XP_PER_EP, log);
+  gainXp(state, content, ep * XP_PER_EP, log);
   // Passive, util, and eye skills gain XP upon defeating enemies (since they cannot be actively cast).
   for (const slot of state.skills) {
     const def = content.skills.get(slot.id);

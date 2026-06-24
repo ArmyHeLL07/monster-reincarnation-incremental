@@ -1996,15 +1996,27 @@ function evolutionInfoCard(state: GameState): string {
   }
 
   const levelReqMet = state.level >= n.levelReq;
+  const tierReqMet = state.tier >= n.tierReq;
   const levelColor = levelReqMet ? 'var(--venom)' : 'var(--blood)';
+  const tierColor = tierReqMet ? 'var(--venom)' : 'var(--ember)';
   const statusLabel = evoStatusText(n.status);
   const currentLabel = t('ui.evo_current_short');
+
+  const tierReqLine =
+    n.tierReq > 0
+      ? `<span style="color:${tierColor}; font-weight:bold;"> · T${n.tierReq}</span>`
+      : '';
+
+  const lockedReason =
+    !levelReqMet
+      ? t('ui.evo_locked', { lv: n.levelReq })
+      : `${t('ui.evo_locked_tier')} T${n.tierReq}`;
 
   const actionBtn =
     n.status === 'available'
       ? `<button class="evo-action-btn active" data-form="${n.id}" style="min-height:36px; padding:0.4rem 1.2rem;">${t('ui.evolve')}</button>`
       : n.status === 'locked'
-        ? `<button disabled style="min-height:36px; padding:0.4rem 1.2rem; opacity:0.5;">${t('ui.evo_locked', { lv: n.levelReq })}</button>`
+        ? `<button disabled style="min-height:36px; padding:0.4rem 1.2rem; opacity:0.5;">${lockedReason}</button>`
         : '';
 
   return `
@@ -2018,9 +2030,9 @@ function evolutionInfoCard(state: GameState): string {
         ${skillsHtml || `<div class="muted" style="font-size:0.82rem;">${t('ui.empty')}</div>`}
         <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.6rem; margin-top: 0.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
           <div style="font-size: 0.82rem;">
-            ${t('ui.evo_requires')}: 
-            <span style="color:${levelColor}; font-weight:bold;">${t('ui.level')} ${n.levelReq}</span> 
-            <span class="muted">(${currentLabel}: ${state.level})</span>
+            ${t('ui.evo_requires')}:
+            <span style="color:${levelColor}; font-weight:bold;">${t('ui.level')} ${n.levelReq}</span>${tierReqLine}
+            <span class="muted">(${currentLabel}: ${state.level} / T${state.tier})</span>
           </div>
           ${actionBtn}
         </div>

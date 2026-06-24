@@ -112,6 +112,8 @@ export interface EvolutionForm {
   evolvesTo: string[];
   /** Minimum character level required to take this evolution. */
   levelReq: number;
+  /** Minimum state.tier (evolution count) required to unlock this form. Computed from tree depth. */
+  tierReq?: number;
   statBonus?: Partial<Record<StatKey, number>>;
   grantSkills?: string[];
   /** A hidden (easter-egg) form — only revealed/available once its secret condition is met. */

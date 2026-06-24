@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.13.0';
+export const VERSION = '1.14.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.14.0',
+    date: '2026-06-25',
+    tr: [
+      'fix: evrim T10 sistemi — her terminal form artık T10 gerektiriyor; tier bekleme otomatik ilerler',
+      'fix: Lv10 terminal formda ilerleme duruyordu — tierReq kapısı eklendi, tier advance döngüsü çalışıyor',
+      'feat: evrim ağacında tier gereksinimi göstergesi — kilitli formlarda "Gerekli: T{n}" ifadesi',
+      'feat: tier advance log mesajı — yeni tier bildirim metni eklendi (TR/EN/RU)',
+    ],
+    en: [
+      'fix: T10 evolution system — every terminal form now requires T10; tier gap auto-advances without player input',
+      'fix: progression stuck at Lv10 terminal form — tierReq gate added, auto tier-advance loop implemented',
+      'feat: evolution tree shows tier requirement on locked forms',
+      'feat: tier advance log notification added (TR/EN/RU)',
+    ],
+    ru: [
+      'fix: система эволюции T10 — каждая терминальная форма теперь требует T10; тир авансирует автоматически',
+      'fix: прогресс застревал на Lv10 терминальной форме — добавлен barrer tierReq, реализован авто-advance',
+      'feat: дерево эволюций показывает требование тира на заблокированных формах',
+      'feat: добавлено уведомление о повышении тира (TR/EN/RU)',
+    ],
+  },
   {
     v: '1.13.0',
     date: '2026-06-24',

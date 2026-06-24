@@ -26,7 +26,7 @@ export function secretMet(state: GameState, form: EvolutionForm): boolean {
 }
 
 export function canEvolve(state: GameState, form: EvolutionForm): boolean {
-  return secretMet(state, form) && state.level >= form.levelReq;
+  return secretMet(state, form) && state.level >= form.levelReq && state.tier >= (form.tierReq ?? 0);
 }
 
 /** True when the player can carry/equip gear — humanoid race OR a humanoid form (e.g. a slime's Rimuru). */
@@ -89,7 +89,7 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   }
   state.formId = formId;
   if (!state.formHistory.includes(formId)) state.formHistory.push(formId);
-  state.tier += 1; // advance evolution tier; level resets (effective level keeps climbing)
+  state.tier = Math.min(10, state.tier + 1); // advance evolution tier; level resets (caps at T10)
   state.level = 1;
   state.xp = 0;
   recomputeMaxes(state);
@@ -174,6 +174,7 @@ export interface EvoNode {
   status: EvoNodeStatus;
   name: string | null; // null → UI '???' gösterir
   levelReq: number;
+  tierReq: number; // minimum state.tier to unlock this form
   statBonus?: EvolutionForm['statBonus'];
   grantSkills?: string[];
   parents: string[];
@@ -267,6 +268,7 @@ export function evolutionTreeView(state: GameState, content: Content): EvoNode[]
         status,
         name: seen ? f.locKey : null,
         levelReq: f.levelReq,
+        tierReq: f.tierReq ?? 0,
         statBonus: f.statBonus,
         grantSkills: f.grantSkills,
         parents: parents.get(f.id) ?? [],
