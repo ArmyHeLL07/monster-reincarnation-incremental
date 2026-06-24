@@ -270,7 +270,16 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       <header id="topbar" class="topbar"></header>
       <nav id="sidebar" class="sidebar">
         <aside id="ministatus" class="ministatus" aria-label="status"></aside>
-        ${TABS.map((tb) => `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`).join('')}
+        ${TABS.map((tb) => {
+          const anchorMap: Partial<Record<Tab, string>> = {
+            combat: 'guide-combat', map: 'guide-map', skills: 'guide-skills',
+            inventory: 'guide-inventory', lore: 'guide-lore', bestiary: 'guide-lore',
+            stats: 'guide-stats',
+          };
+          const anchor = anchorMap[tb];
+          const helpBtn = anchor ? guideLink(anchor) : '';
+          return `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span>${helpBtn}</button>`;
+        }).join('')}
       </nav>
       <main id="content" class="content"></main>
       <section class="logpanel">
@@ -304,6 +313,18 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       if (body) body.classList.toggle('collapsed', !logOpen[cat]);
       if (toggle) toggle.textContent = logOpen[cat] ? '▲' : '▼';
     });
+  });
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.guide-link');
+    if (!btn) return;
+    const anchor = btn.getAttribute('data-guide');
+    if (!anchor) return;
+    activeTab = 'guide';
+    renderTab();
+    setTimeout(() => {
+      const el = document.querySelector<HTMLElement>(`#${anchor}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
   });
   renderTab();
   live(state);
@@ -478,6 +499,9 @@ function topbarHtml(): string {
     </div>
     <p class="sub" id="tb-sub"></p>
     <div class="bars">
+      <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem;font-size:0.78rem;color:rgba(255,255,255,0.4);">
+        ${t('ui.hp')}/${t('ui.mp')}/${t('ui.sp')} ${guideLink('guide-basics')}
+      </div>
       ${statBarSkel('tb-hp', t('ui.hp'), '#6fae53')}
       ${statBarSkel('tb-mp', t('ui.mp'), '#4f86c2')}
       ${statBarSkel('tb-sp', t('ui.sp'), '#d2a73a')}
@@ -2050,6 +2074,7 @@ function raceSelectScreen(state: GameState): string {
           <div class="race-card-name">${t(r.locKey)}</div>
           <div class="muted">${t('ui.eyes')}: ${eyeCount}</div>
           ${startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
+          ${raceHintPanel(r.id, state.lang ?? 'en')}
         </button>`;
     })
     .join('');
@@ -2262,6 +2287,11 @@ function wireTutorialOverlay(overlay: HTMLElement): void {
       }
     });
   });
+}
+
+/** Kılavuz sekmesinin belirtilen anchor'ına navigate eden küçük ? butonu. */
+function guideLink(anchor: string): string {
+  return `<button class="guide-link" data-guide="${anchor}" title="${t('guide.title')}">?</button>`;
 }
 
 // ---- GUIDE TAB -------------------------------------------------------------

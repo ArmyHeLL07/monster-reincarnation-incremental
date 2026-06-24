@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.10.1';
+export const VERSION = '2.0.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '2.0.0',
+    date: '2026-06-24',
+    tr: [
+      'Tutorial sistemi: 8 adımlı sihirbaz, 10 hint bildirimi, Kılavuz sekmesi',
+      'Race seçim ekranına ırk açıklaması paneli eklendi (güçlü/zayıf yön, gelişim yolu)',
+      '? ikonları: her sekmeye ve topbar\'a Kılavuz navigasyonu',
+      'Ayarlar\'dan tutorial sıfırlanabilir',
+    ],
+    en: [
+      'Tutorial system: 8-step wizard, 10 hint toasts, Guide tab',
+      'Race selection now shows race hint panel (strengths, weaknesses, growth path)',
+      '? icons on tabs and topbar navigate to Guide sections',
+      'Tutorial can be reopened from Settings',
+    ],
+    ru: [
+      'Система туториала: мастер из 8 шагов, 10 подсказок, вкладка Руководство',
+      'Экран выбора расы теперь показывает панель подсказок расы',
+      'Иконки ? на вкладках и панели навигируют в Руководство',
+      'Туториал можно снова открыть из Настроек',
+    ],
+  },
   {
     v: '1.10.1',
     date: '2026-06-24',
