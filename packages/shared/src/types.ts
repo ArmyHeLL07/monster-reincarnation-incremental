@@ -205,7 +205,7 @@ export interface Skill {
   /** Which resistance stat this chain skill boosts (e.g. 'fire_res'). */
   resistType?: string;
   /** Nullification merger group this chain belongs to. */
-  chainGroup?: 'physical' | 'magic' | 'status' | 'soul';
+  chainGroup?: 'physical' | 'magic' | 'status' | 'ultimate';
   /** Max flat % bonus this tier adds to resistance reduction at full level (e.g. 5 = +5%). */
   tierStatBonus?: number;
 }

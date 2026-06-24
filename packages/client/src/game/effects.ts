@@ -86,11 +86,11 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.kind === 'resistance') {
       // Group nullification skills have no resistType — they contribute to merger reductions.
       if (slot.id === 'physical_nullification') {
-        b.physNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+        b.physNullReduction = Math.min(0.85, s * 0.85);
       } else if (slot.id === 'magic_nullification') {
-        b.magicNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+        b.magicNullReduction = Math.min(0.85, s * 0.85);
       } else if (slot.id === 'status_nullification') {
-        b.statusNullReduction = Math.min(0.85, (slot.level / 10) * 0.85);
+        b.statusNullReduction = Math.min(0.85, s * 0.85);
       } else if (slot.id === 'ultimate_nullification') {
         b.ultimateNullLv = slot.level;
       }
