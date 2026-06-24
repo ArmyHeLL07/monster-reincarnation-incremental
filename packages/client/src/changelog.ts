@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '2.0.0';
+export const VERSION = '1.11.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -15,7 +15,7 @@ export interface ChangelogEntry {
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    v: '2.0.0',
+    v: '1.11.0',
     date: '2026-06-24',
     tr: [
       'Tutorial sistemi: 8 adımlı sihirbaz, 10 hint bildirimi, Kılavuz sekmesi',
