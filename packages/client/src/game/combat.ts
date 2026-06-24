@@ -1,4 +1,4 @@
-import type { DamageType, StatKey, Skill, DungeonLayer } from '@mri/shared';
+import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
@@ -1455,6 +1455,10 @@ function skillLevelUp(slot: SkillSlot, state: GameState, content: Content, log: 
       slot.exp = 0;
     }
   }
+  // After any evolution, check if a resistance merger condition is now met.
+  if (def.kind === 'resistance') {
+    checkMergerConditions(state, content, log);
+  }
   checkDerivations(state, content, log);
 }
 
@@ -1595,6 +1599,34 @@ function autoUnlockChainSkill(state: GameState, content: Content, type: DamageTy
   if (owned) return;
   state.skills.push({ id: t1Id, level: 1, exp: 0, tier: 1 });
   log({ key: 'log.chain_unlock', params: { skill: def.locKeyName } });
+}
+
+/** Checks all merger definitions; fires applyMerger for any newly satisfied mergers. */
+function checkMergerConditions(state: GameState, content: Content, log: Log): void {
+  for (const merger of content.resistanceMergers.values()) {
+    // Skip if merger result already owned.
+    if (state.skills.some((s) => s.id === merger.id)) continue;
+    // Check all requirements.
+    const satisfied = merger.requires.every((req) => {
+      const slot = state.skills.find((s) => s.id === req.skillId);
+      if (!slot) return false;
+      if (req.minLevel !== undefined && slot.level < req.minLevel) return false;
+      return true;
+    });
+    if (satisfied) applyMerger(state, content, merger, log);
+  }
+}
+
+/** Removes component skills and spawns the merger skill at Lv1. */
+function applyMerger(state: GameState, content: Content, merger: ResistanceMerger, log: Log): void {
+  // Remove all component skills.
+  const toRemove = new Set(merger.requires.map((r) => r.skillId));
+  state.skills = state.skills.filter((s) => !toRemove.has(s.id));
+  // Add merger skill at Lv1.
+  const mergerDef = content.skills.get(merger.id);
+  if (!mergerDef) return;
+  state.skills.push({ id: merger.id, level: 1, exp: 0 });
+  log({ key: 'log.merger_unlocked', params: { merger: merger.locKey } });
 }
 
 function addResistExp(state: GameState, content: Content, type: DamageType, amount: number, log: Log): void {

@@ -95,6 +95,7 @@
   "log.resist_up": "{res} {lvLabel} {lv} oldu.",
   "log.nullity": "{res} → {nullity} (bağışıklık)!",
   "log.chain_unlock": "Yeni direnç zinciri açıldı: {skill}!",
+  "log.merger_unlocked": "{merger} koşulları karşılandı ve açıldı!",
   "log.no_mp": "MP yetersiz.",
   "log.appraise_name": "Analiz — isim: {enemy}.",
   "log.appraise_type": "  hasar tipi: {type}.",

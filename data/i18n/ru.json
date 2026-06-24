@@ -95,6 +95,7 @@
   "log.resist_up": "{res} достигло {lvLabel} {lv}.",
   "log.nullity": "{res} → {nullity} (иммунитет)!",
   "log.chain_unlock": "Открыта новая цепочка сопротивления: {skill}!",
+  "log.merger_unlocked": "Условия {merger} выполнены — разблокировано!",
   "log.no_mp": "Недостаточно ОМ.",
   "log.appraise_name": "Проанализировано — имя: {enemy}.",
   "log.appraise_type": "  тип урона: {type}.",

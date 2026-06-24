@@ -95,6 +95,7 @@
   "log.resist_up": "{res} reached {lvLabel} {lv}.",
   "log.nullity": "{res} → {nullity} (immunity)!",
   "log.chain_unlock": "New resistance chain unlocked: {skill}!",
+  "log.merger_unlocked": "{merger} conditions met — unlocked!",
   "log.no_mp": "Not enough MP.",
   "log.appraise_name": "Analyzed — name: {enemy}.",
   "log.appraise_type": "  damage type: {type}.",
