@@ -148,7 +148,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
       if (state.hp <= 0) onDeath(state, content, log, b);
     }
   } else {
-    restRound(state, content);
+    restRound(state, content, log);
   }
   growStaminaRegen(state); // training raises SP regen (more in combat / low HP)
   if (state.forageCD > 0) state.forageCD = Math.max(0, state.forageCD - 1000);
@@ -441,7 +441,7 @@ function skillCooldown(def: Skill, state: GameState, lv: number): number {
   return Math.max(1, baseCd - agiReduce - intReduce);
 }
 
-function restRound(state: GameState, content: Content): void {
+function restRound(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   sigRestTick(state);
   const b = aggregateBonuses(state, content);
