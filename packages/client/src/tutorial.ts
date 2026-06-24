@@ -100,7 +100,7 @@ export const HINT_DEFS: HintDef[] = [
     i18nPrefix: 'hint.hunger_warning',
     targetTab: null,
     guideAnchor: 'guide-hunger',
-    trigger: (s) => s.hunger > 0 && s.hunger / 1000 > 0.7,
+    trigger: (s) => s.hunger > 0 && s.hunger / 100 > 0.7,
   },
 ];
 
