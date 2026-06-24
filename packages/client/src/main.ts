@@ -549,6 +549,14 @@ function migrate(s: GameState): void {
   // v10 fields — tutorial sistemi
   s.tutorialStep ??= 0;
   s.seenHints ??= [];
+  // v11 fields — Auto-Search & Auto-Event
+  s.totalSearchCount ??= 0;
+  s.autoSearchUnlocked ??= false;
+  s.autoSearchFood ??= false;
+  s.autoSearchExplore ??= false;
+  s.searchCD ??= 0;
+  s.autoEventDecision ??= false;
+  s.autoEventPuzzleMode ??= 'skip';
 }
 
 /**

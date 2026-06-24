@@ -303,6 +303,22 @@ export interface GameState {
   tutorialStep: number | 'done' | 'skipped';
   /** Gösterilmiş hint ID'leri — aynı hint tekrar çıkmaz. */
   seenHints: string[];
+
+  // --- Auto-Search & Auto-Event -------------------------------------------
+  /** Cumulative manual search count (forage + explore). Never resets on rebirth. */
+  totalSearchCount: number;
+  /** Unlocked when totalSearchCount >= 100. Stays unlocked through rebirth. */
+  autoSearchUnlocked: boolean;
+  /** Auto-forage toggle (requires autoSearchUnlocked). */
+  autoSearchFood: boolean;
+  /** Auto-explore toggle (requires autoSearchUnlocked). */
+  autoSearchExplore: boolean;
+  /** CD in ms before next auto/manual explore (shared with forage's forageCD pattern). */
+  searchCD: number;
+  /** Auto-choose event choices when INT >= 50. */
+  autoEventDecision: boolean;
+  /** Puzzle behaviour when autoEventDecision is on: skip combat | solve (INT >= 100). */
+  autoEventPuzzleMode: 'skip' | 'solve';
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -449,6 +465,13 @@ export function newGame(): GameState {
     pendingForage: null,
     tutorialStep: 0,
     seenHints: [],
+    totalSearchCount: 0,
+    autoSearchUnlocked: false,
+    autoSearchFood: false,
+    autoSearchExplore: false,
+    searchCD: 0,
+    autoEventDecision: false,
+    autoEventPuzzleMode: 'skip',
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
