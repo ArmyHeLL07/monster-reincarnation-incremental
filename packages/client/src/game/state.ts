@@ -319,6 +319,12 @@ export interface GameState {
   autoEventDecision: boolean;
   /** Puzzle behaviour when autoEventDecision is on: skip combat | solve (INT >= 100). */
   autoEventPuzzleMode: 'skip' | 'solve';
+
+  // --- EP Shop ----------------------------------------------------------------
+  /** How many stat points have been bought with EP this life (cost doubles each purchase; resets on rebirth). */
+  epStatsBought: number;
+  /** Active temporary buffs: buffId → real-time expiry timestamp (ms since epoch). */
+  tempBuffs: Record<string, number>;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -472,6 +478,8 @@ export function newGame(): GameState {
     searchCD: 0,
     autoEventDecision: false,
     autoEventPuzzleMode: 'skip',
+    epStatsBought: 0,
+    tempBuffs: {},
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

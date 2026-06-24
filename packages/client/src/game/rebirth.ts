@@ -60,6 +60,8 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.resolvedEvents = []; // …and the fresh map's events re-trigger.
   state.bossRiddle = null; // …nor an open boss riddle…
   state.riddleLimits = {}; // …and riddle attempt-locks reset for the fresh run.
+  state.epStatsBought = 0;  // EP stat purchases reset — fresh life, fresh economy.
+  state.tempBuffs = {};     // Temporary buffs don't survive death.
   // formHistory is reset AFTER applyRace below, using the race's real starting form.
 
   // --- base stats reset (race-specific base applied by applyRace below) -----

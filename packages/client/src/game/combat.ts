@@ -1347,6 +1347,77 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   }
 }
 
+// ---- EP Shop ---------------------------------------------------------------
+
+const EP_STAT_BASE_COST = 100;
+
+/** Cost of the next EP-purchased stat point (doubles with each purchase this life). */
+export function epStatCost(state: GameState): number {
+  return EP_STAT_BASE_COST * Math.pow(2, state.epStatsBought ?? 0);
+}
+
+/** Buy one stat point with EP. Returns true on success. */
+export function buyStatPointEp(state: GameState): boolean {
+  const cost = epStatCost(state);
+  if (state.ep < cost) return false;
+  state.ep -= cost;
+  state.statPoints += 1;
+  state.epStatsBought = (state.epStatsBought ?? 0) + 1;
+  return true;
+}
+
+/** Temporary buff definitions: id → { cost in EP, duration in ms }. */
+export const EP_BUFF_DEFS: Record<string, { cost: number; durationMs: number }> = {
+  slow_hunger: { cost: 100, durationMs: 3_600_000 },  // 1 saat — yarı açlık hızı
+  xp_rush:     { cost: 150, durationMs: 1_800_000 },  // 30 dk — +%50 XP
+  regen_surge: { cost: 80,  durationMs: 1_800_000 },  // 30 dk — +%100 HP rejenerasyon
+};
+
+/** Buy a temporary buff with EP. Stacks duration if already active. */
+export function buyTempBuff(state: GameState, buffId: string): boolean {
+  const def = EP_BUFF_DEFS[buffId];
+  if (!def || state.ep < def.cost) return false;
+  state.ep -= def.cost;
+  state.tempBuffs = state.tempBuffs ?? {};
+  const existing = state.tempBuffs[buffId] ?? 0;
+  state.tempBuffs[buffId] = Math.max(existing, Date.now()) + def.durationMs;
+  return true;
+}
+
+/** Rank-based EP cost multiplier for skill XP injection. */
+const INJECT_RANK_MULT: Record<string, number> = {
+  F: 0.5, E: 1, D: 1.5, C: 2, B: 3, A: 5, S: 8, SS: 12,
+};
+
+/** EP cost to inject one level's worth of XP into a skill at its current level. */
+export function injectSkillXpCost(state: GameState, content: Content, skillId: string): number {
+  const slot = state.skills.find((s) => s.id === skillId);
+  const def = content.skills.get(skillId);
+  if (!slot || !def || slot.level >= (def.lvMax ?? 10)) return Infinity;
+  const rankMult = INJECT_RANK_MULT[def.rank ?? 'E'] ?? 1;
+  return Math.max(30, Math.round((15 + slot.level * 10) * rankMult));
+}
+
+/** Inject one level's worth of XP into a skill, paying EP. Returns true on success. */
+export function injectSkillXp(state: GameState, content: Content, skillId: string, log: Log): boolean {
+  const slot = state.skills.find((s) => s.id === skillId);
+  const def = content.skills.get(skillId);
+  if (!slot || !def) return false;
+  const lvMax = def.lvMax ?? 10;
+  if (slot.level >= lvMax) return false;
+  const cost = injectSkillXpCost(state, content, skillId);
+  if (!Number.isFinite(cost) || state.ep < cost) return false;
+  state.ep -= cost;
+  const xpChunk = 15 + slot.level * 10;
+  slot.exp += xpChunk;
+  while (slot.level < lvMax && slot.exp >= (15 + slot.level * 10)) {
+    slot.exp -= 15 + slot.level * 10;
+    slot.level += 1;
+    log({ key: 'log.skill_up', params: { skill: def.locKeyName, lvLabel: LV_LABEL, lv: slot.level } });
+  }
+  return true;
+}
+
 /** Player tapped "Advance" (manual progression) — move one room forward, abandoning the current foe. */
 export function advanceRoom(state: GameState, content: Content, log: Log): void {
   if (state.action !== 'combat') return;

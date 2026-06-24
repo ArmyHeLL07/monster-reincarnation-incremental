@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -401,6 +401,26 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onBuyStatPointEp: () => {
+      if (buyStatPointEp(state)) {
+        logFn({ key: 'log.buy_stat_ep', params: { pts: state.statPoints } });
+        save(state);
+        render(state);
+      }
+    },
+    onBuyTempBuff: (buffId: string) => {
+      if (buyTempBuff(state, buffId)) {
+        logFn({ key: `log.buff_${buffId}` });
+        save(state);
+        render(state);
+      }
+    },
+    onInjectSkillXp: (skillId: string) => {
+      if (injectSkillXp(state, content, skillId, logFn)) {
+        save(state);
+        render(state);
+      }
+    },
   };
 
   mount(state, content, actions);
@@ -561,6 +581,9 @@ function migrate(s: GameState): void {
   s.searchCD ??= 0;
   s.autoEventDecision ??= false;
   s.autoEventPuzzleMode ??= 'skip';
+  // v12 fields — EP Shop
+  s.epStatsBought ??= 0;
+  s.tempBuffs ??= {};
 }
 
 /**

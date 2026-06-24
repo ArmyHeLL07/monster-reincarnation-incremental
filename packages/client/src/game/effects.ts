@@ -125,6 +125,14 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
   b.lootMult += soulLevel(state, 'greed_soul') * 0.10;    // Greed: more loot/EP
   b.idleMult += soulLevel(state, 'sleepless') * 0.12;     // Sleepless: better offline/idle yield
 
+  // Temporary EP-bought buffs — check expiry in real time.
+  if (state.tempBuffs) {
+    const now = Date.now();
+    if ((state.tempBuffs['slow_hunger'] ?? 0) > now) b.hungerMult *= 0.5;
+    if ((state.tempBuffs['xp_rush'] ?? 0) > now) b.xpMult += 0.5;
+    if ((state.tempBuffs['regen_surge'] ?? 0) > now) b.regenMult += 1.0;
+  }
+
   // Ruler powers (sins/virtues already granted) — full value, no level.
   for (const def of content.ruler) {
     if (!state.ruler.powers.includes(def.id)) continue;

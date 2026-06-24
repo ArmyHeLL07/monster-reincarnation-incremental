@@ -9,7 +9,7 @@ import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type Ev
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
@@ -73,6 +73,9 @@ export interface UiActions {
   onScrapCommon: () => void;
   onRespec: () => void;
   onChooseHumanPath: (pathId: string) => void;
+  onBuyStatPointEp: () => void;
+  onBuyTempBuff: (buffId: string) => void;
+  onInjectSkillXp: (skillId: string) => void;
   onForage: () => void;
   onForageEat: () => void;
   onForageDiscard: () => void;
@@ -1392,8 +1395,12 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   const sacBtn = sacUnlocked
     ? `<button class="sacskill ghost" data-sac="${s.id}">${t('ui.sacrifice')}</button>`
     : `<span class="muted" style="font-size:.78rem">${t('ui.sacrifice_locked')}</span>`;
+  const injectCost = exp && def ? injectSkillXpCost(CURSTATE, CONTENT, s.id) : Infinity;
+  const injectBtn = exp && Number.isFinite(injectCost)
+    ? `<button class="injectxp ghost" data-inject="${s.id}"${CURSTATE.ep >= injectCost ? '' : ' disabled'}>${t('ui.inject_xp')} (${injectCost} EP)</button>`
+    : '';
   const actions = exp
-    ? `<div class="controls" style="margin:.2rem 0 .5rem 1rem"><button class="delskill ghost" data-del="${s.id}">${t('ui.delete_skill')}</button>${sacBtn}</div>`
+    ? `<div class="controls" style="margin:.2rem 0 .5rem 1rem">${injectBtn}<button class="delskill ghost" data-del="${s.id}">${t('ui.delete_skill')}</button>${sacBtn}</div>`
     : '';
   const liveBonus = exp && def && !active ? skillLiveBonus(def, s.level) : '';
   const desc = exp && def ? `<div class="skilldesc">${t(def.locKeyDesc)}${dmgBit}</div>${liveBonus}${acq}${actions}` : '';
@@ -1604,6 +1611,9 @@ function wireSkills(el: HTMLElement): void {
       const id = b.getAttribute('data-del');
       if (id) ACTIONS.onDeleteSkill(id);
     });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.injectxp[data-inject]').forEach((b) => {
+    b.addEventListener('click', () => { const id = b.getAttribute('data-inject'); if (id) ACTIONS.onInjectSkillXp(id); });
   });
   el.querySelectorAll<HTMLButtonElement>('.sacskill[data-sac]').forEach((b) => {
     b.addEventListener('click', () => {
@@ -2084,6 +2094,7 @@ function statsTab(state: GameState): string {
       <ul>${statRows}</ul>
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>
+    ${epShopPanel(state)}
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
@@ -2094,6 +2105,31 @@ function statsTab(state: GameState): string {
     ${rulerPanel(state)}
     ${rebirthPanel(state)}
   `;
+}
+
+/** EP mağazası — stat puanı, geçici buff ve skill XP enjeksiyonu. */
+function epShopPanel(state: GameState): string {
+  const statCost = epStatCost(state);
+  const canStat = state.ep >= statCost;
+  const statBtn = `<button id="buy-stat-ep" class="ghost"${canStat ? '' : ' disabled'}>${t('ui.ep_stat_buy')} (${statCost} EP)</button>`;
+
+  const now = Date.now();
+  const buffRows = Object.entries(EP_BUFF_DEFS).map(([id, def]) => {
+    const active = (state.tempBuffs?.[id] ?? 0) > now;
+    const remaining = active ? Math.ceil(((state.tempBuffs?.[id] ?? 0) - now) / 60000) : 0;
+    const canBuy = state.ep >= def.cost;
+    const label = t(`ui.buff_${id}`);
+    const status = active ? `<span class="muted"> ✓ ${remaining}${t('ui.buff_min')}</span>` : '';
+    return `<div class="row" style="margin:.3rem 0"><span>${label}${status}</span><button class="buff-buy ghost" data-buff="${id}"${canBuy ? '' : ' disabled'}>${def.cost} EP</button></div>`;
+  }).join('');
+
+  return `
+    <section class="panel">
+      <h2>${t('ui.ep_shop')} <span class="muted">(${state.ep} EP)</span></h2>
+      <div style="margin-bottom:.6rem">${statBtn} <span class="muted" style="font-size:.8rem">${t('ui.ep_stat_desc')} #${(state.epStatsBought ?? 0) + 1}</span></div>
+      <h3 style="margin:.5rem 0 .2rem">${t('ui.ep_buffs')}</h3>
+      ${buffRows}
+    </section>`;
 }
 
 /** Full-screen race selector — shown until the player confirms a race on a fresh save. */
@@ -2234,6 +2270,10 @@ function wireStats(el: HTMLElement): void {
     b.addEventListener('click', () => ACTIONS.onAllocStat(b.getAttribute('data-stat') as StatKey));
   });
   el.querySelector<HTMLButtonElement>('#respec')?.addEventListener('click', () => ACTIONS.onRespec());
+  el.querySelector<HTMLButtonElement>('#buy-stat-ep')?.addEventListener('click', () => ACTIONS.onBuyStatPointEp());
+  el.querySelectorAll<HTMLButtonElement>('.buff-buy[data-buff]').forEach((b) => {
+    b.addEventListener('click', () => { const id = b.getAttribute('data-buff'); if (id) ACTIONS.onBuyTempBuff(id); });
+  });
   el.querySelectorAll<HTMLElement>('.evo-node[data-form-id]').forEach((node) => {
     node.addEventListener('click', () => {
       const id = node.getAttribute('data-form-id');
