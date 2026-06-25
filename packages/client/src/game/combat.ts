@@ -33,6 +33,7 @@ const REST_SP_REGEN = 5;
 const REST_MP_REGEN = 2;
 const DEEP_READ_MP_COST = 5;
 const HUNGER_RISE_COMBAT = 0.7;
+const HUNGER_RISE_REST = HUNGER_RISE_COMBAT * 0.4; // resting still burns calories, just slower
 const DEEP_READ_XP = 5;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
@@ -505,6 +506,13 @@ function restRound(state: GameState, content: Content, log: Log): void {
   state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round((REST_MP_REGEN + b.mpRegen) * REST_MULT)));
   const hp = (passiveHpRegen(state, content) * (1 + (b.regenMult - 1)) + 1) * REST_MULT;
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
+
+  // Time still passes while resting — hunger drains at 40% of combat rate.
+  state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_REST * b.hungerMult);
+  // Starvation still bites during rest (just not enough food).
+  if (hungerStage(state) >= 3) {
+    state.hp = Math.max(0, state.hp - 1);
+  }
 
   // Auto-search (forage + explore) — SP yeterliyse tetikle; soul upgrade kapıyı erken açar
   const autoSearchLv = soulLevel(state, 'auto_search');

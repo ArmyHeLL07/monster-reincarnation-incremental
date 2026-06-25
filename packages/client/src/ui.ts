@@ -1196,7 +1196,8 @@ function combatTab(state: GameState): string {
       : '';
   const deepBtn = ownsSkill(state, 'insight') ? `<button id="deepread">${t('ui.deepread')}</button>` : '';
   const courtBtn = loreUnlocked(state, 'brink') ? `<button id="courtdeath" class="ghost">${t('ui.court_death')}</button>` : '';
-  const searched = state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
+  // In rest mode the player has time to comb the room repeatedly; lastSearchPos only blocks in combat.
+  const searched = state.action !== 'rest' && state.lastSearchPos === `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
   const searchBtn = state.autoSearchExplore
     ? exploreAutoToggle(state)
     : `<button id="search"${searched ? ' disabled' : ''}>${t('ui.search')}</button>${exploreAutoToggle(state)}`;
