@@ -126,6 +126,7 @@ let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 let selectedEvoNodeId: string | null = null;
 let selectedItemUid: string | null = null;
+let selectedBestiaryId: string | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot' | 'lore';
 const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [], lore: [] };
 /** Lore log is persistent — never cleared (player reads books there). */
@@ -610,6 +611,7 @@ function renderTab(): void {
       break;
     case 'bestiary':
       el.innerHTML = bestiaryTab(CURSTATE);
+      wireBestiary(el);
       break;
     case 'stats':
       el.innerHTML = statsTab(CURSTATE);
@@ -965,38 +967,166 @@ function raceSigPanel(state: GameState): string {
 
 const BEHAVIOR_KEYS = ['regen', 'doubleStrike', 'enrage', 'armorPct', 'lifesteal', 'statusBoost'] as const;
 
+/** Turkish tactical flavor text dictionary — keyed by enemy id. */
+const BESTIARY_FLAVOR: Record<string, string> = {
+  elroe_frog: 'Alt katmanların en basit canlısı. Yeni uyanan örümcekler için kolay bir atıştırmalık.',
+  elroe_geafrog: 'Yavaş hareket eder ama vücudu zehirlidir. Saldırdıkça zehir direnci kazanmanıza yardımcı olur.',
+  small_lesser_taratect: 'Küçük ama seri bir örümcek. Zindanın erken katmanlarında en sık rastlanan yırtıcı.',
+  small_poison_taratect: 'Yapışkan ipekleri ile avını felç eder. Zehir dayanıklılığı kasmanıza yardımcı olur.',
+  elroe_basilisk: 'Sert kabuklu bir yaratık. Fiziksel hasara karşı dayanıklıdır, taşlaştırma bakışına dikkat edin.',
+  elroe_pebbluck: 'Kalın kabuğuyla zindanın en savungan yaratığı. Ezici vuruşlar işe yarayabilir.',
+  lesser_taratect: 'Olgunlaşmış bir örümcek. İpek örmekten boyuna yenilenme yeteneği kazanmış, uzun süren dövüşlere hazırlıklı olun.',
+  elroe_gunerush: 'Orta katmanın sıcak lavlarında yaşar. Ateş hasarı verir, alev büyüleri sezinlemenizi sağlar.',
+  elroe_gunerave: 'Çift vuruşla saldıran sinsi bir ateş yılanı. Hızını hafife almayın.',
+  elroe_gunesohka: 'Güçlü alev nefesiyle geniş alan hasarı verir. Ateş direnci olmadan yaklaşmak intihardır.',
+  elroe_guneseven: 'Ateş yılanlarının en güçlüsü. Kızıl alevleri her şeyi küle çevirir.',
+  magma_newt: 'Lavda yaşayan küçük semender. Ateş hasarı verir, alev büyüleri sezinlemenizi sağlar.',
+  elroe_cohgou: 'Fiziksel güce dayanan bir brawler. Yumruk saldırılarıyla bilinir.',
+  flame_jaw: 'Orta katmanın hakimi. Saf alevden oluşur, yüksek hasar verir. Alt seviye patronu olarak kapıyı korur.',
+  finjicote: 'Delici saldırılarıyla zırhı bile parçalar. Savunmanız ne kadar yüksek olursa olsun dikkatli olun.',
+  greater_taratect: 'Zindanın en tehlikeli örümceği. Nekrotoksin ve kesici teller ile donatılmış ölümcül bir avcı.',
+  shade_wraith: 'Ruhsal hasar veren hayalet. Fiziksel saldırılar etkisizdir, büyü veya ruh gücü kullanın.',
+  venom_brute: 'Zehirli ve güçlü bir yaratık. Hem zehirler hem de ezer.',
+  abyss_stalker: 'Abisin en derinlerinde gizlenen, taş bakışıyla kurbanlarını donduran örümcek.',
+  cave_horror: 'Karanlıktan beslenen korku yaratığı. Korku hasarı verir, moral kırıcıdır.',
+  earth_dragon_araba: 'Devasa toprak ejderhası. Yer sarsıcı saldırılarıyla bilinir, muazzam fiziksel dayanıklılığa sahiptir.',
+  earth_dragon_kaguna: 'Kıdemli toprak ejderhası. Yıkıcı darbelerinden kaçınmak neredeyse imkansızdır.',
+  earth_dragon_rendill: 'Ateş nefesli toprak ejderhası. Hem fiziksel hem ateş hasarı verir, en tehlikeli ejderha türü.',
+  queen_taratect: 'Örümcek kraliçesi. Büyüsel ağlar örer ve mekansal saldırılar yapar. Zindanın en güçlü örümceği.',
+  abyss_horror: 'Abisin karanlık derinliklerinden gelen dehşet. Ruh hasarıyla savaşır.',
+  system_guardian: 'Zindanın nihai bekçisi. Devasa gücüyle Rebirth kapısını kilitli tutar. Tüm hazırlıklarınızı tamamlayın.',
+};
+
 function bestiaryTab(state: GameState): string {
   const enemies = [...CONTENT.enemies.values()];
-  const tier = appraisalTier(state);
+  const appTier = appraisalTier(state);
   const killed = state.killedEnemies ?? {};
   const known = enemies.filter((e) => (killed[e.id] ?? 0) > 0).length;
 
-  const cards = enemies.map((e) => {
+  // Auto-select first discovered enemy if nothing selected
+  if (!selectedBestiaryId) {
+    const first = enemies.find((e) => (killed[e.id] ?? 0) > 0);
+    if (first) selectedBestiaryId = first.id;
+  }
+
+  // --- Left list ---
+  const listItems = enemies.map((e) => {
     const n = killed[e.id] ?? 0;
     if (n === 0) {
-      return `<div class="bestiary-card unknown"><div class="bc-icon">?</div><div class="bc-name">${t('ui.bestiary_unknown')}</div></div>`;
+      return `<div class="bestiary-list-item locked"><span class="bc-icon">🔒</span><span>${t('ui.bestiary_unknown')}</span></div>`;
     }
-    const reveal = n >= 5 || tier >= 1;
-    const behTags = reveal && e.behavior
-      ? BEHAVIOR_KEYS.filter((k) => (e.behavior as Record<string, unknown>)[k] !== undefined)
-          .map((k) => `<span class="beh-tag">${t(`ui.beh_${k}`)}</span>`)
-          .join('')
-      : '';
+    const active = selectedBestiaryId === e.id;
     const iconHtml = e.image
-      ? `<div class="bc-icon"><img class="bc-img" src="${assetUrl(e.image)}" alt="" loading="lazy" /></div>`
-      : `<div class="bc-icon">${e.icon ?? '🐾'}</div>`;
-    return `<div class="bestiary-card">
-      ${iconHtml}
-      <div class="bc-name">${t(e.locKey)}</div>
-      <div class="bc-meta">${t(`dmgtype.${e.damageType}`)} · EP ${e.ep} · ×${n}</div>
-      ${behTags ? `<div class="bc-tags">${behTags}</div>` : ''}
+      ? `<img class="bc-img" src="${assetUrl(e.image)}" alt="" loading="lazy" />`
+      : `<span class="bc-icon">${e.icon ?? '🐾'}</span>`;
+    return `<div class="bestiary-list-item${active ? ' active' : ''}" data-bestiary="${e.id}">
+      ${iconHtml}<span>💀 ${t(e.locKey)} (${n})</span>
     </div>`;
   }).join('');
 
+  // --- Right detail pane ---
+  const detailHtml = bestiaryDetailPane(state, appTier);
+
   return `<section class="panel">
     <h2>${t('tab.bestiary')} <span class="muted">(${known}/${enemies.length})</span></h2>
-    <div class="bestiary-grid">${cards}</div>
+    <div class="bestiary-cols">
+      <div class="bestiary-list">${listItems}</div>
+      <div class="bestiary-detail-pane">${detailHtml}</div>
+    </div>
   </section>`;
+}
+
+/** Render the detail pane for the currently selected bestiary monster. */
+function bestiaryDetailPane(state: GameState, appTier: number): string {
+  if (!selectedBestiaryId) {
+    return `<div style="text-align:center;color:var(--ash);padding:3rem 1rem;">📖 Soldaki listeden bir canavar seçerek analiz raporunu inceleyin.</div>`;
+  }
+  const enemy = CONTENT.enemies.get(selectedBestiaryId);
+  if (!enemy) {
+    return `<div style="text-align:center;color:var(--blood);padding:3rem 1rem;">Hata: Canavar tanımı bulunamadı.</div>`;
+  }
+  const kills = (state.killedEnemies ?? {})[enemy.id] ?? 0;
+  if (kills === 0) {
+    return `<div style="text-align:center;color:var(--ember);padding:3rem 1rem;">🔒 <b>Keşfedilmemiş Yaratık</b><br><br>Bu yaratığı henüz avlamadın.</div>`;
+  }
+
+  // Tier-gated stat reveal (matches Godot: T2 HP/Race, T5 ATK/DEF, T8 Element/Weakness, T12 EXP/Food/Skill, T20+ Flavor)
+  const q = () => `<span style="color:var(--ash)">???</span>`;
+  const c = (color: string, v: string | number) => `<span style="color:${color}">${v}</span>`;
+
+  const killsStr = c('#5fa8d0', kills);
+  const hpStr = appTier >= 2 ? c('#bb4140', enemy.hp) : q();
+  const raceStr = appTier >= 2
+    ? c('#e0902f', enemy.race ? t(`race.${enemy.race}.name`) : '—')
+    : q();
+  const atkStr = appTier >= 5 ? c('#e87060', enemy.attack) : q();
+  const defStr = appTier >= 5 ? c('#d2a73a', enemy.behavior?.armorPct ? `${Math.round(enemy.behavior.armorPct * 100)}%` : '0') : q();
+  const dmgTypeStr = appTier >= 8 ? c('#b07ae0', t(`dmgtype.${enemy.damageType}`)) : q();
+  const weak = weaknessOf(CONTENT, enemy.damageType);
+  const weakStr = appTier >= 8 ? c('#8ab23f', weak ? t(`dmgtype.${weak}`) : '—') : q();
+  const expStr = appTier >= 12 ? c('#d2a73a', `+${enemy.ep} EP`) : q();
+  const foodStr = appTier >= 12 ? c('#8ab23f', `-${enemy.satiety} Açlık`) : q();
+
+  let grantSkillStr = q();
+  if (appTier >= 12) {
+    const skills = enemy.grantSkills ?? [];
+    if (skills.length === 0) {
+      grantSkillStr = `<span style="color:var(--ash)">Yok</span>`;
+    } else {
+      grantSkillStr = skills.map((sid) => {
+        const sDef = CONTENT.skills.get(sid);
+        return sDef ? `<span style="color:#d2a73a">${t(sDef.locKeyName)}</span>` : sid;
+      }).join(', ');
+    }
+  }
+
+  // Behavior tags
+  const behTags = enemy.behavior
+    ? BEHAVIOR_KEYS.filter((k) => (enemy.behavior as Record<string, unknown>)[k] !== undefined)
+        .map((k) => `<span class="beh-tag">${t(`ui.beh_${k}`)}</span>`)
+        .join(' ')
+    : '';
+
+  // Portrait
+  const portrait = enemy.image
+    ? `<div style="text-align:center;margin-bottom:0.6rem;"><img src="${assetUrl(enemy.image)}" alt="" style="width:80px;height:80px;object-fit:contain;border:2px solid var(--chitin);border-radius:12px;background:radial-gradient(circle at 50% 38%, #23202e, #0e0c14);" /></div>`
+    : `<div style="text-align:center;font-size:2.4rem;margin-bottom:0.4rem;">${enemy.icon ?? '🐾'}</div>`;
+
+  // Flavor text (T20+ or hint)
+  const flavorText = appTier >= 20
+    ? BESTIARY_FLAVOR[enemy.id] ?? 'Zindanda karşılaşılan tehlikeli bir yaratık.'
+    : null;
+  const flavorHtml = flavorText
+    ? `<div class="bestiary-flavor">📜 ${flavorText}</div>`
+    : `<div style="font-size:0.78rem;color:var(--ash);margin-top:0.5rem;">🔮 Göz yeteneğini geliştirerek (Insight Lv10+ / All-Sight) bu yaratığın detaylı taktik analizini açabilirsin.</div>`;
+
+  return `
+    ${portrait}
+    <h3>📖 ${t(enemy.locKey)}</h3>
+    ${behTags ? `<div style="text-align:center;margin-bottom:0.5rem;">${behTags}</div>` : ''}
+    <table class="bestiary-detail-table">
+      <tr><td>Avlanma Sayısı:</td><td>${killsStr}</td></tr>
+      <tr><td>Irk Grubu:</td><td>${raceStr}</td></tr>
+      <tr><td>Maksimum HP:</td><td>${hpStr}</td></tr>
+      <tr><td>Saldırı Gücü (ATK):</td><td>${atkStr}</td></tr>
+      <tr><td>Savunma (DEF):</td><td>${defStr}</td></tr>
+      <tr><td>Saldırı Tipi:</td><td>${dmgTypeStr}</td></tr>
+      <tr><td>Zayıf Noktası:</td><td>${weakStr}</td></tr>
+      <tr><td>EXP Getirisi:</td><td>${expStr}</td></tr>
+      <tr><td>Besin Değeri:</td><td>${foodStr}</td></tr>
+      <tr><td>Eşsiz Yetenek:</td><td>${grantSkillStr}</td></tr>
+    </table>
+    ${flavorHtml}
+  `;
+}
+
+function wireBestiary(el: HTMLElement): void {
+  el.querySelectorAll<HTMLElement>('.bestiary-list-item[data-bestiary]').forEach((b) => {
+    b.addEventListener('click', () => {
+      selectedBestiaryId = b.getAttribute('data-bestiary');
+      renderTab();
+    });
+  });
 }
 
 function foragePanel(state: GameState): string {

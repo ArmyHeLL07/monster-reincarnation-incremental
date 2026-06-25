@@ -606,14 +606,36 @@
       .race-card-name { font-family: var(--disp); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone); font-weight: 600; text-shadow: 0 1px 3px #000; }
       .race-card .muted { text-shadow: 0 1px 3px #000; }
       .racepick { flex: 1 1 auto; }
-      /* Bestiary grid */
-      .bestiary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
-      .bestiary-card { background: rgba(255,255,255,0.04); border: 1px solid var(--bone-dim, #2a2520); border-radius: 8px; padding: 0.5rem 0.4rem; text-align: center; font-size: 0.78rem; }
-      .bestiary-card.unknown { opacity: 0.35; }
-      .bc-icon { font-size: 1.4rem; line-height: 1.2; }
-      .bc-name { font-weight: 600; margin: 0.2rem 0 0.1rem; color: var(--bone); font-size: 0.8rem; word-break: break-word; }
-      .bc-meta { color: var(--ash); font-size: 0.72rem; }
-      .bc-tags { display: flex; flex-wrap: wrap; gap: 0.2rem; justify-content: center; margin-top: 0.3rem; }
+      /* Bestiary cols & split layout */
+      .bestiary-cols { display: grid; gap: 0.6rem; grid-template-columns: 240px 1fr; align-items: start; }
+      @media (max-width: 760px) { .bestiary-cols { grid-template-columns: 1fr; } }
+      .bestiary-list { max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.3rem; padding-right: 0.2rem; }
+      .bestiary-list-item {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem;
+        background: #191522; border: 1px solid var(--chitin); border-radius: 8px;
+        color: var(--ash); cursor: pointer; text-align: left; width: 100%; transition: background 0.15s, border-color 0.15s;
+        font-family: var(--body); font-size: 0.85rem;
+      }
+      .bestiary-list-item:hover { border-color: var(--venom-dim); color: var(--bone); }
+      .bestiary-list-item.active { background: rgba(138, 178, 63, 0.08); border-color: var(--venom); color: var(--venom); font-weight: 600; }
+      .bestiary-list-item.locked { opacity: 0.5; cursor: default; }
+      .bestiary-list-item.locked:hover { border-color: var(--chitin); color: var(--ash); }
+      .bestiary-list-item .bc-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+      .bestiary-list-item .bc-img { width: 20px; height: 20px; object-fit: contain; }
+      .bestiary-detail-pane {
+        background: rgba(255,255,255,0.02); border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.8rem 1rem;
+        min-height: 350px;
+      }
+      .bestiary-detail-pane h3 { font-family: var(--disp); font-size: 1.15rem; color: var(--ember); margin: 0 0 0.5rem; text-align: center; }
+      .bestiary-detail-table { width: 100%; border-collapse: collapse; margin-top: 0.6rem; margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .bestiary-detail-table td { padding: 0.35rem 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+      .bestiary-detail-table td:first-child { font-weight: 600; color: var(--ash); width: 45%; }
+      .bestiary-detail-table td:last-child { font-family: var(--mono); text-align: right; }
+      .bestiary-flavor {
+        font-style: italic; font-size: 0.82rem; color: var(--bone); opacity: 0.85; line-height: 1.4;
+        background: rgba(0,0,0,0.25); border-left: 2px solid var(--venom-dim); padding: 0.5rem 0.6rem; border-radius: 4px;
+        margin-top: 0.5rem;
+      }
       .beh-tag { background: rgba(138,178,63,0.15); border: 1px solid rgba(138,178,63,0.3); border-radius: 4px; padding: 0.1rem 0.3rem; font-size: 0.68rem; color: var(--venom); }
       /* Enemy panel — fixed minimum height so layout doesn't jump when a foe dies/spawns. */
       .enemy-panel { min-height: 130px; }
