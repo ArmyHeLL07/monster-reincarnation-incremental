@@ -2287,7 +2287,7 @@ function raceSelectScreen(state: GameState): string {
     .join('');
   const curRace = CONTENT.races.get(state.raceId);
   return `
-    <section class="panel" style="max-width:560px;margin:2rem auto">
+    <section class="panel" style="max-width:min(960px,100%);margin:2rem auto">
       <h2>${t('ui.race_select')}</h2>
       <p class="muted">${t('ui.race_select_info')}</p>
       <div class="race-grid">${raceCards}</div>
