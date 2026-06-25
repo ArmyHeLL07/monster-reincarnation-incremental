@@ -833,10 +833,10 @@ function restStage(state: GameState): string {
   } else {
     figure = headSvg(state);
   }
-  const hp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">HP</span>${bar(state.hp, state.maxHp, '#c0392b')}<span class="muted" style="font-size:0.78rem">${Math.round(state.hp)}/${state.maxHp}</span></div>`;
-  const sp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">SP</span>${bar(state.sp, state.maxSp, '#2980b9')}<span class="muted" style="font-size:0.78rem">${Math.round(state.sp)}/${state.maxSp}</span></div>`;
-  const mp = state.maxMp > 0 ? `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">MP</span>${bar(state.mp, state.maxMp, '#8e44ad')}<span class="muted" style="font-size:0.78rem">${Math.round(state.mp)}/${state.maxMp}</span></div>` : '';
-  return `<div class="rest-stage ${kind}"><span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span><div class="rest-bars">${hp}${sp}${mp}</div></div>`;
+  const hp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">HP</span>${bar(state.hp, state.maxHp, '#6fae53')}<span class="muted" style="font-size:0.78rem">${Math.round(state.hp)}/${state.maxHp}</span></div>`;
+  const mp = state.maxMp > 0 ? `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">MP</span>${bar(state.mp, state.maxMp, '#4f86c2')}<span class="muted" style="font-size:0.78rem">${Math.round(state.mp)}/${state.maxMp}</span></div>` : '';
+  const sp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">SP</span>${bar(state.sp, state.maxSp, '#d2a73a')}<span class="muted" style="font-size:0.78rem">${Math.round(state.sp)}/${state.maxSp}</span></div>`;
+  return `<div class="rest-stage ${kind}"><span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span><div class="rest-bars">${hp}${mp}${sp}</div></div>`;
 }
 
 function enemyView(state: GameState): string {
