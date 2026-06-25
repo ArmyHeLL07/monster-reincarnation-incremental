@@ -367,6 +367,11 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onToggleModifierFreeRooms: () => {
+      state.modifierFreeRooms = !state.modifierFreeRooms;
+      save(state);
+      render(state);
+    },
     onSetAutosave: (m) => {
       state.autosaveMin = m;
       save(state);

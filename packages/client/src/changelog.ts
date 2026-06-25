@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.16.0';
+export const VERSION = '1.17.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,26 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.17.0',
+    date: '2026-06-25',
+    tr: [
+      'feat: Save migration — yeni save şeması; eski kayıtlar yeni alanlarla birleşir, eksik alanlar sıfırlanmaz',
+      'feat: Status reaksiyonları — 2. status eklenince patlama: Toksik Alev (zehir+ateş), Dondurulmuş Devre (buz+yıldırım), Buhar Patlaması (ateş+buz sersemlik), Aşındırıcı Yanık (asit+ateş)',
+      'feat: Oda modifier çeşitliliği — her oda bağımsız hash ile modifiye edilir; katman havuzları: L1 Zehir Bulutu/Kök Ağı, L2 Kor Yağmuru/Kavurucu Hava, L3 Ağır Yer Çekimi/Yankı Odası, L4 Ruh Çekilmesi/Yokluk Baskısı; ayarlardan modifiyersiz şans açılabilir (%10 + LUCK×0.5%)',
+      'feat: Taboo rank ağacı — Rank 1 +5 INT, Rank 2 Forbidden Knowledge, Rank 3 +5 STR/AGI, Rank 4 oto-appraise, Rank 5 +10 INT/WIS +5 tüm direnç',
+      'feat: Gluttony (Oburluk) — dolu iken ye → %1 (%10 Taboo varsa) Gluttony açma şansı; aktifken: dolu=%15 hasar/%20 regen/%15 ganimet, aç=−%20 hasar/−%15 kaçınma',
+      'balance: Kin kill günah 1→3, boss kin 5→15; dolu yeme 2 günah (Taboo varsa 10)',
+    ],
+    en: [
+      'feat: Save migration — new save schema merges with newGame() defaults; missing fields recover automatically',
+      'feat: Status reactions — second status triggers instant burst: Toxic Blaze (poison+fire), Frozen Circuit (frost+lightning), Steam Burst (fire+frost stun), Corrosive Burn (acid+fire)',
+      'feat: Per-room modifiers — each room independently randomised via hash; layer pools: L1 Toxin Cloud/Root Web, L2 Ember Rain/Scorched Air, L3 Heavy Gravity/Echo Chamber, L4 Soul Ebb/Void Pressure; modifier-free room chance toggle in settings (10% + LUCK×0.5%)',
+      'feat: Taboo rank tree — Rank 1 +5 INT, Rank 2 Forbidden Knowledge, Rank 3 +5 STR/AGI, Rank 4 auto-appraise, Rank 5 +10 INT/WIS +5 all resistances',
+      'feat: Gluttony — eat while full → 1% (10% if Taboo) to awaken; active: full=+15% dmg/+20% regen/+15% loot, hungry=−20% dmg/−15% dodge',
+      'balance: Kin kill sin 1→3, boss kin 5→15; eating while full 2 sin (10 if Taboo active)',
+    ],
+  },
   {
     v: '1.16.0',
     date: '2026-06-25',

@@ -7,8 +7,47 @@ type Log = (e: LogEvent) => void;
 
 /** Taboo rises one rank per this much accumulated Sin (GDD §C — the dark-path key). */
 const TABOO_PER_SIN = 300;
-/** Taboo rank that unlocks Forbidden Knowledge (ruler authority). */
-const TABOO_FORBIDDEN_RANK = 2;
+
+/** One-time effects unlocked at each Taboo rank. */
+const TABOO_RANK_EFFECTS: Record<number, (state: GameState, log: Log) => void> = {
+  1: (state, log) => {
+    // Dark Whispers: raw power from forbidden insight
+    state.stats.INT += 5;
+    recomputeMaxes(state);
+    log({ key: 'log.taboo_rank1' });
+  },
+  2: (state, log) => {
+    // Forbidden Knowledge: the System's secrets become readable
+    if (!state.skills.some((s) => s.id === 'forbidden_knowledge')) {
+      state.skills.push({ id: 'forbidden_knowledge', level: 1, exp: 0 });
+    }
+    log({ key: 'log.taboo_authority' });
+  },
+  3: (state, log) => {
+    // Predation Drive: the taste of kin's blood refines instinct
+    state.stats.STR += 5;
+    state.stats.AGI += 5;
+    recomputeMaxes(state);
+    log({ key: 'log.taboo_rank3' });
+  },
+  4: (state, log) => {
+    // Soul Sight: can peer into enemies' essence — auto-appraise
+    state.autoAppraise = true;
+    log({ key: 'log.taboo_rank4' });
+  },
+  5: (state, log) => {
+    // Taboo Authority: the System acknowledges the transgressor
+    for (const r of state.resistances) {
+      r.level = Math.min(r.level + 5, 18);
+    }
+    state.stats.INT += 10;
+    state.stats.WIS += 10;
+    recomputeMaxes(state);
+    log({ key: 'log.taboo_rank5' });
+  },
+};
+
+const MAX_TABOO_RANK = Object.keys(TABOO_RANK_EFFECTS).length;
 
 /** Grant any ruler powers whose threshold the given pole has now crossed. */
 function grantCrossed(state: GameState, content: Content, log: Log): void {
@@ -30,14 +69,11 @@ export function gainSin(state: GameState, content: Content, amount: number, log:
   if (amount <= 0) return;
   state.ruler.sin += amount;
   grantCrossed(state, content, log);
-  const rank = Math.floor(state.ruler.sin / TABOO_PER_SIN);
+  const rank = Math.min(Math.floor(state.ruler.sin / TABOO_PER_SIN), MAX_TABOO_RANK);
   if (rank > state.ruler.taboo) {
     state.ruler.taboo = rank;
     log({ key: 'log.taboo_rise', params: { rank } });
-    if (rank >= TABOO_FORBIDDEN_RANK && !state.skills.some((s) => s.id === 'forbidden_knowledge')) {
-      state.skills.push({ id: 'forbidden_knowledge', level: 1, exp: 0 });
-      log({ key: 'log.taboo_authority' });
-    }
+    TABOO_RANK_EFFECTS[rank]?.(state, log);
   }
 }
 

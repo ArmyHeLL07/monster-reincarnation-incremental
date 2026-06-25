@@ -176,6 +176,8 @@ export interface GameState {
   difficulty: Difficulty;
   /** Hell-only: death is a true wipe. */
   permadeath: boolean;
+  /** Settings toggle: allow modifier-free rooms (base 10% + LUCK×0.5% chance). Default off. */
+  modifierFreeRooms: boolean;
   /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
   hellClears: string[];
 
@@ -309,6 +311,8 @@ export interface GameState {
   totalSearchCount: number;
   /** Unlocked when totalSearchCount >= 100. Stays unlocked through rebirth. */
   autoSearchUnlocked: boolean;
+  /** Taboo rank 4 unlock: enemies are auto-appraised on encounter. */
+  autoAppraise: boolean;
   /** Auto-forage toggle (requires autoSearchUnlocked). */
   autoSearchFood: boolean;
   /** Auto-explore toggle (requires autoSearchUnlocked). */
@@ -325,6 +329,10 @@ export interface GameState {
   epStatsBought: number;
   /** Active temporary buffs: buffId → real-time expiry timestamp (ms since epoch). */
   tempBuffs: Record<string, number>;
+
+  // --- Save versiyonu -------------------------------------------------------
+  /** Incremented when the save schema changes; used by migrate() to patch old saves. */
+  saveVersion: number;
 
   // --- İstatistik paneli ---------------------------------------------------
   /** Non-idle ticks elapsed ≈ active seconds played. Never resets on rebirth. */
@@ -432,6 +440,7 @@ export function newGame(): GameState {
     lastSeen: Date.now(),
     difficulty: 'normal',
     permadeath: false,
+    modifierFreeRooms: false,
     hellClears: [],
     rebirthCount: 0,
     unlocks: [],
@@ -481,6 +490,7 @@ export function newGame(): GameState {
     seenHints: [],
     totalSearchCount: 0,
     autoSearchUnlocked: false,
+    autoAppraise: false,
     autoSearchFood: false,
     autoSearchExplore: false,
     searchCD: 0,
@@ -488,6 +498,7 @@ export function newGame(): GameState {
     autoEventPuzzleMode: 'skip',
     epStatsBought: 0,
     tempBuffs: {},
+    saveVersion: 1,
     totalTicks: 0,
     deepestLayer: 1,
     deepestFloor: 1,

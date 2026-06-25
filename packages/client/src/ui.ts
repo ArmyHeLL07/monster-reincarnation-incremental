@@ -9,7 +9,7 @@ import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type Ev
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
@@ -63,6 +63,7 @@ export interface UiActions {
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
+  onToggleModifierFreeRooms: () => void;
   onSelectRace: (raceId: string) => void;
   onSetRoom: (floor: number, room: number) => void;
   onEquipItem: (uid: string) => void;
@@ -1213,12 +1214,17 @@ function combatTab(state: GameState): string {
           : `<b style="color:var(--ember)">${t(`dmgtype.${s.type}`)}</b> ${s.ticksLeft}s (-${s.dmgPerTick})`)
         .join(' · ')}</p>`
     : '';
+  const roomMod = currentRoomModifier(state, CONTENT);
+  const modifierBadge = roomMod
+    ? `<p class="muted" style="margin:.4rem 0 0;color:var(--ember)">🌫 ${t('ui.room_modifier')}: <b>${t(roomMod.locKey + '.name')}</b> — ${t(roomMod.locKey + '.desc')}</p>`
+    : (state.modifierFreeRooms ? `<p class="muted" style="margin:.4rem 0 0;color:#4caf50">✨ ${t('ui.room_modifier_free')}</p>` : '');
   const sigPanel = raceSigPanel(state);
   return `
     <section class="panel enemy-panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
       ${statusLine}
+      ${modifierBadge}
     </section>
     ${sigPanel ? `<section class="panel sig-panel"><h2>${t('sig.title')}</h2>${sigPanel}</section>` : ''}
     <div class="controls">
@@ -2633,6 +2639,12 @@ function settingsTab(state: GameState): string {
       <div class="controls">${autosave}</div>
     </section>
     <section class="panel">
+      <div class="row"><span>${t('ui.modifier_free_toggle')}</span>
+        <button id="modifier-free-toggle" class="${state.modifierFreeRooms ? 'actbtn active' : 'ghost'}">${state.modifierFreeRooms ? t('ui.on') : t('ui.off')}</button>
+      </div>
+      <p class="muted">${t('ui.modifier_free_hint')}</p>
+    </section>
+    <section class="panel">
       <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('auto.event.label')}</h3>
       <div class="controls">
         <button id="auto-event-toggle" class="${state.autoEventDecision ? 'actbtn active' : 'ghost'}">
@@ -2687,6 +2699,7 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
+  el.querySelector<HTMLButtonElement>('#modifier-free-toggle')?.addEventListener('click', ACTIONS.onToggleModifierFreeRooms);
   el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
   el.querySelector<HTMLButtonElement>('#puzzle-skip')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('skip'));
   el.querySelector<HTMLButtonElement>('#puzzle-solve')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('solve'));

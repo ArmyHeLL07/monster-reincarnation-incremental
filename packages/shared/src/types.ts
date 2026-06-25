@@ -326,6 +326,8 @@ export interface DungeonLayer {
   ambient?: LayerAmbient;
   /** Fraction of non-boss, non-entry rooms that are calm exploration rooms (no combat). */
   explorationRate?: number;
+  /** Modifier IDs drawn randomly per-room (layer theme determines pool). */
+  modifierPool?: string[];
 }
 
 export interface Dungeon {

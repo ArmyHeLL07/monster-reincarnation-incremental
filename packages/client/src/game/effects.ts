@@ -1,7 +1,9 @@
 import type { Content } from './content';
 import type { GameState } from './state';
+import { MAX_HUNGER } from './state';
 import { sigBoneArmor } from './signature';
 import { soulLevel } from './soul';
+import { currentRoomModifier } from './combat';
 
 /** Aggregated passive/ruler modifiers, summed live each time they're needed. */
 export interface Bonuses {
@@ -141,6 +143,31 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.lootMult) b.lootMult += def.lootMult;
     if (def.regenMult) b.regenMult += def.regenMult;
     if (def.idleMult) b.idleMult += def.idleMult;
+  }
+
+  // Room modifier: apply stat penalties for the player's current room.
+  const roomMod = currentRoomModifier(state, content);
+  if (roomMod) {
+    if (roomMod.dodgePenalty) b.dodgeBonus -= roomMod.dodgePenalty;
+    if (roomMod.dmgPenalty)   b.dmgMult    -= roomMod.dmgPenalty;
+    if (roomMod.regenPenalty) b.regenMult  -= roomMod.regenPenalty;
+    if (roomMod.hungerMult)   b.hungerMult *= roomMod.hungerMult;
+  }
+
+  // Gluttony ruler power: hunger-based buff when sated, debuff when starving.
+  // Theme: "black hole in the stomach — calming when full, frantic when empty."
+  if (state.ruler.powers.includes('gluttony')) {
+    const ratio = state.hunger / MAX_HUNGER;
+    if (ratio <= 0.20) {
+      // Sated — the black hole is calm and content
+      b.dmgMult    += 0.15;
+      b.regenMult  += 0.20;
+      b.lootMult   += 0.15;
+    } else if (ratio >= 0.75) {
+      // Hungry — the void inside becomes desperate and erratic
+      b.dmgMult    -= 0.20;
+      b.dodgeBonus -= 0.15;
+    }
   }
 
   return b;

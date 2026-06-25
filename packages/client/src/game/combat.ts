@@ -53,7 +53,8 @@ const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
-const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
+const SIN_PER_KILL = 3; // kin kills feed the dark axis (GDD §C)
+const SIN_PER_KILL_BOSS = 15; // boss kin = heinous transgression
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
 const STATUS_CHANCE = 0.3; // base chance an elemental enemy hit also applies a lingering status
 const DOT_TYPES: DamageType[] = ['poison', 'fire', 'acid', 'lightning', 'frost']; // types that linger as DoT
@@ -195,9 +196,19 @@ function autoEat(state: GameState, content: Content, log: Log): void {
   }
   if (idx >= 0) {
     const [eaten] = state.inventory.splice(idx, 1);
+    const wasFullBefore = state.hunger <= 0;
     state.hunger = Math.max(0, state.hunger - eaten.satiety);
-    // Gluttony: feeding feeds the dark axis (GDD §7.4.5).
-    gainSin(state, content, 0.25, log);
+    // Gluttony: feeding feeds the dark axis; eating while full gives more sin.
+    const tabooActiveAuto = state.ruler.taboo >= 1;
+    const sinGainAuto = wasFullBefore ? (tabooActiveAuto ? 10 : 2) : 0.25;
+    gainSin(state, content, sinGainAuto, log);
+    if (wasFullBefore && !state.ruler.powers.includes('gluttony')) {
+      const gluttonyChanceAuto = tabooActiveAuto ? 0.10 : 0.01;
+      if (Math.random() < gluttonyChanceAuto) {
+        state.ruler.powers.push('gluttony');
+        log({ key: 'log.gluttony_awaken' });
+      }
+    }
 
     // Devouring mechanic: chance to learn a skill from the eaten enemy
     const enemyDef = content.enemies.get(eaten.enemyId);
@@ -228,8 +239,19 @@ export function eatFood(state: GameState, content: Content, index: number, log: 
     addResistExp(state, content, 'poison', 3, log); // rotten meat = passive poison resistance
     log({ key: 'log.ate_rotten' });
   } else {
+    const wasFullBefore = state.hunger <= 0;
     state.hunger = Math.max(0, state.hunger - it.satiety);
-    gainSin(state, content, 0.25, log); // feeding feeds the dark axis (Gluttony)
+    // Eating while full: greater sin + rare Gluttony awakening
+    const tabooActive = state.ruler.taboo >= 1;
+    const sinGain = wasFullBefore ? (tabooActive ? 10 : 2) : 0.25;
+    gainSin(state, content, sinGain, log);
+    if (wasFullBefore && !state.ruler.powers.includes('gluttony')) {
+      const gluttonyChance = tabooActive ? 0.10 : 0.01;
+      if (Math.random() < gluttonyChance) {
+        state.ruler.powers.push('gluttony');
+        log({ key: 'log.gluttony_awaken' });
+      }
+    }
     log({ key: 'log.ate', params: { sat: it.satiety } });
 
     // Devouring mechanic: chance to learn a skill from the eaten enemy
@@ -397,6 +419,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   }
   if (state.roomCleared || !state.enemy) return;
   applyAmbient(state, content, log); // environmental burn (elemental layers only)
+  applyRoomModifierTick(state, content, log); // per-room modifier passive drain
   if (state.hp <= 0) {
     onDeath(state, content, log, b);
     return;
@@ -612,6 +635,61 @@ function roomHash(a: number, b: number, c: number): number {
   return (n % 100000) / 100000;
 }
 
+/** Per-room modifier definition — stat/drain penalties applied while in this room. */
+interface RoomModifierDef {
+  id: string;
+  locKey: string;
+  /** Flat dodge penalty (0–1). */
+  dodgePenalty?: number;
+  /** Additive dmgMult penalty. */
+  dmgPenalty?: number;
+  /** Additive regenMult penalty. */
+  regenPenalty?: number;
+  /** Hunger drain multiplier bonus (stacks with others). */
+  hungerMult?: number;
+  /** HP drain per tick as fraction of maxHP. */
+  hpDrainPct?: number;
+  /** Enemy ATK multiplier bonus (makes enemies hit harder). */
+  enemyAtkBonus?: number;
+}
+
+const ROOM_MODIFIERS: RoomModifierDef[] = [
+  { id: 'toxin_cloud',    locKey: 'modifier.toxin_cloud',    dodgePenalty: 0.05, hpDrainPct: 0.003 },
+  { id: 'root_web',       locKey: 'modifier.root_web',       dodgePenalty: 0.20, dmgPenalty: 0.10 },
+  { id: 'ember_rain',     locKey: 'modifier.ember_rain',     hpDrainPct: 0.005, regenPenalty: 0.30 },
+  { id: 'scorched_air',   locKey: 'modifier.scorched_air',   hungerMult: 1.40 },
+  { id: 'heavy_gravity',  locKey: 'modifier.heavy_gravity',  dodgePenalty: 0.20, dmgPenalty: 0.10 },
+  { id: 'echo_chamber',   locKey: 'modifier.echo_chamber',   enemyAtkBonus: 0.20 },
+  { id: 'soul_ebb',       locKey: 'modifier.soul_ebb',       regenPenalty: 0.50 },
+  { id: 'void_pressure',  locKey: 'modifier.void_pressure',  hpDrainPct: 0.004, regenPenalty: 0.40 },
+];
+
+/** Returns the active room modifier for the player's current position, or null if modifier-free. */
+export function currentRoomModifier(state: GameState, content: Content): RoomModifierDef | null {
+  const layer = currentLayer(state, content);
+  const pool = layer?.modifierPool;
+  if (!pool || pool.length === 0) return null;
+  const { layer: lId, floor, room } = state.pos;
+  // Modifier-free room check (different salt from exploration hash to avoid collision)
+  if (state.modifierFreeRooms) {
+    const freeChance = 0.10 + (state.stats.LUCK * 0.005);
+    const freeRoll = roomHash(lId + 999, floor, room);
+    if (freeRoll < freeChance) return null;
+  }
+  const pick = roomHash(lId + 500, floor, room);
+  const modId = pool[Math.floor(pick * pool.length)];
+  return ROOM_MODIFIERS.find((m) => m.id === modId) ?? null;
+}
+
+/** Apply per-tick room modifier drains (HP loss, extra ambient). Called once per tick in combat. */
+export function applyRoomModifierTick(state: GameState, content: Content, log: Log): void {
+  const mod = currentRoomModifier(state, content);
+  if (!mod?.hpDrainPct) return;
+  const drain = Math.max(1, Math.round(state.maxHp * mod.hpDrainPct));
+  state.hp = Math.max(0, state.hp - drain);
+  log({ key: 'log.modifier_drain', params: { name: mod.locKey, dmg: drain } });
+}
+
 /** Is the player's current room a calm exploration room (no combat)? Never the entry or boss room. */
 function isExplorationRoom(state: GameState, content: Content): boolean {
   const layer = currentLayer(state, content);
@@ -693,8 +771,10 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
   const diff = diffDef(state, content);
   const depth = (state.pos.layer - 1) * 100 + (state.pos.floor - 1) * 15 + state.pos.room;
   const rbMult = rebirthMult(state);
+  const roomMod = currentRoomModifier(state, content);
+  const roomAtkBonus = roomMod?.enemyAtkBonus ?? 0;
   const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult * rbMult;
-  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult * rbMult;
+  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult * rbMult * (1 + roomAtkBonus);
   const hp = Math.round(def.hp * hpMult);
   return {
     id: archId,
@@ -1080,6 +1160,32 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
 }
 
+type ReactionCombo = { a: DamageType; b: DamageType; key: string; burstMult: number; controlTicks?: number };
+const REACTION_COMBOS: ReactionCombo[] = [
+  { a: 'fire',  b: 'poison',    key: 'log.reaction_toxic_blaze',    burstMult: 3.0 },
+  { a: 'frost', b: 'lightning', key: 'log.reaction_frozen_circuit',  burstMult: 3.5 },
+  { a: 'fire',  b: 'frost',     key: 'log.reaction_steam_burst',     burstMult: 0,   controlTicks: 2 },
+  { a: 'acid',  b: 'fire',      key: 'log.reaction_corrosive_burn',  burstMult: 2.5 },
+];
+
+/** When a new status would be applied, check if it reacts with an existing one. Returns true if consumed. */
+function checkStatusReaction(state: GameState, newType: DamageType, newDmg: number, log: Log): boolean {
+  for (const combo of REACTION_COMBOS) {
+    const isA = newType === combo.a, isB = newType === combo.b;
+    if (!isA && !isB) continue;
+    const partnerType = isA ? combo.b : combo.a;
+    const partner = state.statusEffects.find((s) => s.type === partnerType);
+    if (!partner) continue;
+    state.statusEffects = state.statusEffects.filter((s) => s.type !== newType && s.type !== partnerType);
+    const burst = Math.max(0, Math.round((newDmg + partner.dmgPerTick) * combo.burstMult));
+    if (burst > 0) state.hp = Math.max(0, state.hp - burst);
+    if (combo.controlTicks) state.statusEffects.push({ type: 'petrify', ticksLeft: combo.controlTicks, dmgPerTick: 0, control: true });
+    log({ key: combo.key, params: { dmg: burst } });
+    return true;
+  }
+  return false;
+}
+
 /** Apply/refresh a lingering status: duration 1–10s and per-tick damage scale with the hit & resistance. */
 function applyStatus(state: GameState, type: DamageType, share: number, reduction: number, log: Log): void {
   const dur = Math.min(10, Math.max(1, Math.round((2 + share / 5) * (1 - reduction))));
@@ -1089,8 +1195,10 @@ function applyStatus(state: GameState, type: DamageType, share: number, reductio
     existing.ticksLeft = Math.max(existing.ticksLeft, dur);
     existing.dmgPerTick = Math.max(existing.dmgPerTick, dmgPerTick);
   } else {
-    state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
-    log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
+    if (!checkStatusReaction(state, type, dmgPerTick, log)) {
+      state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
+      log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
+    }
   }
 }
 
@@ -1300,7 +1408,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   }
   // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
   if (enemy.race && enemy.race === state.raceId) {
-    gainSin(state, content, SIN_PER_KILL * (enemy.isBoss ? 5 : 1), log);
+    gainSin(state, content, enemy.isBoss ? SIN_PER_KILL_BOSS : SIN_PER_KILL, log);
     log({ key: 'log.sin_kill', params: { enemy: enemy.locKey } }); // a clear "you sinned" beat
   }
 
