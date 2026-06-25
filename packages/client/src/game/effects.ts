@@ -23,7 +23,7 @@ export interface Bonuses {
   armor: number;
   /** Bonus damage = Σ overdrawFrac × missing HP. */
   overdrawFrac: number;
-  /** Hunger-rate multiplier (product of all hungerMult, ≤ 1). */
+  /** Hunger-rate multiplier: >1 drains faster (debuff), <1 drains slower (buff). */
   hungerMult: number;
   /** Best chance to survive a lethal hit at 1 HP. */
   surviveChance: number;

@@ -823,6 +823,7 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
   state.dmgStreakType = undefined;
   const enemy = makeEnemy(state, content, archId, isBoss);
   if (!enemy) return;
+  if (state.autoAppraise) enemy.analyzed = true;
   state.enemy = enemy;
   log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
   // Spider web trap: discharge accumulated gauge as opening burst damage.
@@ -837,6 +838,7 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
 export function spawnEventEnemy(state: GameState, content: Content, enemyId: string, log: Log): void {
   const enemy = makeEnemy(state, content, enemyId, false);
   if (!enemy) return;
+  if (state.autoAppraise) enemy.analyzed = true;
   state.enemy = enemy;
   log({ key: 'log.ev_spawn', params: { enemy: enemy.locKey } });
 }
@@ -870,6 +872,7 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
       state.resolvedEvents.push(br.roomKey);
       state.bossRiddle = null;
       state.enemy = makeEnemy(state, content, layer.boss, true, 1);
+      if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
       log({ key: 'log.br_fight' });
     }
     return;
@@ -1318,6 +1321,7 @@ export function answerBossRiddle(state: GameState, content: Content, answer: str
     // 3rd wrong → the real boss, strengthened, good reward.
     state.bossRiddle = null;
     state.enemy = makeEnemy(state, content, layer.boss, true, RIDDLE_FAILBOSS_MULT);
+    if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
     log({ key: 'log.br_fail_boss' });
   } else {
     // 1st/2nd wrong → a slightly strengthened guard; killing it returns to the riddle.
@@ -1325,6 +1329,7 @@ export function answerBossRiddle(state: GameState, content: Content, answer: str
     const guard = makeEnemy(state, content, archId, false, RIDDLE_GUARD_MULT);
     if (guard) {
       guard.riddleGuard = true;
+      if (state.autoAppraise) guard.analyzed = true;
       state.enemy = guard;
     }
     log({ key: 'log.br_wrong', params: { left: 3 - br.attempts } });
@@ -1357,6 +1362,7 @@ export function chooseBossOption(
     state.resolvedEvents.push(br.roomKey);
     state.bossRiddle = null;
     state.enemy = makeEnemy(state, content, layer.boss, true, mult); // beat it → normal onKill → applyBossClear
+    if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
     log({ key: 'log.br_fight' });
   }
 }
