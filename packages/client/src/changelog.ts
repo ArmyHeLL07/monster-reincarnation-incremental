@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.14.0';
+export const VERSION = '1.15.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,37 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.15.0',
+    date: '2026-06-25',
+    tr: [
+      'feat: EP Mağazası — Stat sekmesinde EP harcama sistemi eklendi',
+      'feat: EP → Stat puanı satın alma (100 EP, her alımda 2 katına çıkar, rebirth\'te sıfırlanır)',
+      'feat: Geçici bufflar — Yarı Açlık (100 EP/1 saat), XP Patlaması (150 EP/30 dk), Rejenerasyon (80 EP/30 dk)',
+      'feat: Skill XP enjeksiyonu — skill kartı açıkken EP ile bir seviye atlat (rank\'a göre maliyet)',
+      'fix: larder dolu + açlık 0 iken satiety boşa gidiyordu — taşan kısım %50 EP\'ye dönüşüyor',
+      'fix: yeni düşman spawn\'ında hasar streak sıfırlanıyor (artık yeni düşman önceki saldırılardan adaptasyon almıyor)',
+      'fix: combat\'ta MP regen ondalıklı birikim düzeltildi',
+    ],
+    en: [
+      'feat: EP Shop — new EP spending system in the Stats tab',
+      'feat: EP → stat point purchase (100 EP base, cost doubles each buy, resets on rebirth)',
+      'feat: temporary buffs — Half Hunger (100 EP/1 h), XP Rush (150 EP/30 min), Regen Surge (80 EP/30 min)',
+      'feat: skill XP injection — spend EP to level up a skill once (cost scales with rank)',
+      'fix: satiety wasted when larder full and hunger at 0 — overflow now converts to EP at 50%',
+      'fix: dmgStreak now resets on enemy spawn (new enemy no longer penalised for hits on previous foes)',
+      'fix: combat MP regen floating-point accumulation fixed',
+    ],
+    ru: [
+      'feat: Магазин EP — новая система трат EP во вкладке Статы',
+      'feat: EP → покупка очка статы (100 EP базово, цена удваивается, сбрасывается при возрождении)',
+      'feat: временные баффы — Полуголод (100 EP/1 ч), XP-бафф (150 EP/30 мин), Реген (80 EP/30 мин)',
+      'feat: влить XP в навык — потратить EP для мгновенного повышения уровня (стоимость зависит от ранга)',
+      'fix: насыщенность больше не теряется при полном ларе и нулевом голоде — избыток конвертируется в EP',
+      'fix: серия урона сбрасывается при спауне нового врага',
+      'fix: исправлено накопление дробных значений MP в бою',
+    ],
+  },
   {
     v: '1.14.0',
     date: '2026-06-25',
