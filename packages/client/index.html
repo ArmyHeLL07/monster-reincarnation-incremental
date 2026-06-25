@@ -423,7 +423,11 @@
       .eportrait.boss.combat-active { animation: enemy-attack 1s ease-out, boss-glow 1s ease-in-out infinite; }
       .eportrait.idle-foe { animation: enemy-breathe 1s ease-in-out; } /* enemy present but combat paused */
 
-      .rest-stage { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.4rem 0 0.2rem; }
+      .rest-stage { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.4rem 0 0.2rem; }
+      .rest-bars { width: 90%; max-width: 240px; display: flex; flex-direction: column; gap: 0.25rem; }
+      .rest-bar-row { display: flex; align-items: center; gap: 0.4rem; }
+      .rest-bar-row .bar { flex: 1; height: 8px; }
+      .rest-bar-row span:last-child { min-width: 3.5rem; text-align: right; font-size: 0.78rem; }
       .rest-stage .rest-aura { border-radius: 50%; display: inline-flex; }
       .rest-stage .head { max-width: 116px; margin: 0; }
       .rest-stage .rest-portrait { width: 132px; height: 132px; object-fit: contain; display: block;
