@@ -589,6 +589,10 @@ function migrate(s: GameState): void {
   // v12 fields — EP Shop
   s.epStatsBought ??= 0;
   s.tempBuffs ??= {};
+  // v13 — slime gained a 2nd eye slot; backfill missing e2 for existing slime saves
+  if (s.raceId === 'slime' && s.eyeAssignments && !('e2' in s.eyeAssignments)) {
+    s.eyeAssignments['e2'] = null;
+  }
 }
 
 /**
