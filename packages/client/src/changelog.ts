@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.15.1';
+export const VERSION = '1.16.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.16.0',
+    date: '2026-06-25',
+    tr: [
+      'feat: Rebirth scaling — her rebirth düşmanları %10 güçlendirir, tüm kazançları (EP/XP/soul) %10 artırır',
+      'feat: Soul Tree revize — mevcut upgrade\'lerin sınırları artırıldı (predator×50, wisdom×100, soul_luck×50, extra_slot×3…), costMult\'lar yüksek cap için ayarlandı',
+      'feat: Yeni soul upgrade: Oto Arama (🔍) — Lv1 oto-yemek, Lv2 oto-keşif; 100 arama sayacı gerekmez (25✦/3.0× maliyet)',
+      'feat: Yeni soul upgrade: Hızlı İlerleyiş (⚡) — her seviye oda kill kotasını 1 düşürür (10→1 min, 25✦/2.5× maliyet)',
+    ],
+    en: [
+      'feat: Rebirth scaling — each rebirth makes enemies 10% harder and increases all gains (EP/XP/soul) by 10%',
+      'feat: Soul Tree revised — higher caps on existing upgrades (predator×50, wisdom×100, soul_luck×50, extra_slot×3…), costMults tuned for high caps',
+      'feat: New soul upgrade: Auto Search (🔍) — Lv1 auto-forage, Lv2 auto-explore; bypasses 100-search requirement (25✦/3.0× cost)',
+      'feat: New soul upgrade: Swift Advance (⚡) — each level lowers room kill quota by 1 (10→1 min, 25✦/2.5× cost)',
+    ],
+    ru: [
+      'feat: Масштабирование перерождений — каждое перерождение +10% сложности врагов и +10% ко всем наградам',
+      'feat: Древо Душ пересмотрено — увеличены лимиты апгрейдов, costMult подобран для высоких уровней',
+      'feat: Новый апгрейд: Авто-поиск (🔍) — Ур.1 авто-еда, Ур.2 авто-исследование (25✦/3.0× стоимость)',
+      'feat: Новый апгрейд: Быстрый Прорыв (⚡) — каждый уровень снижает квоту убийств в комнате на 1 (25✦/2.5× стоимость)',
+    ],
+  },
   {
     v: '1.15.1',
     date: '2026-06-25',

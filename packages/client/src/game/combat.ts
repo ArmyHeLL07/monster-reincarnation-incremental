@@ -327,6 +327,16 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 /** Minimum kills required before the Advance button unlocks (non-boss rooms only). */
 export const ROOM_KILL_QUOTA = 10;
 
+/** Rebirth scaling: each rebirth adds 10% to enemy power and all rewards. */
+export function rebirthMult(state: GameState): number {
+  return 1 + (state.rebirthCount ?? 0) * 0.10;
+}
+
+/** Effective room kill quota after soul upgrades (minimum 1). */
+export function roomQuota(state: GameState): number {
+  return Math.max(1, ROOM_KILL_QUOTA - soulLevel(state, 'room_quota_down'));
+}
+
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   const layer = currentLayer(state, content);
@@ -344,7 +354,7 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
   // Non-boss rooms: track the kill count and unlock the Advance button at quota.
   // Enemies KEEP spawning after quota — player farms freely until they press Advance.
   state.roomKillCount = (state.roomKillCount ?? 0) + 1;
-  if (state.roomKillCount >= ROOM_KILL_QUOTA && state.autoAdvance) {
+  if (state.roomKillCount >= roomQuota(state) && state.autoAdvance) {
     state.roomKillCount = 0;
     state.roomEnemyId = null;
     advancePosition(state, content, log);
@@ -473,8 +483,9 @@ function restRound(state: GameState, content: Content, log: Log): void {
   const hp = (passiveHpRegen(state, content) * (1 + (b.regenMult - 1)) + 1) * REST_MULT;
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
 
-  // Auto-search (forage + explore) — SP yeterliyse tetikle
-  if (state.autoSearchUnlocked) {
+  // Auto-search (forage + explore) — SP yeterliyse tetikle; soul upgrade kapıyı erken açar
+  const autoSearchLv = soulLevel(state, 'auto_search');
+  if (state.autoSearchUnlocked || autoSearchLv >= 1) {
     if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0 && !state.pendingForage) {
       forage(state, content, log);
     }
@@ -617,7 +628,7 @@ function isExplorationRoom(state: GameState, content: Content): boolean {
 function resolveExploration(state: GameState, content: Content, log: Log): void {
   recordExplored(state); // light the room on the map
   const reward = diffDef(state, content).rewardMult ?? 1;
-  const ep = Math.max(1, Math.round(3 * reward));
+  const ep = Math.max(1, Math.round(3 * reward * rebirthMult(state)));
   state.ep += ep;
   state.hp = Math.min(state.maxHp, state.hp + Math.round(state.maxHp * 0.1)); // a calm, safe breather
   state.sp = Math.min(state.maxSp, state.sp + Math.round(state.maxSp * 0.2));
@@ -681,8 +692,9 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
   if (!def) return null;
   const diff = diffDef(state, content);
   const depth = (state.pos.layer - 1) * 100 + (state.pos.floor - 1) * 15 + state.pos.room;
-  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult;
-  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult;
+  const rbMult = rebirthMult(state);
+  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult * rbMult;
+  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult * rbMult;
   const hp = Math.round(def.hp * hpMult);
   return {
     id: archId,
@@ -1267,7 +1279,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   const enemy = state.enemy;
   if (!enemy) return;
   const reward = diffDef(state, content).rewardMult ?? 1; // Hell pays more, Easy less
-  const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward));
+  const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward * rebirthMult(state)));
   state.ep += ep;
   state.kills += 1;
   state.killedEnemies = state.killedEnemies ?? {};

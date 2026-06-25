@@ -9,7 +9,7 @@ import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type Ev
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, ROOM_KILL_QUOTA, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
@@ -860,8 +860,9 @@ function enemyView(state: GameState): string {
   }
   const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
+  const quota = roomQuota(state);
   const killBadge = (!isBossRoom && state.action === 'combat')
-    ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= ROOM_KILL_QUOTA ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${ROOM_KILL_QUOTA}</span>`
+    ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
   return `<div class="erow" style="position:relative">${killBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
@@ -1148,7 +1149,8 @@ function foragePanel(state: GameState): string {
 }
 
 function forageAutoToggle(state: GameState): string {
-  if (!state.autoSearchUnlocked) {
+  const soulLv = soulLevel(state, 'auto_search');
+  if (!state.autoSearchUnlocked && soulLv < 1) {
     return `<span class="muted" style="font-size:0.75rem">${t('auto.locked')} (${state.totalSearchCount}/100)</span>`;
   }
   const foodOn = state.autoSearchFood;
@@ -1158,7 +1160,8 @@ function forageAutoToggle(state: GameState): string {
 }
 
 function exploreAutoToggle(state: GameState): string {
-  if (!state.autoSearchUnlocked) return '';
+  const soulLv = soulLevel(state, 'auto_search');
+  if (!state.autoSearchUnlocked && soulLv < 1) return '';
   const on = state.autoSearchExplore;
   return `<button class="ghost auto-toggle" id="auto-explore-toggle" style="font-size:0.75rem;padding:0.2rem 0.5rem;">
     ${t('auto.explore.label')}: <b>${on ? t('auto.on') : t('auto.off')}</b>
@@ -1243,7 +1246,7 @@ function combatTab(state: GameState): string {
 
 /** Manual map progression: Advance button unlocks at quota (non-boss) or on room cleared (boss/explore). */
 function advanceControls(state: GameState): string {
-  const quotaMet = (state.roomKillCount ?? 0) >= ROOM_KILL_QUOTA;
+  const quotaMet = (state.roomKillCount ?? 0) >= roomQuota(state);
   const canManualAdvance = state.action === 'combat' && !state.autoAdvance && (state.roomCleared || quotaMet);
   const advBtn = canManualAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
   const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
@@ -2392,7 +2395,10 @@ function rulerPanel(state: GameState): string {
 
 function rebirthPanel(state: GameState): string {
   const ready = canRebirth(state);
-  const info = `${t('ui.rebirths')}: ${state.rebirthCount}${state.rebirthBoon > 0 ? ` · +${state.rebirthBoon} ${t('ui.boon')}` : ''}`;
+  const rb = state.rebirthCount ?? 0;
+  const mult = rebirthMult(state);
+  const multLine = rb > 0 ? ` · <span style="color:#c8a23f">♻ ×${mult.toFixed(1)}</span>` : '';
+  const info = `${t('ui.rebirths')}: ${rb}${state.rebirthBoon > 0 ? ` · +${state.rebirthBoon} ${t('ui.boon')}` : ''}${multLine}`;
   return `
     <section class="panel">
       <h2>${t('ui.rebirth')}</h2>
