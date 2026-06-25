@@ -13,7 +13,13 @@ export const CURRENT_SAVE_VERSION = 1;
 function migrate(raw: Record<string, unknown>): GameState {
   const base = newGame();
   // Shallow merge: raw fields override base, missing fields fall back to base defaults.
-  return { ...base, ...raw, saveVersion: CURRENT_SAVE_VERSION } as GameState;
+  const merged = { ...base, ...raw, saveVersion: CURRENT_SAVE_VERSION } as GameState;
+  // Old saves pre-date raceConfirmed — if a raceId is already set, the player
+  // already picked and played their race, so treat it as confirmed.
+  if (merged.raceId && !raw['raceConfirmed']) {
+    merged.raceConfirmed = true;
+  }
+  return merged;
 }
 
 export function save(state: GameState): void {
