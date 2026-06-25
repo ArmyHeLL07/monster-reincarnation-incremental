@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.15.0';
+export const VERSION = '1.15.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.15.1',
+    date: '2026-06-25',
+    tr: [
+      'fix: skill evrim sonrası equipped slot eski ID\'yi tutuyordu — savaşta saldırı yapılamıyordu (critical)',
+      'feat: İstatistik paneli — Stat sekmesine oynama süresi, en derin konum, rebirth/keşif/düşman istatistikleri eklendi',
+    ],
+    en: [
+      'fix: equipped skill slot retained old ID after evolution — attacks stopped firing (critical)',
+      'feat: Statistics panel — play time, deepest position, rebirths/discoveries/enemy types in Stats tab',
+    ],
+    ru: [
+      'fix: слот экипированного скилла сохранял старый ID после эволюции — атаки переставали срабатывать (critical)',
+      'feat: Панель статистики — время игры, наибольшая глубина, перерождения/открытия/типы врагов',
+    ],
+  },
   {
     v: '1.15.0',
     date: '2026-06-25',

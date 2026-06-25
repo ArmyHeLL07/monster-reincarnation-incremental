@@ -2225,6 +2225,7 @@ function statsTab(state: GameState): string {
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>
     ${epShopPanel(state)}
+    ${statisticsPanel(state)}
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
@@ -2235,6 +2236,42 @@ function statsTab(state: GameState): string {
     ${rulerPanel(state)}
     ${rebirthPanel(state)}
   `;
+}
+
+function statisticsPanel(state: GameState): string {
+  const ticks = state.totalTicks ?? 0;
+  const h = Math.floor(ticks / 3600);
+  const m = Math.floor((ticks % 3600) / 60);
+  const s = ticks % 60;
+  const timeStr = h > 0
+    ? t('ui.time_hms', { h, m, s })
+    : m > 0
+      ? t('ui.time_ms', { m, s })
+      : t('ui.time_s', { s });
+
+  const deepL = state.deepestLayer ?? 1;
+  const deepF = state.deepestFloor ?? 1;
+  const deepR = state.deepestRoom ?? 1;
+  const discCount = (state.discoveries?.length ?? 0) + (state.booksFound?.length ?? 0);
+  const enemyTypes = Object.keys(state.killedEnemies ?? {}).length;
+
+  const rows: [string, string | number][] = [
+    [t('ui.stats_playtime'), timeStr],
+    [t('ui.stats_deepest'), t('ui.stats_deepest_pos', { layer: deepL, floor: deepF, room: deepR })],
+    [t('ui.stats_rebirths'), state.rebirthCount ?? 0],
+    [t('ui.stats_discoveries'), discCount],
+    [t('ui.stats_enemies_seen'), enemyTypes],
+  ];
+
+  const rowsHtml = rows
+    .map(([label, val]) => `<div class="row" style="margin:.25rem 0"><span class="muted">${label}</span><b>${val}</b></div>`)
+    .join('');
+
+  return `
+    <section class="panel">
+      <h2>${t('ui.stats_panel')}</h2>
+      ${rowsHtml}
+    </section>`;
 }
 
 /** EP mağazası — stat puanı, geçici buff ve skill XP enjeksiyonu. */

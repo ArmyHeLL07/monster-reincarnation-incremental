@@ -325,6 +325,14 @@ export interface GameState {
   epStatsBought: number;
   /** Active temporary buffs: buffId → real-time expiry timestamp (ms since epoch). */
   tempBuffs: Record<string, number>;
+
+  // --- İstatistik paneli ---------------------------------------------------
+  /** Non-idle ticks elapsed ≈ active seconds played. Never resets on rebirth. */
+  totalTicks: number;
+  /** Furthest layer/floor/room ever reached across all runs. Never resets. */
+  deepestLayer: number;
+  deepestFloor: number;
+  deepestRoom: number;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -480,6 +488,10 @@ export function newGame(): GameState {
     autoEventPuzzleMode: 'skip',
     epStatsBought: 0,
     tempBuffs: {},
+    totalTicks: 0,
+    deepestLayer: 1,
+    deepestFloor: 1,
+    deepestRoom: 1,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

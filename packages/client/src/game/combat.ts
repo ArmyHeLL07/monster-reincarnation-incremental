@@ -143,6 +143,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     state.lastSeen = Date.now();
     return; // frozen — no hunger, no regen, nothing happens
   }
+  state.totalTicks = (state.totalTicks ?? 0) + 1;
 
   if (state.action === 'meditate') {
     meditateTick(state, content, log); // hidden zen gauge + virtue
@@ -649,6 +650,16 @@ function recordExplored(state: GameState): void {
   const arr = (state.exploredMax[state.pos.layer] ??= []);
   const fi = state.pos.floor - 1;
   if ((arr[fi] ?? 0) < state.pos.room) arr[fi] = state.pos.room;
+  const { layer, floor, room } = state.pos;
+  if (
+    layer > (state.deepestLayer ?? 1) ||
+    (layer === (state.deepestLayer ?? 1) && floor > (state.deepestFloor ?? 1)) ||
+    (layer === (state.deepestLayer ?? 1) && floor === (state.deepestFloor ?? 1) && room > (state.deepestRoom ?? 1))
+  ) {
+    state.deepestLayer = layer;
+    state.deepestFloor = floor;
+    state.deepestRoom = room;
+  }
 }
 
 /** Luck-driven chance to sense a (gated) secret room when a floor is cleared (GDD §8.2). */
@@ -1574,6 +1585,8 @@ function skillLevelUp(slot: SkillSlot, state: GameState, content: Content, log: 
     const next = content.skills.get(nextId);
     if (next) {
       log({ key: 'log.evolve', params: { from: def.locKeyName, to: next.locKeyName } });
+      const eIdx = state.equipped.indexOf(def.id);
+      if (eIdx >= 0) state.equipped[eIdx] = nextId;
       slot.id = nextId;
       slot.tier = (slot.tier ?? 1) + 1;
       slot.level = 1;
