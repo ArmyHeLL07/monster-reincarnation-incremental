@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.17.0';
+export const VERSION = '1.17.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.17.1',
+    date: '2026-06-25',
+    tr: [
+      'fix: Eski kayıtlarda ırk zaten seçilmişken yeniden ırk seçim ekranına düşme sorunu giderildi (raceConfirmed migration)',
+      'fix: Dinlen/Meditasyon modunda oyun donmuş gibi hissettiriyordu — arama butonu çalışmıyor, açlık düşmüyordu; her ikisi de düzeltildi',
+      'fix: Dinlen/Meditasyon panelinde canlı HP/SP/MP barları eklendi; tüm sekmeler artık her saniye güncelleniyor',
+    ],
+    en: [
+      'fix: Old saves with a race already selected no longer land on the race selection screen (raceConfirmed migration)',
+      'fix: Rest/Meditate felt frozen — search button and hunger drain both fixed',
+      'fix: Live HP/SP/MP bars added to rest/meditate panel; all tabs now refresh every tick during rest or meditation',
+    ],
+    ru: [
+      'fix: Старые сохранения с выбранной расой больше не попадают на экран выбора расы',
+      'fix: Режим отдыха/медитации ощущался замороженным — исправлены кнопка поиска и расход голода',
+      'fix: В панели отдыха добавлены живые полосы HP/SP/MP; все вкладки теперь обновляются каждую секунду',
+    ],
+  },
   {
     v: '1.17.0',
     date: '2026-06-25',
