@@ -847,11 +847,17 @@ function enemyView(state: GameState): string {
     return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
   }
   const portrait = enemyPortrait(inst, state.action === 'combat');
+  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
+  const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
+  const quota = roomQuota(state);
+  const killBadge = (!isBossRoom && state.action === 'combat')
+    ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
+    : '';
   const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return `<div class="erow">${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
+    return `<div class="erow" style="position:relative">${killBadge}${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
   }
   const baseName = t(inst.locKey);
   const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
@@ -865,12 +871,6 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
-  const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
-  const quota = roomQuota(state);
-  const killBadge = (!isBossRoom && state.action === 'combat')
-    ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
-    : '';
   return `<div class="erow" style="position:relative">${killBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
