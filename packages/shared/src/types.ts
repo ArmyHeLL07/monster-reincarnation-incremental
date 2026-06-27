@@ -493,6 +493,17 @@ export interface ForageableFood {
   minDepth?: number;
 }
 
+/** A repeatable quest template — track `metric` delta from when it was assigned; on reaching `target`
+ *  grant the reward and roll a fresh quest. Metric names resolve against state (see achievements.ts). */
+export interface Quest {
+  id: string;
+  locKey: string;
+  icon: string;
+  metric: string;
+  target: number;
+  reward: { ep?: number; statPoints?: number };
+}
+
 /** A milestone achievement — unlocked the moment `metric` reaches `threshold`, granting a small
  *  permanent reward. `metric` names are resolved against game state in code (see achievements.ts). */
 export interface Achievement {

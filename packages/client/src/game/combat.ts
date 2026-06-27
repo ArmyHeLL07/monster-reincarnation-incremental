@@ -10,6 +10,7 @@ import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
 import { gainSin } from './ruler';
 import { checkAchievements } from './achievements';
+import { checkQuests } from './quests';
 import { rollRoomEvent, outcomesFor, applyOutcome, condMet, roomKeyOf } from './roomevents';
 import {
   bossRiddleChance,
@@ -165,6 +166,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
   }
   state.totalTicks = (state.totalTicks ?? 0) + 1;
   checkAchievements(state, content, log); // unlock milestones + grant rewards (idempotent, cheap)
+  checkQuests(state, content, log); // fill/complete repeatable quests
 
   if (state.action === 'meditate') {
     meditateTick(state, content, log); // hidden zen gauge + virtue

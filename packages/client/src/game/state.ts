@@ -186,6 +186,10 @@ export interface GameState {
   // --- achievements / lifetime counters (never reset by rebirth/race change) -
   /** Unlocked achievement ids (permanent across lives). */
   achievements: string[];
+  /** Active repeatable quests: template id + the metric value when it was assigned (delta = progress). */
+  activeQuests: { id: string; base: number }[];
+  /** Lifetime quests completed (a small bragging counter). */
+  questsDone: number;
   /** Lifetime fusion discoveries — feeds the fusion achievement. */
   fusionCount: number;
   /** Lifetime branch switches — feeds the branch-switch achievement. */
@@ -510,6 +514,8 @@ export function newGame(): GameState {
     modifierFreeRooms: false,
     hellClears: [],
     achievements: [],
+    activeQuests: [],
+    questsDone: 0,
     fusionCount: 0,
     branchSwitchCount: 0,
     deaths: 0,

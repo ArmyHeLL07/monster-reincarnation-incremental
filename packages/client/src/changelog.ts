@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.19.1';
+export const VERSION = '1.20.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.0',
+    date: '2026-06-27',
+    tr: [
+      'feat: Görevler — 3 aktif tekrarlanan görev slotu (Statlar sekmesinde, ilerleme barlı). Biri bitince ödül (EP/stat puanı) + toast + havuzdan yeni görev gelir. Başarımlardan farklı: tekrarlanan ödül döngüsü. Data-driven (quests.json), 6 görev tipi',
+    ],
+    en: [
+      'feat: Quests — 3 active repeatable quest slots (Stats tab, with progress bars). Completing one grants a reward (EP/stat point) + toast, then a fresh quest rolls in. Unlike achievements: a repeatable reward loop. Data-driven (quests.json), 6 quest types',
+    ],
+    ru: [
+      'feat: Задания — 3 активных повторяемых слота (вкладка «Статы», с полосами прогресса). Выполнение даёт награду (EP/очко статов) + уведомление, затем выпадает новое задание. Повторяемый цикл наград. Data-driven, 6 типов',
+    ],
+  },
   {
     v: '1.19.1',
     date: '2026-06-27',

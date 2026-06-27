@@ -606,6 +606,8 @@ function migrate(s: GameState): void {
   s.pendingHumanPath ??= false;
   s.evolveAckCount ??= 0;
   s.achievements ??= [];
+  s.activeQuests ??= [];
+  s.questsDone ??= 0;
   s.fusionCount ??= 0;
   s.branchSwitchCount ??= 0;
   s.deaths ??= 0;

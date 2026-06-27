@@ -10,6 +10,7 @@ import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { achievementMetric } from './game/achievements';
+import { questProgress } from './game/quests';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -165,7 +166,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.achievement', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn', 'log.devour_skill',
+  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn', 'log.devour_skill', 'log.quest_done',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -2349,6 +2350,7 @@ function statsTab(state: GameState): string {
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>
     ${epShopPanel(state)}
+    ${questsPanel(state)}
     ${statisticsPanel(state)}
     ${achievementsPanel(state)}
     ${minionPanel(state)}
@@ -2404,6 +2406,26 @@ function minionPanel(state: GameState): string {
       </ul>
     </section>
   `;
+}
+
+function questsPanel(state: GameState): string {
+  if (!CONTENT.quests || CONTENT.quests.size === 0) return '';
+  const rows = (state.activeQuests ?? [])
+    .map((q) => {
+      const def = CONTENT.quests.get(q.id);
+      if (!def) return '';
+      const { cur, target } = questProgress(state, CONTENT, q);
+      const name = t(`${def.locKey}.name`);
+      const desc = t(`${def.locKey}.desc`);
+      const reward = [def.reward.ep ? `+${def.reward.ep} EP` : '', def.reward.statPoints ? `+${def.reward.statPoints} SP` : ''].filter(Boolean).join(' ');
+      return `<div style="margin:.35rem 0">
+        <div class="row" style="font-size:.85rem"><span>${def.icon} <b>${name}</b> <span class="muted" style="font-size:.72rem">${desc}</span></span><span class="muted" style="font-size:.78rem">${cur}/${target} · ${reward}</span></div>
+        ${bar(cur, target, '#6fae53')}
+      </div>`;
+    })
+    .join('');
+  if (!rows) return '';
+  return `<section class="panel"><h2>${t('ui.quests_title')}</h2>${rows}</section>`;
 }
 
 let achievementsOpen = false; // Stats-tab achievements list starts collapsed (32 rows = a lot of scroll)
