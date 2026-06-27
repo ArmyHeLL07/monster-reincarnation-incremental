@@ -348,6 +348,9 @@ export interface GameState {
   autoEventDecision: boolean;
   /** Puzzle behaviour when autoEventDecision is on: skip combat | solve (INT >= 100). */
   autoEventPuzzleMode: 'skip' | 'solve';
+  /** Moral encounter handling: 'ask' pauses for a choice; 'spare'/'devour' auto-resolve (so AFK play
+   *  never locks on the prompt). */
+  moralAutoMode: 'ask' | 'spare' | 'devour';
 
   // --- EP Shop ----------------------------------------------------------------
   /** How many stat points have been bought with EP this life (cost doubles each purchase; resets on rebirth). */
@@ -568,6 +571,7 @@ export function newGame(): GameState {
     searchCD: 0,
     autoEventDecision: false,
     autoEventPuzzleMode: 'skip',
+    moralAutoMode: 'ask',
     epStatsBought: 0,
     tempBuffs: {},
     saveVersion: 1,

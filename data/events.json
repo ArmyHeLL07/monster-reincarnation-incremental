@@ -1049,5 +1049,38 @@
         ]
       }
     ]
+  },
+  {
+    "id": "moral_wounded",
+    "icon": "🩸",
+    "locKey": "ev.moral_wounded.text",
+    "weight": 2,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_wounded.spare", "outcomes": [{ "kind": "virtue", "amount": 3, "locKeyResult": "ev.moral_wounded.spare_r" }] },
+      { "locKey": "ev.moral_wounded.devour", "outcomes": [{ "kind": "sin", "amount": 2, "locKeyResult": "ev.moral_wounded.devour_r" }, { "kind": "hunger", "amount": -30, "locKeyResult": "ev.moral_wounded.devour_eat" }] }
+    ]
+  },
+  {
+    "id": "moral_surrender",
+    "icon": "🙏",
+    "locKey": "ev.moral_surrender.text",
+    "weight": 2,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_surrender.spare", "outcomes": [{ "kind": "virtue", "amount": 3, "locKeyResult": "ev.moral_surrender.spare_r" }] },
+      { "locKey": "ev.moral_surrender.devour", "outcomes": [{ "kind": "sin", "amount": 2, "locKeyResult": "ev.moral_surrender.devour_r" }, { "kind": "ep", "amount": 12, "locKeyResult": "ev.moral_surrender.devour_ep" }] }
+    ]
+  },
+  {
+    "id": "moral_brood",
+    "icon": "🥚",
+    "locKey": "ev.moral_brood.text",
+    "weight": 1,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_brood.spare", "outcomes": [{ "kind": "virtue", "amount": 4, "locKeyResult": "ev.moral_brood.spare_r" }] },
+      { "locKey": "ev.moral_brood.devour", "outcomes": [{ "kind": "sin", "amount": 3, "locKeyResult": "ev.moral_brood.devour_r" }, { "kind": "hunger", "amount": -40, "locKeyResult": "ev.moral_brood.devour_eat" }] }
+    ]
   }
 ]

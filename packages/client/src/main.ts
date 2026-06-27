@@ -261,6 +261,7 @@ async function init(): Promise<void> {
     onToggleAutoExplore: () => { state.autoSearchExplore = !state.autoSearchExplore; save(state); render(state); },
     onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
     onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
+    onSetMoralMode: (mode) => { state.moralAutoMode = mode; save(state); render(state); },
     onSpawnMinion: (type) => {
       if (spawnMinion(state, type)) {
         logFn({ key: `log.minion_spawned_${type}` });
@@ -632,6 +633,7 @@ function migrate(s: GameState): void {
   s.searchCD ??= 0;
   s.autoEventDecision ??= false;
   s.autoEventPuzzleMode ??= 'skip';
+  s.moralAutoMode ??= 'ask';
   // v12 fields — EP Shop
   s.epStatsBought ??= 0;
   s.tempBuffs ??= {};

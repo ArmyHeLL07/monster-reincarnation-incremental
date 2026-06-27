@@ -421,7 +421,12 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
       const evId = rollRoomEvent(state, content);
       if (evId) {
         state.pendingEvent = { id: evId, roomKey: roomKeyOf(state) };
-        return; // event set up; the UI shows its panel
+        // Moral encounters auto-resolve per the player's setting so AFK play never locks on the prompt.
+        const evDef = content.events.get(evId);
+        if (evDef?.moral && state.moralAutoMode !== 'ask') {
+          chooseEvent(state, content, state.moralAutoMode === 'spare' ? 0 : 1, log, b); // 0 = spare, 1 = devour
+        }
+        return; // event set up (or already auto-resolved); the UI shows its panel if still pending
       }
     }
     // Boss room: a luck-rolled chance to become a riddle challenge instead of a straight fight.

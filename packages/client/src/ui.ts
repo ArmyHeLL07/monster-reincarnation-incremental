@@ -96,6 +96,7 @@ export interface UiActions {
   onToggleAutoExplore(): void;
   onToggleAutoEvent(): void;
   onSetPuzzleMode(mode: 'skip' | 'solve'): void;
+  onSetMoralMode(mode: 'ask' | 'spare' | 'devour'): void;
   onSpawnMinion(type: 'dps' | 'tank' | 'utility'): void;
   onSpinWeb(): void;
   onCollectWeb(): void;
@@ -2872,6 +2873,15 @@ function settingsTab(state: GameState): string {
       </div>` : ''}
     </section>
     <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.moral_auto')}</h3>
+      <div class="controls">
+        <button id="moral-ask" class="${state.moralAutoMode === 'ask' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_ask')}</button>
+        <button id="moral-spare" class="${state.moralAutoMode === 'spare' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_spare')}</button>
+        <button id="moral-devour" class="${state.moralAutoMode === 'devour' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_devour')}</button>
+      </div>
+      <span class="muted" style="font-size:0.78rem">${t('ui.moral_auto_hint')}</span>
+    </section>
+    <section class="panel">
       <div class="controls">
         <button id="savenow" class="ghost">${t('ui.save')}</button>
         <button id="exportsave" class="ghost">${t('ui.export_save')}</button>
@@ -2909,6 +2919,9 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
   el.querySelector<HTMLButtonElement>('#modifier-free-toggle')?.addEventListener('click', ACTIONS.onToggleModifierFreeRooms);
   el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
+  el.querySelector<HTMLButtonElement>('#moral-ask')?.addEventListener('click', () => ACTIONS.onSetMoralMode('ask'));
+  el.querySelector<HTMLButtonElement>('#moral-spare')?.addEventListener('click', () => ACTIONS.onSetMoralMode('spare'));
+  el.querySelector<HTMLButtonElement>('#moral-devour')?.addEventListener('click', () => ACTIONS.onSetMoralMode('devour'));
   el.querySelector<HTMLButtonElement>('#puzzle-skip')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('skip'));
   el.querySelector<HTMLButtonElement>('#puzzle-solve')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('solve'));
 }

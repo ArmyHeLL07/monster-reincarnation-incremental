@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.19.0';
+export const VERSION = '1.19.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.19.1',
+    date: '2026-06-27',
+    tr: [
+      'feat: Ahlaki seçim anları — 3 yeni karşılaşma (yaralı av / teslim olan düşman / savunmasız yuva): Bağışla → +erdem (saf, maddi ödül yok) ya da Ye → +günah + yiyecek/EP. Ruler eksenini gerçek bir karara çevirir',
+      'feat: Ahlak otomasyonu — Ayarlar\'da "Ahlaki Karşılaşmalar": Sor / Hep Bağışla / Hep Ye. Otomatik seçilirse moral olaylar duraklatmadan çözülür (AFK\'de oyun kilitlenmez)',
+    ],
+    en: [
+      'feat: Moral choice moments — 3 new encounters (wounded prey / surrendering foe / defenseless nest): Spare → +virtue (pure, no material gain) or Devour → +sin + food/EP. Turns the ruler axis into a real choice',
+      'feat: Moral automation — Settings "Moral Encounters": Ask / Always Spare / Always Devour. Auto modes resolve moral events without pausing (AFK play never locks)',
+    ],
+    ru: [
+      'feat: Моральные моменты — 3 новые встречи (раненая добыча / сдавшийся враг / беззащитное гнездо): пощадить → +добродетель (без выгоды) или пожрать → +грех + еда/EP',
+      'feat: Авто-мораль — в настройках «Моральные встречи»: Спрашивать / Всегда щадить / Всегда пожирать. Авто-режимы решают события без паузы (AFK не зависнет)',
+    ],
+  },
   {
     v: '1.19.0',
     date: '2026-06-27',
