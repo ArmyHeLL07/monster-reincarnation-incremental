@@ -79,7 +79,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "corrosive_storm"
+    ],
     "damage": 7,
     "damageType": "acid",
     "element": "acid",
@@ -113,7 +115,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "plague_storm"
+    ],
     "damage": 7,
     "damageType": "poison",
     "element": "poison",
@@ -1732,7 +1736,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "divine_cleave"
+    ],
     "damage": 10,
     "damageType": "physical",
     "element": "physical"
@@ -2303,7 +2309,9 @@
       "INT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "earthquake_slam"
+    ],
     "damage": 10,
     "damageType": "fire",
     "element": "fire",
@@ -2722,7 +2730,9 @@
       "STR"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "feral_annihilation"
+    ],
     "damageType": "physical",
     "element": "physical",
     "damage": 16
@@ -2737,7 +2747,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "bone_hail"
+    ],
     "damageType": "pierce",
     "element": "physical",
     "damage": 16,
@@ -2754,7 +2766,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "dragon_god_strike"
+    ],
     "damageType": "physical",
     "element": "physical",
     "damage": 16
@@ -4487,7 +4501,9 @@
       "AGI"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "primal_devastation"
+    ],
     "damage": 16,
     "damageType": "physical"
   },
@@ -4532,7 +4548,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "chaos_nova"
+    ],
     "damage": 14,
     "damageType": "soul",
     "element": "soul"
@@ -4547,7 +4565,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "soul_hunger"
+    ],
     "dmgMult": 0.18,
     "regenMult": 0.2
   },
@@ -4561,7 +4581,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "soul_cascade"
+    ],
     "damage": 22,
     "damageType": "soul",
     "element": "soul"
@@ -4576,7 +4598,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "primal_howl"
+    ],
     "damage": 12,
     "damageType": "physical",
     "element": "physical"
@@ -4591,7 +4615,9 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "god_aura"
+    ],
     "dmgMult": 0.12,
     "regenMult": 0.25,
     "dodgeBonus": 0.08
@@ -4606,7 +4632,9 @@
       "WIS"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "dark_nova"
+    ],
     "damage": 13,
     "damageType": "dark",
     "element": "dark"
@@ -4621,9 +4649,620 @@
       "VIT"
     ],
     "lvMax": 10,
-    "evolvesTo": [],
+    "evolvesTo": [
+      "monster_amalgam"
+    ],
     "dmgMult": 0.15,
     "armor": 8,
     "regenMult": 0.12
+  },
+  {
+    "id": "terrify",
+    "locKeyName": "skill.terrify.name",
+    "locKeyDesc": "skill.terrify.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "paralyzing_dread"
+    ],
+    "damage": 5,
+    "damageType": "fear",
+    "element": "fear"
+  },
+  {
+    "id": "paralyzing_dread",
+    "locKeyName": "skill.paralyzing_dread.name",
+    "locKeyDesc": "skill.paralyzing_dread.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "soul_terror"
+    ],
+    "damage": 11,
+    "damageType": "fear",
+    "element": "fear"
+  },
+  {
+    "id": "soul_terror",
+    "locKeyName": "skill.soul_terror.name",
+    "locKeyDesc": "skill.soul_terror.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "existential_horror"
+    ],
+    "damage": 22,
+    "damageType": "fear",
+    "element": "fear"
+  },
+  {
+    "id": "existential_horror",
+    "locKeyName": "skill.existential_horror.name",
+    "locKeyDesc": "skill.existential_horror.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "fear",
+    "element": "fear"
+  },
+  {
+    "id": "water_bolt",
+    "locKeyName": "skill.water_bolt.name",
+    "locKeyDesc": "skill.water_bolt.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "torrent"
+    ],
+    "damage": 4,
+    "damageType": "magic",
+    "element": "water"
+  },
+  {
+    "id": "torrent",
+    "locKeyName": "skill.torrent.name",
+    "locKeyDesc": "skill.torrent.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "tidal_wave"
+    ],
+    "damage": 9,
+    "damageType": "magic",
+    "element": "water"
+  },
+  {
+    "id": "tidal_wave",
+    "locKeyName": "skill.tidal_wave.name",
+    "locKeyDesc": "skill.tidal_wave.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "deluge"
+    ],
+    "damage": 20,
+    "damageType": "magic",
+    "element": "water"
+  },
+  {
+    "id": "deluge",
+    "locKeyName": "skill.deluge.name",
+    "locKeyDesc": "skill.deluge.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 35,
+    "damageType": "magic",
+    "element": "water"
+  },
+  {
+    "id": "holy_light",
+    "locKeyName": "skill.holy_light.name",
+    "locKeyDesc": "skill.holy_light.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "divine_beam"
+    ],
+    "damage": 5,
+    "damageType": "magic",
+    "element": "light"
+  },
+  {
+    "id": "divine_beam",
+    "locKeyName": "skill.divine_beam.name",
+    "locKeyDesc": "skill.divine_beam.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "radiance_burst"
+    ],
+    "damage": 11,
+    "damageType": "magic",
+    "element": "light"
+  },
+  {
+    "id": "radiance_burst",
+    "locKeyName": "skill.radiance_burst.name",
+    "locKeyDesc": "skill.radiance_burst.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "divine_judgment"
+    ],
+    "damage": 22,
+    "damageType": "magic",
+    "element": "light"
+  },
+  {
+    "id": "divine_judgment",
+    "locKeyName": "skill.divine_judgment.name",
+    "locKeyDesc": "skill.divine_judgment.desc",
+    "kind": "active",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "magic",
+    "element": "light"
+  },
+  {
+    "id": "dark_nova",
+    "locKeyName": "skill.dark_nova.name",
+    "locKeyDesc": "skill.dark_nova.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "void_darkness"
+    ],
+    "damage": 25,
+    "damageType": "dark",
+    "element": "dark"
+  },
+  {
+    "id": "void_darkness",
+    "locKeyName": "skill.void_darkness.name",
+    "locKeyDesc": "skill.void_darkness.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 42,
+    "damageType": "dark",
+    "element": "dark"
+  },
+  {
+    "id": "corrosive_storm",
+    "locKeyName": "skill.corrosive_storm.name",
+    "locKeyDesc": "skill.corrosive_storm.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "dissolution"
+    ],
+    "damage": 16,
+    "damageType": "acid",
+    "element": "acid"
+  },
+  {
+    "id": "dissolution",
+    "locKeyName": "skill.dissolution.name",
+    "locKeyDesc": "skill.dissolution.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 28,
+    "damageType": "acid",
+    "element": "acid"
+  },
+  {
+    "id": "plague_storm",
+    "locKeyName": "skill.plague_storm.name",
+    "locKeyDesc": "skill.plague_storm.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "pandemic"
+    ],
+    "damage": 20,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "pandemic",
+    "locKeyName": "skill.pandemic.name",
+    "locKeyDesc": "skill.pandemic.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 35,
+    "damageType": "poison",
+    "element": "poison"
+  },
+  {
+    "id": "earthquake_slam",
+    "locKeyName": "skill.earthquake_slam.name",
+    "locKeyDesc": "skill.earthquake_slam.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "world_breaker"
+    ],
+    "damage": 22,
+    "damageType": "earth",
+    "element": "earth"
+  },
+  {
+    "id": "world_breaker",
+    "locKeyName": "skill.world_breaker.name",
+    "locKeyDesc": "skill.world_breaker.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "earth",
+    "element": "earth"
+  },
+  {
+    "id": "feral_annihilation",
+    "locKeyName": "skill.feral_annihilation.name",
+    "locKeyDesc": "skill.feral_annihilation.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "extinction_strike"
+    ],
+    "damage": 28,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "extinction_strike",
+    "locKeyName": "skill.extinction_strike.name",
+    "locKeyDesc": "skill.extinction_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 45,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "divine_cleave",
+    "locKeyName": "skill.divine_cleave.name",
+    "locKeyDesc": "skill.divine_cleave.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "heaven_slash"
+    ],
+    "damage": 22,
+    "damageType": "light",
+    "element": "light"
+  },
+  {
+    "id": "heaven_slash",
+    "locKeyName": "skill.heaven_slash.name",
+    "locKeyDesc": "skill.heaven_slash.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "light",
+    "element": "light"
+  },
+  {
+    "id": "dragon_god_strike",
+    "locKeyName": "skill.dragon_god_strike.name",
+    "locKeyDesc": "skill.dragon_god_strike.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "cosmic_rend"
+    ],
+    "damage": 30,
+    "damageType": "fire",
+    "element": "fire"
+  },
+  {
+    "id": "cosmic_rend",
+    "locKeyName": "skill.cosmic_rend.name",
+    "locKeyDesc": "skill.cosmic_rend.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 50,
+    "damageType": "void",
+    "element": "void"
+  },
+  {
+    "id": "bone_hail",
+    "locKeyName": "skill.bone_hail.name",
+    "locKeyDesc": "skill.bone_hail.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "void_volley"
+    ],
+    "damage": 22,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "void_volley",
+    "locKeyName": "skill.void_volley.name",
+    "locKeyDesc": "skill.void_volley.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "void",
+    "element": "void"
+  },
+  {
+    "id": "primal_devastation",
+    "locKeyName": "skill.primal_devastation.name",
+    "locKeyDesc": "skill.primal_devastation.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 25,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "chaos_nova",
+    "locKeyName": "skill.chaos_nova.name",
+    "locKeyDesc": "skill.chaos_nova.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "entropy_obliteration"
+    ],
+    "damage": 24,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "entropy_obliteration",
+    "locKeyName": "skill.entropy_obliteration.name",
+    "locKeyDesc": "skill.entropy_obliteration.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 40,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "primal_howl",
+    "locKeyName": "skill.primal_howl.name",
+    "locKeyDesc": "skill.primal_howl.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "genesis_roar"
+    ],
+    "damage": 22,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "genesis_roar",
+    "locKeyName": "skill.genesis_roar.name",
+    "locKeyDesc": "skill.genesis_roar.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 38,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "soul_cascade",
+    "locKeyName": "skill.soul_cascade.name",
+    "locKeyDesc": "skill.soul_cascade.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "soul_annihilation"
+    ],
+    "damage": 34,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "soul_annihilation",
+    "locKeyName": "skill.soul_annihilation.name",
+    "locKeyDesc": "skill.soul_annihilation.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 52,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "soul_hunger",
+    "locKeyName": "skill.soul_hunger.name",
+    "locKeyDesc": "skill.soul_hunger.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.28,
+    "regenMult": 0.32
+  },
+  {
+    "id": "god_aura",
+    "locKeyName": "skill.god_aura.name",
+    "locKeyDesc": "skill.god_aura.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.22,
+    "regenMult": 0.45,
+    "dodgeBonus": 0.15
+  },
+  {
+    "id": "monster_amalgam",
+    "locKeyName": "skill.monster_amalgam.name",
+    "locKeyDesc": "skill.monster_amalgam.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.25,
+    "armor": 15,
+    "regenMult": 0.2
   }
 ]
