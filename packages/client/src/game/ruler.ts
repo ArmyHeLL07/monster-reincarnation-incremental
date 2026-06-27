@@ -6,7 +6,7 @@ import { recomputeMaxes } from './state';
 type Log = (e: LogEvent) => void;
 
 /** Taboo rises one rank per this much accumulated Sin (GDD §C — the dark-path key). */
-const TABOO_PER_SIN = 300;
+const TABOO_PER_SIN = 200;
 
 /** One-time effects unlocked at each Taboo rank. */
 const TABOO_RANK_EFFECTS: Record<number, (state: GameState, log: Log) => void> = {

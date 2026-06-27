@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.1';
+export const VERSION = '1.20.2';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.2',
+    date: '2026-06-28',
+    tr: [
+      'balance: Günah dengesi — yamyamlık/Predator bir skil yutunca +2 günah (her ırka tematik günah musluğu); Taboo rank başına gereken günah 300→200 (Taboo Authority 600→400); 7 ölümcül günah eşiği ~%20 düşürüldü (pride 50→40 … lust 950→760). Karanlık/günah yolu artık ulaşılabilir',
+    ],
+    en: [
+      'balance: Sin rebalance — devouring a skill (cannibalism/Predator) now grants +2 sin (a sin tap for every race); Taboo now rises every 200 sin instead of 300 (Taboo Authority 600→400); the 7 deadly-sin thresholds lowered ~20% (pride 50→40 … lust 950→760). The dark/sin path is now reachable',
+    ],
+    ru: [
+      'balance: Баланс греха — поглощение навыка (каннибализм/Хищник) теперь даёт +2 греха; Табу растёт каждые 200 греха вместо 300 (Власть Табу 600→400); 7 порогов смертных грехов снижены ~20% (гордыня 50→40 … похоть 950→760)',
+    ],
+  },
   {
     v: '1.20.1',
     date: '2026-06-27',

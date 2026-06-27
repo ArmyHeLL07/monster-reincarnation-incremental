@@ -65,6 +65,7 @@ const ELITE_SAT = 1.5;
 const DEVOUR_KIN_THRESHOLD = 100; // general races must devour the same kin this many times first
 const DEVOUR_KIN_CHANCE = 0.08;   // then each further kin kill has this chance to teach a skill
 const DEVOUR_SLIME_CHANCE = 0.05; // slime Predator: any foe, no threshold (its signature)
+const DEVOUR_SIN = 2;             // devouring another's essence to steal its power stains you
 // Slime Absorb — gains the foe's properties on every kill.
 const ABSORB_RESIST_GAIN = 2;     // resistance XP per absorbed element
 const ABSORB_HEAL_PCT = 0.04;     // heal this fraction of max HP per kill (biomass)
@@ -1599,6 +1600,7 @@ function tryDevourSkill(state: GameState, content: Content, enemy: NonNullable<G
   if (learnable.length === 0) return false;
   const id = learnable[Math.floor(Math.random() * learnable.length)];
   state.skills.push({ id, level: 1, exp: 0 });
+  gainSin(state, content, DEVOUR_SIN, log); // consuming another's essence for power is a transgression
   log({ key: 'log.devour_skill', params: { enemy: enemy.locKey, skill: content.skills.get(id)!.locKeyName } });
   return true;
 }
