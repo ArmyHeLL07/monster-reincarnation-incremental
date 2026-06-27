@@ -584,8 +584,9 @@ function restRound(state: GameState, content: Content, log: Log): void {
 
   tryAutoSearch(state, content, log); // auto-forage + auto-explore (also runs in combat — see tick)
 
-  // Auto-event kararı
-  if (state.autoEventDecision && state.pendingEvent && state.stats.INT >= 50) {
+  // Auto-event kararı — boss riddles set state.bossRiddle (not pendingEvent), so include both here
+  // or auto-solve never fired for riddles (the bug Atıl reported).
+  if (state.autoEventDecision && (state.pendingEvent || state.bossRiddle) && state.stats.INT >= 50) {
     autoChooseEvent(state, content, log);
   }
 
@@ -988,7 +989,7 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
     const layer = currentLayer(state, content);
     if (!riddle || !layer) { state.bossRiddle = null; return; }
 
-    if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= 100) {
+    if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= RIDDLE_INT_SOLVE) {
       // Auto-solve: bilmece ödülünü ver, boss'u atla (gatekeeper/rebirth tetiklenir)
       applyRiddleReward(state, riddle.reward, log);
       state.resolvedEvents.push(br.roomKey);
@@ -1505,6 +1506,26 @@ export function applyBossClear(state: GameState, content: Content, log: Log): vo
       log({ key: 'log.hell_clear', params: { race: `race.${state.raceId}.name` } });
     }
   }
+}
+
+/** INT needed to bypass a boss riddle with raw intellect (auto-solve or the manual "🧠 skip" button). */
+export const RIDDLE_INT_SOLVE = 100;
+
+/** Manually pass the active boss riddle via intellect (no answer needed) — INT-gated. Returns true on success. */
+export function intSkipRiddle(state: GameState, content: Content, log: Log): boolean {
+  const br = state.bossRiddle;
+  if (!br || state.stats.INT < RIDDLE_INT_SOLVE) return false;
+  const riddle = content.bossRiddles.get(br.riddleId);
+  const layer = currentLayer(state, content);
+  if (!riddle || !layer) return false;
+  applyRiddleReward(state, riddle.reward, log);
+  state.resolvedEvents.push(br.roomKey);
+  state.bossRiddle = null;
+  applyBossClear(state, content, log);
+  if (state.autoAdvance) advancePosition(state, content, log);
+  else state.roomCleared = true;
+  log({ key: 'log.br_skip' });
+  return true;
 }
 
 /** Type the answer to the active boss riddle. Correct → mark solved (UI offers skip/fight). Wrong → escalate. */

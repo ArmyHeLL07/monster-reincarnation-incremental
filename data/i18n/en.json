@@ -1019,6 +1019,8 @@
   "ui.no_room": "No secret room perceived yet. (High Appraisal + Search)",
   "ui.answer": "answer…",
   "ui.solve": "Solve",
+  "ui.br_intskip": "Solve with INT",
+  "ui.br_intskip_hint": "High INT cracks the riddle instantly and passes",
   "ui.meditation": "Meditation",
   "ui.ruler": "Ruler (Sin/Virtue)",
   "ui.sin": "Sin",

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.4';
+export const VERSION = '1.20.5';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.5',
+    date: '2026-06-28',
+    tr: [
+      'fix: Boss bilmecesi otomatik çözülmüyordu — oto-olay kararı yalnızca normal olaylarda çalışıyordu, bilmece ayrı bir durum (state.bossRiddle) olduğu için INT yüksek olsa bile tetiklenmiyordu. Artık oto-olay açık + INT≥100 + "çöz" modunda boss bilmecesi otomatik geçilir',
+      'feat: "🧠 INT ile geç" butonu — oto kapalıyken bile INT≥100 ise bilmeceyi düşünmeden çözüp geçebilirsin (INT yetmezse gereken değer gösterilir)',
+    ],
+    en: [
+      'fix: Boss riddles never auto-solved — the auto-event decision only ran for normal events, but a riddle is a separate state (state.bossRiddle), so it never fired even with high INT. Now with auto-events on + INT≥100 + "solve" mode, boss riddles auto-pass',
+      'feat: "🧠 Solve with INT" button — even with auto off, INT≥100 lets you crack the riddle instantly and pass (shows the requirement if your INT is too low)',
+    ],
+    ru: [
+      'fix: Загадки боссов не решались автоматически — авто-решение событий работало только для обычных событий, а загадка — отдельное состояние, поэтому не срабатывало даже при высоком INT. Теперь при авто-событиях + INT≥100 + режим «решать» загадки проходятся авто',
+      'feat: Кнопка «🧠 Решить через INT» — даже при выключенном авто, INT≥100 мгновенно разгадывает загадку',
+    ],
+  },
   {
     v: '1.20.4',
     date: '2026-06-28',

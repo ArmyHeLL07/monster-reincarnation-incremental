@@ -1019,6 +1019,8 @@
   "ui.no_room": "Henüz gizli oda sezmedin. (Yüksek Appraisal + Ara)",
   "ui.answer": "cevap…",
   "ui.solve": "Çöz",
+  "ui.br_intskip": "INT ile geç",
+  "ui.br_intskip_hint": "Yüksek INT ile bilmeceyi düşünmeden çöz ve geç",
   "ui.meditation": "Meditasyon",
   "ui.ruler": "Ruler (Günah/Erdem)",
   "ui.sin": "Günah",

@@ -14,7 +14,7 @@ import { questProgress } from './game/quests';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS, RIDDLE_INT_SOLVE } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
 import { forageReveal } from './game/forage';
@@ -69,6 +69,7 @@ export interface UiActions {
   onAnswerRoom: (answer: string) => void;
   onChooseEvent: (i: number) => void;
   onAnswerBossRiddle: (answer: string) => void;
+  onIntSkipRiddle: () => void;
   onBossChoice: (mode: 'skip' | 'fight', difficulty: string) => void;
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
@@ -978,6 +979,7 @@ function bossRiddlePanel(state: GameState): string {
     <div class="controls">
       <input id="br-input" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
       <button id="br-answer">${t('ui.solve')}</button>
+      ${state.stats.INT >= RIDDLE_INT_SOLVE ? `<button id="br-intskip" class="ghost" title="${t('ui.br_intskip_hint')}">🧠 ${t('ui.br_intskip')}</button>` : `<span class="muted" style="font-size:.72rem">🧠 INT ${RIDDLE_INT_SOLVE}</span>`}
     </div></section>`;
 }
 
@@ -1408,6 +1410,7 @@ function wireCombat(el: HTMLElement): void {
     const input = el.querySelector<HTMLInputElement>('#br-input');
     if (input && input.value.trim()) ACTIONS.onAnswerBossRiddle(input.value);
   });
+  el.querySelector<HTMLButtonElement>('#br-intskip')?.addEventListener('click', () => ACTIONS.onIntSkipRiddle());
   el.querySelector<HTMLButtonElement>('.br-skip')?.addEventListener('click', () => ACTIONS.onBossChoice('skip', ''));
   el.querySelectorAll<HTMLButtonElement>('.br-fight').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onBossChoice('fight', b.dataset.diff ?? 'normal')),

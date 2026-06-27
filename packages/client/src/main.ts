@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
@@ -321,6 +321,9 @@ async function init(): Promise<void> {
       answerBossRiddle(state, content, a, logFn);
       save(state);
       render(state);
+    },
+    onIntSkipRiddle: () => {
+      if (intSkipRiddle(state, content, logFn)) { save(state); render(state); }
     },
     onBossChoice: (mode, difficulty) => {
       chooseBossOption(state, content, mode, difficulty, logFn);
