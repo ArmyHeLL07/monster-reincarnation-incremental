@@ -1,7 +1,7 @@
 import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
-import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
 import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
@@ -89,6 +89,7 @@ export interface UiActions {
   onToggleAutoExplore(): void;
   onToggleAutoEvent(): void;
   onSetPuzzleMode(mode: 'skip' | 'solve'): void;
+  onSpawnMinion(type: 'dps' | 'tank' | 'utility'): void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
@@ -2212,6 +2213,7 @@ function statsTab(state: GameState): string {
     </section>
     ${epShopPanel(state)}
     ${statisticsPanel(state)}
+    ${minionPanel(state)}
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
@@ -2221,6 +2223,45 @@ function statsTab(state: GameState): string {
     ${racePanel(state)}
     ${rulerPanel(state)}
     ${rebirthPanel(state)}
+  `;
+}
+
+function minionPanel(state: GameState): string {
+  if (state.raceId !== 'spider' || state.tier < 5) return '';
+  if (!state.minions) {
+    state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
+  }
+  const limit = Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1);
+  const total = state.minions.dps + state.minions.tank + state.minions.utility;
+  
+  return `
+    <section class="panel">
+      <h2>${t('ui.queen_panel')}</h2>
+      <div class="row">
+        <span>${t('ui.minions_limit')}:</span>
+        <span><b>${total} / ${limit}</b></span>
+      </div>
+      <ul style="margin-top:0.5rem; list-style:none; padding:0;">
+        <li style="margin-bottom:0.5rem;">
+          <div class="row">
+            <span>DPS: ${state.minions.dps}</span>
+            <button class="spawn-minion-btn" data-type="dps"${total >= limit || state.sp < 10 || state.mp < 5 ? ' disabled' : ''}>${t('ui.spawn')}</button>
+          </div>
+        </li>
+        <li style="margin-bottom:0.5rem;">
+          <div class="row">
+            <span>TANK: ${state.minions.tank} ${state.minions.tank > 0 ? `(${state.minions.tankHp}/${state.minions.tankMaxHp} HP)` : ''}</span>
+            <button class="spawn-minion-btn" data-type="tank"${total >= limit || state.sp < 10 || state.mp < 5 ? ' disabled' : ''}>${t('ui.spawn')}</button>
+          </div>
+        </li>
+        <li style="margin-bottom:0.5rem;">
+          <div class="row">
+            <span>UTILITY: ${state.minions.utility}</span>
+            <button class="spawn-minion-btn" data-type="utility"${total >= limit || state.sp < 10 || state.mp < 5 ? ' disabled' : ''}>${t('ui.spawn')}</button>
+          </div>
+        </li>
+      </ul>
+    </section>
   `;
 }
 
@@ -2447,6 +2488,12 @@ function wireStats(el: HTMLElement): void {
   });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
   el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
+  el.querySelectorAll<HTMLButtonElement>('.spawn-minion-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      const type = b.getAttribute('data-type');
+      if (type === 'dps' || type === 'tank' || type === 'utility') ACTIONS.onSpawnMinion(type);
+    });
+  });
   el.querySelectorAll<HTMLButtonElement>('.soul-buy[data-soul]').forEach((b) => {
     b.addEventListener('click', () => {
       const id = b.getAttribute('data-soul');

@@ -170,6 +170,12 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     }
   }
 
+  if (state.minions && state.minions.utility > 0) {
+    const isSovereign = state.formId === 'arachnid_sovereign';
+    const effMult = isSovereign ? 1.5 : 1;
+    b.lootMult *= (1 + state.minions.utility * 0.05 * effMult);
+    b.hungerMult *= Math.max(0.5, 1 - state.minions.utility * 0.03 * effMult);
+  }
   return b;
 }
 

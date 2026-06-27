@@ -341,6 +341,13 @@ export interface GameState {
   deepestLayer: number;
   deepestFloor: number;
   deepestRoom: number;
+  minions: {
+    dps: number;
+    tank: number;
+    utility: number;
+    tankHp: number;
+    tankMaxHp: number;
+  };
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -503,6 +510,13 @@ export function newGame(): GameState {
     deepestLayer: 1,
     deepestFloor: 1,
     deepestRoom: 1,
+    minions: {
+      dps: 0,
+      tank: 0,
+      utility: 0,
+      tankHp: 0,
+      tankMaxHp: 0,
+    },
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

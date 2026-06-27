@@ -54,6 +54,13 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.scars = 0;
   state.pendingRoom = null;
   state.statusEffects = []; // a fresh life carries no lingering poison/burn…
+  state.minions = {
+    dps: 0,
+    tank: 0,
+    utility: 0,
+    tankHp: 0,
+    tankMaxHp: 0,
+  };
   state.roomCleared = false; // …nor a stuck "cleared room" flag…
   state.cooldowns = {}; // …nor old skill cooldowns.
   state.pendingEvent = null; // …nor an open map event…

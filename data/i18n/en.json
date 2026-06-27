@@ -705,7 +705,7 @@
   "ruler.greed.name": "Greed",
   "ruler.greed.desc": "More loot/exp/resource gathering.",
   "ruler.gluttony.name": "Gluttony",
-  "ruler.gluttony.desc": "Grow by feeding; endurance + loot.",
+  "ruler.gluttony.desc": "Full → +15% dmg, +20% regen, +15% loot. Hungry → −20% dmg, −15% dodge.",
   "ruler.envy.name": "Envy",
   "ruler.envy.desc": "Mimic enemy power; damage.",
   "ruler.sloth.name": "Sloth",
@@ -908,7 +908,6 @@
   "log.taboo_rank4": "👁 Soul Sight: enemies are auto-appraised.",
   "log.taboo_rank5": "👑 Taboo Authority: all resistances +5, +10 INT, +10 WIS.",
   "log.gluttony_awaken": "🌀 The Black Hole in your stomach awakens — Gluttony active!",
-  "ruler.gluttony.desc": "Full → +15% dmg, +20% regen, +15% loot. Hungry → −20% dmg, −15% dodge.",
   "log.meditation_unlock": "From the long silence, a power was born… (Stillness)",
   "log.gatekeeper_down": "The Gatekeeper falls! Rebirth is now possible (Stats tab).",
   "log.hell_clear": "HELL CLEARED! A permanent reward earned for {race}.",
@@ -1852,5 +1851,17 @@
   "bestiary.flavor.earth_dragon_rendill": "An earth dragon with fire breath. Deals both physical and fire damage — the most dangerous dragon type.",
   "bestiary.flavor.queen_taratect": "The spider queen. Weaves magical webs and launches spatial attacks. The strongest spider in the dungeon.",
   "bestiary.flavor.abyss_horror": "A terror from the dark depths of the abyss. Fights with soul damage.",
-  "bestiary.flavor.system_guardian": "The ultimate guardian of the dungeon. Keeps the Rebirth gate locked with immense power. Complete all preparations before engaging."
+  "bestiary.flavor.system_guardian": "The ultimate guardian of the dungeon. Keeps the Rebirth gate locked with immense power. Complete all preparations before engaging.",
+  "ui.queen_panel": "Queen / Minions",
+  "ui.minions_limit": "Minion Limit",
+  "ui.spawn": "Spawn",
+  "log.minion_spawned_dps": "Spawned a DPS minion.",
+  "log.minion_spawned_tank": "Spawned a Tank minion.",
+  "log.minion_spawned_utility": "Spawned a Utility minion.",
+  "log.minion_spawn_failed": "Failed to spawn minion. Limit reached or not enough resources.",
+  "log.minion_dps_phys": "Your DPS minion attacks for {dmg} physical damage.",
+  "log.minion_dps_poison": "Your DPS minion attacks for {dmg} poison damage.",
+  "log.minions_absorbed": "Your Tank minion absorbs {absorbed} damage.",
+  "log.tank_minions_slain": "Your Tank minions have been slain!"
+
 }

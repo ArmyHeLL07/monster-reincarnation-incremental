@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -254,6 +254,15 @@ async function init(): Promise<void> {
     onToggleAutoExplore: () => { state.autoSearchExplore = !state.autoSearchExplore; save(state); render(state); },
     onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
     onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
+    onSpawnMinion: (type) => {
+      if (spawnMinion(state, type)) {
+        logFn({ key: `log.minion_spawned_${type}` });
+        save(state);
+        render(state);
+      } else {
+        logFn({ key: 'log.minion_spawn_failed' });
+      }
+    },
     onCourtDeath: () => {
       courtDeath(state, content, logFn);
       save(state);

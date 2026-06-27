@@ -705,7 +705,7 @@
   "ruler.greed.name": "Açgözlülük",
   "ruler.greed.desc": "Loot/exp/kaynak toplama artışı.",
   "ruler.gluttony.name": "Oburluk",
-  "ruler.gluttony.desc": "Yedikçe güçlen; dayanıklılık + loot.",
+  "ruler.gluttony.desc": "Dolu → +15% hasar, +20% regen, +15% ganimet. Aç → −20% hasar, −15% kaçınma.",
   "ruler.envy.name": "Kıskançlık",
   "ruler.envy.desc": "Düşman gücünü taklit; hasar.",
   "ruler.sloth.name": "Tembellik",
@@ -908,7 +908,6 @@
   "log.taboo_rank4": "👁 Ruh Görüşü: düşmanlar otomatik değerlendiriliyor.",
   "log.taboo_rank5": "👑 Taboo Otoritesi: tüm direnç +5, +10 INT, +10 WIS.",
   "log.gluttony_awaken": "🌀 Midendeki Kara Delik uyandı — Oburluk (Gluttony) aktif!",
-  "ruler.gluttony.desc": "Dolu → +15% hasar, +20% regen, +15% ganimet. Aç → −20% hasar, −15% kaçınma.",
   "log.meditation_unlock": "Uzun sessizlikten bir güç doğdu… (Durağanlık)",
   "log.gatekeeper_down": "Gatekeeper düştü! Yeniden doğuş artık mümkün (Statlar sekmesi).",
   "log.hell_clear": "CEHENNEM GEÇİLDİ! {race} için kalıcı ödül kazanıldı.",
@@ -1852,5 +1851,17 @@
   "bestiary.flavor.earth_dragon_rendill": "Ateş nefesli toprak ejderhası. Hem fiziksel hem ateş hasarı verir, en tehlikeli ejderha türü.",
   "bestiary.flavor.queen_taratect": "Örümcek kraliçesi. Büyüsel ağlar örer ve mekansal saldırılar yapar. Zindanın en güçlü örümceği.",
   "bestiary.flavor.abyss_horror": "Abisin karanlık derinliklerinden gelen dehşet. Ruh hasarıyla savaşır.",
-  "bestiary.flavor.system_guardian": "Zindanın nihai bekçisi. Devasa gücüyle Rebirth kapısını kilitli tutar. Tüm hazırlıklarınızı tamamlayın."
+  "bestiary.flavor.system_guardian": "Zindanın nihai bekçisi. Devasa gücüyle Rebirth kapısını kilitli tutar. Tüm hazırlıklarınızı tamamlayın.",
+  "ui.queen_panel": "Kraliçe / Minyonlar",
+  "ui.minions_limit": "Minyon Limiti",
+  "ui.spawn": "Çağır",
+  "log.minion_spawned_dps": "Hasar (DPS) minyonu çağrıldı.",
+  "log.minion_spawned_tank": "Tank minyonu çağrıldı.",
+  "log.minion_spawned_utility": "Fayda (Utility) minyonu çağrıldı.",
+  "log.minion_spawn_failed": "Minyon çağrılamadı. Limit aşılmış veya yetersiz kaynak.",
+  "log.minion_dps_phys": "Hasar minyonunuz {dmg} fiziksel hasar vuruyor.",
+  "log.minion_dps_poison": "Hasar minyonunuz {dmg} zehir hasarı vuruyor.",
+  "log.minions_absorbed": "Tank minyonunuz {absorbed} hasar emdi.",
+  "log.tank_minions_slain": "Tank minyonlarınız katledildi!"
+
 }
