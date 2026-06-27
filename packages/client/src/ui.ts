@@ -2383,10 +2383,14 @@ function minionPanel(state: GameState): string {
   `;
 }
 
+let achievementsOpen = false; // Stats-tab achievements list starts collapsed (32 rows = a lot of scroll)
+
 function achievementsPanel(state: GameState): string {
   const all = [...CONTENT.achievements.values()];
   if (all.length === 0) return '';
   const unlocked = new Set(state.achievements ?? []);
+  const header = `<h2 id="ach-toggle" style="cursor:pointer;user-select:none;margin:0">${achievementsOpen ? '▾' : '▸'} ${t('ui.achievements_title')} <span class="muted" style="font-size:.8rem">${unlocked.size}/${all.length}</span></h2>`;
+  if (!achievementsOpen) return `<section class="panel">${header}</section>`;
   const rows = all
     .map((a) => {
       const got = unlocked.has(a.id);
@@ -2408,7 +2412,7 @@ function achievementsPanel(state: GameState): string {
     .join('');
   return `
     <section class="panel">
-      <h2>${t('ui.achievements_title')} <span class="muted" style="font-size:.8rem">${unlocked.size}/${all.length}</span></h2>
+      ${header}
       ${rows}
     </section>`;
 }
@@ -2639,6 +2643,10 @@ function wireStats(el: HTMLElement): void {
       const f = b.getAttribute('data-switch');
       if (f) ACTIONS.onSwitchBranch(f);
     });
+  });
+  el.querySelector<HTMLElement>('#ach-toggle')?.addEventListener('click', () => {
+    achievementsOpen = !achievementsOpen;
+    render(CURSTATE);
   });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
   el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
