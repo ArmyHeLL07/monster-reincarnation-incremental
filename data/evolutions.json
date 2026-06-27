@@ -4472,8 +4472,8 @@
     "raceId": "spider",
     "locKey": "form.chaos_spinner.name",
     "evolvesTo": [
-      "soul_weaver_apex",
-      "oblivion_weaver"
+      "soul_mind",
+      "corruption_mind"
     ],
     "levelReq": 7,
     "tierReq": 7,
@@ -4489,8 +4489,8 @@
     "raceId": "spider",
     "locKey": "form.entropy_queen.name",
     "evolvesTo": [
-      "entropy_sovereign_sp",
-      "genesis_eater"
+      "entropy_lord_sp",
+      "genesis_lord"
     ],
     "levelReq": 7,
     "tierReq": 7,
@@ -4590,8 +4590,8 @@
     "raceId": "beastman",
     "locKey": "form.transcendent_hunter.name",
     "evolvesTo": [
-      "apex_chimera_bm",
-      "void_predator"
+      "chimera_hunter",
+      "void_hunter_bm"
     ],
     "levelReq": 7,
     "tierReq": 6,
@@ -4610,8 +4610,8 @@
     "raceId": "beastman",
     "locKey": "form.spirit_ascendant.name",
     "evolvesTo": [
-      "sovereign_beast",
-      "primal_sovereign"
+      "sovereign_path",
+      "primal_path"
     ],
     "levelReq": 7,
     "tierReq": 6,
@@ -4709,8 +4709,8 @@
     "raceId": "human",
     "locKey": "form.abomination_mage.name",
     "evolvesTo": [
-      "void_abomination",
-      "chaos_mage_supreme"
+      "void_scholar",
+      "chaos_scholar"
     ],
     "levelReq": 7,
     "tierReq": 6,
@@ -4729,8 +4729,8 @@
     "raceId": "human",
     "locKey": "form.dark_sovereign_human.name",
     "evolvesTo": [
-      "taboo_sovereign",
-      "dread_archmage"
+      "taboo_scholar",
+      "dread_scholar"
     ],
     "levelReq": 7,
     "tierReq": 6,
@@ -4934,6 +4934,375 @@
       "kills": 1000,
       "virtue": 400,
       "rebirths": 1
+    }
+  },
+  {
+    "id": "soul_mind",
+    "raceId": "spider",
+    "locKey": "form.soul_mind.name",
+    "evolvesTo": [
+      "soul_weaver_apex",
+      "abyssal_weaver"
+    ],
+    "levelReq": 7,
+    "tierReq": 8,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 4,
+      "AGI": 2
+    }
+  },
+  {
+    "id": "corruption_mind",
+    "raceId": "spider",
+    "locKey": "form.corruption_mind.name",
+    "evolvesTo": [
+      "oblivion_weaver",
+      "entropy_mind_sp"
+    ],
+    "levelReq": 7,
+    "tierReq": 8,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 5,
+      "STR": 2
+    }
+  },
+  {
+    "id": "entropy_lord_sp",
+    "raceId": "spider",
+    "locKey": "form.entropy_lord_sp.name",
+    "evolvesTo": [
+      "entropy_sovereign_sp",
+      "void_entropy"
+    ],
+    "levelReq": 7,
+    "tierReq": 8,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 6,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "genesis_lord",
+    "raceId": "spider",
+    "locKey": "form.genesis_lord.name",
+    "evolvesTo": [
+      "genesis_eater",
+      "cosmic_genesis"
+    ],
+    "levelReq": 7,
+    "tierReq": 8,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 3,
+      "AGI": 2,
+      "LUCK": 2
+    }
+  },
+  {
+    "id": "abyssal_weaver",
+    "raceId": "spider",
+    "locKey": "form.abyssal_weaver.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 9,
+      "WIS": 6,
+      "AGI": 4,
+      "STR": 3
+    }
+  },
+  {
+    "id": "entropy_mind_sp",
+    "raceId": "spider",
+    "locKey": "form.entropy_mind_sp.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 9,
+      "STR": 4,
+      "LUCK": 3
+    }
+  },
+  {
+    "id": "void_entropy",
+    "raceId": "spider",
+    "locKey": "form.void_entropy.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 10,
+      "WIS": 5,
+      "AGI": 5,
+      "STR": 2
+    }
+  },
+  {
+    "id": "cosmic_genesis",
+    "raceId": "spider",
+    "locKey": "form.cosmic_genesis.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 13,
+      "WIS": 9,
+      "LUCK": 4,
+      "STR": 2
+    }
+  },
+  {
+    "id": "chimera_hunter",
+    "raceId": "beastman",
+    "locKey": "form.chimera_hunter.name",
+    "evolvesTo": [
+      "apex_chimera_bm",
+      "transcendent_chimera"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "STR": 5,
+      "AGI": 4,
+      "VIT": 3,
+      "WIS": 2
+    }
+  },
+  {
+    "id": "void_hunter_bm",
+    "raceId": "beastman",
+    "locKey": "form.void_hunter_bm.name",
+    "evolvesTo": [
+      "void_predator",
+      "shadow_apex_bm"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "STR": 4,
+      "AGI": 6,
+      "INT": 3,
+      "WIS": 2
+    }
+  },
+  {
+    "id": "sovereign_path",
+    "raceId": "beastman",
+    "locKey": "form.sovereign_path.name",
+    "evolvesTo": [
+      "sovereign_beast",
+      "battle_sovereign_bm"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "VIT": 5,
+      "WIS": 4,
+      "STR": 3,
+      "AGI": 2
+    }
+  },
+  {
+    "id": "primal_path",
+    "raceId": "beastman",
+    "locKey": "form.primal_path.name",
+    "evolvesTo": [
+      "primal_sovereign",
+      "ancient_beast_lord"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 4,
+      "WIS": 5,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "transcendent_chimera",
+    "raceId": "beastman",
+    "locKey": "form.transcendent_chimera.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 9,
+      "AGI": 7,
+      "VIT": 5,
+      "WIS": 4
+    }
+  },
+  {
+    "id": "shadow_apex_bm",
+    "raceId": "beastman",
+    "locKey": "form.shadow_apex_bm.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "AGI": 10,
+      "STR": 7,
+      "INT": 5,
+      "WIS": 2
+    }
+  },
+  {
+    "id": "battle_sovereign_bm",
+    "raceId": "beastman",
+    "locKey": "form.battle_sovereign_bm.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "VIT": 9,
+      "STR": 8,
+      "WIS": 4,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "ancient_beast_lord",
+    "raceId": "beastman",
+    "locKey": "form.ancient_beast_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 7,
+      "WIS": 9,
+      "AGI": 4
+    }
+  },
+  {
+    "id": "void_scholar",
+    "raceId": "human",
+    "locKey": "form.void_scholar.name",
+    "evolvesTo": [
+      "void_abomination",
+      "void_sovereign_human"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 4,
+      "STR": 2,
+      "LUCK": 2
+    }
+  },
+  {
+    "id": "chaos_scholar",
+    "raceId": "human",
+    "locKey": "form.chaos_scholar.name",
+    "evolvesTo": [
+      "chaos_mage_supreme",
+      "chaos_incarnate"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 3,
+      "LUCK": 3,
+      "STR": 2
+    }
+  },
+  {
+    "id": "taboo_scholar",
+    "raceId": "human",
+    "locKey": "form.taboo_scholar.name",
+    "evolvesTo": [
+      "taboo_sovereign",
+      "forbidden_sovereign"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 6,
+      "STR": 2,
+      "LUCK": 2
+    }
+  },
+  {
+    "id": "dread_scholar",
+    "raceId": "human",
+    "locKey": "form.dread_scholar.name",
+    "evolvesTo": [
+      "dread_archmage",
+      "nightmare_archmage"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 5,
+      "STR": 3,
+      "LUCK": 2
+    }
+  },
+  {
+    "id": "void_sovereign_human",
+    "raceId": "human",
+    "locKey": "form.void_sovereign_human.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 11,
+      "WIS": 5,
+      "AGI": 4,
+      "STR": 3
+    }
+  },
+  {
+    "id": "chaos_incarnate",
+    "raceId": "human",
+    "locKey": "form.chaos_incarnate.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 13,
+      "WIS": 4,
+      "LUCK": 5,
+      "STR": 2
+    }
+  },
+  {
+    "id": "forbidden_sovereign",
+    "raceId": "human",
+    "locKey": "form.forbidden_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 9,
+      "STR": 4,
+      "LUCK": 3
+    }
+  },
+  {
+    "id": "nightmare_archmage",
+    "raceId": "human",
+    "locKey": "form.nightmare_archmage.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 10,
+      "WIS": 8,
+      "STR": 3,
+      "LUCK": 2
     }
   }
 ]
