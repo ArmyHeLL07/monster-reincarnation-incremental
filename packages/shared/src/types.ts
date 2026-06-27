@@ -457,6 +457,9 @@ export interface EventDef {
   weight?: number;
   /** Foresight: outcomes are previewed when appraisalTier/INT meets this. */
   revealReq?: { appraisalTier?: number; int?: number };
+  /** A moral encounter (spare vs devour). Choice 0 = spare (virtue), choice 1 = devour (sin). These
+   *  can auto-resolve per the player's `moralAutoMode` setting so AFK play never locks on the prompt. */
+  moral?: boolean;
   choices: EventChoice[];
 }
 

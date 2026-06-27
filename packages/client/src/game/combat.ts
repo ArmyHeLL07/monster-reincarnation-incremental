@@ -743,6 +743,59 @@ export function applyRoomModifierTick(state: GameState, content: Content, log: L
   log({ key: 'log.modifier_drain', params: { name: mod.locKey, dmg: drain } });
 }
 
+// ---- Precognition (Önsezi) — WIS-tiered preview of the room you'd advance into -------------------
+export const FORESIGHT_WIS_HINT = 30;   // danger + event presence
+export const FORESIGHT_WIS_EXACT = 60;  // exact modifier / hazard / event
+export const FORESIGHT_WIS_ENEMY = 100; // + the enemy pool / element
+
+export interface RoomForesight {
+  wis: number;
+  danger: boolean;
+  hasEvent: boolean;
+  moral: boolean;
+  eventIcon?: string;
+  modifierKey?: string;
+  hazardKey?: string;
+  hazardIcon?: string;
+  enemyPool: string[];
+}
+
+/** Coordinates of the room the player would advance into next (null at the very end of the dungeon). */
+export function nextRoomPos(state: GameState, content: Content): { layer: number; floor: number; room: number } | null {
+  const layer = currentLayer(state, content);
+  if (!layer) return null;
+  const R = roomsOf(state, layer, state.pos.floor);
+  if (state.pos.room < R) return { layer: state.pos.layer, floor: state.pos.floor, room: state.pos.room + 1 };
+  if (state.pos.floor < floorsOf(state, layer)) return { layer: state.pos.layer, floor: state.pos.floor + 1, room: 1 };
+  const next = content.dungeon.layers.find((l) => l.id === state.pos.layer + 1);
+  return next ? { layer: next.id, floor: 1, room: 1 } : null;
+}
+
+/** WIS-gated foresight of the next room (null below the WIS hint threshold). Pure — probes a pos copy. */
+export function roomPreview(state: GameState, content: Content): RoomForesight | null {
+  const wis = effStat(state, 'WIS');
+  if (wis < FORESIGHT_WIS_HINT) return null;
+  const np = nextRoomPos(state, content);
+  if (!np) return null;
+  const probe = { ...state, pos: np } as GameState; // read-only probe — never mutates real state
+  const evId = rollRoomEvent(probe, content);
+  const evDef = evId ? content.events.get(evId) : null;
+  const mod = currentRoomModifier(probe, content);
+  const haz = currentRoomHazard(probe);
+  const layer = content.dungeon.layers.find((l) => l.id === np.layer);
+  return {
+    wis,
+    danger: !!mod || !!haz || !!evId,
+    hasEvent: !!evId,
+    moral: !!evDef?.moral,
+    eventIcon: evDef?.icon,
+    modifierKey: mod?.locKey,
+    hazardKey: haz?.locKey,
+    hazardIcon: haz?.icon,
+    enemyPool: layer?.enemyPool ?? [],
+  };
+}
+
 /** Apply per-tick room hazard drains (HP loss, SP loss). Called once per tick in combat. */
 export function applyRoomHazardTick(state: GameState, log: Log): void {
   const hazard = currentRoomHazard(state);

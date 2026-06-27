@@ -13,7 +13,7 @@ import { achievementMetric } from './game/achievements';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
 import { forageReveal } from './game/forage';
@@ -1301,6 +1301,7 @@ function combatTab(state: GameState): string {
     </div>
     ${state.action === 'meditate' ? `<section class="panel">${medBarHtml(state)}</section>` : ''}
     ${advanceControls(state)}
+    ${roomPreviewHtml(state)}
     ${skillBar(state)}
     <div class="controls">
       ${deepBtn}
@@ -1324,6 +1325,27 @@ function advanceControls(state: GameState): string {
   const advBtn = canManualAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
   const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
   return `<div class="controls">${advBtn}${autoBtn}</div>`;
+}
+
+/** Önsezi: WIS-tiered foresight of the next room (knowledge = survival). Empty below the WIS threshold. */
+function roomPreviewHtml(state: GameState): string {
+  const f = roomPreview(state, CONTENT);
+  if (!f) return '';
+  const parts: string[] = [];
+  if (f.wis >= FORESIGHT_WIS_EXACT) {
+    if (f.modifierKey) parts.push(`🌫 ${t(f.modifierKey + '.name')}`);
+    if (f.hazardKey) parts.push(`${f.hazardIcon ?? '⚠'} ${t(f.hazardKey + '.name')}`);
+    if (f.hasEvent) parts.push(`${f.eventIcon ?? '❓'} ${f.moral ? t('ui.foresee_moral') : t('ui.foresee_event')}`);
+    if (parts.length === 0) parts.push(`✓ ${t('ui.foresee_calm')}`);
+  } else {
+    parts.push(f.danger ? `⚠ ${t('ui.foresee_danger')}` : `✓ ${t('ui.foresee_calm')}`);
+    if (f.hasEvent) parts.push(`❓ ${t('ui.foresee_event')}`);
+  }
+  if (f.wis >= FORESIGHT_WIS_ENEMY && f.enemyPool.length) {
+    const names = f.enemyPool.slice(0, 3).map((id) => { const e = CONTENT.enemies.get(id); return e ? t(e.locKey) : id; }).join(', ');
+    parts.push(`⚔ ${names}`);
+  }
+  return `<section class="panel" style="border-color:#9a7fd0;padding:.4rem .6rem"><p class="muted" style="margin:0;font-size:.82rem">🔮 ${t('ui.foresee_next')}: ${parts.join(' · ')}</p></section>`;
 }
 
 /** Combat mode toggle + equipped skill cast buttons (with live cooldown). */

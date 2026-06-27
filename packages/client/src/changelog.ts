@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.18.5';
+export const VERSION = '1.19.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.19.0',
+    date: '2026-06-27',
+    tr: [
+      'feat: Önsezi — yüksek WIS ile sonraki odayı önceden gör (savaş sekmesinde). WIS≥30: tehlike + olay var/yok ipucu; WIS≥60: kesin modifier + hazard + olay türü; WIS≥100: + düşman havuzu. "Bilgi = Hayatta Kalma"',
+    ],
+    en: [
+      'feat: Precognition — high WIS previews the next room (in the combat tab). WIS≥30: danger + whether an event waits; WIS≥60: exact modifier + hazard + event type; WIS≥100: + the enemy pool. "Knowledge = Survival"',
+    ],
+    ru: [
+      'feat: Предвидение — высокий WIS показывает следующую комнату (во вкладке боя). WIS≥30: опасность + есть ли событие; WIS≥60: точный модификатор + опасность + тип события; WIS≥100: + пул врагов',
+    ],
+  },
   {
     v: '1.18.5',
     date: '2026-06-27',
