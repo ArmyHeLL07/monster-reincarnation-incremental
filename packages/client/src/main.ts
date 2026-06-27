@@ -6,7 +6,7 @@ import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBes
 import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
-import { evolve, remapRemovedForms } from './game/evolution';
+import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { buySoulUpgrade } from './game/soul';
@@ -157,6 +157,12 @@ async function init(): Promise<void> {
       save(state);
       render(state);
       if (ok) playEvolveEffect(state.formId); // celebrate the new form (state.formId is now the target)
+    },
+    onSwitchBranch: (formId) => {
+      const ok = switchBranch(state, content, formId, logFn);
+      save(state);
+      render(state);
+      if (ok) playEvolveEffect(state.formId); // same celebration as an evolution
     },
     onFuse: (a, b) => {
       const r = fuse(state, content, a, b, logFn);

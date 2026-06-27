@@ -8,7 +8,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, e
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
 import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -39,6 +39,7 @@ export interface UiActions {
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
   onKeepGrow: () => void;
+  onSwitchBranch: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
@@ -160,7 +161,7 @@ function logCategory(key: string): LogCat {
 const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
-  'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
+  'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
   'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain',
 ]);
@@ -2205,12 +2206,21 @@ function evolutionInfoCard(state: GameState): string {
       ? t('ui.evo_locked', { lv: n.levelReq })
       : `${t('ui.evo_locked_tier')} T${n.tierReq}`;
 
+  // A 'missed' node is an unchosen sibling branch — offer a high-EP re-route into it.
+  const switchCost = switchBranchCost(state);
+  const isSwitchable = n.status === 'missed' && switchableTargets(state, CONTENT).some((f) => f.id === n.id);
+  const switchBtn = isSwitchable
+    ? (state.ep ?? 0) >= switchCost
+      ? `<button class="branch-switch-btn" data-switch="${n.id}" style="min-height:36px; padding:0.4rem 1rem; border-color:#c9a23a; color:#e6c558;">${t('ui.switch_branch')} · ${switchCost} EP</button>`
+      : `<button disabled style="min-height:36px; padding:0.4rem 1rem; opacity:0.5;">${t('ui.switch_branch')} · ${switchCost} EP</button>`
+    : '';
+
   const actionBtn =
     n.status === 'available'
       ? `<button class="evo-action-btn active" data-form="${n.id}" style="min-height:36px; padding:0.4rem 1.2rem;">${t('ui.evolve')}</button>`
       : n.status === 'locked'
         ? `<button disabled style="min-height:36px; padding:0.4rem 1.2rem; opacity:0.5;">${lockedReason}</button>`
-        : '';
+        : switchBtn;
 
   return `
     <div class="evo-info-card status-${n.status}">
@@ -2553,6 +2563,12 @@ function wireStats(el: HTMLElement): void {
     b.addEventListener('click', () => {
       const f = b.getAttribute('data-form');
       if (f) ACTIONS.onEvolve(f);
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.branch-switch-btn[data-switch]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const f = b.getAttribute('data-switch');
+      if (f) ACTIONS.onSwitchBranch(f);
     });
   });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);

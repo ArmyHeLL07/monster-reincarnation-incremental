@@ -46,10 +46,9 @@ export function evolutionReady(state: GameState, content: Content): boolean {
   return availableEvolutions(state, content).some((f) => canEvolve(state, f));
 }
 
-/** True if the player owns ANY skill in baseId's whole lineage — its ancestors OR descendants.
- *  Walks UP to the root first (so granting `raphael` sees an owned `great_sage`), then DOWN over
- *  the full evolvesTo tree. Prevents granting a skill the player already holds in a different form. */
-function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
+/** The full lineage of a skill — its ancestors AND descendants. Walks UP to the root first (so
+ *  `raphael` resolves back to `great_sage`), then DOWN over the whole evolvesTo tree. */
+function skillLineSet(content: Content, baseId: string): Set<string> {
   // 1) climb to the lineage root (the skill nothing evolves into baseId from).
   let root = baseId;
   const climbed = new Set<string>();
@@ -72,7 +71,20 @@ function ownsSkillLine(state: GameState, content: Content, baseId: string): bool
     line.add(id);
     for (const n of content.skills.get(id)?.evolvesTo ?? []) stack.push(n);
   }
+  return line;
+}
+
+/** True if the player owns ANY skill in baseId's whole lineage — its ancestors OR descendants.
+ *  Prevents granting a skill the player already holds in a different (evolved) form. */
+function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
+  const line = skillLineSet(content, baseId);
   return state.skills.some((s) => line.has(s.id));
+}
+
+/** Remove any owned skill that belongs to baseId's lineage (used when a branch is abandoned). */
+function removeOwnedSkillInLine(state: GameState, content: Content, baseId: string): void {
+  const line = skillLineSet(content, baseId);
+  state.skills = state.skills.filter((s) => !line.has(s.id));
 }
 
 /** Evolve into a branch: gated by character level; applies stat bonus, grants skills, heals. */
@@ -133,6 +145,90 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
     state.hp = Math.max(1, state.hp - dmg); // a real bite, but never lethal during the change
     log({ key: 'log.evolve_ambush', params: { dmg } });
   }
+  return true;
+}
+
+// ---- Branch switch (high-EP re-route) --------------------------------------
+// Rebirth changes branches by resetting everything; this is the premium shortcut: pay a steep EP fee
+// to re-route into an unchosen sibling branch you've already earned the tier for, keeping your tier,
+// allocated stats, fusions and meta. You lose only the abandoned branch's evolution stats + skills.
+
+/** EP cost to switch branches — scales with how far you've progressed (2500 × tier). */
+export function switchBranchCost(state: GameState): number {
+  return 2500 * Math.max(1, state.tier);
+}
+
+/** Sum of evolution statBonus across a lineage (root→…→form). */
+function lineageStatBonus(content: Content, history: string[]): Partial<Record<StatKey, number>> {
+  const acc: Partial<Record<StatKey, number>> = {};
+  for (const id of history) {
+    const f = content.forms.get(id);
+    if (!f?.statBonus) continue;
+    for (const [k, v] of Object.entries(f.statBonus)) acc[k as StatKey] = (acc[k as StatKey] ?? 0) + (v ?? 0);
+  }
+  return acc;
+}
+
+/** Forms the player may switch into: unchosen siblings of their ancestry, tier-earned and (if secret) unlocked. */
+export function switchableTargets(state: GameState, content: Content): EvolutionForm[] {
+  const cur = content.forms.get(state.formId);
+  if (!cur) return [];
+  const visited = new Set(state.formHistory);
+  // Sibling check excludes the CURRENT form, so its own children (normal forward evolutions, reached
+  // for free via evolve) are not offered as paid switches — only unchosen siblings of past forms are.
+  const pastNoCur = new Set(state.formHistory.filter((id) => id !== state.formId));
+  const out: EvolutionForm[] = [];
+  for (const f of content.forms.values()) {
+    if (f.raceId !== cur.raceId) continue;
+    if (f.id === state.formId || visited.has(f.id)) continue; // already current / already taken
+    if (!secretMet(state, f)) continue;
+    if (state.tier < (f.tierReq ?? 0)) continue; // tier not yet earned
+    // an unchosen sibling: at least one of its parents is a PAST form (not the current one)
+    const isSibling = [...content.forms.values()].some((p) => p.evolvesTo.includes(f.id) && pastNoCur.has(p.id));
+    if (isSibling) out.push(f);
+  }
+  return out;
+}
+
+/** Pay the EP fee and re-route into a sibling branch. Keeps tier/allocations/fusions; swaps the
+ *  abandoned branch's evolution stats + skills for the new lineage's. Level resets to 1. */
+export function switchBranch(state: GameState, content: Content, targetFormId: string, log: Log): boolean {
+  const target = content.forms.get(targetFormId);
+  const cur = content.forms.get(state.formId);
+  if (!target || !cur || target.raceId !== cur.raceId) return false;
+  if (!switchableTargets(state, content).some((f) => f.id === targetFormId)) return false;
+  const cost = switchBranchCost(state);
+  if ((state.ep ?? 0) < cost) return false;
+  state.ep -= cost;
+
+  const oldHistory = state.formHistory.slice();
+  const newHistory = ancestryOf(content, targetFormId);
+
+  // Stats: swap evolution lineage bonuses (race base + allocated stay untouched).
+  const oldB = lineageStatBonus(content, oldHistory);
+  const newB = lineageStatBonus(content, newHistory);
+  for (const k of new Set([...Object.keys(oldB), ...Object.keys(newB)]) as Set<StatKey>) {
+    state.stats[k] += (newB[k] ?? 0) - (oldB[k] ?? 0);
+  }
+
+  // Skills: drop the abandoned branch's granted skill lines, grant the new branch's (lineage-aware).
+  const oldGrants = new Set(oldHistory.flatMap((id) => content.forms.get(id)?.grantSkills ?? []));
+  const newGrants = new Set(newHistory.flatMap((id) => content.forms.get(id)?.grantSkills ?? []));
+  for (const id of oldGrants) if (!newGrants.has(id)) removeOwnedSkillInLine(state, content, id);
+  for (const id of newGrants) if (!oldGrants.has(id) && !ownsSkillLine(state, content, id)) state.skills.push({ id, level: 1, exp: 0 });
+  // Drop equips pointing at skills that no longer exist.
+  state.equipped = state.equipped.filter((id) => state.skills.some((s) => s.id === id));
+
+  state.formId = targetFormId;
+  state.formHistory = newHistory;
+  state.level = 1;
+  state.xp = 0;
+  state.evolveAckCount = 0; // tier is kept; new node → fresh "keep growing" acknowledgement
+  recomputeMaxes(state);
+  state.hp = state.maxHp;
+  state.mp = state.maxMp;
+  state.sp = state.maxSp;
+  log({ key: 'log.branch_switch', params: { form: target.locKey } });
   return true;
 }
 

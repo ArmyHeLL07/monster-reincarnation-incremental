@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.17.3';
+export const VERSION = '1.17.4';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.17.4',
+    date: '2026-06-27',
+    tr: [
+      'feat: Dalı Değiştir — yüksek EP (2500 × tier) ödeyerek geçmişte seçmediğin bir kardeş dala geçebilirsin (Statlar → evrim ağacı → kaçırılmış düğüm → "Dalı Değiştir"). Tier\'ın, dağıttığın statlar, füzyon/öğrenilen skiller ve meta korunur; sadece terk edilen dalın evrim stat+skill\'leri gider. Rebirth\'ten hafif bir yeniden-yönlendirme — pahalı ama dalı sıfırdan grind\'lemeden değiştirirsin',
+    ],
+    en: [
+      'feat: Switch Branch — pay a steep EP fee (2500 × tier) to re-route into an unchosen sibling branch from your past (Stats → evolution tree → a missed node → "Switch Branch"). Your tier, allocated stats, fusions/learned skills and meta are kept; only the abandoned branch\'s evolution stats + skills are lost. A lighter re-route than rebirth — expensive, but switches branches without re-grinding from scratch',
+    ],
+    ru: [
+      'feat: Смена ветки — заплатив крупную сумму EP (2500 × тир), можно перейти на невыбранную родственную ветку из прошлого (Статы → древо эволюции → пропущенный узел → «Сменить ветку»). Тир, распределённые статы, слияния/изученные навыки и мета сохраняются; теряются только эволюционные статы и навыки покинутой ветки. Более лёгкий перенаправление, чем перерождение',
+    ],
+  },
   {
     v: '1.17.3',
     date: '2026-06-27',
