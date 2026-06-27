@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.18.2';
+export const VERSION = '1.18.3';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.18.3',
+    date: '2026-06-27',
+    tr: [
+      'feat: Elit düşmanlar — her normal düşmanın ~%5 (LUCK ile artar, max %20) şansla elit varyantı çıkar: HP ×2.2, ATK ×1.5 ama EP/XP ×3 + doygunluk ×1.5. Altın çerçeve + ⭐ ELİT rozeti + belirince toast. Risk/ödül sürprizi',
+    ],
+    en: [
+      'feat: Elite enemies — every normal foe has a ~5% chance (rises with LUCK, max 20%) to spawn as an elite: ×2.2 HP, ×1.5 ATK but ×3 EP/XP and ×1.5 satiety. Gold frame + ⭐ ELITE badge + a toast on spawn. A risk/reward surprise',
+    ],
+    ru: [
+      'feat: Элитные враги — у каждого обычного врага ~5% шанс (растёт с LUCK, макс 20%) появиться элитным: ×2.2 HP, ×1.5 ATK, но ×3 EP/XP и ×1.5 сытость. Золотая рамка + значок ⭐ ЭЛИТА + уведомление',
+    ],
+  },
   {
     v: '1.18.2',
     date: '2026-06-27',

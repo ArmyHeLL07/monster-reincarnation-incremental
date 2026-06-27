@@ -164,7 +164,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.achievement', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain',
+  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -852,15 +852,16 @@ const DMG_COLORS: Record<string, string> = {
 /** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled.
  *  `active` = combat is live → the portrait gets a per-tick attack lunge (synced to the 1s round). */
 function enemyPortrait(inst: NonNullable<GameState['enemy']>, active: boolean): string {
-  const color = DMG_COLORS[inst.damageType] ?? '#989384';
-  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : '';
+  // Elites take a gold frame + glow so they read as special at a glance, over the element colour.
+  const color = inst.elite ? '#e6c558' : (DMG_COLORS[inst.damageType] ?? '#989384');
+  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : inst.elite ? 'box-shadow:0 0 14px #e6c558;' : '';
   const anim = active ? ' combat-active' : ' idle-foe';
   // A hand-drawn portrait when available; otherwise the emoji glyph.
   const inner = inst.image
     ? `<img class="eportrait-img" src="${assetUrl(inst.image)}" alt="" loading="lazy" />`
     : (inst.icon ?? '❓');
   // color:${color} so the boss-glow keyframe's currentColor matches the element's element-colour.
-  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
+  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${inst.elite ? ' elite' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
 }
 
 /** Resolve an asset path under the Vite base (handles the GitHub Pages "/<repo>/" base). */
@@ -904,14 +905,15 @@ function enemyView(state: GameState): string {
   const killBadge = (!isBossRoom && state.action === 'combat')
     ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
+  const eliteBadge = inst.elite ? `<span class="elite-badge">⭐ ${t('ui.elite')}</span>` : '';
   const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return `<div class="erow" style="position:relative">${killBadge}${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
+    return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
   }
   const baseName = t(inst.locKey);
-  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
+  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${baseName}`;
   const et = tier + (inst.analyzed ? 1 : 0); // a deep-read (Analyze) reveals one tier deeper, on the enemy
   const bits: string[] = [`<b>${name}</b>`];
   if (et >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
@@ -922,7 +924,7 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return `<div class="erow" style="position:relative">${killBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
+  return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */

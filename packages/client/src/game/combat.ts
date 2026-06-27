@@ -52,6 +52,14 @@ const DEPTH_HP = 0.05; // enemy HP growth per room of depth
 const DEPTH_ATK = 0.045;
 const BOSS_HP = 2.5;
 const BOSS_ATK = 1.6;
+// Elite variants — rare, tougher, far more rewarding. Chance scales lightly with LUCK.
+const ELITE_CHANCE = 0.05;
+const ELITE_LUCK = 0.001;
+const ELITE_CHANCE_CAP = 0.20;
+const ELITE_HP = 2.2;
+const ELITE_ATK = 1.5;
+const ELITE_EP = 3; // EP (and thus XP) reward multiplier
+const ELITE_SAT = 1.5;
 const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
@@ -816,7 +824,7 @@ function trySenseRoom(state: GameState, content: Content, log: Log): void {
 }
 
 /** Build a depth-scaled enemy instance for the current position (shared by combat, event & riddle spawns). */
-function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean, mult = 1): GameState['enemy'] {
+function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean, mult = 1, elite = false): GameState['enemy'] {
   const def = content.enemies.get(archId);
   if (!def) return null;
   const diff = diffDef(state, content);
@@ -824,8 +832,8 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
   const rbMult = rebirthMult(state);
   const roomMod = currentRoomModifier(state, content);
   const roomAtkBonus = roomMod?.enemyAtkBonus ?? 0;
-  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult * rbMult;
-  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult * rbMult * (1 + roomAtkBonus);
+  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * (elite ? ELITE_HP : 1) * diff.enemyMult * mult * rbMult;
+  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * (elite ? ELITE_ATK : 1) * diff.enemyMult * mult * rbMult * (1 + roomAtkBonus);
   const hp = Math.round(def.hp * hpMult);
   return {
     id: archId,
@@ -835,9 +843,10 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
     attack: Math.max(1, Math.round(def.attack * atkMult)),
     damageType: def.damageType,
     damageType2: def.damageType2,
-    ep: Math.round(def.ep * (isBoss ? 3 : 1) * mult), // reward scales with the chosen/fail difficulty
-    satiety: Math.round(def.satiety * (isBoss ? 2 : 1) * mult),
+    ep: Math.round(def.ep * (isBoss ? 3 : 1) * (elite ? ELITE_EP : 1) * mult), // reward scales with difficulty / elite
+    satiety: Math.round(def.satiety * (isBoss ? 2 : 1) * (elite ? ELITE_SAT : 1) * mult),
     isBoss,
+    elite: elite || undefined,
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
     icon: def.icon,
@@ -864,11 +873,14 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
   // New enemy hasn't seen any previous attacks — reset adaptation streak.
   state.dmgStreak = 0;
   state.dmgStreakType = undefined;
-  const enemy = makeEnemy(state, content, archId, isBoss);
+  // Rare elite roll (non-boss only) — LUCK nudges the odds up.
+  const eliteChance = Math.min(ELITE_CHANCE_CAP, ELITE_CHANCE + effStat(state, 'LUCK') * ELITE_LUCK);
+  const elite = !isBoss && Math.random() < eliteChance;
+  const enemy = makeEnemy(state, content, archId, isBoss, 1, elite);
   if (!enemy) return;
   if (state.autoAppraise) enemy.analyzed = true;
   state.enemy = enemy;
-  log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
+  log({ key: enemy.elite ? 'log.elite_spawn' : isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
   // Spider web trap: discharge accumulated gauge as opening burst damage.
   const webDmg = sigCombatStart(state);
   if (webDmg > 0) {

@@ -99,6 +99,8 @@ export interface EnemyInstance {
   riddleGuard?: boolean;
   /** Special combat behaviour copied from the archetype (regen/double-strike/enrage/armour/…). */
   behavior?: EnemyBehavior;
+  /** A rare elite variant — tougher (more HP/ATK) but drops far more EP/XP. Marked with a star badge. */
+  elite?: boolean;
 }
 
 export const MAX_HUNGER = 100;
