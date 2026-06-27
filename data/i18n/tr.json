@@ -366,6 +366,7 @@
   "ui.evo_rare": "nadir",
   "ui.switch_branch": "Dalı Değiştir",
   "ui.achievements_title": "Başarımlar",
+  "ui.achievement_unlocked": "Başarım Açıldı!",
   "log.achievement": "🏆 Başarım açıldı: {name} ({reward})",
   "ach.first_evolution.name": "İlk Evrim",
   "ach.first_evolution.desc": "İlk kez evrimleş.",

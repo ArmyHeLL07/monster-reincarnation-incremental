@@ -1,4 +1,4 @@
-import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot, Achievement } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
@@ -370,6 +370,7 @@ function structureSig(state: GameState): string {
 /** Per-tick light update: top bar + mini HUD (smooth bars), logs, and the active tab. */
 export function live(state: GameState): void {
   CURSTATE = state;
+  syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) {
     if (!top.firstElementChild) {
@@ -433,6 +434,40 @@ export function playEvolveEffect(formId: string): void {
     `<div class="evo-burst-text">✦ ${t('ui.evolved')} ✦<span>${name}</span></div>`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2000);
+}
+
+/** One-shot achievement celebration — reuses the evolution burst (centred, same look) with the
+ *  achievement icon + name. Imperative (appended to <body>) so ticks don't replay it. */
+export function playAchievementEffect(a: Achievement): void {
+  const rp: Record<string, string> = a.param ? { race: t(`race.${a.param}.name`) } : {};
+  const name = t(`${a.locKey}.name`, rp);
+  const el = document.createElement('div');
+  el.className = 'evo-burst ach-burst';
+  el.innerHTML =
+    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
+    `<div class="evo-burst-text">${a.icon} ${t('ui.achievement_unlocked')} ${a.icon}<span>${name}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// Achievements unlock passively during ticks (not via a user action), so the render loop diffs
+// state.achievements against what it has already celebrated and fires the burst for new ones.
+// The first sync seeds the set silently so loading a save doesn't replay every past achievement.
+let achFxSeeded = false;
+const celebratedAch = new Set<string>();
+function syncAchievementFx(state: GameState): void {
+  const cur = state.achievements ?? [];
+  if (!achFxSeeded) {
+    for (const id of cur) celebratedAch.add(id);
+    achFxSeeded = true;
+    return;
+  }
+  for (const id of cur) {
+    if (celebratedAch.has(id)) continue;
+    celebratedAch.add(id);
+    const a = CONTENT.achievements.get(id);
+    if (a) playAchievementEffect(a);
+  }
 }
 
 /** One-shot rebirth celebration: a death→soul-light→rebirth arc. Imperative + auto-removed. */

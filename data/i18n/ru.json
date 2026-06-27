@@ -366,6 +366,7 @@
   "ui.evo_rare": "редкая",
   "ui.switch_branch": "Сменить ветку",
   "ui.achievements_title": "Достижения",
+  "ui.achievement_unlocked": "Достижение получено!",
   "log.achievement": "🏆 Достижение получено: {name} ({reward})",
   "ach.first_evolution.name": "Первая эволюция",
   "ach.first_evolution.desc": "Эволюционируйте впервые.",

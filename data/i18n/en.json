@@ -366,6 +366,7 @@
   "ui.evo_rare": "rare",
   "ui.switch_branch": "Switch Branch",
   "ui.achievements_title": "Achievements",
+  "ui.achievement_unlocked": "Achievement Unlocked!",
   "log.achievement": "🏆 Achievement unlocked: {name} ({reward})",
   "ach.first_evolution.name": "First Evolution",
   "ach.first_evolution.desc": "Evolve for the first time.",

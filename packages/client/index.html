@@ -472,6 +472,11 @@
         animation: evo-burst-text 1.9s ease-out forwards;
       }
       .evo-burst-text span { display: block; margin-top: 0.35rem; font-size: 1.55rem; color: var(--ember); letter-spacing: 0.12em; }
+      /* Achievement burst — same animation as evolution, gold-tinted to set it apart. */
+      .ach-burst .evo-burst-ring { background: radial-gradient(circle, rgba(230, 197, 88, 0.95), rgba(201, 162, 58, 0.45) 42%, transparent 70%); }
+      .ach-burst .evo-burst-rays { background: linear-gradient(transparent, rgba(230, 197, 88, 0.6), transparent); }
+      .ach-burst .evo-burst-text { text-shadow: 0 0 14px #e6c558, 0 0 30px #c9a23a; }
+      .ach-burst .evo-burst-text span { color: #e6c558; }
       @keyframes evo-burst-ring { 0% { transform: scale(0.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(24); opacity: 0; } }
       @keyframes evo-burst-rays { 0% { transform: scale(0.2) rotate(0deg); opacity: 0; } 25% { opacity: 0.9; } 100% { transform: scale(1.4) rotate(40deg); opacity: 0; } }
       @keyframes evo-burst-text {
