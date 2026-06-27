@@ -4,7 +4,7 @@ import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
 import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
-import { isHumanoidForm, availableEvolutions, canEvolve } from './evolution';
+import { isHumanoidForm, availableEvolutions, canEvolve, secretMet } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
@@ -1310,7 +1310,14 @@ function processStatuses(state: GameState, content: Content, log: Log): void {
 function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boolean {
   const avail = availableEvolutions(state, content);
   if (avail.length === 0) return false; // terminal form reached — truly done
-  if (avail.some((f) => canEvolve(state, f))) return false; // evolution already unlocked, player acts
+  // Climb until the FULL menu of branches selectable at this node is open — not just the cheapest one.
+  // "Selectable" = every non-secret child, plus any secret child whose hidden condition is already met
+  // (a secret form joins the menu as a bonus but never halts the climb early). Without this, staggered
+  // sibling tierReqs (e.g. slime acid T3 / crystalline T4 / demon_slime T5) let the lowest-tier branch
+  // permanently lock the player out of its higher-tier siblings.
+  const selectable = avail.filter((f) => secretMet(state, f));
+  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
+  if (state.tier >= needTier && selectable.some((f) => canEvolve(state, f))) return false; // full menu open — player acts
   if (state.tier >= 10) return false; // T10 with tierReq still blocking = design gap, don't spiral
   state.tier = Math.min(10, state.tier + 1);
   state.level = 1;

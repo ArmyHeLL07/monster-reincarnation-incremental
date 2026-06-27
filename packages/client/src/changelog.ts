@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.17.1';
+export const VERSION = '1.17.2';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.17.2',
+    date: '2026-06-27',
+    tr: [
+      'fix: Evrim tier kilitlenmesi — kademeli kardeş formlar (ör. slime acid T3 / crystalline T4 / demon_slime T5) en düşük dal açılınca tier yükselmesini durduruyordu; artık oyun o düğümdeki TÜM dallar açılana kadar tier yükseltir, böylece tüm seçenekler görünür (slime + spider, 7 düğüm). Takılı kayıtlar kendiliğinden ilerlemeye devam eder',
+    ],
+    en: [
+      'fix: Evolution tier lockout — staggered sibling forms (e.g. slime acid T3 / crystalline T4 / demon_slime T5) halted tier growth as soon as the cheapest branch unlocked; the game now climbs until EVERY branch at that node is open, so all options appear (slime + spider, 7 nodes). Stuck saves resume progressing on their own',
+    ],
+    ru: [
+      'fix: Блокировка тира эволюции — ступенчатые родственные формы (напр. слизь acid T3 / crystalline T4 / demon_slime T5) останавливали рост тира, как только открывалась самая дешёвая ветка; теперь игра поднимает тир, пока не откроются ВСЕ ветки узла, и видны все варианты (слизь + паук, 7 узлов). Застрявшие сохранения продолжают прогресс сами',
+    ],
+  },
   {
     v: '1.17.1',
     date: '2026-06-25',
