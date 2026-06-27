@@ -1,0 +1,38 @@
+[
+  {
+    "id": "r1",
+    "text": "I have no voice, yet I answer in the dark; call into the cavern and I call back. What am I?",
+    "clue": "Caves love to repeat me.",
+    "answers": ["echo", "an echo"],
+    "reward": { "kind": "ep", "value": 25 }
+  },
+  {
+    "id": "r2",
+    "text": "I swell while you wait and fade the moment you feed. What am I?",
+    "clue": "The dungeon's quietest killer.",
+    "answers": ["hunger", "starvation"],
+    "reward": { "kind": "fragment", "value": "lore", "amount": 2 }
+  },
+  {
+    "id": "r3",
+    "text": "Eight legs weave my silent trap; the careless become my supper. What am I?",
+    "clue": "Look up before you walk.",
+    "answers": ["spider", "a spider", "web", "spider web", "cobweb"],
+    "reward": { "kind": "ep", "value": 30 }
+  },
+  {
+    "id": "r4",
+    "text": "Name me and you destroy me; meditation only deepens me. What am I?",
+    "clue": "Virtue feeds on it.",
+    "answers": ["silence", "stillness", "quiet"],
+    "reward": { "kind": "stat", "value": "WIS", "amount": 2 }
+  },
+  {
+    "id": "r5",
+    "text": "The first to fall taught the last to rise. Name the cycle written in the First Tome.",
+    "clue": "Read the oldest book to know the word.",
+    "answers": ["rebirth", "reincarnation", "the cycle"],
+    "reward": { "kind": "ep", "value": 60 },
+    "loreReq": "lore_1"
+  }
+]

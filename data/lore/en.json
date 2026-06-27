@@ -1,0 +1,35 @@
+[
+  {
+    "id": "lore_1",
+    "title": "The First Tome: On the First Death",
+    "lore": "Nothing here dies only once. The first creature to fall learned that the dark does not keep what it takes — it returns it, smaller, hungrier, and wiser. They named this turning the cycle of rebirth.",
+    "deep": "Each rebirth strips the flesh but leaves a scar of memory in the soul. That scar is not weakness; it is the ledger of every death, and the System reads it to decide what you may become.",
+    "intReq": 8,
+    "order": 1
+  },
+  {
+    "id": "lore_2",
+    "title": "On Wounds and Mending",
+    "lore": "Flesh torn in the dark does not wait for kindness. Those who survive learn to knit themselves shut between heartbeats — to heal is the first skill of the deep.",
+    "deep": "Regeneration is not free; it borrows from tomorrow's strength. Push it past its limit and the body forgets how to stop closing, sealing even what should stay open.",
+    "intReq": 10,
+    "order": 2,
+    "hints": "regen"
+  },
+  {
+    "id": "lore_3",
+    "title": "The Weaver's Patience",
+    "lore": "The strongest hunter never chases. It waits at the center of a trap it spun in silence, and lets the careless deliver themselves.",
+    "deep": "Every thread is a question the prey answers with its own weight. Mastery is not in the strike but in the stillness that makes the strike unnecessary.",
+    "intReq": 9,
+    "order": 3
+  },
+  {
+    "id": "lore_4",
+    "title": "Hunger, the Silent Court",
+    "lore": "The dungeon judges no one. Only hunger holds court here, and it rules the patient and the proud alike — wait too long and it collects its tax in flesh.",
+    "deep": "To eat your own kind quiets the hunger but stains the ruler within. Gluttony is the throne hunger offers to those who stop saying no.",
+    "intReq": 12,
+    "order": 4
+  }
+]

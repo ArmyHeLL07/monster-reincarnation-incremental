@@ -7,13 +7,11 @@ import type {
   EvolutionForm,
   FusionRules,
   Dungeon,
-  Book,
   SecretRoom,
   RulerDef,
   DifficultyDef,
   ElementChart,
   EventDef,
-  BossRiddle,
   ForageableFood,
   Achievement,
   Quest,
@@ -28,14 +26,11 @@ export interface Content {
   forms: Map<string, EvolutionForm>;
   fusionRules: FusionRules;
   dungeon: Dungeon;
-  books: Map<string, Book>;
   rooms: Map<string, SecretRoom>;
   ruler: RulerDef[];
   difficulties: Map<string, DifficultyDef>;
   elements: ElementChart;
   events: Map<string, EventDef>;
-  /** Boss riddles keyed by the boss enemy id they gate. */
-  bossRiddles: Map<string, BossRiddle>;
   /** Forageable food items keyed by id (Yemek Ara mechanic). */
   forageableFoods: Map<string, ForageableFood>;
   resistanceMergers: Map<string, ResistanceMerger>;
@@ -46,7 +41,7 @@ export interface Content {
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods, resistanceMergerList, achievements, quests] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -55,13 +50,11 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<EvolutionForm[]>(`${base}evolutions.json`),
       fetchJson<FusionRules>(`${base}fusion_rules.json`),
       fetchJson<Dungeon>(`${base}dungeon.json`),
-      fetchJson<Book[]>(`${base}books.json`),
       fetchJson<SecretRoom[]>(`${base}secret_rooms.json`),
       fetchJson<RulerDef[]>(`${base}ruler.json`),
       fetchJson<DifficultyDef[]>(`${base}difficulty.json`),
       fetchJson<ElementChart>(`${base}elements.json`),
       fetchJson<EventDef[]>(`${base}events.json`),
-      fetchJson<BossRiddle[]>(`${base}boss_riddles.json`),
       fetchJson<ForageableFood[]>(`${base}forageable_foods.json`),
       fetchJson<ResistanceMerger[]>(`${base}resistance_mergers.json`),
       fetchJson<Achievement[]>(`${base}achievements.json`),
@@ -75,14 +68,11 @@ export async function loadContent(base: string): Promise<Content> {
     forms: byId(forms),
     fusionRules,
     dungeon,
-    books: byId(books),
     rooms: byId(rooms),
     ruler,
     difficulties: byId(difficulties),
     elements,
     events: byId(events),
-    // Keyed by riddle id (state.bossRiddle.riddleId looks up by id); pickBossRiddle maps boss→riddle.
-    bossRiddles: new Map(bossRiddles.map((r) => [r.id, r])),
     forageableFoods: byId(forageableFoods),
     resistanceMergers: new Map(resistanceMergerList.map((m) => [m.id, m])),
     achievements: byId(achievements),

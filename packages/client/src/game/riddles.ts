@@ -1,7 +1,7 @@
-import type { BossRiddle, StatKey } from '@mri/shared';
-import type { Content } from './content';
+import type { NativeRiddle, StatKey } from '@mri/shared';
 import type { GameState, LogEvent } from './state';
 import { recomputeMaxes } from './state';
+import { allRiddles } from './langContent';
 
 type Log = (e: LogEvent) => void;
 /** A reward payload shared by secret rooms and boss riddles. */
@@ -68,17 +68,16 @@ export function bossRiddleChance(state: GameState): number {
   return Math.min(RIDDLE_CHANCE_CAP, RIDDLE_CHANCE_BASE + state.stats.LUCK * RIDDLE_CHANCE_LUCK);
 }
 
-/** The riddle gating a given boss archetype, if any. */
-export function pickBossRiddle(content: Content, bossId: string): BossRiddle | null {
-  // bossRiddles is keyed by riddle id, so match the boss by its bossId field.
-  return [...content.bossRiddles.values()].find((r) => r.bossId === bossId) ?? null;
+/** A random NATIVE riddle for a boss gate (language-specific pool); null if none loaded. */
+export function pickBossRiddle(): NativeRiddle | null {
+  const pool = allRiddles();
+  return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
 }
 
 /** Is the typed answer correct (Turkish-folded tolerance)? */
-export function checkBossAnswer(riddle: BossRiddle, answer: string): boolean {
+export function checkBossAnswer(riddle: NativeRiddle, answer: string): boolean {
   const norm = normalizeAnswer(answer);
-  const all = [...(riddle.answers.tr ?? []), ...(riddle.answers.en ?? [])];
-  return norm.length > 0 && all.some((a) => normalizeAnswer(a) === norm);
+  return norm.length > 0 && riddle.answers.some((a) => normalizeAnswer(a) === norm);
 }
 
 // ---- normal secret-room riddle attempt limit -------------------------------

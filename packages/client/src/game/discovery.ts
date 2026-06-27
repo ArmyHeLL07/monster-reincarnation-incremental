@@ -6,6 +6,7 @@ import { aggregateBonuses } from './effects';
 import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm } from './evolution';
 import { normalizeAnswer, isRiddleLocked, recordRiddleWrong, applyRiddleReward } from './riddles';
+import { allLore, loreById } from './langContent';
 
 type Log = (e: LogEvent) => void;
 
@@ -59,13 +60,13 @@ export function search(state: GameState, content: Content, log: Log): void {
     }
   }
 
-  // 2) Find a sacrifice book (chronological series).
-  const book = [...content.books.values()]
+  // 2) Find a lore tome (native, chronological series).
+  const book = [...allLore()]
     .sort((x, y) => x.order - y.order)
     .find((bk) => !state.booksFound.includes(bk.id));
   if (book && Math.random() < 0.16 + luck * 0.005 + tier * 0.01) {
     state.booksFound.push(book.id);
-    log({ key: 'log.search_book' });
+    log({ key: 'log.search_book', params: { title: book.title } });
     return;
   }
 
@@ -98,15 +99,15 @@ export function search(state: GameState, content: Content, log: Log): void {
 }
 
 /** Read a found book: surface lore always; the deep layer only at/above its INT gate (§7.8.1). */
-export function readBook(state: GameState, content: Content, bookId: string, log: Log): void {
-  const book = content.books.get(bookId);
+export function readBook(state: GameState, _content: Content, bookId: string, log: Log): void {
+  const book = loreById(bookId); // native lore (text is raw, not a loc key)
   if (!book || !state.booksFound.includes(bookId)) return;
-  log({ key: 'log.book_lore', params: { lore: book.locKeyLore } });
+  log({ key: 'log.book_lore', params: { title: book.title, lore: book.lore } });
   // Surface read always grants a small EP reward — knowledge has tangible value.
   state.ep += 5;
   log({ key: 'log.book_ep', params: { ep: 5 } });
   if (state.stats.INT >= book.intReq) {
-    log({ key: 'log.book_deep', params: { deep: book.locKeyDeep } });
+    log({ key: 'log.book_deep', params: { deep: book.deep } });
     const firstTime = !state.discoveries.includes(bookId);
     if (firstTime) {
       state.discoveries.push(bookId);

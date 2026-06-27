@@ -1,0 +1,35 @@
+[
+  {
+    "id": "lore_1",
+    "title": "İlk Kitap: İlk Ölüm Üzerine",
+    "lore": "Burada hiçbir şey yalnızca bir kez ölmez. Düşen ilk yaratık öğrendi ki karanlık aldığını saklamaz — onu daha küçük, daha aç ve daha bilge olarak geri verir. Bu dönüşe yeniden doğuş döngüsü dediler.",
+    "deep": "Her yeniden doğuş eti soyar ama ruhta bir hafıza izi bırakır. Bu iz zayıflık değil; her ölümün defteridir ve Sistem ne olabileceğine karar verirken onu okur.",
+    "intReq": 8,
+    "order": 1
+  },
+  {
+    "id": "lore_2",
+    "title": "Yaralar ve Şifa Üzerine",
+    "lore": "Karanlıkta yırtılan et merhamet beklemez. Hayatta kalanlar kalp atışları arasında kendilerini dikmeyi öğrenir — iyileşmek, derinliğin ilk yeteneğidir.",
+    "deep": "Rejenerasyon bedava değildir; yarının gücünden ödünç alır. Sınırının ötesine zorlarsan beden kapanmayı durdurmayı unutur, açık kalması gerekeni bile mühürler.",
+    "intReq": 10,
+    "order": 2,
+    "hints": "regen"
+  },
+  {
+    "id": "lore_3",
+    "title": "Dokumacının Sabrı",
+    "lore": "En güçlü avcı asla kovalamaz. Sessizce ördüğü tuzağın merkezinde bekler ve dikkatsizlerin kendilerini teslim etmesine izin verir.",
+    "deep": "Her iplik, avın kendi ağırlığıyla yanıtladığı bir sorudur. Ustalık darbede değil, darbeyi gereksiz kılan durgunluktadır.",
+    "intReq": 9,
+    "order": 3
+  },
+  {
+    "id": "lore_4",
+    "title": "Açlık, Sessiz Mahkeme",
+    "lore": "Zindan kimseyi yargılamaz. Burada yalnızca açlık mahkeme kurar ve sabırlıyı da gururluyu da aynı yargılar — fazla beklersen vergisini etten alır.",
+    "deep": "Kendi türünü yemek açlığı susturur ama içindeki hükümdarı lekeler. Oburluk, açlığın 'hayır' demeyi bırakanlara sunduğu tahttır.",
+    "intReq": 12,
+    "order": 4
+  }
+]

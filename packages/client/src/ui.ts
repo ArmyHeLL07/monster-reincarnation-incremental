@@ -11,6 +11,7 @@ import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { achievementMetric } from './game/achievements';
 import { questProgress } from './game/quests';
+import { riddleById, loreById } from './game/langContent';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -70,6 +71,7 @@ export interface UiActions {
   onChooseEvent: (i: number) => void;
   onAnswerBossRiddle: (answer: string) => void;
   onIntSkipRiddle: () => void;
+  onAbandonRiddle: () => void;
   onBossChoice: (mode: 'skip' | 'fight', difficulty: string) => void;
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
@@ -845,7 +847,7 @@ function ownsSkill(state: GameState, id: string): boolean {
 /** A feature unlocks once the player has READ the deep layer (INT-gated) of a matching lore book —
  *  merely FINDING the book is not enough (deep-read book ids live in state.discoveries). */
 function loreUnlocked(state: GameState, hint: string): boolean {
-  return state.discoveries.some((id) => CONTENT.books.get(id)?.hints === hint);
+  return state.discoveries.some((id) => loreById(id)?.hints === hint);
 }
 
 /** Element → portrait frame colour (visual flavour only). */
@@ -959,8 +961,19 @@ function eventPanel(state: GameState): string {
 function bossRiddlePanel(state: GameState): string {
   const br = state.bossRiddle;
   if (!br) return '';
-  const riddle = CONTENT.bossRiddles.get(br.riddleId);
+  const riddle = riddleById(br.riddleId);
   if (!riddle) return '';
+  // Hard lore-gate: if the riddle needs lore the player hasn't found, lock it — they must fight the boss.
+  if (riddle.loreReq && !state.booksFound.includes(riddle.loreReq) && br.attempts >= 0) {
+    const loreTitle = loreById(riddle.loreReq)?.title ?? riddle.loreReq;
+    return `<section class="panel brpanel"><div class="ev-head">🧩 <b>${t('ui.br_title')}</b></div>
+      <p>${riddle.text}</p>
+      <p style="color:#c9a23a;font-size:0.85rem">🔒 ${t('ui.br_lore_locked', { lore: loreTitle })}</p>
+      <div class="ev-choices">
+        <button class="evchoice" id="br-abandon">⚔️ ${t('ui.br_fight_instead')}</button>
+        ${state.stats.INT >= RIDDLE_INT_SOLVE ? `<button id="br-intskip" class="ghost" title="${t('ui.br_intskip_hint')}">🧠 ${t('ui.br_intskip')}</button>` : ''}
+      </div></section>`;
+  }
   if (br.attempts === -1) {
     return `<section class="panel brpanel"><div class="ev-head">🗝️ <b>${t('ui.br_solved_title')}</b></div>
       <p>${t('ui.br_choose')}</p>
@@ -974,8 +987,8 @@ function bossRiddlePanel(state: GameState): string {
       </div></section>`;
   }
   return `<section class="panel brpanel"><div class="ev-head">🧩 <b>${t('ui.br_title')}</b> <span class="muted">${t('ui.br_attempts', { left: 3 - br.attempts })}</span></div>
-    <p>${t(riddle.locKey)}</p>
-    <p class="muted" style="font-size:0.8rem">↪ ${t(riddle.locKeyClue)}</p>
+    <p>${riddle.text}</p>
+    <p class="muted" style="font-size:0.8rem">↪ ${riddle.clue}</p>
     <div class="controls">
       <input id="br-input" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
       <button id="br-answer">${t('ui.solve')}</button>
@@ -1411,6 +1424,7 @@ function wireCombat(el: HTMLElement): void {
     if (input && input.value.trim()) ACTIONS.onAnswerBossRiddle(input.value);
   });
   el.querySelector<HTMLButtonElement>('#br-intskip')?.addEventListener('click', () => ACTIONS.onIntSkipRiddle());
+  el.querySelector<HTMLButtonElement>('#br-abandon')?.addEventListener('click', () => ACTIONS.onAbandonRiddle());
   el.querySelector<HTMLButtonElement>('.br-skip')?.addEventListener('click', () => ACTIONS.onBossChoice('skip', ''));
   el.querySelectorAll<HTMLButtonElement>('.br-fight').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onBossChoice('fight', b.dataset.diff ?? 'normal')),
@@ -1633,7 +1647,7 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   const exp = expandedSkill === s.id;
   const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
   const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
-  const sacUnlocked = state.discoveries.some((id) => CONTENT.books.has(id)); // deep-read a Sacrifice Journal (INT)
+  const sacUnlocked = state.discoveries.some((id) => !!loreById(id)); // deep-read a lore tome (INT)
   const sacBtn = sacUnlocked
     ? `<button class="sacskill ghost" data-sac="${s.id}">${t('ui.sacrifice')}</button>`
     : `<span class="muted" style="font-size:.78rem">${t('ui.sacrifice_locked')}</span>`;
@@ -2076,14 +2090,14 @@ function loreTab(state: GameState): string {
 
   const books = state.booksFound.length
     ? [...state.booksFound]
-        .map((id) => CONTENT.books.get(id))
+        .map((id) => loreById(id))
         .filter((b): b is NonNullable<typeof b> => !!b)
         .sort((a, b) => a.order - b.order)
         .map((bk) => {
           const read = state.discoveries.includes(bk.id);
           const deep = state.stats.INT >= bk.intReq;
           const tag = read ? '✓' : deep ? '★' : `INT ${bk.intReq}`;
-          return `<li><button class="readbook" data-book="${bk.id}">${t('book.' + bk.id + '.title')}</button> <span class="muted">${tag}</span></li>`;
+          return `<li><button class="readbook" data-book="${bk.id}">${bk.title}</button> <span class="muted">${tag}</span></li>`;
         })
         .join('')
     : `<span class="muted">${t('ui.empty')}</span>`;

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "r1",
+    "text": "Dağda gezer, bağda gezer; kendi evinde tezgâh dezer. Bu ne ola ki?",
+    "clue": "Sekiz ayağıyla iplik eğirir.",
+    "answers": ["örümcek", "orumcek"],
+    "reward": { "kind": "ep", "value": 25 }
+  },
+  {
+    "id": "r2",
+    "text": "Beklersen kabarır, doyarsan söner gider; zindanın en sessiz katili. Nedir?",
+    "clue": "Karnını doyurmazsan seni yer.",
+    "answers": ["açlık", "aclik"],
+    "reward": { "kind": "fragment", "value": "lore", "amount": 2 }
+  },
+  {
+    "id": "r3",
+    "text": "Sesi yok ama karanlıkta sana cevap verir; mağaraya seslen, o da seslenir. Nedir?",
+    "clue": "Mağaralar onu tekrarlar.",
+    "answers": ["yankı", "yanki", "eko"],
+    "reward": { "kind": "ep", "value": 30 }
+  },
+  {
+    "id": "r4",
+    "text": "Adını söyleyince onu yok edersin; meditasyon ise onu derinleştirir. Nedir?",
+    "clue": "Erdem onunla beslenir.",
+    "answers": ["sessizlik", "sukunet", "sükunet", "suskunluk"],
+    "reward": { "kind": "stat", "value": "WIS", "amount": 2 }
+  },
+  {
+    "id": "r5",
+    "text": "İlk düşen, son yükseleni eğitti. İlk Kitap'ta yazılı döngünün adı nedir?",
+    "clue": "Adını öğrenmek için en eski kitabı oku.",
+    "answers": ["yeniden doğuş", "yeniden dogus", "reenkarnasyon", "döngü", "dongu"],
+    "reward": { "kind": "ep", "value": 60 },
+    "loreReq": "lore_1"
+  }
+]

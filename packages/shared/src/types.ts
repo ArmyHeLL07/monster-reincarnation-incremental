@@ -463,6 +463,39 @@ export interface EventDef {
   choices: EventChoice[];
 }
 
+/** A boss-gate riddle written NATIVELY per language (no translation — each language file has its own
+ *  wordplay). The same `id` slot exists in every language's riddles/<lang>.json so a pending riddle
+ *  still resolves after a language switch. Pulled at random. */
+export interface NativeRiddle {
+  id: string;
+  /** The riddle question, in this language's own words. */
+  text: string;
+  /** A hint shown beneath the question. */
+  clue: string;
+  /** Accepted answers (normalised match — case/space/Turkish-letter folded). */
+  answers: string[];
+  reward: { kind: 'skill' | 'stat' | 'unlock' | 'ep' | 'fragment'; value: string | number; amount?: number };
+  /** Optional lore id that must be READ before this riddle can be answered (hard knowledge-gate). */
+  loreReq?: string;
+}
+
+/** A lore entry written NATIVELY per language (replaces the old translated books). Shared `id` slots. */
+export interface NativeLore {
+  id: string;
+  /** Book title (native). */
+  title: string;
+  /** Surface text — always readable once found. */
+  lore: string;
+  /** Deeper text — revealed only at/above intReq. */
+  deep: string;
+  /** INT required to grasp the deep layer. */
+  intReq: number;
+  /** Reading order (chronological series). */
+  order: number;
+  /** Optional tag — e.g. 'regen' unlocks the passive regen discovery when this lore is found. */
+  hints?: string;
+}
+
 /** A hard riddle that may gate a boss room (GDD §8.2 — "knowledge defeats the boss"). */
 export interface BossRiddle {
   id: string;

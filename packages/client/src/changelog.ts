@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.5';
+export const VERSION = '1.21.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.21.0',
+    date: '2026-06-28',
+    tr: [
+      'feat: Dile-ÖZEL native bilmeceler — bilmeceler artık çeviri değil, her dile özgü yazılıyor (wordplay korunur). Boss odalarında rastgele native bilmece çıkar; doğru cevap → boss\'u atla/ödül. data/riddles/<dil>.json',
+      'feat: Dile-özel native lore — kitaplar artık çevrilmiyor, her dil kendi lore metnini okur (data/lore/<dil>.json). Search ile bulunur, INT ile derin katman açılır',
+      'feat: Lore-kapılı bilmeceler — bazı bilmeceler bir lore gerektirir; o lore bulunmadan bilmece kilitli kalır ("önce şu lore\'u bul") — yine de boss\'la savaşabilir ya da INT≥100 ile geçebilirsin',
+    ],
+    en: [
+      'feat: Language-NATIVE riddles — riddles are no longer translated; each language is written on its own so wordplay survives. Boss rooms now show a random native riddle; a correct answer skips the boss / rewards. data/riddles/<lang>.json',
+      'feat: Language-native lore — books are no longer translated; each language reads its own lore text (data/lore/<lang>.json). Found via search, deep layer unlocked by INT',
+      'feat: Lore-gated riddles — some riddles require a lore; until you find it the riddle stays locked ("find this lore first") — you can still fight the boss or pass with INT≥100',
+    ],
+    ru: [
+      'feat: Загадки НА РОДНОМ языке — загадки больше не переводятся; каждый язык пишется отдельно (игра слов сохраняется). В комнатах боссов появляется случайная родная загадка',
+      'feat: Знания на родном языке — книги больше не переводятся; каждый язык читает свой текст (data/lore/<язык>.json)',
+      'feat: Загадки с гейтом знаний — некоторым загадкам нужно знание; пока не найдёшь — загадка заблокирована (можно сразиться с боссом или пройти при INT≥100)',
+    ],
+  },
   {
     v: '1.20.5',
     date: '2026-06-28',

@@ -1,9 +1,10 @@
 import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
+import { loadLangContent } from './game/langContent';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, abandonRiddleForBoss, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
@@ -28,6 +29,7 @@ async function init(): Promise<void> {
   migrate(state);
   const lang = state.lang ?? 'en';
   await loadI18n(base, lang);
+  await loadLangContent(base, lang); // native riddles + lore for this language
   const content = await loadContent(base);
   recomputeMaxes(state);
   repairSave(state, content); // content-aware fixes (dedupe skill lineages, remap removed forms) — BEFORE offline
@@ -325,6 +327,7 @@ async function init(): Promise<void> {
     onIntSkipRiddle: () => {
       if (intSkipRiddle(state, content, logFn)) { save(state); render(state); }
     },
+    onAbandonRiddle: () => { abandonRiddleForBoss(state, content, logFn); save(state); render(state); },
     onBossChoice: (mode, difficulty) => {
       chooseBossOption(state, content, mode, difficulty, logFn);
       save(state);
@@ -417,9 +420,9 @@ async function init(): Promise<void> {
     },
     onSetLang: (l) => {
       state.lang = l;
-      void loadI18n(base, l).then(() => {
+      void Promise.all([loadI18n(base, l), loadLangContent(base, l)]).then(() => {
         save(state);
-        mount(state, content, actions); // re-build shell so sidebar tab labels update too
+        mount(state, content, actions); // re-build shell so sidebar tab labels + native riddles/lore update
       });
     },
     onSaveNow: () => {

@@ -22,6 +22,7 @@ import {
   RIDDLE_FIGHT_MULTS,
 } from './riddles';
 import { meditateTick } from './meditation';
+import { riddleById, loreById } from './langContent';
 import { forage, autoResolveForage } from './forage';
 import { search, SEARCH_SP_COST } from './discovery';
 import { diffDef } from './difficulty';
@@ -435,7 +436,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     }
     // Boss room: a luck-rolled chance to become a riddle challenge instead of a straight fight.
     if (atBossRoom && evLayer && !state.resolvedEvents.includes(roomKeyOf(state)) && !isOffline) {
-      const riddle = pickBossRiddle(content, evLayer.boss);
+      const riddle = pickBossRiddle();
       if (riddle && Math.random() < bossRiddleChance(state)) {
         state.bossRiddle = { roomKey: roomKeyOf(state), riddleId: riddle.id, attempts: 0 };
         recordExplored(state);
@@ -604,7 +605,7 @@ function tryLearnRegen(state: GameState, content: Content, log: Log, forced: boo
   if (hasSkillLine(state, content, 'hp_regen')) return; // whole regen lineage, not just the base id
   const missing = 1 - state.hp / Math.max(1, state.maxHp);
   const nearDeath = forced || missing >= 0.6; // otherwise it's "normal" play — still possible, just rarer
-  const lore = state.booksFound.some((id) => content.books.get(id)?.hints === 'regen');
+  const lore = state.booksFound.some((id) => loreById(id)?.hints === 'regen');
   const chance = lore ? (nearDeath ? 0.3 : 0.1) : nearDeath ? 0.1 : 0.01;
   if (Math.random() < chance) {
     state.skills.push({ id: 'hp_regen', level: 1, exp: 0 });
@@ -985,7 +986,7 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
   // Boss riddle — ayrı sistem (text-answer tabanlı)
   if (state.bossRiddle) {
     const br = state.bossRiddle;
-    const riddle = content.bossRiddles.get(br.riddleId);
+    const riddle = riddleById(br.riddleId);
     const layer = currentLayer(state, content);
     if (!riddle || !layer) { state.bossRiddle = null; return; }
 
@@ -1515,7 +1516,7 @@ export const RIDDLE_INT_SOLVE = 100;
 export function intSkipRiddle(state: GameState, content: Content, log: Log): boolean {
   const br = state.bossRiddle;
   if (!br || state.stats.INT < RIDDLE_INT_SOLVE) return false;
-  const riddle = content.bossRiddles.get(br.riddleId);
+  const riddle = riddleById(br.riddleId);
   const layer = currentLayer(state, content);
   if (!riddle || !layer) return false;
   applyRiddleReward(state, riddle.reward, log);
@@ -1531,9 +1532,14 @@ export function intSkipRiddle(state: GameState, content: Content, log: Log): boo
 /** Type the answer to the active boss riddle. Correct → mark solved (UI offers skip/fight). Wrong → escalate. */
 export function answerBossRiddle(state: GameState, content: Content, answer: string, log: Log): boolean {
   const br = state.bossRiddle;
-  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
+  const riddle = br ? riddleById(br.riddleId) : null;
   const layer = currentLayer(state, content);
   if (!br || !riddle || !layer || br.attempts < 0) return false;
+  // Hard knowledge-gate: a riddle that requires unread lore can't be answered until you've found it.
+  if (riddle.loreReq && !state.booksFound.includes(riddle.loreReq)) {
+    log({ key: 'log.br_lore_locked', params: { lore: loreById(riddle.loreReq)?.title ?? riddle.loreReq } });
+    return false;
+  }
   if (checkBossAnswer(riddle, answer)) {
     br.attempts = -1; // solved → UI shows Skip / Fight
     log({ key: 'log.br_solved' });
@@ -1569,7 +1575,7 @@ export function chooseBossOption(
   log: Log,
 ): void {
   const br = state.bossRiddle;
-  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
+  const riddle = br ? riddleById(br.riddleId) : null;
   const layer = currentLayer(state, content);
   if (!br || br.attempts !== -1 || !riddle || !layer) return; // only on a solved riddle
   if (mode === 'skip') {
@@ -1588,6 +1594,18 @@ export function chooseBossOption(
     if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
     log({ key: 'log.br_fight' });
   }
+}
+
+/** Give up on a lore-locked / unsolved riddle and just face the boss — no riddle reward. */
+export function abandonRiddleForBoss(state: GameState, content: Content, log: Log): void {
+  const br = state.bossRiddle;
+  const layer = currentLayer(state, content);
+  if (!br || !layer) return;
+  state.resolvedEvents.push(br.roomKey);
+  state.bossRiddle = null;
+  state.enemy = makeEnemy(state, content, layer.boss, true, 1);
+  if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
+  log({ key: 'log.br_fight' });
 }
 
 const RARITY_RANK: Record<string, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
