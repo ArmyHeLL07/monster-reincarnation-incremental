@@ -11,7 +11,7 @@ import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { achievementMetric } from './game/achievements';
 import { questProgress } from './game/quests';
-import { riddleById, loreById } from './game/langContent';
+import { riddleById, loreById, storyText, storyLines } from './game/langContent';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -78,6 +78,12 @@ export interface UiActions {
   onTogglePermadeath: () => void;
   onToggleModifierFreeRooms: () => void;
   onSelectRace: (raceId: string) => void;
+  /** Story mode: enter (save normal, then continue or start a fresh story run). */
+  onEnterStory: () => void;
+  /** Story mode: leave back to normal/sandbox. */
+  onExitStory: () => void;
+  /** Story mode opening: pick the "last thought" → starting race + first chapter. */
+  onStoryChoice: (choiceId: string) => void;
   onSetRoom: (floor: number, room: number) => void;
   onEquipItem: (uid: string) => void;
   onUnequipSlot: (slot: EquipSlot) => void;
@@ -671,8 +677,13 @@ function renderTab(): void {
     b.classList.toggle('active', b.getAttribute('data-tab') === activeTab);
   });
   if (!CURSTATE.raceConfirmed) {
-    el.innerHTML = raceSelectScreen(CURSTATE);
-    wireRaceSelect(el);
+    if (CURSTATE.mode === 'story') {
+      el.innerHTML = storyIntroScreen(CURSTATE);
+      wireStoryIntro(el);
+    } else {
+      el.innerHTML = raceSelectScreen(CURSTATE);
+      wireRaceSelect(el);
+    }
     return;
   }
   if (CURSTATE.pendingRebirthPerk) {
@@ -682,7 +693,7 @@ function renderTab(): void {
   }
   switch (activeTab) {
     case 'combat':
-      el.innerHTML = combatTab(CURSTATE);
+      el.innerHTML = storyBannerHtml(CURSTATE) + combatTab(CURSTATE);
       wireCombat(el);
       break;
     case 'map':
@@ -2626,6 +2637,7 @@ function raceSelectScreen(state: GameState): string {
         <button id="confirm-race" class="actbtn active">
           ${t('ui.pick_race')}: ${curRace ? t(curRace.locKey) : state.raceId}
         </button>
+        <button id="enter-story" class="ghost" style="margin-left:0.6rem">${t('ui.story_mode')}</button>
       </div>
     </section>
   `;
@@ -2641,6 +2653,55 @@ function wireRaceSelect(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#confirm-race')?.addEventListener('click', () => {
     ACTIONS.onSelectRace(CURSTATE.raceId); // confirm current selection
   });
+  el.querySelector<HTMLButtonElement>('#enter-story')?.addEventListener('click', () => ACTIONS.onEnterStory());
+}
+
+/** Story-mode narration banner atop the combat view: chapter intro while in progress, ending when done. */
+function storyBannerHtml(state: GameState): string {
+  if (state.mode !== 'story') return '';
+  const txt = state.storyEnded ? storyText('ending') : storyText(`intro.${state.storyChapter}`);
+  if (!txt) return '';
+  const head = state.storyEnded ? t('ui.story_the_end') : t('ui.story_chapter');
+  return `<section class="panel" style="border-color:#7a5cc0">
+    <div style="font-weight:bold;color:#b79cf0;margin-bottom:.3rem">📖 ${head}</div>
+    <div style="opacity:.92;line-height:1.5">${txt}</div>
+  </section>`;
+}
+
+/** Story-Mode opening: the truck-kun death scene + the "last thought" → starting race choice. */
+function storyIntroScreen(state: GameState): string {
+  void state;
+  const lines = storyLines('opening.truck').map((p) => `<p style="margin:0.4rem 0;line-height:1.6">${p}</p>`).join('');
+  const choices = CONTENT.story.opening.choices.map((c) => {
+    const race = CONTENT.races.get(c.race);
+    const raceName = race ? t(race.locKey) : c.race;
+    return `
+      <button class="race-card" data-choice="${c.id}" style="text-align:left">
+        <div style="font-size:1.05rem">${storyText(`choice.${c.id}`)}</div>
+        <div class="muted" style="font-size:0.8rem;margin-top:0.3rem">→ ${raceName}</div>
+      </button>`;
+  }).join('');
+  return `
+    <section class="panel" style="max-width:min(720px,100%);margin:2rem auto">
+      <h2>${t('ui.story_mode')}</h2>
+      <div style="opacity:0.92;margin:1rem 0">${lines}</div>
+      <p class="muted" style="margin-top:1rem">${storyText('opening.prompt')}</p>
+      <div class="race-grid" style="margin-top:0.6rem">${choices}</div>
+      <div style="margin-top:1.2rem">
+        <button id="story-cancel" class="ghost">${t('ui.story_cancel')}</button>
+      </div>
+    </section>
+  `;
+}
+
+function wireStoryIntro(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.race-card').forEach((b) => {
+    b.addEventListener('click', () => {
+      const c = b.getAttribute('data-choice');
+      if (c) ACTIONS.onStoryChoice(c);
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#story-cancel')?.addEventListener('click', () => ACTIONS.onExitStory());
 }
 
 function racePanel(state: GameState): string {
@@ -2986,6 +3047,7 @@ function settingsTab(state: GameState): string {
       </div>
       <div class="controls">
         <button id="tutorial-reopen">${t('tut.reopen')}</button>
+        <button id="mode-switch" class="ghost">${state.mode === 'story' ? t('ui.story_back') : t('ui.story_mode')}</button>
       </div>
     </section>
   `;
@@ -3009,6 +3071,9 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
+  el.querySelector<HTMLButtonElement>('#mode-switch')?.addEventListener('click', () => {
+    if (CURSTATE.mode === 'story') ACTIONS.onExitStory(); else ACTIONS.onEnterStory();
+  });
   el.querySelector<HTMLButtonElement>('#modifier-free-toggle')?.addEventListener('click', ACTIONS.onToggleModifierFreeRooms);
   el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
   el.querySelector<HTMLButtonElement>('#moral-ask')?.addEventListener('click', () => ACTIONS.onSetMoralMode('ask'));

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.22.0';
+export const VERSION = '1.23.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.0',
+    date: '2026-06-28',
+    tr: [
+      'feat: 📖 HİKAYE MODU (yeni!) — normal oyundan ayrı, kendi kaydı olan bir kampanya. Truck-kun açılışı (insan ölür → başka bir dünyada canavar olarak doğar) + "son düşüncen neydi?" seçimi başlangıç ırkını belirler (örümcek/slime/wyrmling). El-yapımı bölüm (özel düşman alanı + boss) native anlatıyla gelir; boss\'u yen → bölüm tamamlanır. Ayarlar\'dan ya da ırk-seçim ekranından girilir. (İlk bölüm: Orman\'da Uyanış — devamı yolda.)',
+    ],
+    en: [
+      'feat: 📖 STORY MODE (new!) — a separate campaign with its own save. A truck-kun opening (a human dies → reborn as a monster in another world) + a "what was your last thought?" choice sets your starting race (spider/slime/wyrmling). A hand-authored chapter (custom enemy area + boss) with native narration; beat the boss → chapter complete. Enter from Settings or the race-select screen. (First chapter: Awakening in the Forest — more on the way.)',
+    ],
+    ru: [
+      'feat: 📖 СЮЖЕТНЫЙ РЕЖИМ (новое!) — отдельная кампания с собственным сохранением. Вступление «грузовик-кун» (человек погибает → перерождается монстром в другом мире) + выбор «о чём была твоя последняя мысль?» задаёт стартовую расу (паук/слизь/вирмлинг). Авторская глава (особая зона врагов + босс) с родным повествованием; победи босса → глава пройдена. Вход из Настроек или экрана выбора расы. (Первая глава: Пробуждение в лесу — продолжение следует.)',
+    ],
+  },
   {
     v: '1.22.0',
     date: '2026-06-28',

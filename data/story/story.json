@@ -1,0 +1,20 @@
+{
+  "chapters": [
+    {
+      "id": "ch_forest",
+      "order": 1,
+      "areaEnemyPool": ["cave_pest", "venom_toad", "ember_crawler"],
+      "bossId": "venom_brute",
+      "levelHint": 3,
+      "rewards": { "ep": 50, "statPoints": 2 },
+      "nextChapter": ""
+    }
+  ],
+  "opening": {
+    "choices": [
+      { "id": "survive", "race": "spider" },
+      { "id": "fade", "race": "slime" },
+      { "id": "power", "race": "wyrmling" }
+    ]
+  }
+}

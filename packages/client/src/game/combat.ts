@@ -390,6 +390,19 @@ export function roomQuota(state: GameState): number {
   return Math.max(1, ROOM_KILL_QUOTA - soulLevel(state, 'room_quota_down'));
 }
 
+/** Story mode: mark the current chapter cleared, grant its rewards, then advance or end the campaign. */
+function storyClearChapter(state: GameState, content: Content, log: Log): void {
+  const ch = content.story.chapters.find((c) => c.id === state.storyChapter);
+  if (!ch || state.storyCleared.includes(ch.id)) return; // only fire once per chapter
+  state.storyCleared.push(ch.id);
+  const parts: string[] = [];
+  if (ch.rewards?.ep) { state.ep += ch.rewards.ep; parts.push(`+${ch.rewards.ep} EP`); }
+  if (ch.rewards?.statPoints) { state.statPoints += ch.rewards.statPoints; parts.push(`+${ch.rewards.statPoints} SP`); }
+  log({ key: 'log.story_chapter_clear', params: { reward: parts.join(' ') } });
+  if (ch.nextChapter) state.storyChapter = ch.nextChapter;
+  else state.storyEnded = true;
+}
+
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   const layer = currentLayer(state, content);
@@ -399,6 +412,8 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
     // Boss kill: advance or hold for the "Advance" tap. Reset room lock.
     state.roomKillCount = 0;
     state.roomEnemyId = null;
+    // Story mode: the floor boss IS the chapter boss → defeating it completes the chapter.
+    if (state.mode === 'story' && state.storyChapter) storyClearChapter(state, content, log);
     if (state.autoAdvance) advancePosition(state, content, log);
     else state.roomCleared = true;
     return;
@@ -936,17 +951,24 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
 
 function spawnEnemy(state: GameState, content: Content, log: Log): void {
   const layer = currentLayer(state, content);
-  if (!layer || layer.enemyPool.length === 0) return;
+  if (!layer) return;
+  // Story mode: the current chapter's hand-authored area overrides the dungeon pool & boss.
+  const chapter = state.mode === 'story' && state.storyChapter
+    ? content.story.chapters.find((c) => c.id === state.storyChapter)
+    : undefined;
+  const pool = chapter ? chapter.areaEnemyPool : layer.enemyPool;
+  const bossArch = chapter ? chapter.bossId : layer.boss;
+  if (pool.length === 0) return;
   const R = roomsOf(state, layer, state.pos.floor);
   recordExplored(state); // light the room on the map as we enter it
   const isBoss = state.pos.room >= R;
   // Non-boss rooms lock to one enemy type for the whole kill-quota run.
   let archId: string;
   if (isBoss) {
-    archId = layer.boss;
+    archId = bossArch;
     state.roomEnemyId = null;
   } else {
-    if (!state.roomEnemyId) state.roomEnemyId = layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
+    if (!state.roomEnemyId) state.roomEnemyId = pool[Math.floor(Math.random() * pool.length)];
     archId = state.roomEnemyId;
   }
   // New enemy hasn't seen any previous attacks — reset adaptation streak.

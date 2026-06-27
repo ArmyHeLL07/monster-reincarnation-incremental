@@ -503,6 +503,30 @@ export interface NativeLore {
   race?: string;
 }
 
+/** A hand-authored Story-Mode chapter: a custom combat area + boss goal, with native narration.
+ *  Narration text lives per-language in data/story/<lang>.json under intro.<id> / outro.<id>. */
+export interface StoryChapter {
+  id: string;
+  order: number;
+  /** Custom enemy ids for this chapter's area (overrides the dungeon pool while in story mode). */
+  areaEnemyPool: string[];
+  /** The chapter boss enemy id — defeating it clears the chapter. */
+  bossId: string;
+  /** Suggested player level (pacing/flavor hint). */
+  levelHint?: number;
+  /** Rewards granted on clear. */
+  rewards?: { ep?: number; statPoints?: number };
+  /** Next chapter id; empty/absent = final chapter → ending. */
+  nextChapter?: string;
+}
+
+/** Story-Mode config (language-independent structure; native text is separate, like riddles/lore).
+ *  `opening.choices` maps the "last thought" prompt options to a starting race (proto personality test). */
+export interface StoryConfig {
+  chapters: StoryChapter[];
+  opening: { choices: { id: string; race: string }[] };
+}
+
 /** A hard riddle that may gate a boss room (GDD §8.2 — "knowledge defeats the boss"). */
 export interface BossRiddle {
   id: string;

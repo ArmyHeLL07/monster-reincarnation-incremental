@@ -15,6 +15,7 @@ import type {
   ForageableFood,
   Achievement,
   Quest,
+  StoryConfig,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -38,10 +39,12 @@ export interface Content {
   achievements: Map<string, Achievement>;
   /** Repeatable quest templates keyed by id. */
   quests: Map<string, Quest>;
+  /** Story-Mode config (chapters + opening "last thought" choices). */
+  story: StoryConfig;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives, story] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -60,6 +63,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<Achievement[]>(`${base}achievements.json`),
       fetchJson<Quest[]>(`${base}quests.json`),
       fetchJson<Skill[]>(`${base}lore_passives.json`),
+      fetchJson<StoryConfig>(`${base}story/story.json`),
     ]);
   return {
     skills: byId([...skills, ...lorePassives]),
@@ -78,6 +82,7 @@ export async function loadContent(base: string): Promise<Content> {
     resistanceMergers: new Map(resistanceMergerList.map((m) => [m.id, m])),
     achievements: byId(achievements),
     quests: byId(quests),
+    story,
   };
 }
 

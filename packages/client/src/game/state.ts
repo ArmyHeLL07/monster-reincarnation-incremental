@@ -275,6 +275,14 @@ export interface GameState {
   // --- race selection ---------------------------------------------------------
   /** False on a fresh game — shows the race selection screen before play begins. */
   raceConfirmed: boolean;
+  /** Which game mode this save belongs to. Story mode persists to its own slot (save.ts). */
+  mode: 'normal' | 'story';
+  /** Story mode: current chapter id ('' when not in a story run). */
+  storyChapter: string;
+  /** Story mode: cleared chapter ids. */
+  storyCleared: string[];
+  /** Story mode: campaign finished (final chapter cleared). */
+  storyEnded: boolean;
   /** Suppresses repeated "larder full" log spam — set when first notified, cleared when inventory drops below cap. */
   larderFullNotified?: boolean;
 
@@ -520,6 +528,10 @@ export function newGame(): GameState {
     hellClears: [],
     achievements: [],
     loreMasteries: [],
+    mode: 'normal',
+    storyChapter: '',
+    storyCleared: [],
+    storyEnded: false,
     activeQuests: [],
     questsDone: 0,
     fusionCount: 0,

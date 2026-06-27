@@ -345,6 +345,40 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onEnterStory: () => {
+      save(state); // preserve the current (normal) save in its own slot
+      const existing = load('story');
+      if (existing) {
+        state = existing; // continue an in-progress story run
+        migrate(state);
+      } else {
+        state = newGame();
+        state.mode = 'story';
+        state.raceConfirmed = false; // triggers the truck-kun opening + race choice
+      }
+      resetUi();
+      save(state);
+      render(state);
+    },
+    onExitStory: () => {
+      save(state); // preserve the story save in its own slot
+      const normal = load('normal');
+      state = normal ?? newGame();
+      migrate(state);
+      resetUi();
+      save(state);
+      render(state);
+    },
+    onStoryChoice: (choiceId) => {
+      const ch = content.story.opening.choices.find((c) => c.id === choiceId);
+      if (!ch) return;
+      applyRace(state, ch.race, content); // sets race-specific form/skills/stats
+      state.raceConfirmed = true;
+      const first = [...content.story.chapters].sort((a, b) => a.order - b.order)[0];
+      state.storyChapter = first ? first.id : '';
+      save(state);
+      render(state);
+    },
     onEquipItem: (uid) => {
       if (equipItem(state, uid)) {
         recomputeMaxes(state); // worn gear feeds HP/MP/SP
@@ -616,6 +650,10 @@ function migrate(s: GameState): void {
   s.loadouts ??= [];
   s.achievements ??= [];
   s.loreMasteries ??= [];
+  s.mode ??= 'normal';
+  s.storyChapter ??= '';
+  s.storyCleared ??= [];
+  s.storyEnded ??= false;
   s.activeQuests ??= [];
   s.questsDone ??= 0;
   s.fusionCount ??= 0;

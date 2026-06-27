@@ -1,0 +1,15 @@
+{
+  "opening.truck": [
+    "Karşıdan gelen kamyonu bir an geç fark ettin.",
+    "Lastiklerin çığlığı, beyaz bir ışık — sonra sessizlik.",
+    "Soğuk toprak. Yabancı kokular. Bu beden... senin değil.",
+    "Karanlıkta bir ses fısıldıyor: «Yeniden doğuyorsun. Bu dünyada zayıf doğanlar avlanır. Sadece bilenler hayatta kalır.»"
+  ],
+  "opening.prompt": "Son nefesinde aklından geçen neydi?",
+  "choice.survive": "«Ne pahasına olursa olsun... yaşamalıyım.»",
+  "choice.fade": "«Bırak her şey eriyip gitsin...»",
+  "choice.power": "«Bir daha asla zayıf olmayacağım. Güç istiyorum.»",
+  "intro.ch_forest": "Gözlerini loş bir orman zemininde açıyorsun. Devasa kökler, nemli hava, her gölgede bir tehlike. Hayatta kalmak için avlanmalısın — ve bu ormanın bir bekçisi var.",
+  "outro.ch_forest": "Bekçi düştü. Ormanın derinliklerinden soğuk bir hava yükseliyor; ileride daha büyük şeyler seni bekliyor. Ama artık eskisi kadar zayıf değilsin.",
+  "ending": "Hikaye şimdilik burada duruyor — yeni bölümler yolda. Yaşamaya devam et."
+}
