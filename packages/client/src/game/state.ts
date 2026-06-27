@@ -275,6 +275,11 @@ export interface GameState {
   humanPath?: string;
   /** True when the human player hit LV10 T0 and must choose a path before continuing. */
   pendingHumanPath: boolean;
+  /** How many evolution branches at the CURRENT node the player has already acknowledged via
+   *  "keep growing". Auto-tier-advance stops whenever more branches are open than this, so a
+   *  staggered node (e.g. demon_slime T5 shortcut vs T10 siblings) lets the player grab an early
+   *  branch OR climb past it. Reset to 0 on evolve / rebirth / race change. */
+  evolveAckCount: number;
 
   // --- Room progression (10-kill quota before advance) -----------------------
   /** Enemies killed in the current room; resets on room advance. */
@@ -438,6 +443,7 @@ export function newGame(): GameState {
     tier: 0,
     xp: 0,
     statPoints: 0,
+    evolveAckCount: 0,
     autosaveMin: 5,
     hunger: 0,
     inventory: [],

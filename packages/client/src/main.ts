@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -432,6 +432,11 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onKeepGrow: () => {
+      keepGrowing(state, content, logFn);
+      save(state);
+      render(state);
+    },
     onBuyStatPointEp: () => {
       if (buyStatPointEp(state)) {
         logFn({ key: 'log.buy_stat_ep', params: { pts: state.statPoints } });
@@ -592,6 +597,7 @@ function migrate(s: GameState): void {
   // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
+  s.evolveAckCount ??= 0;
   s.roomKillCount ??= 0;
   s.roomEnemyId ??= null;
   s.seenSkillIds ??= [];

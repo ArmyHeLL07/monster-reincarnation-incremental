@@ -8,7 +8,7 @@ import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, e
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
 import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -38,6 +38,7 @@ export interface UiActions {
   onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
+  onKeepGrow: () => void;
   onFuse: (aId: string, bId: string) => void;
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
@@ -1164,6 +1165,34 @@ function exploreAutoToggle(state: GameState): string {
   </button>`;
 }
 
+/** Combat-tab banner shown at the level cap when an evolution is available: lists each open form with
+ *  an Evolve button, plus a "Keep Growing" button when higher-tier siblings are still locked (the C
+ *  mechanic — lets a staggered node be caught early or climbed past). Soft: combat keeps running. */
+function evolveBannerHtml(state: GameState): string {
+  if (state.level < LEVEL_CAP || state.pendingHumanPath) return '';
+  const selectable = availableEvolutions(state, CONTENT).filter((f) => secretMet(state, f));
+  const open = selectable.filter((f) => canEvolve(state, f));
+  if (open.length === 0) return '';
+  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
+  const rows = open
+    .map((f) => {
+      const rare = f.secret ? ` <span style="color:#e6c558">✦ ${t('ui.evo_rare')}</span>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.25rem 0">
+        <span><b>${t(f.locKey)}</b>${rare}</span>
+        <button class="evo-action-btn active" data-form="${f.id}" style="min-height:32px;padding:.3rem 1rem">${t('ui.evolve')}</button>
+      </div>`;
+    })
+    .join('');
+  const growBtn =
+    state.tier < needTier
+      ? `<button id="keep-grow" class="ghost" style="width:100%;margin-top:.4rem">${t('ui.keep_growing')} →</button>`
+      : '';
+  return `<section class="panel" style="border-color:#c9a23a">
+    <div style="font-weight:bold;color:#e6c558;margin-bottom:.3rem">✦ ${t('ui.evolve_ready_banner')}</div>
+    ${rows}${growBtn}
+  </section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -1216,6 +1245,7 @@ function combatTab(state: GameState): string {
     : (state.modifierFreeRooms ? `<p class="muted" style="margin:.4rem 0 0;color:#4caf50">✨ ${t('ui.room_modifier_free')}</p>` : '');
   const sigPanel = raceSigPanel(state);
   return `
+    ${evolveBannerHtml(state)}
     <section class="panel enemy-panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
@@ -1319,6 +1349,11 @@ function wireCombat(el: HTMLElement): void {
   );
   el.querySelector<HTMLButtonElement>('#web-spin')?.addEventListener('click', () => ACTIONS.onSpinWeb());
   el.querySelector<HTMLButtonElement>('#web-collect')?.addEventListener('click', () => ACTIONS.onCollectWeb());
+  // Evolve banner (level-cap, combat tab): evolve now or keep growing toward higher-tier siblings.
+  el.querySelectorAll<HTMLButtonElement>('.evo-action-btn[data-form]').forEach((b) => {
+    b.addEventListener('click', () => { const f = b.getAttribute('data-form'); if (f) ACTIONS.onEvolve(f); });
+  });
+  el.querySelector<HTMLButtonElement>('#keep-grow')?.addEventListener('click', ACTIONS.onKeepGrow);
 }
 
 // ---- MAP -------------------------------------------------------------------

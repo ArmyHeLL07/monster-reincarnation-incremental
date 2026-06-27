@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.17.2';
+export const VERSION = '1.17.3';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.17.3',
+    date: '2026-06-27',
+    tr: [
+      'feat: Evrim seçim kontrolü — kademeli bir düğümde (ör. slime/spider gizli formları) artık ilk dal açılınca savaş panelinde bir banner çıkar: o formu hemen seç ya da "Büyümeye Devam Et" ile üst kardeşleri (ve gizli ✦ formları) aç. Demon Slime/Zoa Ele gibi gizli kısa-yollar T5\'te erken yakalanabilir VEYA T10 uç-formları için büyümeye devam edilebilir',
+    ],
+    en: [
+      'feat: Evolution choice control — at a staggered node (e.g. slime/spider hidden forms) a banner now appears in combat once the first branch unlocks: evolve into it now, or "Keep Growing" to open the higher-tier siblings (and hidden ✦ forms). Secret shortcuts like Demon Slime/Zoa Ele can be caught early at T5 OR you can keep growing toward the T10 apex forms',
+    ],
+    ru: [
+      'feat: Управление выбором эволюции — в ступенчатом узле (напр. скрытые формы слизи/паука) теперь при открытии первой ветки в бою появляется баннер: эволюционировать сейчас или «Продолжить рост», чтобы открыть старшие ветки (и скрытые ✦ формы). Секретные сокращения вроде Demon Slime/Zoa Ele можно поймать рано на T5 ИЛИ продолжить рост к вершинным формам T10',
+    ],
+  },
   {
     v: '1.17.2',
     date: '2026-06-27',

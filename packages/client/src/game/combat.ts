@@ -1307,17 +1307,26 @@ function processStatuses(state: GameState, content: Content, log: Log): void {
   if (total > 0) state.hp = Math.max(0, state.hp - total);
 }
 
+/** Branches selectable at the current node: every non-secret child + any secret child whose hidden
+ *  condition is already met (a secret form joins the menu as a bonus but never blocks the climb). */
+function selectableEvolutions(state: GameState, content: Content) {
+  return availableEvolutions(state, content).filter((f) => secretMet(state, f));
+}
+
+/** Auto-advance the evolution tier while grinding at the level cap.
+ *  Empty tiers (nothing unlockable yet) climb silently — idle flow is preserved. But the moment a tier
+ *  unlocks a NEW branch the player hasn't acknowledged (via "keep growing"), the climb STOPS so the
+ *  combat-tab banner can offer "evolve now / keep growing". This lets staggered nodes (e.g. demon_slime
+ *  T5 shortcut vs T10 siblings) be caught early OR climbed past, instead of silently overshooting. */
 function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boolean {
   const avail = availableEvolutions(state, content);
   if (avail.length === 0) return false; // terminal form reached — truly done
-  // Climb until the FULL menu of branches selectable at this node is open — not just the cheapest one.
-  // "Selectable" = every non-secret child, plus any secret child whose hidden condition is already met
-  // (a secret form joins the menu as a bonus but never halts the climb early). Without this, staggered
-  // sibling tierReqs (e.g. slime acid T3 / crystalline T4 / demon_slime T5) let the lowest-tier branch
-  // permanently lock the player out of its higher-tier siblings.
-  const selectable = avail.filter((f) => secretMet(state, f));
+  const selectable = selectableEvolutions(state, content);
+  const openCount = selectable.filter((f) => canEvolve(state, f)).length;
+  if (openCount > (state.evolveAckCount ?? 0)) return false; // a NEW branch opened — player chooses (no freeze)
+  // Player acknowledged the current open set (or nothing open yet) → climb toward the next branch.
   const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
-  if (state.tier >= needTier && selectable.some((f) => canEvolve(state, f))) return false; // full menu open — player acts
+  if (state.tier >= needTier) return false; // top of node — every branch already open
   if (state.tier >= 10) return false; // T10 with tierReq still blocking = design gap, don't spiral
   state.tier = Math.min(10, state.tier + 1);
   state.level = 1;
@@ -1326,6 +1335,19 @@ function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boole
   log({ key: 'log.tier_advance', params: { tier: state.tier } });
   recomputeMaxes(state);
   return true;
+}
+
+/** "Keep growing" button: acknowledge the currently-open branches and resume climbing toward higher-tier
+ *  siblings (auto-advance will stop again at the next new unlock, or at the top of the node). */
+export function keepGrowing(state: GameState, content: Content, log: Log): boolean {
+  if (state.level < LEVEL_CAP) return false; // only meaningful once capped
+  const selectable = selectableEvolutions(state, content);
+  const open = selectable.filter((f) => canEvolve(state, f));
+  if (open.length === 0) return false; // nothing open to grow past
+  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
+  if (state.tier >= needTier) return false; // already at the top — no higher sibling to reach
+  state.evolveAckCount = open.length; // dismiss the current menu, then climb
+  return tryAutoTierAdvance(state, content, log);
 }
 
 function gainXp(state: GameState, content: Content, amount: number, log: Log): void {

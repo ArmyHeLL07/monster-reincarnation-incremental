@@ -41,6 +41,7 @@ export function applyRace(state: GameState, raceId: string, content: Content): v
   // Reset race-life-scoped counters (Faz 3/4)
   state.humanPath        = undefined;
   state.pendingHumanPath = false;
+  state.evolveAckCount   = 0;
   state.roomKillCount    = 0;
   state.roomEnemyId      = null;
   state.seenSkillIds     = [];

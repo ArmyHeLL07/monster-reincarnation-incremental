@@ -37,6 +37,7 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.tier = 0;
   state.level = 1;
   state.xp = 0;
+  state.evolveAckCount = 0;
   state.statPoints = boon * 3; // the small permanent kindness (§7.5.4)
   state.ep = 0;
   state.hunger = 0;

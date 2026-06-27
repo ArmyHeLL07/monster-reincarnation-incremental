@@ -99,6 +99,7 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   state.tier = Math.min(10, state.tier + 1); // advance evolution tier; level resets (caps at T10)
   state.level = 1;
   state.xp = 0;
+  state.evolveAckCount = 0; // new node → fresh "keep growing" acknowledgement
   recomputeMaxes(state);
   state.hp = state.maxHp;
   state.mp = state.maxMp;
