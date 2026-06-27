@@ -2,6 +2,7 @@ import type { EvolutionForm, StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
 import { recomputeMaxes } from './state';
+import { MUTATION_POOL } from './mutations';
 
 type Log = (e: LogEvent) => void;
 
@@ -103,6 +104,25 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   state.mp = state.maxMp;
   state.sp = state.maxSp;
   log({ key: 'log.evolve_form', params: { form: form.locKey } });
+
+  // 15% chance to roll a random mutation upon evolution
+  if (Math.random() < 0.15) {
+    const positivePool = MUTATION_POOL.filter(m => m.positive);
+    const negativePool = MUTATION_POOL.filter(m => !m.positive);
+    // 60% positive, 40% negative
+    const pool = Math.random() < 0.60 ? positivePool : negativePool;
+    const mut = pool[Math.floor(Math.random() * pool.length)];
+    if (mut && !state.mutations.includes(mut.id)) {
+      state.mutations.push(mut.id);
+      if (mut.statMods) {
+        for (const [k, v] of Object.entries(mut.statMods)) {
+          state.stats[k as StatKey] = Math.max(1, state.stats[k as StatKey] + (v ?? 0));
+        }
+      }
+      log({ key: 'log.mutation_gain', params: { name: mut.locKey } });
+    }
+  }
+
   // Evolution leaves you raw and vulnerable — a chance (lower with high LUCK) to be ambushed mid-change.
   // Wisdom Soul (prestige) calms the change, shrinking the ambush chance permanently.
   const wisdom = (state.soulUpgrades?.['wisdom_soul'] ?? 0) * 0.05;

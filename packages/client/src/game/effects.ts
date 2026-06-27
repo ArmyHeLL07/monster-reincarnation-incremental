@@ -4,6 +4,9 @@ import { MAX_HUNGER } from './state';
 import { sigBoneArmor } from './signature';
 import { soulLevel } from './soul';
 import { currentRoomModifier } from './combat';
+import { MUTATION_POOL } from './mutations';
+import { currentRoomHazard } from './hazards';
+import { REBIRTH_PERKS } from './teachings';
 
 /** Aggregated passive/ruler modifiers, summed live each time they're needed. */
 export interface Bonuses {
@@ -158,6 +161,43 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (roomMod.dmgPenalty)   b.dmgMult    -= roomMod.dmgPenalty;
     if (roomMod.regenPenalty) b.regenMult  -= roomMod.regenPenalty;
     if (roomMod.hungerMult)   b.hungerMult *= roomMod.hungerMult;
+  }
+
+  // Room hazard: apply environmental hazard penalties
+  const hazard = currentRoomHazard(state);
+  if (hazard) {
+    if (hazard.dodgePenalty) b.dodgeBonus -= hazard.dodgePenalty;
+    if (hazard.dmgPenalty)   b.dmgMult    -= hazard.dmgPenalty;
+    if (hazard.hungerMult)   b.hungerMult *= hazard.hungerMult;
+  }
+
+  // Mutations: apply active roguelite mutations
+  if (state.mutations) {
+    for (const mutId of state.mutations) {
+      const def = MUTATION_POOL.find((m) => m.id === mutId);
+      if (!def) continue;
+      if (def.dmgMult) b.dmgMult += def.dmgMult;
+      if (def.xpMult) b.xpMult += def.xpMult;
+      if (def.regenMult) b.regenMult += def.regenMult;
+      if (def.armor) b.armor += def.armor;
+      if (def.hungerMult) b.hungerMult *= def.hungerMult;
+    }
+  }
+
+  // Rebirth perks: apply permanent prestige perks
+  if (state.rebirthPerks) {
+    for (const perkId of state.rebirthPerks) {
+      const def = REBIRTH_PERKS.find((p) => p.id === perkId);
+      if (!def) continue;
+      if (def.dmgMult) b.dmgMult += def.dmgMult;
+      if (def.xpMult) b.xpMult += def.xpMult;
+      if (def.regenMult) b.regenMult += def.regenMult;
+      if (def.dodgeBonus) b.dodgeBonus += def.dodgeBonus;
+      if (def.armor) b.armor += def.armor;
+      if (def.hungerMult) b.hungerMult *= def.hungerMult;
+      if (def.mpRegen) b.mpRegen += def.mpRegen;
+      if (def.lootMult) b.lootMult += def.lootMult;
+    }
   }
 
   // Gluttony ruler power: hunger-based buff when sated, debuff when starving.

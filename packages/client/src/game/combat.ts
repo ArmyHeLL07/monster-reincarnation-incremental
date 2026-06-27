@@ -2,6 +2,7 @@ import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from 
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
+import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm, availableEvolutions, canEvolve } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
@@ -178,6 +179,10 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
   growStaminaRegen(state); // training raises SP regen (more in combat / low HP)
   if (state.forageCD > 0) state.forageCD = Math.max(0, state.forageCD - 1000);
   if ((state.searchCD ?? 0) > 0) state.searchCD = Math.max(0, state.searchCD - 1000);
+  if (state.webRoom) {
+    const b = aggregateBonuses(state, content);
+    tickWeb(state, b, log, isOffline);
+  }
   state.lastSeen = Date.now();
 }
 
@@ -421,6 +426,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   if (state.roomCleared || !state.enemy) return;
   applyAmbient(state, content, log); // environmental burn (elemental layers only)
   applyRoomModifierTick(state, content, log); // per-room modifier passive drain
+  applyRoomHazardTick(state, log); // passive room hazard drain
   if (state.hp <= 0) {
     onDeath(state, content, log, b);
     return;
@@ -717,6 +723,20 @@ export function applyRoomModifierTick(state: GameState, content: Content, log: L
   const drain = Math.max(1, Math.round(state.maxHp * mod.hpDrainPct));
   state.hp = Math.max(0, state.hp - drain);
   log({ key: 'log.modifier_drain', params: { name: mod.locKey, dmg: drain } });
+}
+
+/** Apply per-tick room hazard drains (HP loss, SP loss). Called once per tick in combat. */
+export function applyRoomHazardTick(state: GameState, log: Log): void {
+  const hazard = currentRoomHazard(state);
+  if (!hazard) return;
+  if (hazard.hpDrainPct) {
+    const drain = Math.max(1, Math.round(state.maxHp * hazard.hpDrainPct));
+    state.hp = Math.max(0, state.hp - drain);
+    log({ key: 'log.hazard_drain', params: { name: hazard.locKey, dmg: drain } });
+  }
+  if (hazard.spDrain) {
+    state.sp = Math.max(0, state.sp - hazard.spDrain);
+  }
 }
 
 /** Is the player's current room a calm exploration room (no combat)? Never the entry or boss room. */
@@ -2046,11 +2066,113 @@ export function chooseHumanPath(state: GameState, content: Content, pathId: stri
   return true;
 }
 
+export function spinWeb(state: GameState, log: Log): boolean {
+  if (!state.roomCleared) return false;
+  if (state.raceId !== 'spider' || state.tier < 3) return false;
+  if (state.sp < 20 || state.sig < 10) return false;
+
+  state.sp -= 20;
+  state.sig -= 10;
+  state.webRoom = { ...state.pos };
+  state.webTicks = state.formId === 'arachnid_sovereign' ? 1000 : 500;
+  state.webAccEp = 0;
+  state.webAccFood = [];
+  state.webAccLoot = [];
+
+  log({ key: 'log.web_spun', params: { pos: `${state.pos.layer}.${state.pos.floor}.${state.pos.room}` } });
+  return true;
+}
+
+export function collectWeb(state: GameState, log: Log): void {
+  if (!state.webRoom) return;
+
+  const ep = Math.round(state.webAccEp);
+  state.ep += ep;
+
+  let foodCount = 0;
+  let foodMeltedEp = 0;
+  const maxFood = maxFoodSlots(state);
+  for (const food of state.webAccFood) {
+    if (state.inventory.length < maxFood) {
+      state.inventory.push(food);
+      foodCount++;
+    } else {
+      const overflowEp = Math.round(food.satiety * 0.5);
+      state.ep += overflowEp;
+      foodMeltedEp += overflowEp;
+    }
+  }
+
+  let lootCount = 0;
+  let lootMeltedEp = 0;
+  for (const loot of state.webAccLoot) {
+    if (state.inventoryItems.length < MAX_INVENTORY) {
+      state.inventoryItems.push(loot);
+      lootCount++;
+    } else {
+      state.ep += loot.value;
+      lootMeltedEp += loot.value;
+    }
+  }
+
+  log({
+    key: 'log.web_collect',
+    params: {
+      ep: ep + foodMeltedEp + lootMeltedEp,
+      food: foodCount,
+      loot: lootCount
+    }
+  });
+
+  state.webAccEp = 0;
+  state.webAccFood = [];
+  state.webAccLoot = [];
+}
+
+export function tickWeb(state: GameState, b: Bonuses, log: Log, isOffline: boolean): void {
+  if (!state.webRoom) return;
+  state.webTicks = (state.webTicks ?? 0) - 1;
+  if (state.webTicks <= 0) {
+    state.webRoom = null;
+    state.webTicks = 0;
+    log({ key: 'log.web_broke' });
+    return;
+  }
+
+  const isSovereign = state.formId === 'arachnid_sovereign';
+  const yieldMult = isSovereign ? 1.5 : 1.0;
+  const offlinePenalty = isOffline ? 0.5 : 1.0;
+
+  // EP Accumulation
+  const epGain = 0.5 * b.lootMult * b.idleMult * yieldMult * offlinePenalty;
+  state.webAccEp = (state.webAccEp ?? 0) + epGain;
+
+  // Food roll (2% online, 1% offline due to 50% penalty)
+  const foodChance = isOffline ? 0.01 : 0.02;
+  if (Math.random() < foodChance) {
+    state.webAccFood = state.webAccFood ?? [];
+    state.webAccFood.push({ enemyId: 'cave_pest', satiety: 15, decay: 0 });
+  }
+
+  // Loot roll (0.5% online, 0.25% offline) in layer > 2
+  if (state.webRoom.layer > 2) {
+    const lootChance = isOffline ? 0.0025 : 0.005;
+    if (Math.random() < lootChance) {
+      const ilvl = state.webRoom.layer * 10 + state.level;
+      const luck = effStat(state, 'LUCK');
+      const item = generateLoot(ilvl, luck);
+      state.webAccLoot = state.webAccLoot ?? [];
+      state.webAccLoot.push(item);
+    }
+  }
+}
+
 export function spawnMinion(state: GameState, type: 'dps' | 'tank' | 'utility'): boolean {
   if (!state.minions) {
     state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
   }
-  const limit = Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1);
+  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
+  const limit = (Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1)) + perkBonus;
   const currentTotal = state.minions.dps + state.minions.tank + state.minions.utility;
   if (currentTotal >= limit) return false;
   if (state.sp < 10 || state.mp < 5) return false;

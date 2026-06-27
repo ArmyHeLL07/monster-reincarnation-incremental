@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms } from './game/evolution';
@@ -11,6 +11,7 @@ import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { buySoulUpgrade } from './game/soul';
 import { aggregateBonuses } from './game/effects';
+import { chooseRebirthPerk } from './game/teachings';
 import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
@@ -262,6 +263,22 @@ async function init(): Promise<void> {
       } else {
         logFn({ key: 'log.minion_spawn_failed' });
       }
+    },
+    onSpinWeb: () => {
+      if (spinWeb(state, logFn)) {
+        save(state);
+        render(state);
+      }
+    },
+    onCollectWeb: () => {
+      collectWeb(state, logFn);
+      save(state);
+      render(state);
+    },
+    onChooseRebirthPerk: (perkId) => {
+      chooseRebirthPerk(state, perkId);
+      save(state);
+      render(state);
     },
     onCourtDeath: () => {
       courtDeath(state, content, logFn);

@@ -348,6 +348,21 @@ export interface GameState {
     tankHp: number;
     tankMaxHp: number;
   };
+
+  // --- Idle Web Hunting ---
+  webRoom: DungeonPos | null;
+  webTicks: number;
+  webAccEp: number;
+  webAccFood: FoodItem[];
+  webAccLoot: LootItem[];
+
+  // --- Evolution Mutations ---
+  mutations: string[];
+
+  // --- Rebirth Teachings ---
+  rebirthPerks: string[];
+  pendingRebirthPerk: boolean;
+  rebirthPerkChoices: string[];
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -372,21 +387,37 @@ export function equipStatBonus(state: GameState): Record<StatKey, number> {
   return out;
 }
 
-/** Effective value of one stat = allocated base + equipment bonus. */
+/** Effective value of one stat = allocated base + equipment bonus + rebirth perks. */
 export function effStat(state: GameState, k: StatKey): number {
-  return state.stats[k] + equipStatBonus(state)[k];
+  let val = state.stats[k] + equipStatBonus(state)[k];
+  if (state.rebirthPerks) {
+    for (const p of state.rebirthPerks) {
+      if (p === 'lucky_charm' && k === 'LUCK') val += 1;
+      else if (p === 'brute_strength' && k === 'STR') val += 1;
+      else if (p === 'inner_peace' && k === 'WIS') val += 1;
+      else if (p === 'quick_feet' && k === 'AGI') val += 1;
+      else if (p === 'sharp_mind' && k === 'INT') val += 1;
+    }
+  }
+  return val;
 }
 
 /** Recompute max HP/MP/SP from effective stats (base + equipment) and clamp current values. */
 export function recomputeMaxes(state: GameState): void {
   const effLvl = state.tier * LEVEL_CAP + state.level; // auto growth: a small max bump per level
-  const eq = equipStatBonus(state); // equipped gear feeds HP/MP/SP via its VIT/INT/AGI
-  const VIT = state.stats.VIT + eq.VIT;
-  const INT = state.stats.INT + eq.INT;
-  const AGI = state.stats.AGI + eq.AGI;
+  const VIT = effStat(state, 'VIT');
+  const INT = effStat(state, 'INT');
+  const AGI = effStat(state, 'AGI');
   state.maxHp = 20 + VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
   state.maxMp = 10 + INT * 3 + effLvl; // INT → MP (+1/level)
   state.maxSp = 10 + VIT * 2 + AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
+  
+  if (state.rebirthPerks) {
+    for (const p of state.rebirthPerks) {
+      if (p === 'vital_force') state.maxHp += 5;
+    }
+  }
+
   state.hp = Math.min(state.hp, state.maxHp);
   state.mp = Math.min(state.mp, state.maxMp);
   state.sp = Math.min(state.sp, state.maxSp);
@@ -517,6 +548,15 @@ export function newGame(): GameState {
       tankHp: 0,
       tankMaxHp: 0,
     },
+    webRoom: null,
+    webTicks: 0,
+    webAccEp: 0,
+    webAccFood: [],
+    webAccLoot: [],
+    mutations: [],
+    rebirthPerks: [],
+    pendingRebirthPerk: false,
+    rebirthPerkChoices: [],
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;

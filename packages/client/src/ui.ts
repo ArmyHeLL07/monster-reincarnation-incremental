@@ -1,6 +1,9 @@
 import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
+import { MUTATION_POOL } from './game/mutations';
+import { currentRoomHazard } from './game/hazards';
+import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
 import { equipSetTier } from './game/effects';
@@ -91,6 +94,9 @@ export interface UiActions {
   onToggleAutoEvent(): void;
   onSetPuzzleMode(mode: 'skip' | 'solve'): void;
   onSpawnMinion(type: 'dps' | 'tank' | 'utility'): void;
+  onSpinWeb(): void;
+  onCollectWeb(): void;
+  onChooseRebirthPerk(perkId: string): void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
@@ -589,6 +595,11 @@ function renderTab(): void {
   if (!CURSTATE.raceConfirmed) {
     el.innerHTML = raceSelectScreen(CURSTATE);
     wireRaceSelect(el);
+    return;
+  }
+  if (CURSTATE.pendingRebirthPerk) {
+    el.innerHTML = rebirthPerkSelectScreen(CURSTATE);
+    wireRebirthPerkSelect(el);
     return;
   }
   switch (activeTab) {
@@ -1210,6 +1221,7 @@ function combatTab(state: GameState): string {
       ${enemyView(state)}
       ${statusLine}
       ${modifierBadge}
+      ${currentRoomHazard(state) ? `<p class="muted" style="margin:.4rem 0 0;color:#e87060">${currentRoomHazard(state)!.icon} ${t('ui.room_hazard')}: <b>${t(currentRoomHazard(state)!.locKey + '.name')}</b> — ${t(currentRoomHazard(state)!.locKey + '.desc')}</p>` : ''}
     </section>
     ${sigPanel ? `<section class="panel sig-panel"><h2>${t('sig.title')}</h2>${sigPanel}</section>` : ''}
     <div class="controls">
@@ -1228,6 +1240,7 @@ function combatTab(state: GameState): string {
       ${courtBtn}
     </div>
     ${foragePanel(state)}
+    ${webPanel(state)}
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
       <ul>${resists}</ul>
@@ -1304,6 +1317,8 @@ function wireCombat(el: HTMLElement): void {
   el.querySelectorAll<HTMLButtonElement>('.br-fight').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onBossChoice('fight', b.dataset.diff ?? 'normal')),
   );
+  el.querySelector<HTMLButtonElement>('#web-spin')?.addEventListener('click', () => ACTIONS.onSpinWeb());
+  el.querySelector<HTMLButtonElement>('#web-collect')?.addEventListener('click', () => ACTIONS.onCollectWeb());
 }
 
 // ---- MAP -------------------------------------------------------------------
@@ -2230,6 +2245,8 @@ function statsTab(state: GameState): string {
     ${epShopPanel(state)}
     ${statisticsPanel(state)}
     ${minionPanel(state)}
+    ${mutationsPanel(state)}
+    ${perksPanel(state)}
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}</h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
@@ -2247,7 +2264,8 @@ function minionPanel(state: GameState): string {
   if (!state.minions) {
     state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
   }
-  const limit = Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1);
+  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
+  const limit = (Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1)) + perkBonus;
   const total = state.minions.dps + state.minions.tank + state.minions.utility;
   
   return `
@@ -2743,4 +2761,131 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
   el.querySelector<HTMLButtonElement>('#puzzle-skip')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('skip'));
   el.querySelector<HTMLButtonElement>('#puzzle-solve')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('solve'));
+}
+
+function rebirthPerkSelectScreen(state: GameState): string {
+  const choices = state.rebirthPerkChoices ?? [];
+  const cards = choices.map((perkId) => {
+    const perk = REBIRTH_PERKS.find((p) => p.id === perkId);
+    if (!perk) return '';
+    return `
+      <button class="perk-card" data-perk="${perk.id}">
+        <div class="perk-icon">${perk.icon}</div>
+        <h3 class="perk-name">${perk.icon} ${t(perk.locKey)}</h3>
+        <p class="perk-desc">${t(perk.locKeyDesc)}</p>
+      </button>
+    `;
+  }).join('');
+
+  return `
+    <div class="race-select-screen" style="max-width:600px; margin:2rem auto; text-align:center;">
+      <h2 style="color:var(--gold); font-size:1.8rem; margin-bottom:0.5rem;">✨ ${t('ui.teachings_title')}</h2>
+      <p class="muted" style="margin-bottom:2rem;">${t('ui.teachings_subtitle')}</p>
+      <div class="perk-cards-grid" style="display:flex; flex-direction:column; gap:1rem;">
+        ${cards}
+      </div>
+    </div>
+  `;
+}
+
+function wireRebirthPerkSelect(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.perk-card').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const perkId = btn.getAttribute('data-perk');
+      if (perkId) {
+        ACTIONS.onChooseRebirthPerk(perkId);
+      }
+    });
+  });
+}
+
+function webPanel(state: GameState): string {
+  if (state.raceId !== 'spider' || state.tier < 3) return '';
+
+  const isSovereign = state.formId === 'arachnid_sovereign';
+  const maxDurability = isSovereign ? 1000 : 500;
+
+  if (!state.webRoom) {
+    const canSpin = state.roomCleared && state.sp >= 20 && state.sig >= 10;
+    return `
+      <section class="panel web-panel">
+        <h2>🕸️ ${t('ui.web_status')}</h2>
+        <p class="muted" style="font-size:0.82rem; margin-bottom:0.5rem;">${t('ui.web_spin_desc')}</p>
+        <button id="web-spin" class="actbtn"${canSpin ? '' : ' disabled'} style="font-size:0.8rem; padding:0.4rem 0.8rem;">
+          ${t('btn.spin_web')} (20 SP · 10 🕸)
+        </button>
+      </section>
+    `;
+  }
+
+  const roomStr = `${state.webRoom.layer}.${state.webRoom.floor}.${state.webRoom.room}`;
+  const ep = Math.round(state.webAccEp);
+  const food = state.webAccFood?.length ?? 0;
+  const loot = state.webAccLoot?.length ?? 0;
+  
+  return `
+    <section class="panel web-panel">
+      <h2>🕸️ ${t('ui.web_status')}</h2>
+      <div style="font-size:0.85rem; margin-bottom:0.4rem;">
+        <b>${t('ui.web_room')}:</b> ${roomStr} · 
+        <b>${t('ui.web_durability')}:</b> ${state.webTicks}/${maxDurability}
+      </div>
+      ${bar(state.webTicks, maxDurability, '#8ab23f')}
+      <div style="font-size:0.82rem; margin-top:0.5rem; margin-bottom:0.5rem;">
+        <b>${t('ui.web_accumulated')}:</b> +${ep} EP, ${food} food, ${loot} loot
+      </div>
+      <button id="web-collect" class="actbtn" style="font-size:0.8rem; padding:0.4rem 0.8rem;">
+        ${t('btn.collect_web')}
+      </button>
+    </section>
+  `;
+}
+
+function mutationsPanel(state: GameState): string {
+  if (!state.mutations || state.mutations.length === 0) return '';
+  const badges = state.mutations.map((mutId) => {
+    const def = MUTATION_POOL.find((m) => m.id === mutId);
+    if (!def) return '';
+    const color = def.positive ? 'var(--venom)' : 'var(--blood)';
+    return `<span class="mut-badge" style="display:inline-block; background:${color}; padding:0.2rem 0.5rem; border-radius:4px; font-size:0.75rem; font-weight:600; color:#fff; margin-right:0.3rem; margin-bottom:0.3rem;">${t(def.locKey)}</span>`;
+  }).join('');
+  
+  return `
+    <section class="panel">
+      <h2>🧬 ${t('ui.mutations')}</h2>
+      <div style="display:flex; flex-wrap:wrap; margin-top:0.4rem;">
+        ${badges}
+      </div>
+    </section>
+  `;
+}
+
+function perksPanel(state: GameState): string {
+  if (!state.rebirthPerks || state.rebirthPerks.length === 0) return '';
+  
+  const counts = state.rebirthPerks.reduce((acc, p) => {
+    acc[p] = (acc[p] ?? 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const rows = Object.entries(counts).map(([perkId, count]) => {
+    const perk = REBIRTH_PERKS.find((p) => p.id === perkId);
+    if (!perk) return '';
+    const multiplier = count > 1 ? ` <span style="color:var(--gold); font-weight:bold;">x${count}</span>` : '';
+    return `
+      <li style="margin-bottom:0.4rem; font-size:0.85rem; display:flex; align-items:center; gap:0.4rem;">
+        <span>${perk.icon}</span>
+        <span><b>${t(perk.locKey)}</b>${multiplier} — ${t(perk.locKeyDesc)}</span>
+      </li>
+    `;
+  }).join('');
+
+  return `
+    <section class="panel">
+      <h2>📿 ${t('ui.teachings_perks_title')}</h2>
+      <ul style="list-style:none; padding:0; margin:0.4rem 0 0;">
+        ${rows}
+      </ul>
+    </section>
+  `;
 }
