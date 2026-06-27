@@ -23,7 +23,7 @@ import {
 } from './riddles';
 import { meditateTick } from './meditation';
 import { forage } from './forage';
-import { search } from './discovery';
+import { search, SEARCH_SP_COST } from './discovery';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
 import { soulLevel } from './soul';
@@ -188,6 +188,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     combatRound(state, content, log, b, isOffline);
     processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
     if (state.hp <= 0) onDeath(state, content, log, b);
+    tryAutoSearch(state, content, log); // auto-forage/explore mid-combat too (SP-gated; one search/room)
     decayFood(state);
     if (state.autoEat) autoEat(state, content, log);
     if (hungerStage(state) >= 3) {
@@ -551,6 +552,19 @@ function skillCooldown(def: Skill, state: GameState, lv: number): number {
   return Math.max(1, baseCd - agiReduce - intReduce);
 }
 
+/** Auto-forage + auto-explore — fires in BOTH rest and combat once unlocked, gated by SP so it never
+ *  starves a fight. (In combat the search's own one-per-room lock paces it; rest allows repeat combing.) */
+function tryAutoSearch(state: GameState, content: Content, log: Log): void {
+  const autoSearchLv = soulLevel(state, 'auto_search');
+  if (!(state.autoSearchUnlocked || autoSearchLv >= 1)) return;
+  if (state.autoSearchFood && state.sp >= SEARCH_SP_COST && state.forageCD <= 0 && !state.pendingForage) {
+    forage(state, content, log);
+  }
+  if (state.autoSearchExplore && state.sp >= SEARCH_SP_COST && (state.searchCD ?? 0) <= 0) {
+    search(state, content, log);
+  }
+}
+
 function restRound(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   sigRestTick(state);
@@ -567,16 +581,7 @@ function restRound(state: GameState, content: Content, log: Log): void {
     state.hp = Math.max(0, state.hp - 1);
   }
 
-  // Auto-search (forage + explore) — SP yeterliyse tetikle; soul upgrade kapıyı erken açar
-  const autoSearchLv = soulLevel(state, 'auto_search');
-  if (state.autoSearchUnlocked || autoSearchLv >= 1) {
-    if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0 && !state.pendingForage) {
-      forage(state, content, log);
-    }
-    if (state.autoSearchExplore && state.sp >= 25 && (state.searchCD ?? 0) <= 0) {
-      search(state, content, log);
-    }
-  }
+  tryAutoSearch(state, content, log); // auto-forage + auto-explore (also runs in combat — see tick)
 
   // Auto-event kararı
   if (state.autoEventDecision && state.pendingEvent && state.stats.INT >= 50) {

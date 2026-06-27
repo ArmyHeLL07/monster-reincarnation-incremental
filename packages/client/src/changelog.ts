@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.2';
+export const VERSION = '1.20.3';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.3',
+    date: '2026-06-28',
+    tr: [
+      'fix: Otomatik keşif (auto-explore) ve otomatik yemek arama artık SAVAŞTA da çalışıyor — eskiden sadece dinlenme modunda tetikleniyordu, bu yüzden savaşırken açık olmasına rağmen hiç lore/parça bulmuyordu. (SP korumalı, oda başına bir arama)',
+    ],
+    en: [
+      'fix: Auto-explore and auto-forage now also run DURING combat — they previously only fired while resting, so they found no lore/fragments while you fought. (SP-gated, one search per room)',
+    ],
+    ru: [
+      'fix: Авто-исследование и авто-добыча еды теперь работают и В БОЮ — раньше срабатывали только в режиме отдыха, поэтому не находили лор/фрагменты во время боя. (с учётом SP, один поиск на комнату)',
+    ],
+  },
   {
     v: '1.20.2',
     date: '2026-06-28',
