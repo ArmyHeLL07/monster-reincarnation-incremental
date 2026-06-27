@@ -378,6 +378,7 @@ function structureSig(state: GameState): string {
 export function live(state: GameState): void {
   CURSTATE = state;
   syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
+  syncLoreMasteryFx(state); // …and for any racial lore-mastery passive earned this tick
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) {
     if (!top.firstElementChild) {
@@ -474,6 +475,38 @@ function syncAchievementFx(state: GameState): void {
     celebratedAch.add(id);
     const a = CONTENT.achievements.get(id);
     if (a) playAchievementEffect(a);
+  }
+}
+
+/** One-shot lore-mastery celebration — same centred burst as achievements, book-themed. */
+export function playLoreMasteryEffect(def: Skill): void {
+  const name = t(def.locKeyName);
+  const el = document.createElement('div');
+  el.className = 'evo-burst ach-burst';
+  el.innerHTML =
+    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
+    `<div class="evo-burst-text">📖 ${t('ui.lore_mastery_unlocked')} 📖<span>${name}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// Lore-mastery passives are granted passively during ticks (checkLoreMastery), so the render loop
+// diffs state.loreMasteries against what it has already celebrated and fires the burst for new ones.
+// The first sync seeds the set silently so loading a save doesn't replay past unlocks.
+let loreFxSeeded = false;
+const celebratedLore = new Set<string>();
+function syncLoreMasteryFx(state: GameState): void {
+  const cur = state.loreMasteries ?? [];
+  if (!loreFxSeeded) {
+    for (const id of cur) celebratedLore.add(id);
+    loreFxSeeded = true;
+    return;
+  }
+  for (const id of cur) {
+    if (celebratedLore.has(id)) continue;
+    celebratedLore.add(id);
+    const def = CONTENT.skills.get(id);
+    if (def) playLoreMasteryEffect(def);
   }
 }
 

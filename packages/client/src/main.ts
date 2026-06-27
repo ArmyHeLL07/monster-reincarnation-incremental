@@ -615,6 +615,7 @@ function migrate(s: GameState): void {
   s.evolveAckCount ??= 0;
   s.loadouts ??= [];
   s.achievements ??= [];
+  s.loreMasteries ??= [];
   s.activeQuests ??= [];
   s.questsDone ??= 0;
   s.fusionCount ??= 0;

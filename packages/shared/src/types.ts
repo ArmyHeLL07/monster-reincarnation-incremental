@@ -210,6 +210,11 @@ export interface Skill {
   /** If set, when deriveCondition is fully met, automatically grant this skill (integration system). */
   derivesTo?: string;
   deriveCondition?: DeriveCondition;
+  // --- lore-mastery passive (auto-granted when ALL of a race's lore books are read) ---
+  /** Race id this lore-mastery passive belongs to (granted only while playing that race). */
+  loreRace?: string;
+  /** Lore book ids that must ALL be in booksFound to auto-grant this passive. */
+  reqLore?: string[];
   // --- Resistance chain fields (kind: 'resistance') ---
   /** Which resistance stat this chain skill boosts (e.g. 'fire_res'). */
   resistType?: string;

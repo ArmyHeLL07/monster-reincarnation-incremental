@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.21.1';
+export const VERSION = '1.22.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.22.0',
+    date: '2026-06-28',
+    tr: [
+      'feat: Irk Lore Ustalığı — bir ırkın 6 lore kitabının HEPSİNİ bulup okursan o ırka özel kalıcı bir pasif açılır (örümcek: Ağ Sezgisi, slime: Sınırsız Beden, insan: Uyarlanan Zihin, iskelet: Çürümez Kemik, wyrmling: Ejder Kanı, golem: Taş Beden). "Bilgi = Hayatta Kalma Gücü" — tüm hikâyeyi bilmenin ödülü. Rebirth\'te kalır, açılışta ekran-ortası kutlama',
+    ],
+    en: [
+      'feat: Racial Lore Mastery — find and read ALL 6 of a race\'s lore books to unlock a permanent race-specific passive (spider: Web Sense, slime: Boundless Body, human: Adaptive Mind, skeleton: Undying Bone, wyrmling: Dragon Blood, golem: Stone Body). "Knowledge = Survival Power" — your reward for knowing the whole story. Survives rebirth, with a centred celebration on unlock',
+    ],
+    ru: [
+      'feat: Расовое мастерство знаний — найди и прочти ВСЕ 6 книг лора расы, чтобы открыть постоянный расовый пассив (паук: Чутьё паутины, слизь: Безграничное тело, человек: Адаптивный разум, скелет: Нетленная кость, вирмлинг: Кровь дракона, голем: Каменное тело). «Знание = сила выживания» — награда за знание всей истории. Сохраняется при перерождении, с празднованием по центру экрана',
+    ],
+  },
   {
     v: '1.21.1',
     date: '2026-06-28',

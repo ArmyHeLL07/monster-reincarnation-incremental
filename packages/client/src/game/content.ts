@@ -41,7 +41,7 @@ export interface Content {
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -59,9 +59,10 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<ResistanceMerger[]>(`${base}resistance_mergers.json`),
       fetchJson<Achievement[]>(`${base}achievements.json`),
       fetchJson<Quest[]>(`${base}quests.json`),
+      fetchJson<Skill[]>(`${base}lore_passives.json`),
     ]);
   return {
-    skills: byId(skills),
+    skills: byId([...skills, ...lorePassives]),
     resistances: byId(resistances),
     enemies: byId(enemies),
     races: byId(races),

@@ -188,6 +188,8 @@ export interface GameState {
   // --- achievements / lifetime counters (never reset by rebirth/race change) -
   /** Unlocked achievement ids (permanent across lives). */
   achievements: string[];
+  /** Lore-mastery passive ids earned (permanent; drives the once-only celebration). */
+  loreMasteries: string[];
   /** Active repeatable quests: template id + the metric value when it was assigned (delta = progress). */
   activeQuests: { id: string; base: number }[];
   /** Lifetime quests completed (a small bragging counter). */
@@ -517,6 +519,7 @@ export function newGame(): GameState {
     modifierFreeRooms: false,
     hellClears: [],
     achievements: [],
+    loreMasteries: [],
     activeQuests: [],
     questsDone: 0,
     fusionCount: 0,
