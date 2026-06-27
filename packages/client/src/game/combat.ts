@@ -4,7 +4,7 @@ import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
 import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
-import { isHumanoidForm, availableEvolutions, canEvolve, secretMet } from './evolution';
+import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
@@ -60,6 +60,14 @@ const ELITE_HP = 2.2;
 const ELITE_ATK = 1.5;
 const ELITE_EP = 3; // EP (and thus XP) reward multiplier
 const ELITE_SAT = 1.5;
+// Cannibalism / Predator — learning a defeated foe's skill by devouring it.
+const DEVOUR_KIN_THRESHOLD = 100; // general races must devour the same kin this many times first
+const DEVOUR_KIN_CHANCE = 0.08;   // then each further kin kill has this chance to teach a skill
+const DEVOUR_SLIME_CHANCE = 0.05; // slime Predator: any foe, no threshold (its signature)
+// Slime Absorb — gains the foe's properties on every kill.
+const ABSORB_RESIST_GAIN = 2;     // resistance XP per absorbed element
+const ABSORB_HEAL_PCT = 0.04;     // heal this fraction of max HP per kill (biomass)
+const ABSORB_VIT_CHANCE = 0.02;   // chance for permanent +1 VIT (biomass growth), tier-capped
 const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
@@ -1500,6 +1508,42 @@ function maybeDropLoot(
   log({ key: 'log.loot_drop', params: { item: lootDisplayName(item), rarity: `rarity.${item.rarity}` } });
 }
 
+/** Learn one un-owned skill from a defeated foe (Cannibalism / Predator). Returns true if learned. */
+function tryDevourSkill(state: GameState, content: Content, enemy: NonNullable<GameState['enemy']>, log: Log): boolean {
+  const pool = content.enemies.get(enemy.id)?.grantSkills ?? [];
+  const learnable = pool.filter((id) => content.skills.has(id) && !ownsSkillLine(state, content, id));
+  if (learnable.length === 0) return false;
+  const id = learnable[Math.floor(Math.random() * learnable.length)];
+  state.skills.push({ id, level: 1, exp: 0 });
+  log({ key: 'log.devour_skill', params: { enemy: enemy.locKey, skill: content.skills.get(id)!.locKeyName } });
+  return true;
+}
+
+/** Cannibalism (general races, kin-only) + slime Predator/Absorb — applied on each kill. */
+function cannibalizeAndAbsorb(state: GameState, content: Content, enemy: NonNullable<GameState['enemy']>, log: Log): void {
+  if (state.raceId === 'slime') {
+    // Predator: devour ANY foe's skill (chance, no threshold) — the slime signature.
+    if (Math.random() < DEVOUR_SLIME_CHANCE) tryDevourSkill(state, content, enemy, log);
+    // Absorb: take the foe's element(s) as resistance + biomass heal + bounded permanent VIT growth.
+    addResistExp(state, content, enemy.damageType, ABSORB_RESIST_GAIN, log);
+    if (enemy.damageType2) addResistExp(state, content, enemy.damageType2, ABSORB_RESIST_GAIN, log);
+    state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(state.maxHp * ABSORB_HEAL_PCT)));
+    const vitCap = (state.tier + 1) * 2;
+    if ((state.absorbVit ?? 0) < vitCap && Math.random() < ABSORB_VIT_CHANCE) {
+      state.absorbVit = (state.absorbVit ?? 0) + 1;
+      state.stats.VIT += 1;
+      recomputeMaxes(state);
+      log({ key: 'log.absorb_vit' });
+    }
+    return;
+  }
+  // General races: cannibalism is kin-only and gated behind heavy investment (sin-laden power).
+  const isKin = !!enemy.race && enemy.race === state.raceId;
+  if (isKin && (state.killedEnemies[enemy.id] ?? 0) >= DEVOUR_KIN_THRESHOLD && Math.random() < DEVOUR_KIN_CHANCE) {
+    tryDevourSkill(state, content, enemy, log);
+  }
+}
+
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffline = false): void {
   const enemy = state.enemy;
   if (!enemy) return;
@@ -1528,6 +1572,7 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
     gainSin(state, content, enemy.isBoss ? SIN_PER_KILL_BOSS : SIN_PER_KILL, log);
     log({ key: 'log.sin_kill', params: { enemy: enemy.locKey } }); // a clear "you sinned" beat
   }
+  cannibalizeAndAbsorb(state, content, enemy, log); // devour a skill (kin / slime) + slime absorb
 
   const satiety = Math.round(enemy.satiety * b.lootMult);
   if (state.inventory.length < maxFoodSlots(state)) {

@@ -199,6 +199,8 @@
   "log.branch_switch": "Dal değiştirdin: {form} (EP harcandı)",
   "log.evolve_ambush": "Evrim seni savunmasız yakaladı — {dmg} hasar aldın!",
   "log.sin_kill": "Kendi türünden birini öldürdün… günah ruhuna işliyor.",
+  "log.devour_skill": "🩸 {enemy} yedin ve {skill} skilini öğrendin!",
+  "log.absorb_vit": "🟢 Biyokütle emildi — kalıcı +1 VIT.",
   "skill.venom_bite.name": "Zehirli Isırık",
   "skill.venom_bite.desc": "Çenelerin arasında biriken ilk silahın. Ete saplanan dişler damarlara zehir akıtır; av hâlâ debelenirken toksin sessizce içini kemirmeye başlar. Yavaş ama affetmez.",
   "skill.lethal_venom.name": "Ölümcül Zehir",

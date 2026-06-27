@@ -617,6 +617,7 @@ function migrate(s: GameState): void {
   s.nearDeathCount ??= 0;
   s.vitEnduranceXP ??= 0;
   s.vitEndurancePerm ??= 0;
+  s.absorbVit ??= 0;
   // v9 fields — Yemek Ara forage mechanic
   s.forageCD ??= 0;
   s.pendingForage ??= null;

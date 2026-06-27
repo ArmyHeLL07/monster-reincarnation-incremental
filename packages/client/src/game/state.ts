@@ -316,6 +316,8 @@ export interface GameState {
   vitEnduranceXP: number;
   /** Permanent VIT bonus earned from Threshold Endurance this race life. Cap = tier × 2. Resets on race change. */
   vitEndurancePerm: number;
+  /** Permanent VIT a slime has absorbed (biomass growth). Cap = (tier+1) × 2. Resets on race change. */
+  absorbVit: number;
 
   // --- Yemek Ara (forage mechanic) -------------------------------------------
   /** Cooldown remaining in ms before the forage button is usable again (0 = ready). */
@@ -553,6 +555,7 @@ export function newGame(): GameState {
     nearDeathCount: 0,
     vitEnduranceXP: 0,
     vitEndurancePerm: 0,
+    absorbVit: 0,
     forageCD: 0,
     pendingForage: null,
     tutorialStep: 0,

@@ -164,7 +164,7 @@ const TOAST_KEYS = new Set([
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
   'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.achievement', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn',
+  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn', 'log.devour_skill',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {

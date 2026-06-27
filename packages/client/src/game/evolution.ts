@@ -76,7 +76,7 @@ function skillLineSet(content: Content, baseId: string): Set<string> {
 
 /** True if the player owns ANY skill in baseId's whole lineage — its ancestors OR descendants.
  *  Prevents granting a skill the player already holds in a different (evolved) form. */
-function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
+export function ownsSkillLine(state: GameState, content: Content, baseId: string): boolean {
   const line = skillLineSet(content, baseId);
   return state.skills.some((s) => line.has(s.id));
 }

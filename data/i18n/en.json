@@ -199,6 +199,8 @@
   "log.branch_switch": "Switched branch to {form} (EP spent)",
   "log.evolve_ambush": "The change left you exposed — you took {dmg} damage!",
   "log.sin_kill": "You slew your own kind… sin seeps into your soul.",
+  "log.devour_skill": "🩸 You devoured the {enemy} and learned {skill}!",
+  "log.absorb_vit": "🟢 Biomass absorbed — permanent +1 VIT.",
   "skill.venom_bite.name": "Venom Bite",
   "skill.venom_bite.desc": "The first weapon waiting in your jaws. Fangs sink into flesh and pour venom into the blood; while the prey still struggles, the toxin quietly eats it from within. Slow, but unforgiving.",
   "skill.lethal_venom.name": "Lethal Venom",

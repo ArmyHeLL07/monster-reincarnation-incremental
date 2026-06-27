@@ -48,6 +48,7 @@ export function applyRace(state: GameState, raceId: string, content: Content): v
   state.nearDeathCount   = 0;
   state.vitEnduranceXP   = 0;
   state.vitEndurancePerm = 0;
+  state.absorbVit        = 0;
   state.forageCD         = 0;
   state.pendingForage    = null;
 

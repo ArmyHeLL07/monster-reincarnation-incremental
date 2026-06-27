@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.18.3';
+export const VERSION = '1.18.4';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.18.4',
+    date: '2026-06-27',
+    tr: [
+      'feat: Yamyamlık → skill öğrenme — kendi ırkından bir düşmanı (kin) ~100 öldürdükten sonra her kin öldürmede %8 şansla o düşmanın sahip olmadığın bir skilini öğrenirsin (kin öldürmek günah → güç için karanlık tradeoff)',
+      'feat: Slime Predator — slime HERHANGI bir düşmanı öldürünce %5 şansla anında bir skil yutar (eşik yok, imza yeteneği)',
+      'feat: Slime Absorb — slime her öldürmede düşmanın element(ler)ini direnç olarak emer + maks HP %4 iyileşir + %2 şansla kalıcı +1 VIT (tier başına 2 ile sınırlı)',
+    ],
+    en: [
+      'feat: Cannibalism → skill learning — after devouring the same kin (your own race) ~100 times, each further kin kill has an 8% chance to teach you one of its skills you don\'t own (killing kin is a sin → a dark trade for power)',
+      'feat: Slime Predator — a slime devouring ANY foe has a 5% chance to instantly absorb one of its skills (no threshold, the slime signature)',
+      'feat: Slime Absorb — on every kill a slime soaks the foe\'s element(s) as resistance + heals 4% max HP + a 2% chance of permanent +1 VIT (capped per tier)',
+    ],
+    ru: [
+      'feat: Каннибализм → изучение навыков — поглотив одного и того же сородича ~100 раз, при каждом следующем убийстве сородича есть 8% шанс выучить его навык (убийство сородича — грех)',
+      'feat: Хищник слизи — слизь при убийстве ЛЮБОГО врага с шансом 5% мгновенно поглощает один его навык (без порога)',
+      'feat: Поглощение слизи — при каждом убийстве слизь впитывает элемент(ы) врага как сопротивление + лечит 4% макс HP + 2% шанс постоянного +1 VIT (с лимитом по тиру)',
+    ],
+  },
   {
     v: '1.18.3',
     date: '2026-06-27',
