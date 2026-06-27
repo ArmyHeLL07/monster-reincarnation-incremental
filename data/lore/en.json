@@ -1,35 +1,48 @@
 [
-  {
-    "id": "lore_1",
-    "title": "The First Tome: On the First Death",
-    "lore": "Nothing here dies only once. The first creature to fall learned that the dark does not keep what it takes — it returns it, smaller, hungrier, and wiser. They named this turning the cycle of rebirth.",
-    "deep": "Each rebirth strips the flesh but leaves a scar of memory in the soul. That scar is not weakness; it is the ledger of every death, and the System reads it to decide what you may become.",
-    "intReq": 8,
-    "order": 1
-  },
-  {
-    "id": "lore_2",
-    "title": "On Wounds and Mending",
-    "lore": "Flesh torn in the dark does not wait for kindness. Those who survive learn to knit themselves shut between heartbeats — to heal is the first skill of the deep.",
-    "deep": "Regeneration is not free; it borrows from tomorrow's strength. Push it past its limit and the body forgets how to stop closing, sealing even what should stay open.",
-    "intReq": 10,
-    "order": 2,
-    "hints": "regen"
-  },
-  {
-    "id": "lore_3",
-    "title": "The Weaver's Patience",
-    "lore": "The strongest hunter never chases. It waits at the center of a trap it spun in silence, and lets the careless deliver themselves.",
-    "deep": "Every thread is a question the prey answers with its own weight. Mastery is not in the strike but in the stillness that makes the strike unnecessary.",
-    "intReq": 9,
-    "order": 3
-  },
-  {
-    "id": "lore_4",
-    "title": "Hunger, the Silent Court",
-    "lore": "The dungeon judges no one. Only hunger holds court here, and it rules the patient and the proud alike — wait too long and it collects its tax in flesh.",
-    "deep": "To eat your own kind quiets the hunger but stains the ruler within. Gluttony is the throne hunger offers to those who stop saying no.",
-    "intReq": 12,
-    "order": 4
-  }
+  { "id": "lore_1", "title": "The First Tome: On the First Death", "lore": "Nothing here dies only once. The first creature to fall learned that the dark returns what it takes — smaller, hungrier, wiser. They named this turning the cycle of rebirth.", "deep": "Each rebirth strips the flesh but leaves a scar of memory in the soul; the System reads that scar to decide what you may become.", "intReq": 8, "order": 1 },
+  { "id": "lore_2", "title": "On Wounds and Mending", "lore": "Flesh torn in the dark does not wait for kindness; survivors learn to knit themselves shut between heartbeats.", "deep": "Regeneration borrows from tomorrow's strength — push it too far and the body forgets how to stop closing.", "intReq": 10, "order": 2, "hints": "regen" },
+  { "id": "lore_3", "title": "The Weaver's Patience", "lore": "The strongest hunter never chases; it waits at the center of a trap spun in silence.", "deep": "Mastery is not in the strike but in the stillness that makes the strike unnecessary.", "intReq": 9, "order": 3 },
+  { "id": "lore_4", "title": "Hunger, the Silent Court", "lore": "The dungeon judges no one; only hunger holds court here, and it taxes the patient and the proud alike in flesh.", "deep": "To eat your own kind quiets the hunger but stains the ruler within — gluttony is the throne hunger offers.", "intReq": 12, "order": 4 },
+
+  { "id": "lore_spider_1", "title": "Hatchling's First Thread", "lore": "A newborn weaver wakes already hunted; its first thread is not a home but a noose for something smaller.", "deep": "Silk remembers every tension it has ever held — it is the spider's oldest memory.", "intReq": 6, "order": 1, "race": "spider" },
+  { "id": "lore_spider_2", "title": "The Many Eyes", "lore": "Eight eyes do not see eight worlds; they see one world eight times, and the spider learns which lie to trust.", "deep": "Appraisal was born here — the habit of looking until the truth has nowhere left to hide.", "intReq": 7, "order": 2, "race": "spider" },
+  { "id": "lore_spider_3", "title": "Venom and Silk", "lore": "One end of the spider kills, the other binds; mastery is knowing which the moment demands.", "deep": "Venom is impatience made liquid; silk is patience made solid.", "intReq": 8, "order": 3, "race": "spider" },
+  { "id": "lore_spider_4", "title": "The Labyrinth Within", "lore": "A spider that survives long enough stops fearing the maze and becomes it.", "deep": "They whisper of one who mapped the whole labyrinth in her mind and was never lost again.", "intReq": 10, "order": 4, "race": "spider" },
+  { "id": "lore_spider_5", "title": "The Weaver's Fear", "lore": "Even the patient hunter dreads the open floor, where nothing waits above to drop from.", "deep": "A spider's courage is measured in ceilings.", "intReq": 9, "order": 5, "race": "spider" },
+  { "id": "lore_spider_6", "title": "Arachne Ascendant", "lore": "The final weaver no longer waits at the center of her web — she is the web, and the dungeon is caught in it.", "deep": "To become Arachne is to stop catching prey and start catching fates.", "intReq": 13, "order": 6, "race": "spider" },
+
+  { "id": "lore_slime_1", "title": "The First Droplet", "lore": "The weakest thing in the dark is a slime — and it survives longest, because nothing bothers to fear it.", "deep": "Being underestimated is the slime's first and best armor.", "intReq": 6, "order": 1, "race": "slime" },
+  { "id": "lore_slime_2", "title": "The Formless Body", "lore": "Having no shape, the slime cannot break the way shaped things break; it only divides and reconvenes.", "deep": "A wound to a slime is just a new edge to flow around.", "intReq": 7, "order": 2, "race": "slime" },
+  { "id": "lore_slime_3", "title": "Predator's Hunger", "lore": "The slime does not eat to fill itself; it eats to become what it ate.", "deep": "Every meal is a question — what of you is worth keeping?", "intReq": 8, "order": 3, "race": "slime" },
+  { "id": "lore_slime_4", "title": "The Name", "lore": "A slime given a true name stops being a monster and starts being a person — and then a sovereign.", "deep": "The naming is not a gift from outside; it is the moment the slime decides who it is.", "intReq": 11, "order": 4, "race": "slime" },
+  { "id": "lore_slime_5", "title": "The Fragile Core", "lore": "Boundless as its body is, a slime is only ever one small core; pierce it and all that formlessness cannot save it.", "deep": "The strongest survivor hides the smallest secret.", "intReq": 9, "order": 5, "race": "slime" },
+  { "id": "lore_slime_6", "title": "Sovereign of Slimes", "lore": "The apex slime no longer mimics what it eats — the world begins to mimic it.", "deep": "Formlessness, taken far enough, becomes the freedom to be every form at once.", "intReq": 13, "order": 6, "race": "slime" },
+
+  { "id": "lore_human_1", "title": "The Weakest Beginning", "lore": "A human is born with no fang, no scale, no venom — only the stubborn habit of refusing to die.", "deep": "Weakness that survives becomes the most dangerous thing of all.", "intReq": 6, "order": 1, "race": "human" },
+  { "id": "lore_human_2", "title": "Body of Balance", "lore": "Where beasts specialize, the human spreads thin and calls it versatility.", "deep": "To be good at everything is to be free to become anything.", "intReq": 7, "order": 2, "race": "human" },
+  { "id": "lore_human_3", "title": "The Path Chosen", "lore": "Every human reaches a fork — shield, blade, spell, or mercy — and the dungeon remembers the choice.", "deep": "The path does not reveal who you are; it decides it.", "intReq": 8, "order": 3, "race": "human" },
+  { "id": "lore_human_4", "title": "Sword and Spell", "lore": "The human who refuses to choose between steel and sorcery is rare, and rarely lives — but when one does, kingdoms kneel.", "deep": "Mastery of two arts is not twice the power; it is a third art no one else can name.", "intReq": 10, "order": 4, "race": "human" },
+  { "id": "lore_human_5", "title": "Mortality's Curse", "lore": "The human fears death more than any beast, and that fear is the engine of every cathedral and every crime.", "deep": "Knowing you will end is the only reason to build something that won't.", "intReq": 9, "order": 5, "race": "human" },
+  { "id": "lore_human_6", "title": "The Crowned", "lore": "The apex human is not the strongest body but the will that bends others to a shared dream.", "deep": "A sovereign is a story so many believe that it becomes true.", "intReq": 13, "order": 6, "race": "human" },
+
+  { "id": "lore_skeleton_1", "title": "Risen from Bone", "lore": "Death was meant to be the end; for the skeleton it was merely a door that opened the wrong way.", "deep": "What rises remembers dying, and that memory is sharper than any blade.", "intReq": 6, "order": 1, "race": "skeleton" },
+  { "id": "lore_skeleton_2", "title": "The Hollow Frame", "lore": "A skeleton carries no flesh to bleed, no organ to fail — only the architecture of what it was.", "deep": "Emptiness is not weakness; it is nothing left for pain to grip.", "intReq": 7, "order": 2, "race": "skeleton" },
+  { "id": "lore_skeleton_3", "title": "Undying Marrow", "lore": "Shatter a skeleton and the pieces still itch to rejoin; the dead do not accept dismissal.", "deep": "Regeneration without flesh is pure will wearing the shape of bone.", "intReq": 8, "order": 3, "race": "skeleton" },
+  { "id": "lore_skeleton_4", "title": "The Lich's Bargain", "lore": "A skeleton that binds its own soul into a vessel buys eternity at the price of warmth.", "deep": "The lich does not fear death, for it has already paid death in full.", "intReq": 11, "order": 4, "race": "skeleton" },
+  { "id": "lore_skeleton_5", "title": "The Brittle Truth", "lore": "For all its defiance, bone is dry and snaps; the undead's strength is also its oldest flaw.", "deep": "To endure forever is to crack forever — the lich's true labor is mending.", "intReq": 9, "order": 5, "race": "skeleton" },
+  { "id": "lore_skeleton_6", "title": "Death Sovereign", "lore": "The apex undead no longer flees death — it commands it, and the dungeon's dead answer.", "deep": "To rule death is to make every ending a beginning you authored.", "intReq": 13, "order": 6, "race": "skeleton" },
+
+  { "id": "lore_wyrmling_1", "title": "The Hatchling Drake", "lore": "A wyrmling breaks its shell already arrogant, for it remembers, dimly, that its kin once ruled the sky.", "deep": "Pride is the dragon's first scale and its last weakness.", "intReq": 6, "order": 1, "race": "wyrmling" },
+  { "id": "lore_wyrmling_2", "title": "Scales and Flame", "lore": "The drake's body is a forge; what it eats becomes heat, and what angers it becomes fire.", "deep": "A dragon's temper is not a flaw in its power — it is the fuel.", "intReq": 7, "order": 2, "race": "wyrmling" },
+  { "id": "lore_wyrmling_3", "title": "The Hoard Instinct", "lore": "Long before it can breathe fire, a drake begins to count what is its, and to resent what is not.", "deep": "Greed in a dragon is not vice but instinct — the world is a hoard it has not yet claimed.", "intReq": 8, "order": 3, "race": "wyrmling" },
+  { "id": "lore_wyrmling_4", "title": "Breath of Ruin", "lore": "The first true breath is the moment a drake stops being prey and the dungeon learns to flinch.", "deep": "Fire is the simplest argument; few survive to disagree.", "intReq": 10, "order": 4, "race": "wyrmling" },
+  { "id": "lore_wyrmling_5", "title": "The Long Slumber", "lore": "A dragon's quiet enemy is time and the sloth it breeds; many an elder wyrm slept until it was forgotten.", "deep": "Power that rests too long is indistinguishable from power that is gone.", "intReq": 9, "order": 5, "race": "wyrmling" },
+  { "id": "lore_wyrmling_6", "title": "Elder Dragon", "lore": "The apex wyrm is a force the dungeon plans around, like weather or grief.", "deep": "An elder dragon does not win battles; it ends the era in which battles were possible.", "intReq": 13, "order": 6, "race": "wyrmling" },
+
+  { "id": "lore_golem_1", "title": "The First Pebble", "lore": "A golem begins as a stone that refused to stay still, woken by a rune no one remembers carving.", "deep": "The smallest stone that thinks is already more than the mountain that does not.", "intReq": 6, "order": 1, "race": "golem" },
+  { "id": "lore_golem_2", "title": "Body of Stone", "lore": "The golem feels no hunger, no fatigue, no fear of bleeding — it has traded speed for the patience of geology.", "deep": "To a golem, a siege is a brief inconvenience and a century is an afternoon.", "intReq": 7, "order": 2, "race": "golem" },
+  { "id": "lore_golem_3", "title": "The Core Rune", "lore": "Every golem is one carved word holding a body together; erase the word and the body remembers it is only rubble.", "deep": "A golem's soul is grammar — a single law that stone agrees to obey.", "intReq": 8, "order": 3, "race": "golem" },
+  { "id": "lore_golem_4", "title": "Unyielding", "lore": "Where other races starve, the golem simply continues; it is the dungeon's most honest survivor.", "deep": "Needing nothing is the deepest kind of freedom, and the loneliest.", "intReq": 10, "order": 4, "race": "golem" },
+  { "id": "lore_golem_5", "title": "The Crack", "lore": "Stone that cannot bend must break; the golem's strength hides a brittleness no flesh would tolerate.", "deep": "The unyielding thing fears only the flaw it cannot feel forming.", "intReq": 9, "order": 5, "race": "golem" },
+  { "id": "lore_golem_6", "title": "World-Golem", "lore": "The apex golem stops being a thing in the world and becomes a piece of its bedrock.", "deep": "Grown large enough, the difference between a titan and a landscape disappears.", "intReq": 13, "order": 6, "race": "golem" }
 ]

@@ -60,8 +60,9 @@ export function search(state: GameState, content: Content, log: Log): void {
     }
   }
 
-  // 2) Find a lore tome (native, chronological series).
+  // 2) Find a lore tome (native, chronological series). Race-specific lore only surfaces for that race.
   const book = [...allLore()]
+    .filter((bk) => !bk.race || bk.race === state.raceId)
     .sort((x, y) => x.order - y.order)
     .find((bk) => !state.booksFound.includes(bk.id));
   if (book && Math.random() < 0.16 + luck * 0.005 + tier * 0.01) {

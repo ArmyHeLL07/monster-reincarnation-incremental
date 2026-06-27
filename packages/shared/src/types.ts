@@ -494,6 +494,8 @@ export interface NativeLore {
   order: number;
   /** Optional tag — e.g. 'regen' unlocks the passive regen discovery when this lore is found. */
   hints?: string;
+  /** Optional race id — race-specific lore is only findable while playing that race (generic if absent). */
+  race?: string;
 }
 
 /** A hard riddle that may gate a boss room (GDD §8.2 — "knowledge defeats the boss"). */

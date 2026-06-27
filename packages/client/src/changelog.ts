@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.21.0';
+export const VERSION = '1.21.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.21.1',
+    date: '2026-06-28',
+    tr: [
+      'feat: Çok daha fazla native lore — her ırka özel 6 kitaplık saga (örümcek/slime/insan/iskelet/wyrmling/golem) + 4 genel = 40 lore, 3 dilde native. Irk lore\'u yalnızca o ırkı oynarken bulunur (kendi hikâyeni keşfedersin)',
+      'feat: Daha fazla bilmece — bilmece havuzu 5\'ten 10\'a çıktı (ölüm/anahtar/günah/korku/kan...), 3 dilde özgün',
+    ],
+    en: [
+      'feat: Much more native lore — a 6-book saga for each race (spider/slime/human/skeleton/wyrmling/golem) + 4 generic = 40 lore, native in 3 languages. Race lore only appears while you play that race (discover your own story)',
+      'feat: More riddles — the riddle pool grew from 5 to 10 (death/key/sin/fear/blood...), native in 3 languages',
+    ],
+    ru: [
+      'feat: Гораздо больше родного лора — сага из 6 книг для каждой расы (паук/слизь/человек/скелет/вирмлинг/голем) + 4 общих = 40 знаний, на 3 языках. Расовый лор находится только при игре за эту расу',
+      'feat: Больше загадок — пул загадок вырос с 5 до 10, на 3 языках',
+    ],
+  },
   {
     v: '1.21.0',
     date: '2026-06-28',
