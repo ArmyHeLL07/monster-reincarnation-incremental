@@ -120,6 +120,12 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
   // Race signature: skeleton bone stacks add flat armor.
   b.armor += sigBoneArmor(state);
 
+  // Race signature: beastman fury stacks boost damage (each of 10 stacks = +5% dmg).
+  if (state.raceId === 'beastman') {
+    const fury = Number.isFinite(state.sig) ? Math.floor(state.sig) : 0;
+    if (fury > 0) b.dmgMult += fury * 0.05;
+  }
+
   // Soul prestige tree (permanent, bought with rebirth Souls).
   b.xpMult += soulLevel(state, 'predator_soul') * 0.08;   // Predator Soul: faster XP
   b.armor += soulLevel(state, 'ancient_armor') * 3;       // Ancient Armor: flat defense

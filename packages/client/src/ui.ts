@@ -969,6 +969,12 @@ function raceSigPanel(state: GameState): string {
       return sigBlock('🪨', t('sig.golem'), `${layers}/5`, sig, 5, '#9a8a6a',
         t('sig.golem_hint', { absorb: layers * 3 }));
     }
+    case 'beastman': {
+      const stacks = Math.floor(sig);
+      const bonus = stacks * 5;
+      return sigBlock('🐾', t('sig.beastman'), `${stacks}/10`, sig, 10, '#8a3a3a',
+        stacks > 0 ? t('sig.beastman_hint', { stacks, bonus }) : t('sig.beastman_empty'));
+    }
     default:
       return '';
   }

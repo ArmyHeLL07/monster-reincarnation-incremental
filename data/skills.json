@@ -4444,5 +4444,61 @@
     "evolvesTo": [],
     "dmgMult": 0.15,
     "statMult": 0.05
+  },
+  {
+    "id": "beast_claw",
+    "locKeyName": "skill.beast_claw.name",
+    "locKeyDesc": "skill.beast_claw.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": ["savage_strike"],
+    "damage": 4,
+    "damageType": "physical"
+  },
+  {
+    "id": "savage_strike",
+    "locKeyName": "skill.savage_strike.name",
+    "locKeyDesc": "skill.savage_strike.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": ["apex_frenzy"],
+    "damage": 9,
+    "damageType": "physical"
+  },
+  {
+    "id": "apex_frenzy",
+    "locKeyName": "skill.apex_frenzy.name",
+    "locKeyDesc": "skill.apex_frenzy.desc",
+    "kind": "active",
+    "stats": ["STR", "AGI"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 16,
+    "damageType": "physical"
+  },
+  {
+    "id": "primal_surge",
+    "locKeyName": "skill.primal_surge.name",
+    "locKeyDesc": "skill.primal_surge.desc",
+    "kind": "passive",
+    "stats": ["STR", "VIT"],
+    "lvMax": 10,
+    "evolvesTo": ["bloodrage"],
+    "dmgMult": 0.10,
+    "regenMult": 0.08
+  },
+  {
+    "id": "bloodrage",
+    "locKeyName": "skill.bloodrage.name",
+    "locKeyDesc": "skill.bloodrage.desc",
+    "kind": "passive",
+    "stats": ["STR", "VIT"],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.20,
+    "regenMult": 0.15,
+    "dodgeBonus": 0.05
   }
 ]

@@ -3833,5 +3833,603 @@
       "maul"
     ],
     "tierReq": 10
+  },
+  {
+    "id": "beastling",
+    "raceId": "beastman",
+    "locKey": "form.beastling.name",
+    "evolvesTo": [
+      "young_beastman"
+    ],
+    "levelReq": 1,
+    "statBonus": {},
+    "grantSkills": [],
+    "tierReq": 0
+  },
+  {
+    "id": "young_beastman",
+    "raceId": "beastman",
+    "locKey": "form.young_beastman.name",
+    "evolvesTo": [
+      "feral_hunter",
+      "pack_guardian"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 1,
+      "VIT": 1,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "endurance",
+      "toughness"
+    ],
+    "tierReq": 0
+  },
+  {
+    "id": "feral_hunter",
+    "raceId": "beastman",
+    "locKey": "form.feral_hunter.name",
+    "evolvesTo": [
+      "wolf_runner",
+      "blood_beast"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "AGI": 2,
+      "LUCK": 1
+    },
+    "grantSkills": [
+      "maul",
+      "pounce"
+    ],
+    "tierReq": 4
+  },
+  {
+    "id": "pack_guardian",
+    "raceId": "beastman",
+    "locKey": "form.pack_guardian.name",
+    "evolvesTo": [
+      "alpha_guardian",
+      "spirit_beast"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 3,
+      "STR": 2,
+      "WIS": 1
+    },
+    "grantSkills": [
+      "hp_regen",
+      "regeneration"
+    ],
+    "tierReq": 4
+  },
+  {
+    "id": "wolf_runner",
+    "raceId": "beastman",
+    "locKey": "form.wolf_runner.name",
+    "evolvesTo": [
+      "shadow_wolf",
+      "steel_fang"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 4,
+      "STR": 2,
+      "LUCK": 1
+    },
+    "grantSkills": [
+      "ambush_strike",
+      "bloodrage"
+    ],
+    "tierReq": 6
+  },
+  {
+    "id": "blood_beast",
+    "raceId": "beastman",
+    "locKey": "form.blood_beast.name",
+    "evolvesTo": [
+      "berserker_beast",
+      "blood_knight"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 2,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "shattering_strike",
+      "battle_cry"
+    ],
+    "tierReq": 6
+  },
+  {
+    "id": "alpha_guardian",
+    "raceId": "beastman",
+    "locKey": "form.alpha_guardian.name",
+    "evolvesTo": [
+      "battle_alpha",
+      "fortress_bear"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "VIT": 3,
+      "AGI": 1
+    },
+    "grantSkills": [
+      "heavy_slam",
+      "parry"
+    ],
+    "tierReq": 6
+  },
+  {
+    "id": "spirit_beast",
+    "raceId": "beastman",
+    "locKey": "form.spirit_beast.name",
+    "evolvesTo": [
+      "wisdom_beast",
+      "arcane_fang"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 3,
+      "VIT": 2,
+      "INT": 2
+    },
+    "grantSkills": [
+      "stillness",
+      "quick_thought"
+    ],
+    "tierReq": 6
+  },
+  {
+    "id": "shadow_wolf",
+    "raceId": "beastman",
+    "locKey": "form.shadow_wolf.name",
+    "evolvesTo": [
+      "apex_shadow",
+      "void_wolf"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 5,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "ambush_strike",
+      "lethal_lunge"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "steel_fang",
+    "raceId": "beastman",
+    "locKey": "form.steel_fang.name",
+    "evolvesTo": [
+      "steel_sovereign",
+      "fang_lord"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 4,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "savage_strike",
+      "weapon_mastery"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "berserker_beast",
+    "raceId": "beastman",
+    "locKey": "form.berserker_beast.name",
+    "evolvesTo": [
+      "apex_berserker",
+      "crimson_beast"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "AGI": 2,
+      "VIT": 1
+    },
+    "grantSkills": [
+      "apex_frenzy",
+      "blade_mastery"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "blood_knight",
+    "raceId": "beastman",
+    "locKey": "form.blood_knight.name",
+    "evolvesTo": [
+      "blood_sovereign",
+      "wrath_lord"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 3,
+      "VIT": 4,
+      "WIS": 1
+    },
+    "grantSkills": [
+      "blade_dance",
+      "undying_vitality"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "battle_alpha",
+    "raceId": "beastman",
+    "locKey": "form.battle_alpha.name",
+    "evolvesTo": [
+      "alpha_sovereign",
+      "war_king_beast"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "VIT": 2,
+      "LUCK": 1
+    },
+    "grantSkills": [
+      "battle_cry",
+      "apex_predator"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "fortress_bear",
+    "raceId": "beastman",
+    "locKey": "form.fortress_bear.name",
+    "evolvesTo": [
+      "iron_bear_lord",
+      "shield_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 5,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "regenerative_core",
+      "parry"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "wisdom_beast",
+    "raceId": "beastman",
+    "locKey": "form.wisdom_beast.name",
+    "evolvesTo": [
+      "sage_beast",
+      "spirit_sovereign"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 4,
+      "VIT": 2,
+      "INT": 2
+    },
+    "grantSkills": [
+      "mp_regen",
+      "sovereign_form"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "arcane_fang",
+    "raceId": "beastman",
+    "locKey": "form.arcane_fang.name",
+    "evolvesTo": [
+      "arcane_sovereign",
+      "mystic_beast"
+    ],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 3,
+      "WIS": 4,
+      "STR": 1
+    },
+    "grantSkills": [
+      "quick_thought",
+      "blade_dance"
+    ],
+    "tierReq": 8
+  },
+  {
+    "id": "apex_shadow",
+    "raceId": "beastman",
+    "locKey": "form.apex_shadow.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 7,
+      "LUCK": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "phase_body",
+      "apex_predator"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "void_wolf",
+    "raceId": "beastman",
+    "locKey": "form.void_wolf.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "AGI": 6,
+      "STR": 4,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "lethal_lunge",
+      "apex_frenzy"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "steel_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.steel_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "shattering_strike",
+      "undying_vitality"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "fang_lord",
+    "raceId": "beastman",
+    "locKey": "form.fang_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "AGI": 3,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_frenzy",
+      "maul"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "apex_berserker",
+    "raceId": "beastman",
+    "locKey": "form.apex_berserker.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "AGI": 3,
+      "VIT": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_frenzy",
+      "bloodrage"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "crimson_beast",
+    "raceId": "beastman",
+    "locKey": "form.crimson_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "LUCK": 3,
+      "AGI": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "shattering_strike",
+      "apex_predator"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "blood_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.blood_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 4,
+      "WIS": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "bloodrage",
+      "regenerative_core"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "wrath_lord",
+    "raceId": "beastman",
+    "locKey": "form.wrath_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 9,
+      "VIT": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_frenzy",
+      "battle_cry"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "alpha_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.alpha_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "VIT": 3,
+      "LUCK": 2,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "battle_cry",
+      "apex_predator"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "war_king_beast",
+    "raceId": "beastman",
+    "locKey": "form.war_king_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "VIT": 4,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "apex_frenzy",
+      "shattering_strike"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "iron_bear_lord",
+    "raceId": "beastman",
+    "locKey": "form.iron_bear_lord.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 7,
+      "STR": 3,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "regenerative_core",
+      "undying_vitality"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "shield_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.shield_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "WIS": 4,
+      "STR": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "undying_vitality",
+      "parry"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "sage_beast",
+    "raceId": "beastman",
+    "locKey": "form.sage_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 7,
+      "INT": 4,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "stillness",
+      "mp_regen"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "spirit_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.spirit_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "WIS": 8,
+      "INT": 3,
+      "VIT": 3
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "inner_silence",
+      "mp_regen"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "arcane_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.arcane_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 4,
+      "STR": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "quick_thought",
+      "blade_dance"
+    ],
+    "tierReq": 10
+  },
+  {
+    "id": "mystic_beast",
+    "raceId": "beastman",
+    "locKey": "form.mystic_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 5,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "sovereign_form",
+      "stillness",
+      "apex_predator"
+    ],
+    "tierReq": 10
   }
 ]

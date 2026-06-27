@@ -279,5 +279,35 @@
       "WIS": 4,
       "LUCK": 4
     }
+  },
+  {
+    "id": "beastman",
+    "locKey": "race.beastman.name",
+    "startSkills": [
+      "beast_claw",
+      "rend",
+      "primal_surge"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "humanoid": true,
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='106' rx='62' ry='74' fill='#1a1525' stroke='#6a4a8a' stroke-width='3'/><polygon points='52,46 32,4 72,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><polygon points='128,46 148,4 108,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><ellipse cx='90' cy='148' rx='22' ry='13' fill='#11090e' stroke='#6a4a8a' stroke-width='2'/>",
+      "eyes": [
+        { "id": "e1", "x": 66, "y": 96, "r": 13 },
+        { "id": "e2", "x": 114, "y": 96, "r": 13 }
+      ]
+    },
+    "startStats": {
+      "STR": 7,
+      "VIT": 5,
+      "AGI": 7,
+      "INT": 3,
+      "WIS": 3,
+      "LUCK": 5
+    }
   }
 ]
