@@ -3,7 +3,7 @@ import { loadContent, type Content } from './game/content';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
 import { applyRace } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
@@ -83,6 +83,8 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onSaveLoadout: (slot) => { saveLoadout(state, slot); save(state); render(state); },
+    onLoadLoadout: (slot) => { loadLoadout(state, content, slot); save(state); render(state); },
     onBuySoul: (id) => {
       if (buySoulUpgrade(state, id)) {
         recomputeMaxes(state);
@@ -605,6 +607,7 @@ function migrate(s: GameState): void {
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
   s.evolveAckCount ??= 0;
+  s.loadouts ??= [];
   s.achievements ??= [];
   s.activeQuests ??= [];
   s.questsDone ??= 0;

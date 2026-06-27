@@ -1173,6 +1173,30 @@ export function unequipAll(state: GameState): void {
   state.equipped = [];
 }
 
+export const LOADOUT_SLOTS = 3;
+
+/** Save the current equipped set into a preset slot. */
+export function saveLoadout(state: GameState, slot: number): void {
+  if (slot < 0 || slot >= LOADOUT_SLOTS) return;
+  if (!state.loadouts) state.loadouts = [];
+  while (state.loadouts.length <= slot) state.loadouts.push([]);
+  state.loadouts[slot] = [...state.equipped];
+}
+
+/** Equip a saved preset — only skills still owned + equippable, trimmed to capacity. */
+export function loadLoadout(state: GameState, content: Content, slot: number): void {
+  const saved = state.loadouts?.[slot];
+  if (!saved || saved.length === 0) return;
+  const cap = skillSlots(state);
+  const next: string[] = [];
+  for (const id of saved) {
+    if (next.length >= cap) break;
+    const def = content.skills.get(id);
+    if (def && def.damage !== undefined && !next.includes(id) && state.skills.some((s) => s.id === id)) next.push(id);
+  }
+  state.equipped = next;
+}
+
 /** Equip / unequip an active skill (manual loadout, capped by skillSlots). */
 export function toggleEquip(state: GameState, content: Content, id: string): void {
   const def = content.skills.get(id);

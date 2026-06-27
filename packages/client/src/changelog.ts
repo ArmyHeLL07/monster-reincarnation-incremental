@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.0';
+export const VERSION = '1.20.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.1',
+    date: '2026-06-27',
+    tr: [
+      'feat: Loadout (skill seti) preset\'leri — Skiller sekmesinde 3 set slotu: 💾 mevcut equipped\'i kaydet, 📥 kaydedilen seti yükle (sahip olduğun + slot kapasitesine göre). Build değiştirme QoL',
+    ],
+    en: [
+      'feat: Loadout presets — 3 build slots in the Skills tab: 💾 save your current equipped set, 📥 load a saved one (filtered to owned skills + slot capacity). Build-swapping QoL',
+    ],
+    ru: [
+      'feat: Наборы экипировки — 3 слота во вкладке «Навыки»: 💾 сохранить текущий набор, 📥 загрузить сохранённый (с учётом владения и лимита слотов)',
+    ],
+  },
   {
     v: '1.20.0',
     date: '2026-06-27',

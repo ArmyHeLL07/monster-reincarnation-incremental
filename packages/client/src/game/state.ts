@@ -151,6 +151,8 @@ export interface GameState {
   atkCd: number;
   /** Equipped active-skill ids — only these are used in combat (limited by skillSlots). */
   equipped: string[];
+  /** Saved equipped-skill presets (loadouts) — quickly swap builds. Up to LOADOUT_SLOTS slots. */
+  loadouts: string[][];
   /** Combat control: `auto` fires ready equipped skills; `manual` waits for taps. */
   combatMode: 'auto' | 'manual';
   /** Per-skill cooldown timers (ticks remaining), keyed by skill id. */
@@ -484,6 +486,7 @@ export function newGame(): GameState {
     mpTransferUnlocked: false,
     atkCd: 0,
     equipped: ['venom_bite', 'sharp_claw', 'silk_thread'],
+    loadouts: [],
     combatMode: 'auto',
     cooldowns: {},
     autoEat: true,

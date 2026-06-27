@@ -14,7 +14,7 @@ import { questProgress } from './game/quests';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY } from './game/combat';
+import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
 import { forageReveal } from './game/forage';
@@ -34,6 +34,8 @@ export interface UiActions {
   onToggleAutoAdvance: () => void;
   onToggleEquip: (id: string) => void;
   onUnequipAll: () => void;
+  onSaveLoadout: (slot: number) => void;
+  onLoadLoadout: (slot: number) => void;
   onDeleteSkill: (id: string) => void;
   onSacrificeSkill: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
@@ -1722,6 +1724,20 @@ function skillTreePanel(state: GameState): string {
   </section>`;
 }
 
+/** Loadout preset bar: save the current equipped build to a slot, or load a saved one. */
+function loadoutBar(state: GameState): string {
+  const slots = Array.from({ length: LOADOUT_SLOTS }, (_, i) => {
+    const saved = state.loadouts?.[i] ?? [];
+    const has = saved.length > 0;
+    return `<span style="display:inline-flex;gap:.2rem;align-items:center;margin-right:.5rem">
+      <span class="muted" style="font-size:.72rem">${t('ui.loadout_slot')}${i + 1}</span>
+      <button class="loadout-save" data-slot="${i}" style="font-size:.68rem;padding:.15rem .4rem" title="${t('ui.loadout_save')}">💾</button>
+      <button class="loadout-load" data-slot="${i}" style="font-size:.68rem;padding:.15rem .4rem"${has ? '' : ' disabled'} title="${t('ui.loadout_load')}">📥${has ? ` ${saved.length}` : ''}</button>
+    </span>`;
+  }).join('');
+  return `<div class="row" style="flex-wrap:wrap;margin-top:.4rem"><span class="muted" style="font-size:.72rem">${t('ui.loadouts')}:</span> ${slots}</div>`;
+}
+
 function skillsTab(state: GameState): string {
   // Human Path selection takes priority — blocks everything else until chosen
   if (state.pendingHumanPath) {
@@ -1750,7 +1766,7 @@ function skillsTab(state: GameState): string {
   const unequipAllBtn = state.equipped.length > 0
     ? `<button id="unequip-all" class="ghost" style="font-size:.72rem;padding:.2rem .5rem">${t('ui.unequip_all')}</button>`
     : '';
-  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)} ${unequipAllBtn}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul></section>`;
+  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)} ${unequipAllBtn}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul>${loadoutBar(state)}</section>`;
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
   if (!selectedB && fusableSkills(state)[1]) selectedB = fusableSkills(state)[1].id;
   const opts = (sel: string | null) =>
@@ -1846,6 +1862,10 @@ function wireSkills(el: HTMLElement): void {
     });
   });
   el.querySelector<HTMLButtonElement>('#unequip-all')?.addEventListener('click', () => ACTIONS.onUnequipAll());
+  el.querySelectorAll<HTMLButtonElement>('.loadout-save[data-slot]').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onSaveLoadout(Number(b.getAttribute('data-slot')))));
+  el.querySelectorAll<HTMLButtonElement>('.loadout-load[data-slot]').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onLoadLoadout(Number(b.getAttribute('data-slot')))));
   el.querySelectorAll<HTMLButtonElement>('.subtab[data-part]').forEach((b) => {
     b.addEventListener('click', () => {
       activeSkillPart = (b.getAttribute('data-part') as 'arm' | 'leg' | 'body' | 'eye') ?? 'arm';
