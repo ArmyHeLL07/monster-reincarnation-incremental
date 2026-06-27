@@ -494,12 +494,14 @@ export interface ForageableFood {
  *  permanent reward. `metric` names are resolved against game state in code (see achievements.ts). */
 export interface Achievement {
   id: string;
-  /** Base loc key → `${locKey}.name` and `${locKey}.desc`. */
+  /** Base loc key → `${locKey}.name` and `${locKey}.desc`. May contain a `{race}` placeholder. */
   locKey: string;
   icon: string;
   metric: string;
   threshold: number;
   reward: { ep?: number; statPoints?: number; souls?: number };
+  /** Optional metric argument (e.g. a raceId for per-race metrics); also fills `{race}` in the name. */
+  param?: string;
 }
 
 /** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */

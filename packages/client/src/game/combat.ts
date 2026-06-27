@@ -1721,10 +1721,13 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
     const keepHell = [...state.hellClears];
     const keepUnlocks = [...state.unlocks];
     const keepBoon = state.rebirthBoon;
-    const keepAch = [...state.achievements];        // achievements are permanent across everything
+    const keepAch = [...state.achievements];        // achievements + their lifetime trackers are permanent
     const keepFusions = state.fusionCount;
     const keepSwitches = state.branchSwitchCount;
     const keepDeaths = state.deaths;
+    const keepRaces = [...state.racesPlayed];
+    const keepGks = [...state.gatekeepersByRace];
+    const keepTrees = [...state.treesCompleted];
     const fresh = newGame();
     Object.assign(state, fresh);
     state.hellClears = keepHell;
@@ -1734,6 +1737,9 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
     state.fusionCount = keepFusions;
     state.branchSwitchCount = keepSwitches;
     state.deaths = keepDeaths;
+    state.racesPlayed = keepRaces;
+    state.gatekeepersByRace = keepGks;
+    state.treesCompleted = keepTrees;
     log({ key: 'log.permadeath' });
     return;
   }

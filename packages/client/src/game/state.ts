@@ -190,6 +190,12 @@ export interface GameState {
   branchSwitchCount: number;
   /** Lifetime deaths — feeds the survivor achievement. */
   deaths: number;
+  /** Race ids the player has ever played (per-race achievements). */
+  racesPlayed: string[];
+  /** Race ids whose gatekeeper the player has cleared at least once. */
+  gatekeepersByRace: string[];
+  /** Race ids whose evolution tree the player has completed (reached a terminal form). */
+  treesCompleted: string[];
 
   // --- rebirth / prestige (GDD §7.5) ----------------------------------------
   rebirthCount: number;
@@ -500,6 +506,9 @@ export function newGame(): GameState {
     fusionCount: 0,
     branchSwitchCount: 0,
     deaths: 0,
+    racesPlayed: [],
+    gatekeepersByRace: [],
+    treesCompleted: [],
     rebirthCount: 0,
     unlocks: [],
     kills: 0,

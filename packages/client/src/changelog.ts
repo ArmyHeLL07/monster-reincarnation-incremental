@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.18.0';
+export const VERSION = '1.18.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.18.1',
+    date: '2026-06-27',
+    tr: [
+      'feat: Irk başarımları — her 6 ırk için 3 kademe: o ırkı oyna (+25 EP), o ırkla kapı bekçisini yen (+1 stat puanı), o ırkın evrim ağacını tamamla / uç forma ulaş (+1 ruh). Toplam 18 yeni başarım (genel toplam 32). Her ırkı keşfetmeye + tamamlamaya teşvik',
+    ],
+    en: [
+      'feat: Race achievements — 3 tiers for each of the 6 races: play as it (+25 EP), beat the gatekeeper as it (+1 stat point), complete its evolution tree / reach a terminal form (+1 soul). 18 new achievements (32 total). Rewards exploring and mastering every race',
+    ],
+    ru: [
+      'feat: Расовые достижения — 3 ступени для каждой из 6 рас: сыграть за неё (+25 EP), победить привратника за неё (+1 очко статов), завершить её древо эволюции (+1 душа). 18 новых достижений (всего 32)',
+    ],
+  },
   {
     v: '1.18.0',
     date: '2026-06-27',

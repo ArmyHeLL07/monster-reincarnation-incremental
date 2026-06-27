@@ -2353,15 +2353,16 @@ function achievementsPanel(state: GameState): string {
   const rows = all
     .map((a) => {
       const got = unlocked.has(a.id);
-      const name = t(`${a.locKey}.name`);
-      const desc = t(`${a.locKey}.desc`);
+      const rp: Record<string, string> = a.param ? { race: t(`race.${a.param}.name`) } : {};
+      const name = t(`${a.locKey}.name`, rp);
+      const desc = t(`${a.locKey}.desc`, rp);
       if (got) {
         return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0">
           <span style="font-size:1.2rem">${a.icon}</span>
           <span><b style="color:#e6c558">${name}</b><br><span class="muted" style="font-size:.75rem">${desc}</span></span>
         </div>`;
       }
-      const prog = `${Math.min(achievementMetric(state, a.metric), a.threshold)}/${a.threshold}`;
+      const prog = `${Math.min(achievementMetric(state, a.metric, a.param), a.threshold)}/${a.threshold}`;
       return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0;opacity:.45">
         <span style="font-size:1.2rem;filter:grayscale(1)">${a.icon}</span>
         <span><b>${name}</b> <span class="muted" style="font-size:.72rem">(${prog})</span><br><span class="muted" style="font-size:.75rem">${desc}</span></span>

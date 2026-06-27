@@ -608,6 +608,9 @@ function migrate(s: GameState): void {
   s.fusionCount ??= 0;
   s.branchSwitchCount ??= 0;
   s.deaths ??= 0;
+  s.racesPlayed ??= [];
+  s.gatekeepersByRace ??= [];
+  s.treesCompleted ??= [];
   s.roomKillCount ??= 0;
   s.roomEnemyId ??= null;
   s.seenSkillIds ??= [];
