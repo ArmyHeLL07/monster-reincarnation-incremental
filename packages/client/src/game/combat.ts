@@ -9,6 +9,7 @@ import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from '
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
 import { aggregateBonuses, type Bonuses } from './effects';
 import { gainSin } from './ruler';
+import { checkAchievements } from './achievements';
 import { rollRoomEvent, outcomesFor, applyOutcome, condMet, roomKeyOf } from './roomevents';
 import {
   bossRiddleChance,
@@ -147,6 +148,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     return; // frozen — no hunger, no regen, nothing happens
   }
   state.totalTicks = (state.totalTicks ?? 0) + 1;
+  checkAchievements(state, content, log); // unlock milestones + grant rewards (idempotent, cheap)
 
   if (state.action === 'meditate') {
     meditateTick(state, content, log); // hidden zen gauge + virtue
@@ -1712,17 +1714,26 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
     return;
   }
   const diff = diffDef(state, content);
+  state.deaths = (state.deaths ?? 0) + 1; // a real death (feeds the survivor achievement)
 
   // Permadeath in Hell = a true wipe (§8.5.2) — only permanent meta survives.
   if (state.permadeath && diff.brutal) {
     const keepHell = [...state.hellClears];
     const keepUnlocks = [...state.unlocks];
     const keepBoon = state.rebirthBoon;
+    const keepAch = [...state.achievements];        // achievements are permanent across everything
+    const keepFusions = state.fusionCount;
+    const keepSwitches = state.branchSwitchCount;
+    const keepDeaths = state.deaths;
     const fresh = newGame();
     Object.assign(state, fresh);
     state.hellClears = keepHell;
     state.unlocks = keepUnlocks;
     state.rebirthBoon = keepBoon;
+    state.achievements = keepAch;
+    state.fusionCount = keepFusions;
+    state.branchSwitchCount = keepSwitches;
+    state.deaths = keepDeaths;
     log({ key: 'log.permadeath' });
     return;
   }

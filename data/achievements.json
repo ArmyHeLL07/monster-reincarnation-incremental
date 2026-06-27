@@ -1,0 +1,16 @@
+[
+  { "id": "first_evolution", "locKey": "ach.first_evolution", "icon": "🥚", "metric": "evolutions", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "hunter", "locKey": "ach.hunter", "icon": "🐛", "metric": "kills", "threshold": 100, "reward": { "ep": 50 } },
+  { "id": "slayer", "locKey": "ach.slayer", "icon": "⚔️", "metric": "kills", "threshold": 1000, "reward": { "statPoints": 1 } },
+  { "id": "first_fusion", "locKey": "ach.first_fusion", "icon": "🧬", "metric": "fusions", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "branch_switcher", "locKey": "ach.branch_switcher", "icon": "🔀", "metric": "branchSwitches", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "gatekeeper", "locKey": "ach.gatekeeper", "icon": "🏆", "metric": "gatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "hell_winner", "locKey": "ach.hell_winner", "icon": "🔥", "metric": "hellClears", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "reborn", "locKey": "ach.reborn", "icon": "♻️", "metric": "rebirths", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "veteran", "locKey": "ach.veteran", "icon": "💪", "metric": "rebirths", "threshold": 5, "reward": { "souls": 1 } },
+  { "id": "apex", "locKey": "ach.apex", "icon": "👑", "metric": "tier", "threshold": 10, "reward": { "souls": 1 } },
+  { "id": "scholar", "locKey": "ach.scholar", "icon": "📖", "metric": "enemyTypes", "threshold": 25, "reward": { "ep": 50 } },
+  { "id": "delver", "locKey": "ach.delver", "icon": "🕳️", "metric": "deepestLayer", "threshold": 3, "reward": { "ep": 50 } },
+  { "id": "persistent", "locKey": "ach.persistent", "icon": "⏳", "metric": "playtime", "threshold": 3600, "reward": { "ep": 50 } },
+  { "id": "survivor", "locKey": "ach.survivor", "icon": "💀", "metric": "deaths", "threshold": 1, "reward": { "ep": 50 } }
+]

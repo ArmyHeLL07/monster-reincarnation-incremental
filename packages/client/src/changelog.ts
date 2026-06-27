@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.17.4';
+export const VERSION = '1.18.0';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.18.0',
+    date: '2026-06-27',
+    tr: [
+      'feat: Başarımlar — 14 kilometre taşı (ilk evrim, 100/1000 öldürme, ilk füzyon, dal değiştir, kapı bekçisi, cehennem, rebirth, T10, 25 tür, Katman 3, 1 saat, ilk ölüm...). Açılınca toast + kalıcı ödül (küçük=+50 EP, kilometre taşı=+1 stat puanı, nadir=+1 ruh). Statlar sekmesinde ilerlemeli liste. Data-driven (achievements.json), 3 dil',
+    ],
+    en: [
+      'feat: Achievements — 14 milestones (first evolution, 100/1000 kills, first fusion, branch switch, gatekeeper, hell, rebirth, T10, 25 types, Layer 3, 1 hour, first death...). Unlocking pops a toast + a permanent reward (minor=+50 EP, milestone=+1 stat point, rare=+1 soul). Progress list in the Stats tab. Data-driven (achievements.json), 3 languages',
+    ],
+    ru: [
+      'feat: Достижения — 14 вех (первая эволюция, 100/1000 убийств, первое слияние, смена ветки, привратник, ад, перерождение, T10, 25 типов, слой 3, 1 час, первая смерть...). Открытие даёт всплывающее уведомление + постоянную награду (малое=+50 EP, веха=+1 очко статов, редкое=+1 душа). Список с прогрессом во вкладке Статы. Data-driven, 3 языка',
+    ],
+  },
   {
     v: '1.17.4',
     date: '2026-06-27',

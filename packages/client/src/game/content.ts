@@ -15,6 +15,7 @@ import type {
   EventDef,
   BossRiddle,
   ForageableFood,
+  Achievement,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -37,10 +38,12 @@ export interface Content {
   /** Forageable food items keyed by id (Yemek Ara mechanic). */
   forageableFoods: Map<string, ForageableFood>;
   resistanceMergers: Map<string, ResistanceMerger>;
+  /** Milestone achievements keyed by id. */
+  achievements: Map<string, Achievement>;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods, resistanceMergerList] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, books, rooms, ruler, difficulties, elements, events, bossRiddles, forageableFoods, resistanceMergerList, achievements] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -58,6 +61,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<BossRiddle[]>(`${base}boss_riddles.json`),
       fetchJson<ForageableFood[]>(`${base}forageable_foods.json`),
       fetchJson<ResistanceMerger[]>(`${base}resistance_mergers.json`),
+      fetchJson<Achievement[]>(`${base}achievements.json`),
     ]);
   return {
     skills: byId(skills),
@@ -77,6 +81,7 @@ export async function loadContent(base: string): Promise<Content> {
     bossRiddles: new Map(bossRiddles.map((r) => [r.id, r])),
     forageableFoods: byId(forageableFoods),
     resistanceMergers: new Map(resistanceMergerList.map((m) => [m.id, m])),
+    achievements: byId(achievements),
   };
 }
 

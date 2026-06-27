@@ -200,6 +200,7 @@ export function switchBranch(state: GameState, content: Content, targetFormId: s
   const cost = switchBranchCost(state);
   if ((state.ep ?? 0) < cost) return false;
   state.ep -= cost;
+  state.branchSwitchCount = (state.branchSwitchCount ?? 0) + 1; // lifetime — feeds the branch-switch achievement
 
   const oldHistory = state.formHistory.slice();
   const newHistory = ancestryOf(content, targetFormId);

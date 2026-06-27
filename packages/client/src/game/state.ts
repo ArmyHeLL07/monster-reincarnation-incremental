@@ -181,6 +181,16 @@ export interface GameState {
   /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
   hellClears: string[];
 
+  // --- achievements / lifetime counters (never reset by rebirth/race change) -
+  /** Unlocked achievement ids (permanent across lives). */
+  achievements: string[];
+  /** Lifetime fusion discoveries — feeds the fusion achievement. */
+  fusionCount: number;
+  /** Lifetime branch switches — feeds the branch-switch achievement. */
+  branchSwitchCount: number;
+  /** Lifetime deaths — feeds the survivor achievement. */
+  deaths: number;
+
   // --- rebirth / prestige (GDD §7.5) ----------------------------------------
   rebirthCount: number;
   /** Content unlocked by rebirths/secret rooms (skill ids, layer keys…) — persists. */
@@ -486,6 +496,10 @@ export function newGame(): GameState {
     permadeath: false,
     modifierFreeRooms: false,
     hellClears: [],
+    achievements: [],
+    fusionCount: 0,
+    branchSwitchCount: 0,
+    deaths: 0,
     rebirthCount: 0,
     unlocks: [],
     kills: 0,

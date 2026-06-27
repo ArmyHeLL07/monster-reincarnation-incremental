@@ -114,7 +114,10 @@ export function fuse(
   const cached = state.fusionCache[key];
   const result = cached ?? resolveFusion(aId, bId, content);
   const discovered = !cached;
-  if (discovered) state.fusionCache[key] = result;
+  if (discovered) {
+    state.fusionCache[key] = result;
+    state.fusionCount = (state.fusionCount ?? 0) + 1; // lifetime — feeds the fusion achievement
+  }
 
   registerFusionSkill(content, result);
   if (!state.skills.some((s) => s.id === result.id)) {

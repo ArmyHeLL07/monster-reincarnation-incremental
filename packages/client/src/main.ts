@@ -604,6 +604,10 @@ function migrate(s: GameState): void {
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
   s.evolveAckCount ??= 0;
+  s.achievements ??= [];
+  s.fusionCount ??= 0;
+  s.branchSwitchCount ??= 0;
+  s.deaths ??= 0;
   s.roomKillCount ??= 0;
   s.roomEnemyId ??= null;
   s.seenSkillIds ??= [];

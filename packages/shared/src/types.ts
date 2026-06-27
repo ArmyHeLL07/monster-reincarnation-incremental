@@ -490,6 +490,18 @@ export interface ForageableFood {
   minDepth?: number;
 }
 
+/** A milestone achievement — unlocked the moment `metric` reaches `threshold`, granting a small
+ *  permanent reward. `metric` names are resolved against game state in code (see achievements.ts). */
+export interface Achievement {
+  id: string;
+  /** Base loc key → `${locKey}.name` and `${locKey}.desc`. */
+  locKey: string;
+  icon: string;
+  metric: string;
+  threshold: number;
+  reward: { ep?: number; statPoints?: number; souls?: number };
+}
+
 /** A ruler track entry — one sin or virtue, granted as the pole's axis crosses its threshold. */
 export interface RulerDef {
   id: string;

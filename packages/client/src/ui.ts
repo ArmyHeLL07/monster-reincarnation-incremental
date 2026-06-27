@@ -9,6 +9,7 @@ import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './
 import { equipSetTier } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { achievementMetric } from './game/achievements';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
@@ -161,7 +162,7 @@ function logCategory(key: string): LogCat {
 const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
-  'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
+  'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.achievement', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
   'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain',
 ]);
@@ -2289,6 +2290,7 @@ function statsTab(state: GameState): string {
     </section>
     ${epShopPanel(state)}
     ${statisticsPanel(state)}
+    ${achievementsPanel(state)}
     ${minionPanel(state)}
     ${mutationsPanel(state)}
     ${perksPanel(state)}
@@ -2342,6 +2344,35 @@ function minionPanel(state: GameState): string {
       </ul>
     </section>
   `;
+}
+
+function achievementsPanel(state: GameState): string {
+  const all = [...CONTENT.achievements.values()];
+  if (all.length === 0) return '';
+  const unlocked = new Set(state.achievements ?? []);
+  const rows = all
+    .map((a) => {
+      const got = unlocked.has(a.id);
+      const name = t(`${a.locKey}.name`);
+      const desc = t(`${a.locKey}.desc`);
+      if (got) {
+        return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0">
+          <span style="font-size:1.2rem">${a.icon}</span>
+          <span><b style="color:#e6c558">${name}</b><br><span class="muted" style="font-size:.75rem">${desc}</span></span>
+        </div>`;
+      }
+      const prog = `${Math.min(achievementMetric(state, a.metric), a.threshold)}/${a.threshold}`;
+      return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0;opacity:.45">
+        <span style="font-size:1.2rem;filter:grayscale(1)">${a.icon}</span>
+        <span><b>${name}</b> <span class="muted" style="font-size:.72rem">(${prog})</span><br><span class="muted" style="font-size:.75rem">${desc}</span></span>
+      </div>`;
+    })
+    .join('');
+  return `
+    <section class="panel">
+      <h2>${t('ui.achievements_title')} <span class="muted" style="font-size:.8rem">${unlocked.size}/${all.length}</span></h2>
+      ${rows}
+    </section>`;
 }
 
 function statisticsPanel(state: GameState): string {
