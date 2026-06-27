@@ -18,10 +18,16 @@ export function availableEvolutions(state: GameState, content: Content): Evoluti
     .filter((f): f is EvolutionForm => f !== undefined);
 }
 
-/** A secret (easter-egg) form is only reachable once its hidden condition is met. */
+/** A secret (easter-egg) form is only reachable once ALL of its hidden conditions are met. */
 export function secretMet(state: GameState, form: EvolutionForm): boolean {
-  if (!form.secret) return true;
-  if (form.secret.kills && state.kills < form.secret.kills) return false;
+  const s = form.secret;
+  if (!s) return true;
+  if (s.kills    && state.kills              < s.kills)    return false;
+  if (s.sin      && state.ruler.sin          < s.sin)      return false;
+  if (s.virtue   && state.ruler.virtue       < s.virtue)   return false;
+  if (s.taboo    && state.ruler.taboo        < s.taboo)    return false;
+  if (s.rebirths && state.rebirthCount       < s.rebirths) return false;
+  if (s.hasSkill && !state.skills.some((sk) => sk.id === s.hasSkill)) return false;
   return true;
 }
 

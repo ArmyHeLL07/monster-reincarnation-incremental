@@ -11,6 +11,7 @@ import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
+import { resolveFusion } from './game/fusion';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
 import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
@@ -1649,15 +1650,24 @@ function skillsTab(state: GameState): string {
   const fz = lastFusion
     ? `<p><b>${t(lastFusion.locKeyName)}</b> · ${t(`fusion.${lastFusion.cls}`)} · ${lastFusion.magnitude}</p><p class="muted">${t(`fusion.effect.${lastFusion.effectType}.desc`)}</p>`
     : '';
+  const hasRaphael = state.skills.some((sk) => sk.id === 'raphael');
+  const raphaelPreview = (() => {
+    if (!hasRaphael || !selectedA || !selectedB || selectedA === selectedB) return '';
+    const preview = resolveFusion(selectedA, selectedB, CONTENT);
+    const clsColor = preview.cls === 'synergy' ? '#4a9' : preview.cls === 'quirk' ? '#b93' : '#a44';
+    const clsIcon  = preview.cls === 'synergy' ? '▲' : preview.cls === 'quirk' ? '◆' : '▼';
+    return `<p style="font-size:.82rem;margin:.3rem 0 0;color:${clsColor}">${clsIcon} ${t('ui.raphael_preview')}: <b>${t(`fusion.${preview.cls}`)}</b> · ${preview.magnitude} · ${t(`fusion.effect.${preview.effectType}.desc`)}</p>`;
+  })();
   const fusionPanel = state.fusionUnlocked
     ? `
     <section class="panel">
-      <h2>${t('ui.fusion')}</h2>
+      <h2>${t('ui.fusion')}${hasRaphael ? ` <span class="muted" style="font-size:.75rem">${t('ui.raphael_active')}</span>` : ''}</h2>
       <div class="controls">
         <select id="fa">${opts(selectedA)}</select>
         <select id="fb">${opts(selectedB)}</select>
         <button id="fuse">${t('ui.fuse')}</button>
       </div>
+      ${raphaelPreview}
       ${fz}
     </section>`
     : `<section class="panel"><h2>${t('ui.fusion')}</h2><p class="muted">${t('ui.fusion_locked')}</p></section>`;

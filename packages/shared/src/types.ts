@@ -116,8 +116,15 @@ export interface EvolutionForm {
   tierReq?: number;
   statBonus?: Partial<Record<StatKey, number>>;
   grantSkills?: string[];
-  /** A hidden (easter-egg) form — only revealed/available once its secret condition is met. */
-  secret?: { kills?: number };
+  /** A hidden (easter-egg) form — only revealed/available once ALL of its secret conditions are met. */
+  secret?: {
+    kills?: number;
+    sin?: number;
+    virtue?: number;
+    taboo?: number;
+    rebirths?: number;
+    hasSkill?: string;
+  };
   /** This form is humanoid even if the race isn't (unlocks equipment — e.g. a slime's Rimuru form). */
   humanoid?: boolean;
   /** Optional portrait image path (relative to asset base, e.g. "forms/venom_weaver.png").

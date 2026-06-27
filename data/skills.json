@@ -4450,9 +4450,14 @@
     "locKeyName": "skill.beast_claw.name",
     "locKeyDesc": "skill.beast_claw.desc",
     "kind": "active",
-    "stats": ["STR", "AGI"],
+    "stats": [
+      "STR",
+      "AGI"
+    ],
     "lvMax": 10,
-    "evolvesTo": ["savage_strike"],
+    "evolvesTo": [
+      "savage_strike"
+    ],
     "damage": 4,
     "damageType": "physical"
   },
@@ -4461,9 +4466,14 @@
     "locKeyName": "skill.savage_strike.name",
     "locKeyDesc": "skill.savage_strike.desc",
     "kind": "active",
-    "stats": ["STR", "AGI"],
+    "stats": [
+      "STR",
+      "AGI"
+    ],
     "lvMax": 10,
-    "evolvesTo": ["apex_frenzy"],
+    "evolvesTo": [
+      "apex_frenzy"
+    ],
     "damage": 9,
     "damageType": "physical"
   },
@@ -4472,7 +4482,10 @@
     "locKeyName": "skill.apex_frenzy.name",
     "locKeyDesc": "skill.apex_frenzy.desc",
     "kind": "active",
-    "stats": ["STR", "AGI"],
+    "stats": [
+      "STR",
+      "AGI"
+    ],
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 16,
@@ -4483,10 +4496,15 @@
     "locKeyName": "skill.primal_surge.name",
     "locKeyDesc": "skill.primal_surge.desc",
     "kind": "passive",
-    "stats": ["STR", "VIT"],
+    "stats": [
+      "STR",
+      "VIT"
+    ],
     "lvMax": 10,
-    "evolvesTo": ["bloodrage"],
-    "dmgMult": 0.10,
+    "evolvesTo": [
+      "bloodrage"
+    ],
+    "dmgMult": 0.1,
     "regenMult": 0.08
   },
   {
@@ -4494,11 +4512,118 @@
     "locKeyName": "skill.bloodrage.name",
     "locKeyDesc": "skill.bloodrage.desc",
     "kind": "passive",
-    "stats": ["STR", "VIT"],
+    "stats": [
+      "STR",
+      "VIT"
+    ],
     "lvMax": 10,
     "evolvesTo": [],
-    "dmgMult": 0.20,
+    "dmgMult": 0.2,
     "regenMult": 0.15,
     "dodgeBonus": 0.05
+  },
+  {
+    "id": "chaos_thread",
+    "locKeyName": "skill.chaos_thread.name",
+    "locKeyDesc": "skill.chaos_thread.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 14,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "soul_feast_sp",
+    "locKeyName": "skill.soul_feast_sp.name",
+    "locKeyDesc": "skill.soul_feast_sp.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.18,
+    "regenMult": 0.2
+  },
+  {
+    "id": "soul_web",
+    "locKeyName": "skill.soul_web.name",
+    "locKeyDesc": "skill.soul_web.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 22,
+    "damageType": "soul",
+    "element": "soul"
+  },
+  {
+    "id": "primal_roar",
+    "locKeyName": "skill.primal_roar.name",
+    "locKeyDesc": "skill.primal_roar.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 12,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "transcendence_aura",
+    "locKeyName": "skill.transcendence_aura.name",
+    "locKeyDesc": "skill.transcendence_aura.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.12,
+    "regenMult": 0.25,
+    "dodgeBonus": 0.08
+  },
+  {
+    "id": "forbidden_amalgam",
+    "locKeyName": "skill.forbidden_amalgam.name",
+    "locKeyDesc": "skill.forbidden_amalgam.desc",
+    "kind": "active",
+    "stats": [
+      "INT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 13,
+    "damageType": "dark",
+    "element": "dark"
+  },
+  {
+    "id": "monster_essence",
+    "locKeyName": "skill.monster_essence.name",
+    "locKeyDesc": "skill.monster_essence.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.15,
+    "armor": 8,
+    "regenMult": 0.12
   }
 ]

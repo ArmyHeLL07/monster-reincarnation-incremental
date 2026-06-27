@@ -134,7 +134,8 @@
     "locKey": "form.dark_scholar.name",
     "evolvesTo": [
       "necromancer_human",
-      "void_seeker"
+      "void_seeker",
+      "monster_scholar"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -154,7 +155,8 @@
     "locKey": "form.paladin.name",
     "evolvesTo": [
       "divine_champion",
-      "holy_crusader"
+      "holy_crusader",
+      "divine_sovereign"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -633,7 +635,8 @@
     "raceId": "slime",
     "locKey": "form.demon_slime.name",
     "evolvesTo": [
-      "rimuru_tempest"
+      "rimuru_tempest",
+      "world_absorber"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -1638,7 +1641,8 @@
     "locKey": "form.ancient_lich.name",
     "evolvesTo": [
       "death_sovereign",
-      "lich_god"
+      "lich_god",
+      "eternal_lich"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -2165,7 +2169,8 @@
     "locKey": "form.ancient_wyrm.name",
     "evolvesTo": [
       "elder_dragon",
-      "dragon_sovereign"
+      "dragon_sovereign",
+      "ancient_dragon_god"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -2812,7 +2817,8 @@
     "locKey": "form.titan_golem.name",
     "evolvesTo": [
       "colossus_prime",
-      "world_golem"
+      "world_golem",
+      "world_core"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -3405,7 +3411,9 @@
     "locKey": "form.broodmother.name",
     "evolvesTo": [
       "brood_sovereign",
-      "spider_queen"
+      "spider_queen",
+      "chaos_spawn",
+      "demon_spider"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -4030,7 +4038,8 @@
     "locKey": "form.berserker_beast.name",
     "evolvesTo": [
       "apex_berserker",
-      "crimson_beast"
+      "crimson_beast",
+      "primal_ascendant"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -4050,7 +4059,8 @@
     "locKey": "form.blood_knight.name",
     "evolvesTo": [
       "blood_sovereign",
-      "wrath_lord"
+      "wrath_lord",
+      "primordial_beast"
     ],
     "levelReq": 10,
     "statBonus": {
@@ -4431,5 +4441,499 @@
       "apex_predator"
     ],
     "tierReq": 10
+  },
+  {
+    "id": "chaos_spawn",
+    "raceId": "spider",
+    "locKey": "form.chaos_spawn.name",
+    "evolvesTo": [
+      "chaos_spinner",
+      "entropy_queen"
+    ],
+    "levelReq": 5,
+    "tierReq": 6,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 3,
+      "AGI": 3,
+      "STR": 2
+    },
+    "grantSkills": [
+      "chaos_thread"
+    ],
+    "secret": {
+      "kills": 1500,
+      "sin": 300,
+      "rebirths": 1
+    }
+  },
+  {
+    "id": "chaos_spinner",
+    "raceId": "spider",
+    "locKey": "form.chaos_spinner.name",
+    "evolvesTo": [
+      "soul_weaver_apex",
+      "oblivion_weaver"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 4,
+      "AGI": 2,
+      "STR": 3
+    }
+  },
+  {
+    "id": "entropy_queen",
+    "raceId": "spider",
+    "locKey": "form.entropy_queen.name",
+    "evolvesTo": [
+      "entropy_sovereign_sp",
+      "genesis_eater"
+    ],
+    "levelReq": 7,
+    "tierReq": 7,
+    "statBonus": {
+      "INT": 3,
+      "WIS": 5,
+      "AGI": 4,
+      "STR": 2
+    },
+    "grantSkills": [
+      "soul_feast_sp"
+    ]
+  },
+  {
+    "id": "soul_weaver_apex",
+    "raceId": "spider",
+    "locKey": "form.soul_weaver_apex.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 8,
+      "WIS": 5,
+      "AGI": 3,
+      "STR": 4
+    }
+  },
+  {
+    "id": "oblivion_weaver",
+    "raceId": "spider",
+    "locKey": "form.oblivion_weaver.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 6,
+      "WIS": 7,
+      "AGI": 5,
+      "STR": 3
+    }
+  },
+  {
+    "id": "entropy_sovereign_sp",
+    "raceId": "spider",
+    "locKey": "form.entropy_sovereign_sp.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 10,
+      "WIS": 6,
+      "AGI": 4,
+      "STR": 5
+    }
+  },
+  {
+    "id": "genesis_eater",
+    "raceId": "spider",
+    "locKey": "form.genesis_eater.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 12,
+      "WIS": 8,
+      "AGI": 3,
+      "STR": 3
+    }
+  },
+  {
+    "id": "primal_ascendant",
+    "raceId": "beastman",
+    "locKey": "form.primal_ascendant.name",
+    "evolvesTo": [
+      "transcendent_hunter",
+      "spirit_ascendant"
+    ],
+    "levelReq": 5,
+    "tierReq": 5,
+    "statBonus": {
+      "STR": 4,
+      "VIT": 3,
+      "AGI": 3,
+      "WIS": 4
+    },
+    "grantSkills": [
+      "primal_roar"
+    ],
+    "secret": {
+      "kills": 1200,
+      "virtue": 200,
+      "rebirths": 1
+    }
+  },
+  {
+    "id": "transcendent_hunter",
+    "raceId": "beastman",
+    "locKey": "form.transcendent_hunter.name",
+    "evolvesTo": [
+      "apex_chimera_bm",
+      "void_predator"
+    ],
+    "levelReq": 7,
+    "tierReq": 6,
+    "statBonus": {
+      "STR": 5,
+      "AGI": 5,
+      "VIT": 2,
+      "WIS": 3
+    },
+    "grantSkills": [
+      "transcendence_aura"
+    ]
+  },
+  {
+    "id": "spirit_ascendant",
+    "raceId": "beastman",
+    "locKey": "form.spirit_ascendant.name",
+    "evolvesTo": [
+      "sovereign_beast",
+      "primal_sovereign"
+    ],
+    "levelReq": 7,
+    "tierReq": 6,
+    "statBonus": {
+      "VIT": 4,
+      "WIS": 6,
+      "STR": 3,
+      "AGI": 2
+    }
+  },
+  {
+    "id": "apex_chimera_bm",
+    "raceId": "beastman",
+    "locKey": "form.apex_chimera_bm.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 8,
+      "AGI": 7,
+      "VIT": 4,
+      "WIS": 3
+    }
+  },
+  {
+    "id": "void_predator",
+    "raceId": "beastman",
+    "locKey": "form.void_predator.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 7,
+      "AGI": 9,
+      "INT": 4,
+      "WIS": 2
+    }
+  },
+  {
+    "id": "sovereign_beast",
+    "raceId": "beastman",
+    "locKey": "form.sovereign_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "VIT": 8,
+      "WIS": 7,
+      "STR": 5,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "primal_sovereign",
+    "raceId": "beastman",
+    "locKey": "form.primal_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 6,
+      "WIS": 8,
+      "AGI": 4
+    }
+  },
+  {
+    "id": "monster_scholar",
+    "raceId": "human",
+    "locKey": "form.monster_scholar.name",
+    "evolvesTo": [
+      "abomination_mage",
+      "dark_sovereign_human"
+    ],
+    "levelReq": 5,
+    "tierReq": 5,
+    "statBonus": {
+      "INT": 5,
+      "WIS": 4,
+      "STR": 2,
+      "LUCK": 2
+    },
+    "grantSkills": [
+      "forbidden_amalgam"
+    ],
+    "secret": {
+      "kills": 800,
+      "taboo": 25,
+      "sin": 200,
+      "rebirths": 1
+    }
+  },
+  {
+    "id": "abomination_mage",
+    "raceId": "human",
+    "locKey": "form.abomination_mage.name",
+    "evolvesTo": [
+      "void_abomination",
+      "chaos_mage_supreme"
+    ],
+    "levelReq": 7,
+    "tierReq": 6,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 3,
+      "STR": 3,
+      "AGI": 2
+    },
+    "grantSkills": [
+      "monster_essence"
+    ]
+  },
+  {
+    "id": "dark_sovereign_human",
+    "raceId": "human",
+    "locKey": "form.dark_sovereign_human.name",
+    "evolvesTo": [
+      "taboo_sovereign",
+      "dread_archmage"
+    ],
+    "levelReq": 7,
+    "tierReq": 6,
+    "statBonus": {
+      "INT": 4,
+      "WIS": 6,
+      "STR": 2,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "void_abomination",
+    "raceId": "human",
+    "locKey": "form.void_abomination.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 10,
+      "WIS": 4,
+      "STR": 5,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "chaos_mage_supreme",
+    "raceId": "human",
+    "locKey": "form.chaos_mage_supreme.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 12,
+      "WIS": 5,
+      "LUCK": 4,
+      "STR": 2
+    }
+  },
+  {
+    "id": "taboo_sovereign",
+    "raceId": "human",
+    "locKey": "form.taboo_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 7,
+      "WIS": 8,
+      "STR": 4,
+      "AGI": 3
+    }
+  },
+  {
+    "id": "dread_archmage",
+    "raceId": "human",
+    "locKey": "form.dread_archmage.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 9,
+      "WIS": 7,
+      "STR": 3,
+      "LUCK": 3
+    }
+  },
+  {
+    "id": "demon_spider",
+    "raceId": "spider",
+    "locKey": "form.demon_spider.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 5,
+      "AGI": 8,
+      "INT": 10,
+      "WIS": 5,
+      "LUCK": 4
+    },
+    "grantSkills": [
+      "soul_web"
+    ],
+    "secret": {
+      "kills": 2000,
+      "sin": 666
+    }
+  },
+  {
+    "id": "primordial_beast",
+    "raceId": "beastman",
+    "locKey": "form.primordial_beast.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 12,
+      "VIT": 8,
+      "AGI": 6,
+      "INT": 2,
+      "WIS": 2
+    },
+    "secret": {
+      "kills": 1500,
+      "sin": 500
+    }
+  },
+  {
+    "id": "world_absorber",
+    "raceId": "slime",
+    "locKey": "form.world_absorber.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "VIT": 15,
+      "INT": 8,
+      "WIS": 8,
+      "STR": 4,
+      "LUCK": 5
+    },
+    "secret": {
+      "kills": 1500,
+      "rebirths": 3
+    }
+  },
+  {
+    "id": "divine_sovereign",
+    "raceId": "human",
+    "locKey": "form.divine_sovereign.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 6,
+      "VIT": 8,
+      "WIS": 10,
+      "INT": 6,
+      "LUCK": 5
+    },
+    "secret": {
+      "kills": 500,
+      "virtue": 500,
+      "rebirths": 2
+    }
+  },
+  {
+    "id": "eternal_lich",
+    "raceId": "skeleton",
+    "locKey": "form.eternal_lich.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "INT": 12,
+      "WIS": 8,
+      "STR": 4,
+      "LUCK": 6,
+      "VIT": 2
+    },
+    "secret": {
+      "kills": 1000,
+      "taboo": 50,
+      "sin": 400
+    }
+  },
+  {
+    "id": "ancient_dragon_god",
+    "raceId": "wyrmling",
+    "locKey": "form.ancient_dragon_god.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "STR": 10,
+      "INT": 10,
+      "VIT": 8,
+      "AGI": 4,
+      "WIS": 6
+    },
+    "secret": {
+      "kills": 2000,
+      "rebirths": 2
+    }
+  },
+  {
+    "id": "world_core",
+    "raceId": "golem",
+    "locKey": "form.world_core.name",
+    "evolvesTo": [],
+    "levelReq": 10,
+    "tierReq": 10,
+    "statBonus": {
+      "VIT": 15,
+      "STR": 8,
+      "WIS": 6,
+      "INT": 4,
+      "LUCK": 2
+    },
+    "secret": {
+      "kills": 1000,
+      "virtue": 400,
+      "rebirths": 1
+    }
   }
 ]
