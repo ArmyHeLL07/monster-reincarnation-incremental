@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.20.3';
+export const VERSION = '1.20.4';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.20.4',
+    date: '2026-06-28',
+    tr: [
+      'fix: Otomatik yemek arama artık bulduğu yiyeceğe otomatik karar veriyor — güvenli/hafif riskli olanı yer, toksik/ölümcül olanı bırakır. Eskiden auto modda bile Ye/Bırak ekranı çıkıp bekliyordu',
+    ],
+    en: [
+      'fix: Auto-forage now auto-decides on the food it finds — eats safe/minor items, discards toxic/lethal ones. Previously it still popped the Eat/Discard prompt and waited even in auto mode',
+    ],
+    ru: [
+      'fix: Авто-добыча еды теперь сама решает по найденной еде — ест безопасную/слегка рискованную, выбрасывает токсичную/смертельную. Раньше даже в авто-режиме появлялось окно «Съесть/Выбросить»',
+    ],
+  },
   {
     v: '1.20.3',
     date: '2026-06-28',

@@ -107,6 +107,16 @@ export function discardFoundFood(state: GameState, log: Log): void {
   log({ key: 'log.forage_discarded' });
 }
 
+/** Auto-food: resolve a just-foraged item without prompting — eat the safe/minor, discard the
+ *  genuinely dangerous (toxic/lethal). Uses the real danger so automation never poisons you. */
+export function autoResolveForage(state: GameState, content: Content, log: Log): void {
+  if (!state.pendingForage) return;
+  const food = content.forageableFoods.get(state.pendingForage.foodId);
+  if (!food) { state.pendingForage = null; return; }
+  if (food.dangerLevel === 'toxic' || food.dangerLevel === 'lethal') discardFoundFood(state, log);
+  else eatFoundFood(state, content, log);
+}
+
 /** Returns Appraisal-filtered display info for the pending food item. */
 export function forageReveal(
   state: GameState,

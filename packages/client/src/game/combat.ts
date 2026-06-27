@@ -22,7 +22,7 @@ import {
   RIDDLE_FIGHT_MULTS,
 } from './riddles';
 import { meditateTick } from './meditation';
-import { forage } from './forage';
+import { forage, autoResolveForage } from './forage';
 import { search, SEARCH_SP_COST } from './discovery';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
@@ -559,6 +559,7 @@ function tryAutoSearch(state: GameState, content: Content, log: Log): void {
   if (!(state.autoSearchUnlocked || autoSearchLv >= 1)) return;
   if (state.autoSearchFood && state.sp >= SEARCH_SP_COST && state.forageCD <= 0 && !state.pendingForage) {
     forage(state, content, log);
+    autoResolveForage(state, content, log); // auto-food decides eat/discard — no manual prompt
   }
   if (state.autoSearchExplore && state.sp >= SEARCH_SP_COST && (state.searchCD ?? 0) <= 0) {
     search(state, content, log);
