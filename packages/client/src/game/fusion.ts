@@ -132,11 +132,13 @@ function fusionSkillDef(content: Content, result: FusionResult): Skill {
   const mapped = EFFECT_TYPE_MAP[result.effectType];
   const element   = mapped?.element   ?? skA?.element ?? skB?.element ?? 'physical';
   const damageType = (mapped?.damageType ?? skA?.damageType ?? skB?.damageType ?? 'physical') as Skill['damageType'];
+  // If BOTH parents are magic the fusion stays magic → scales off INT (not STR); else active (STR).
+  const kind: Skill['kind'] = skA?.kind === 'magic' && skB?.kind === 'magic' ? 'magic' : 'active';
   return {
     id: result.id,
     locKeyName: result.locKeyName,
     locKeyDesc: `fusion.effect.${result.effectType}.desc`,
-    kind: 'active',
+    kind,
     stats,
     lvMax: 10,
     evolvesTo: [],

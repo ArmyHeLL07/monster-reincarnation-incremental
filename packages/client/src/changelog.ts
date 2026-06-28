@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.2';
+export const VERSION = '1.23.3';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.3',
+    date: '2026-06-28',
+    tr: [
+      'fix: İki büyü (magic) skill\'ini birleştirince sonuç da artık magic olur → INT\'ten ölçeklenir (önceden tüm füzyonlar active idi, hep STR\'den vuruyordu)',
+      'balance: Skill türleri düzenlendi — su/ışık/karanlık/void/ruh/asit hasarı veren 23 skill artık doğru şekilde INT\'ten ölçeklenir (önceden yanlışlıkla STR\'den vuruyordu); fiziksel/delici/ısırık/kükreme STR\'de kalır',
+    ],
+    en: [
+      'fix: Fusing two magic skills now yields a magic-kind result → it scales off INT (previously every fusion was active and scaled off STR)',
+      'balance: Skill kinds cleaned up — 23 spell skills (water/light/dark/void/soul/acid) now correctly scale off INT instead of STR; physical/pierce/bite/roar stay STR',
+    ],
+    ru: [
+      'fix: Слияние двух магических скилов теперь даёт магический результат → масштабируется от INT (раньше все слияния были active и шли от STR)',
+      'balance: Виды скилов упорядочены — 23 заклинания (вода/свет/тьма/void/душа/кислота) теперь масштабируются от INT, а не STR; физические/колющие/укус/рёв остаются на STR',
+    ],
+  },
   {
     v: '1.23.2',
     date: '2026-06-28',

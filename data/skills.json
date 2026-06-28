@@ -54,7 +54,7 @@
     "id": "acid_spit",
     "locKeyName": "skill.acid_spit.name",
     "locKeyDesc": "skill.acid_spit.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "STR",
       "INT"
@@ -73,7 +73,7 @@
     "id": "caustic_spray",
     "locKeyName": "skill.caustic_spray.name",
     "locKeyDesc": "skill.caustic_spray.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "STR",
       "INT"
@@ -4542,7 +4542,7 @@
     "id": "chaos_thread",
     "locKeyName": "skill.chaos_thread.name",
     "locKeyDesc": "skill.chaos_thread.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4575,7 +4575,7 @@
     "id": "soul_web",
     "locKeyName": "skill.soul_web.name",
     "locKeyDesc": "skill.soul_web.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4626,7 +4626,7 @@
     "id": "forbidden_amalgam",
     "locKeyName": "skill.forbidden_amalgam.name",
     "locKeyDesc": "skill.forbidden_amalgam.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4726,7 +4726,7 @@
     "id": "water_bolt",
     "locKeyName": "skill.water_bolt.name",
     "locKeyDesc": "skill.water_bolt.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4743,7 +4743,7 @@
     "id": "torrent",
     "locKeyName": "skill.torrent.name",
     "locKeyDesc": "skill.torrent.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4760,7 +4760,7 @@
     "id": "tidal_wave",
     "locKeyName": "skill.tidal_wave.name",
     "locKeyDesc": "skill.tidal_wave.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4777,7 +4777,7 @@
     "id": "deluge",
     "locKeyName": "skill.deluge.name",
     "locKeyDesc": "skill.deluge.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4792,7 +4792,7 @@
     "id": "holy_light",
     "locKeyName": "skill.holy_light.name",
     "locKeyDesc": "skill.holy_light.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "WIS",
       "INT"
@@ -4809,7 +4809,7 @@
     "id": "divine_beam",
     "locKeyName": "skill.divine_beam.name",
     "locKeyDesc": "skill.divine_beam.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "WIS",
       "INT"
@@ -4826,7 +4826,7 @@
     "id": "radiance_burst",
     "locKeyName": "skill.radiance_burst.name",
     "locKeyDesc": "skill.radiance_burst.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "WIS",
       "INT"
@@ -4843,7 +4843,7 @@
     "id": "divine_judgment",
     "locKeyName": "skill.divine_judgment.name",
     "locKeyDesc": "skill.divine_judgment.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "WIS",
       "INT"
@@ -4858,7 +4858,7 @@
     "id": "dark_nova",
     "locKeyName": "skill.dark_nova.name",
     "locKeyDesc": "skill.dark_nova.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4875,7 +4875,7 @@
     "id": "void_darkness",
     "locKeyName": "skill.void_darkness.name",
     "locKeyDesc": "skill.void_darkness.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -4890,7 +4890,7 @@
     "id": "corrosive_storm",
     "locKeyName": "skill.corrosive_storm.name",
     "locKeyDesc": "skill.corrosive_storm.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "STR",
       "INT"
@@ -4907,7 +4907,7 @@
     "id": "dissolution",
     "locKeyName": "skill.dissolution.name",
     "locKeyDesc": "skill.dissolution.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "STR",
       "INT"
@@ -5067,7 +5067,7 @@
     "id": "cosmic_rend",
     "locKeyName": "skill.cosmic_rend.name",
     "locKeyDesc": "skill.cosmic_rend.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "STR",
       "INT"
@@ -5099,7 +5099,7 @@
     "id": "void_volley",
     "locKeyName": "skill.void_volley.name",
     "locKeyDesc": "skill.void_volley.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "AGI",
       "INT"
@@ -5129,7 +5129,7 @@
     "id": "chaos_nova",
     "locKeyName": "skill.chaos_nova.name",
     "locKeyDesc": "skill.chaos_nova.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -5146,7 +5146,7 @@
     "id": "entropy_obliteration",
     "locKeyName": "skill.entropy_obliteration.name",
     "locKeyDesc": "skill.entropy_obliteration.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -5193,7 +5193,7 @@
     "id": "soul_cascade",
     "locKeyName": "skill.soul_cascade.name",
     "locKeyDesc": "skill.soul_cascade.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
@@ -5210,7 +5210,7 @@
     "id": "soul_annihilation",
     "locKeyName": "skill.soul_annihilation.name",
     "locKeyDesc": "skill.soul_annihilation.desc",
-    "kind": "active",
+    "kind": "magic",
     "stats": [
       "INT",
       "WIS"
