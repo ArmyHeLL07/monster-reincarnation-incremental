@@ -191,6 +191,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     const b = aggregateBonuses(state, content);
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
     combatRound(state, content, log, b, isOffline);
+    tryAutoEvent(state, content, log); // auto-resolve events/riddles in combat too, not just rest
     processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
     if (state.hp <= 0) onDeath(state, content, log, b);
     tryAutoSearch(state, content, log); // auto-forage/explore mid-combat too (SP-gated; one search/room)
@@ -215,6 +216,18 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     tickWeb(state, b, log, isOffline);
   }
   state.lastSeen = Date.now();
+}
+
+/**
+ * Auto-resolve a pending event or boss riddle when the player enabled it (INT-gated).
+ * Shared by the combat tick AND restRound so an event auto-resolves no matter which
+ * mode it appears in. Previously this lived only in restRound, so events raised during
+ * combat never auto-resolved → "event geliyor ama otomatik seçim yapmıyor".
+ */
+function tryAutoEvent(state: GameState, content: Content, log: Log): void {
+  if (state.autoEventDecision && (state.pendingEvent || state.bossRiddle) && state.stats.INT >= 50) {
+    autoChooseEvent(state, content, log);
+  }
 }
 
 const EAT_THRESHOLD = 50;
@@ -610,11 +623,7 @@ function restRound(state: GameState, content: Content, log: Log): void {
 
   tryAutoSearch(state, content, log); // auto-forage + auto-explore (also runs in combat — see tick)
 
-  // Auto-event kararı — boss riddles set state.bossRiddle (not pendingEvent), so include both here
-  // or auto-solve never fired for riddles (the bug Atıl reported).
-  if (state.autoEventDecision && (state.pendingEvent || state.bossRiddle) && state.stats.INT >= 50) {
-    autoChooseEvent(state, content, log);
-  }
+  tryAutoEvent(state, content, log); // auto-resolve a pending event/riddle (shared with the combat tick)
 
   decayFood(state);
   if (state.autoEat) autoEat(state, content, log);
@@ -1863,10 +1872,12 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
 // ---- EP Shop ---------------------------------------------------------------
 
 const EP_STAT_BASE_COST = 100;
+/** Per-purchase cost growth for EP-bought stat points (×1.3 each buy this life). */
+const EP_STAT_COST_GROWTH = 1.3;
 
-/** Cost of the next EP-purchased stat point (doubles with each purchase this life). */
+/** Cost of the next EP-purchased stat point (grows ×1.3 with each purchase this life). */
 export function epStatCost(state: GameState): number {
-  return EP_STAT_BASE_COST * Math.pow(2, state.epStatsBought ?? 0);
+  return Math.round(EP_STAT_BASE_COST * Math.pow(EP_STAT_COST_GROWTH, state.epStatsBought ?? 0));
 }
 
 /** Buy one stat point with EP. Returns true on success. */

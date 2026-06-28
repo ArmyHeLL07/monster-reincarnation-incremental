@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.0';
+export const VERSION = '1.23.1';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.1',
+    date: '2026-06-28',
+    tr: [
+      'fix: Otomatik Event Kararı artık SAVAŞ modunda da çalışıyor — önceden auto-çözüm yalnızca dinlenme modunda tetikleniyordu, bu yüzden savaşırken (AFK dahil) çıkan moral-olmayan olaylar ve boss bilmeceleri otomatik seçilmiyordu. Artık event hangi modda çıkarsa çıksın (auto açık + INT≥50) anında çözülür',
+      'balance: EP mağazası stat puanı maliyeti artık her alımda ×2 yerine ×1.3 büyüyor (100, 130, 169, 220, 286...) — eski katlanma birkaç alımdan sonra patlayıp stat puanını alınamaz yapıyordu; artık kalıcı ama makul bir EP gideri',
+    ],
+    en: [
+      'fix: Auto-Event Decision now works in COMBAT mode too — previously auto-resolve only fired while resting, so non-moral events and boss riddles raised during combat (incl. AFK) never auto-selected. Now an event auto-resolves no matter the mode (auto on + INT≥50)',
+      'balance: EP shop stat-point cost now grows ×1.3 per purchase instead of ×2 (100, 130, 169, 220, 286...) — the old doubling exploded after a few buys and locked you out; now it stays a meaningful but affordable EP sink',
+    ],
+    ru: [
+      'fix: Авто-решение событий теперь работает и в БОЮ — раньше оно срабатывало только во время отдыха, поэтому не-моральные события и загадки боссов во время боя (вкл. AFK) не выбирались автоматически. Теперь событие решается в любом режиме (авто вкл + INT≥50)',
+      'balance: Стоимость очка характеристик в EP-магазине теперь растёт ×1.3 за покупку вместо ×2 (100, 130, 169, 220, 286...) — прежнее удвоение взрывалось после нескольких покупок; теперь это ощутимый, но доступный расход EP',
+    ],
+  },
   {
     v: '1.23.0',
     date: '2026-06-28',
