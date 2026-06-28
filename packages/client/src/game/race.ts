@@ -2,8 +2,8 @@ import type { Content } from './content';
 import type { GameState } from './state';
 import { recomputeMaxes } from './state';
 
-/** Races with complete content (lore, etc.). The rest are placeholders — shown but locked in the picker until finished. */
-export const OFFICIAL_RACES = new Set(['spider', 'human', 'slime', 'skeleton', 'wyrmling', 'golem']);
+/** Playable races (mechanics + evolution forms complete). Any race not listed is shown but locked in the picker until it's finished. */
+export const OFFICIAL_RACES = new Set(['spider', 'human', 'slime', 'skeleton', 'wyrmling', 'golem', 'beastkin', 'demon']);
 
 /**
  * Apply race-specific starting configuration to an existing state (for race selection and rebirth).

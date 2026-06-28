@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.12';
+export const VERSION = '1.23.13';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.13',
+    date: '2026-06-28',
+    tr: [
+      'feat: Tüm ırklar oynanabilir — Canavarsı (beastkin) ve İblis (demon) artık açık; her ırkın 10 kademeli evrim zinciri tam adlandırıldı',
+      'fix: Yeni içeriğin eksik metinleri tamamlandı — 71 yetenek (isim + açıklama) + 80 evrim formu + 2 ırk adı, üç dilde; artık ham anahtar görünmüyor',
+    ],
+    en: [
+      'feat: All races playable — Beastkin and Demon are now unlocked; every race\'s full 10-tier evolution chain is named',
+      'fix: Filled in the new content\'s missing text — 71 skills (name + description) + 80 evolution forms + 2 race names, in all 3 languages; no more raw keys',
+    ],
+    ru: [
+      'feat: Все расы играбельны — Зверолюд и Демон теперь открыты; вся 10-ступенчатая цепочка эволюции каждой расы получила названия',
+      'fix: Заполнен недостающий текст нового контента — 71 навык (название + описание) + 80 форм эволюции + 2 названия рас, на трёх языках; сырых ключей больше нет',
+    ],
+  },
   {
     v: '1.23.12',
     date: '2026-06-28',
