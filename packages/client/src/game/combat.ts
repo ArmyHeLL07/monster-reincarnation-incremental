@@ -7,7 +7,7 @@ import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
-import { aggregateBonuses, type Bonuses } from './effects';
+import { aggregateBonuses, specStat, type Bonuses } from './effects';
 import { gainSin } from './ruler';
 import { checkAchievements } from './achievements';
 import { checkQuests } from './quests';
@@ -1120,9 +1120,11 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
 
   const diff = diffDef(state, content);
 
+  const spec = specStat(state);
   let raw: number;
   if (def.kind === 'magic') {
     raw = (def.damage ?? 0) + effStat(state, 'INT') * 0.6;
+    if (spec === 'INT') raw *= 1.5; // INT spec: Arcane Apex boosts magic damage
   } else {
     raw = (def.damage ?? 0) + Math.floor(effStat(state, 'STR') / 3);
   }

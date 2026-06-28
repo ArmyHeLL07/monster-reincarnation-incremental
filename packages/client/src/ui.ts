@@ -6,7 +6,7 @@ import { currentRoomHazard } from './game/hazards';
 import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
-import { equipSetTier } from './game/effects';
+import { equipSetTier, specStat } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
 import { achievementMetric } from './game/achievements';
@@ -1848,6 +1848,38 @@ function skillsTab(state: GameState): string {
     const clsIcon  = preview.cls === 'synergy' ? '▲' : preview.cls === 'quirk' ? '◆' : '▼';
     return `<p style="font-size:.82rem;margin:.3rem 0 0;color:${clsColor}">${clsIcon} ${t('ui.raphael_preview')}: <b>${t(`fusion.${preview.cls}`)}</b> · ${preview.magnitude} · ${t(`fusion.effect.${preview.effectType}.desc`)}</p>`;
   })();
+  const raphaelSuggestions = (() => {
+    if (!hasRaphael) return '';
+    const fusable = fusableSkills(state).map((s) => s.id);
+    type Sugg = { a: string; b: string; cls: string; effect: string; mag: number };
+    const list: Sugg[] = [];
+    for (let i = 0; i < fusable.length; i++) {
+      for (let j = i + 1; j < fusable.length; j++) {
+        const r = resolveFusion(fusable[i], fusable[j], CONTENT);
+        if (r.cls !== 'backfire') list.push({ a: fusable[i], b: fusable[j], cls: r.cls, effect: r.effectType, mag: r.magnitude });
+      }
+    }
+    list.sort((a, b) => {
+      const cs = { synergy: 2, quirk: 1, backfire: 0 };
+      const d = (cs[b.cls as keyof typeof cs] ?? 0) - (cs[a.cls as keyof typeof cs] ?? 0);
+      if (d !== 0) return d;
+      const aSpec = a.effect !== 'mix' ? 1 : 0;
+      const bSpec = b.effect !== 'mix' ? 1 : 0;
+      if (aSpec !== bSpec) return bSpec - aSpec;
+      return b.mag - a.mag;
+    });
+    const top = list.slice(0, 3);
+    if (!top.length) return '';
+    const rows = top.map(({ a, b, cls, effect, mag }) => {
+      const clsIcon  = cls === 'synergy' ? '▲' : '◆';
+      const clsColor = cls === 'synergy' ? '#4a9' : '#b93';
+      const nameA = t(CONTENT.skills.get(a)?.locKeyName ?? a);
+      const nameB = t(CONTENT.skills.get(b)?.locKeyName ?? b);
+      const effectLabel = effect !== 'mix' ? t(`fusion.effect.${effect}`) : effect;
+      return `<button class="ghost suggest-fuse" data-sa="${a}" data-sb="${b}" style="font-size:.76rem;text-align:left;padding:.2rem .4rem;margin:.15rem 0;width:100%"><span style="color:${clsColor}">${clsIcon}</span> ${nameA} + ${nameB} → <b>${effectLabel}</b> · ${mag}</button>`;
+    }).join('');
+    return `<div style="margin-top:.5rem"><p style="font-size:.78rem;color:#7a6;margin:.2rem 0">${t('ui.raphael_suggest')}:</p>${rows}</div>`;
+  })();
   const fusionPanel = state.fusionUnlocked
     ? `
     <section class="panel">
@@ -1858,6 +1890,7 @@ function skillsTab(state: GameState): string {
         <button id="fuse">${t('ui.fuse')}</button>
       </div>
       ${raphaelPreview}
+      ${raphaelSuggestions}
       ${fz}
     </section>`
     : `<section class="panel"><h2>${t('ui.fusion')}</h2><p class="muted">${t('ui.fusion_locked')}</p></section>`;
@@ -1953,6 +1986,13 @@ function wireSkills(el: HTMLElement): void {
       const id = row.getAttribute('data-skill');
       expandedSkill = expandedSkill === id ? null : id; // tap to read its description, tap again to close
       renderTab();
+    });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.suggest-fuse[data-sa]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const a = b.getAttribute('data-sa');
+      const sb = b.getAttribute('data-sb');
+      if (a && sb) { selectedA = a; selectedB = sb; renderTab(); }
     });
   });
 }
@@ -2413,6 +2453,21 @@ function killStatsHtml(state: GameState): string {
   return line;
 }
 
+function specBuffPanel(state: GameState): string {
+  const alloc = state.allocated ?? {};
+  const over100 = (Object.keys(alloc) as (keyof typeof alloc)[]).filter((k) => (alloc[k] ?? 0) >= 100);
+  if (over100.length === 0) return '';
+  const spec = specStat(state);
+  const SPEC_KEYS: Record<string, string> = {
+    STR: 'ui.spec_str', VIT: 'ui.spec_vit', AGI: 'ui.spec_agi',
+    INT: 'ui.spec_int', WIS: 'ui.spec_wis', LUCK: 'ui.spec_luck',
+  };
+  const colour = spec ? '#4a9' : '#a44';
+  const icon   = spec ? '✦' : '✗';
+  const label  = spec ? t(SPEC_KEYS[spec]) : t('ui.spec_cancelled');
+  return `<p style="font-size:.82rem;margin:.35rem 0 0;color:${colour}">${icon} ${t('ui.spec_buff')}: <b>${label}</b></p>`;
+}
+
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
@@ -2426,6 +2481,7 @@ function statsTab(state: GameState): string {
       <div class="row"><span>${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.level')} ${state.level}/${LEVEL_CAP}</span><span>${state.level >= LEVEL_CAP ? t('ui.evolution_ready') : `${t('ui.xp')} ${state.xp}/${xpToNext(state.level)}`}</span></div>
       ${bar(state.level >= LEVEL_CAP ? 1 : state.xp, state.level >= LEVEL_CAP ? 1 : xpToNext(state.level), '#6d44d9')}
       <p class="muted">${t('ui.statpoints')}: ${state.statPoints} · ${t('ui.auto_power')}: +${Math.round((levelPower(state) - 1) * 100)}%</p>
+      ${specBuffPanel(state)}
       ${killStatsHtml(state)}
       <ul>${statRows}</ul>
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}

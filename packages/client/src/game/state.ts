@@ -455,7 +455,15 @@ export function recomputeMaxes(state: GameState): void {
   state.maxHp = 20 + VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
   state.maxMp = 10 + INT * 3 + effLvl; // INT → MP (+1/level)
   state.maxSp = 10 + VIT * 2 + AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
-  
+
+  // Stat spec: VIT×1.5 maxHp, INT×1.5 maxMp — only when exactly one stat is at ≥100 allocated.
+  const _alloc = state.allocated ?? {};
+  const _specKeys = (Object.keys(_alloc) as StatKey[]).filter((k) => (_alloc[k] ?? 0) >= 100);
+  if (_specKeys.length === 1) {
+    if (_specKeys[0] === 'VIT') state.maxHp = Math.round(state.maxHp * 1.5);
+    if (_specKeys[0] === 'INT') state.maxMp = Math.round(state.maxMp * 1.5);
+  }
+
   if (state.rebirthPerks) {
     for (const p of state.rebirthPerks) {
       if (p === 'vital_force') state.maxHp += 5;

@@ -194,6 +194,10 @@ export interface Skill {
   surviveChance?: number;
   /** Pain Nullification (Kumo): fraction of incoming damage ignored while below half HP. */
   painNull?: number;
+  /** Vampire lifesteal: fraction of outgoing damage restored as HP (0.20 = 20%). Sums into Bonuses.lifesteal. */
+  lifesteal?: number;
+  /** Fiend soul pact: fraction of *current* HP spent as cost when this active skill is used (0.15 = 15%). */
+  hpCost?: number;
   /** Marks a hidden/meta skill discovered off the normal path (Stillness, Forbidden Knowledge). */
   hidden?: boolean;
   /** Localization key explaining HOW this skill is obtained (acquisition path), shown in the UI. */

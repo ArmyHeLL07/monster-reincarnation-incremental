@@ -68,20 +68,80 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
   return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: effect, magnitude };
 }
 
+/** Maps a curated fusion effect to a real game element (for matrix matching) and damage type. */
+const EFFECT_TYPE_MAP: Record<string, { element: string; damageType: string }> = {
+  // new special rules
+  dragon_inferno:  { element: 'fire',     damageType: 'fire'     },
+  earthquake:      { element: 'earth',    damageType: 'physical' },
+  void_web:        { element: 'void',     damageType: 'magic'    },
+  soul_chaos:      { element: 'soul',     damageType: 'soul'     },
+  primal_apex:     { element: 'physical', damageType: 'physical' },
+  forbidden_soul:  { element: 'dark',     damageType: 'dark'     },
+  toxic_deluge:    { element: 'poison',   damageType: 'acid'     },
+  living_fortress: { element: 'physical', damageType: 'physical' },
+  shadow_web:      { element: 'silk',     damageType: 'pierce'   },
+  mud_surge:       { element: 'water',    damageType: 'physical' },
+  terror_shadow:   { element: 'dark',     damageType: 'fear'     },
+  abyss:           { element: 'void',     damageType: 'soul'     },
+  cursed_strike:   { element: 'dark',     damageType: 'dark'     },
+  annihilation:    { element: 'void',     damageType: 'magic'    },
+  paradox:         { element: 'dark',     damageType: 'dark'     },
+  holy_fire:       { element: 'fire',     damageType: 'fire'     },
+  hurricane:       { element: 'wind',     damageType: 'wind'     },
+  absolute_zero:   { element: 'frost',    damageType: 'frost'    },
+  // existing matrix effects
+  poison_web:         { element: 'poison',    damageType: 'poison'    },
+  tainted_strike:     { element: 'poison',    damageType: 'physical'  },
+  snare_strike:       { element: 'silk',      damageType: 'physical'  },
+  rend:               { element: 'physical',  damageType: 'physical'  },
+  flame_storm:        { element: 'fire',      damageType: 'fire'      },
+  steam:              { element: 'water',     damageType: 'magic'     },
+  thermal_shock:      { element: 'fire',      damageType: 'fire'      },
+  conductive_shock:   { element: 'lightning', damageType: 'lightning' },
+  mud:                { element: 'water',     damageType: 'physical'  },
+  corrode:            { element: 'acid',      damageType: 'acid'      },
+  dissolve_web:       { element: 'acid',      damageType: 'acid'      },
+  necrosis:           { element: 'acid',      damageType: 'acid'      },
+  blizzard:           { element: 'frost',     damageType: 'frost'     },
+  tempest:            { element: 'lightning', damageType: 'lightning' },
+  magma:              { element: 'fire',      damageType: 'fire'      },
+  superconductor:     { element: 'frost',     damageType: 'lightning' },
+  envenom_pierce:     { element: 'poison',    damageType: 'pierce'    },
+  oblivion:           { element: 'void',      damageType: 'soul'      },
+  despair:            { element: 'fear',      damageType: 'fear'      },
+  phase_rend:         { element: 'void',      damageType: 'physical'  },
+  // special pairs
+  precise_strike:     { element: 'physical',  damageType: 'physical'  },
+  toxic_blood:        { element: 'poison',    damageType: 'poison'    },
+  omniscience:        { element: 'soul',      damageType: 'soul'      },
+  mana_singularity:   { element: 'soul',      damageType: 'magic'     },
+  apex_soul:          { element: 'soul',      damageType: 'soul'      },
+  perfect_predator:   { element: 'physical',  damageType: 'physical'  },
+};
+
 /** Build a usable active skill from a fusion result (damage = magnitude → class drives power). */
 function fusionSkillDef(content: Content, result: FusionResult): Skill {
-  const parentType = content.skills.get(result.aId)?.damageType ?? content.skills.get(result.bId)?.damageType;
+  const skA = content.skills.get(result.aId);
+  const skB = content.skills.get(result.bId);
+  // Inherit stats from both parents (union, max 2 unique entries).
+  const statsA = skA?.stats ?? ['STR'];
+  const statsB = skB?.stats ?? ['STR'];
+  const stats = [...new Set([...statsA, ...statsB])].slice(0, 2) as Skill['stats'];
+  // Resolve a real element and damage type from the curated effect map, else fall back to parents.
+  const mapped = EFFECT_TYPE_MAP[result.effectType];
+  const element   = mapped?.element   ?? skA?.element ?? skB?.element ?? 'physical';
+  const damageType = (mapped?.damageType ?? skA?.damageType ?? skB?.damageType ?? 'physical') as Skill['damageType'];
   return {
     id: result.id,
     locKeyName: result.locKeyName,
     locKeyDesc: `fusion.effect.${result.effectType}.desc`,
     kind: 'active',
-    stats: ['STR'],
+    stats,
     lvMax: 10,
     evolvesTo: [],
     damage: result.magnitude,
-    damageType: parentType ?? 'physical',
-    element: result.effectType,
+    damageType,
+    element,
   };
 }
 

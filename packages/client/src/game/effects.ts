@@ -1,3 +1,4 @@
+import type { StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState } from './state';
 import { MAX_HUNGER } from './state';
@@ -7,6 +8,17 @@ import { currentRoomModifier } from './combat';
 import { MUTATION_POOL } from './mutations';
 import { currentRoomHazard } from './hazards';
 import { REBIRTH_PERKS } from './teachings';
+
+/**
+ * Returns the single stat where the player has allocated ≥100 points,
+ * or null if zero or multiple stats have reached that threshold.
+ * Two stats at 100 = the specialization fields cancel each other out.
+ */
+export function specStat(state: GameState): StatKey | null {
+  const alloc = state.allocated ?? {};
+  const over = (Object.keys(alloc) as StatKey[]).filter((k) => (alloc[k] ?? 0) >= 100);
+  return over.length === 1 ? over[0] : null;
+}
 
 /** Aggregated passive/ruler modifiers, summed live each time they're needed. */
 export interface Bonuses {
@@ -44,6 +56,8 @@ export interface Bonuses {
   statusNullReduction: number;
   /** Ultimate Nullification current level (0–10; 10 = full immunity). */
   ultimateNullLv: number;
+  /** Vampire lifesteal: fraction of outgoing damage restored as HP each hit. */
+  lifesteal: number;
 }
 
 /** A skill's effect scales with its level (full value at lvMax); ruler powers are full value. */
@@ -70,6 +84,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     magicNullReduction: 0,
     statusNullReduction: 0,
     ultimateNullLv: 0,
+    lifesteal: 0,
   };
 
   for (const slot of state.skills) {
@@ -88,6 +103,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     if (def.hungerMult) b.hungerMult *= def.hungerMult;
     if (def.surviveChance) b.surviveChance = Math.max(b.surviveChance, def.surviveChance * s);
     if (def.painNull) b.painNull = Math.min(0.8, b.painNull + def.painNull * s); // cap at 80% ignored
+    if (def.lifesteal) b.lifesteal += def.lifesteal * s;
     if (def.kind === 'resistance') {
       // Group nullification skills have no resistType — they contribute to merger reductions.
       if (slot.id === 'physical_nullification') {
@@ -222,6 +238,16 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     b.lootMult *= (1 + state.minions.utility * 0.05 * effMult);
     b.hungerMult *= Math.max(0.5, 1 - state.minions.utility * 0.03 * effMult);
   }
+
+  // Stat specialization: exactly ONE stat at ≥100 allocated → a major class-defining buff.
+  // Two or more stats at 100 = mutual cancellation (you can't be a jack-of-all-mastery).
+  const spec = specStat(state);
+  if (spec === 'STR')  b.dmgMult    += 0.5;   // Berserk: all damage +50%
+  if (spec === 'VIT')  b.regenMult  += 0.5;   // Iron Body: regen +50%
+  if (spec === 'AGI')  b.dodgeBonus += 0.25;  // Ghost Step: dodge +25%
+  if (spec === 'WIS')  b.xpMult     += 0.5;   // Sage's Path: XP +50%
+  if (spec === 'LUCK') b.lootMult   += 1.0;   // Fortune's Child: loot ×2
+
   return b;
 }
 

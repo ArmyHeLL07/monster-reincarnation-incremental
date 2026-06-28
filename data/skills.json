@@ -5264,5 +5264,313 @@
     "dmgMult": 0.25,
     "armor": 15,
     "regenMult": 0.2
+  },
+  {
+    "id": "blood_drain",
+    "locKeyName": "skill.blood_drain.name",
+    "locKeyDesc": "skill.blood_drain.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "crimson_feast"
+    ],
+    "damage": 4,
+    "damageType": "physical",
+    "element": "physical",
+    "lifesteal": 0.2
+  },
+  {
+    "id": "night_veil",
+    "locKeyName": "skill.night_veil.name",
+    "locKeyDesc": "skill.night_veil.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.12
+  },
+  {
+    "id": "vampiric_aura",
+    "locKeyName": "skill.vampiric_aura.name",
+    "locKeyDesc": "skill.vampiric_aura.desc",
+    "kind": "passive",
+    "stats": [
+      "INT",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "regenMult": 0.2,
+    "lifesteal": 0.1
+  },
+  {
+    "id": "bat_swarm",
+    "locKeyName": "skill.bat_swarm.name",
+    "locKeyDesc": "skill.bat_swarm.desc",
+    "kind": "active",
+    "stats": [
+      "AGI",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 3,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "blood_lance",
+    "locKeyName": "skill.blood_lance.name",
+    "locKeyDesc": "skill.blood_lance.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 9,
+    "damageType": "magic",
+    "element": "fire"
+  },
+  {
+    "id": "crimson_feast",
+    "locKeyName": "skill.crimson_feast.name",
+    "locKeyDesc": "skill.crimson_feast.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "surviveChance": 0.25,
+    "hpRegen": 5,
+    "lifesteal": 0.12
+  },
+  {
+    "id": "feral_claw",
+    "locKeyName": "skill.feral_claw.name",
+    "locKeyDesc": "skill.feral_claw.desc",
+    "kind": "active",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "savage_bite"
+    ],
+    "damage": 5,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "savage_bite",
+    "locKeyName": "skill.savage_bite.name",
+    "locKeyDesc": "skill.savage_bite.desc",
+    "kind": "active",
+    "stats": [
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "apex_predator"
+    ],
+    "damage": 7,
+    "damageType": "physical",
+    "element": "physical"
+  },
+  {
+    "id": "lunar_rage",
+    "locKeyName": "skill.lunar_rage.name",
+    "locKeyDesc": "skill.lunar_rage.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.25
+  },
+  {
+    "id": "pack_howl",
+    "locKeyName": "skill.pack_howl.name",
+    "locKeyDesc": "skill.pack_howl.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS",
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.15,
+    "xpMult": 0.1
+  },
+  {
+    "id": "beast_form",
+    "locKeyName": "skill.beast_form.name",
+    "locKeyDesc": "skill.beast_form.desc",
+    "kind": "passive",
+    "stats": [
+      "STR",
+      "AGI"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "lunar_rage"
+    ],
+    "dmgMult": 0.12
+  },
+  {
+    "id": "hellfire",
+    "locKeyName": "skill.hellfire.name",
+    "locKeyDesc": "skill.hellfire.desc",
+    "kind": "magic",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "infernal_storm"
+    ],
+    "damage": 10,
+    "damageType": "fire",
+    "element": "fire"
+  },
+  {
+    "id": "fel_armor",
+    "locKeyName": "skill.fel_armor.name",
+    "locKeyDesc": "skill.fel_armor.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "armor": 10
+  },
+  {
+    "id": "soul_pact",
+    "locKeyName": "skill.soul_pact.name",
+    "locKeyDesc": "skill.soul_pact.desc",
+    "kind": "active",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "infernal_brand"
+    ],
+    "damage": 14,
+    "damageType": "fire",
+    "element": "fire",
+    "hpCost": 0.15
+  },
+  {
+    "id": "infernal_brand",
+    "locKeyName": "skill.infernal_brand.name",
+    "locKeyDesc": "skill.infernal_brand.desc",
+    "kind": "passive",
+    "stats": [
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dmgMult": 0.15
+  },
+  {
+    "id": "infernal_storm",
+    "locKeyName": "skill.infernal_storm.name",
+    "locKeyDesc": "skill.infernal_storm.desc",
+    "kind": "magic",
+    "stats": [
+      "INT",
+      "STR"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 16,
+    "damageType": "fire",
+    "element": "fire"
+  },
+  {
+    "id": "healing_light",
+    "locKeyName": "skill.healing_light.name",
+    "locKeyDesc": "skill.healing_light.desc",
+    "kind": "passive",
+    "stats": [
+      "WIS",
+      "VIT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "divine_recovery"
+    ],
+    "hpRegen": 10
+  },
+  {
+    "id": "guardian_aura",
+    "locKeyName": "skill.guardian_aura.name",
+    "locKeyDesc": "skill.guardian_aura.desc",
+    "kind": "passive",
+    "stats": [
+      "VIT",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "regenMult": 0.35
+  },
+  {
+    "id": "radiant_burst",
+    "locKeyName": "skill.radiant_burst.name",
+    "locKeyDesc": "skill.radiant_burst.desc",
+    "kind": "magic",
+    "stats": [
+      "WIS",
+      "INT"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [
+      "judgment"
+    ],
+    "damage": 8,
+    "damageType": "light",
+    "element": "light"
+  },
+  {
+    "id": "wings_of_light",
+    "locKeyName": "skill.wings_of_light.name",
+    "locKeyDesc": "skill.wings_of_light.desc",
+    "kind": "passive",
+    "stats": [
+      "AGI",
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "dodgeBonus": 0.18
+  },
+  {
+    "id": "judgment",
+    "locKeyName": "skill.judgment.name",
+    "locKeyDesc": "skill.judgment.desc",
+    "kind": "magic",
+    "stats": [
+      "WIS"
+    ],
+    "lvMax": 10,
+    "evolvesTo": [],
+    "damage": 13,
+    "damageType": "light",
+    "element": "light"
   }
 ]
