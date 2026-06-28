@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.5';
+export const VERSION = '1.23.6';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.6',
+    date: '2026-06-28',
+    tr: [
+      'feat: 💜 Destek bölümü (Ayarlar) — Patreon\'da Destekle butonu (her sürümde) + GitHub sürümünde "✨ Desteklenen sürümü oyna" linki (reklamsız ayna → asıl sürüme yönlendirir)',
+    ],
+    en: [
+      'feat: 💜 Support section (Settings) — a "Support on Patreon" button (both versions) + on the GitHub version a "✨ Play the supported version" link (ad-free mirror → points to the main build)',
+    ],
+    ru: [
+      'feat: 💜 Раздел поддержки (Настройки) — кнопка «Поддержать на Patreon» (обе версии) + в GitHub-версии ссылка «✨ Играть в поддерживаемой версии» (зеркало без рекламы → ведёт на основную сборку)',
+    ],
+  },
   {
     v: '1.23.5',
     date: '2026-06-28',

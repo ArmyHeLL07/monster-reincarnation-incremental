@@ -3275,6 +3275,14 @@ function settingsTab(state: GameState): string {
         <button id="mode-switch" class="ghost">${state.mode === 'story' ? t('ui.story_back') : t('ui.story_mode')}</button>
       </div>
     </section>
+    <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.support_title')}</h3>
+      <div class="controls">
+        <button id="patreon-link" class="actbtn">${t('ui.support')}</button>
+        ${location.hostname.endsWith('github.io') ? `<button id="play-supported" class="ghost">${t('ui.play_supported')}</button>` : ''}
+      </div>
+      ${location.hostname.endsWith('github.io') ? `<span class="muted" style="font-size:0.78rem">${t('ui.play_supported_hint')}</span>` : ''}
+    </section>
   `;
 }
 
@@ -3294,6 +3302,8 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#importsave')?.addEventListener('click', ACTIONS.onImportSave);
   el.querySelector<HTMLButtonElement>('#bugreport')?.addEventListener('click', ACTIONS.onBugReport);
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
+  el.querySelector<HTMLButtonElement>('#patreon-link')?.addEventListener('click', () => window.open('https://www.patreon.com/cw/ArmyHeLL07', '_blank', 'noopener'));
+  el.querySelector<HTMLButtonElement>('#play-supported')?.addEventListener('click', () => window.open('https://monster-reincarnation.pages.dev', '_blank', 'noopener'));
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
   el.querySelector<HTMLButtonElement>('#mode-switch')?.addEventListener('click', () => {
