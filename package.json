@@ -1,7 +1,7 @@
 {
   "name": "monster-reincarnation-incremental",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Incremental/idle monster reincarnation game — free web demo + Cloudflare backend.",
   "type": "module",
   "workspaces": [
