@@ -787,8 +787,8 @@
            3) After approval, create an ad unit and paste its slot id → the banner shows.
            Until AD_CLIENT is set nothing loads. Ads never load on the github.io mirror.
            The ad loads once (no refresh) — policy-safe. */
-        var AD_CLIENT = ''; /* e.g. 'ca-pub-1234567890123456' */
-        var AD_SLOT   = ''; /* e.g. '1234567890' (set after approval) */
+        var AD_CLIENT = 'ca-pub-9869400881171514'; /* Atıl's AdSense publisher id (public, not a secret) */
+        var AD_SLOT   = ''; /* set this to your ad-unit slot id AFTER AdSense approval → banner appears */
         /* ──────────────────────────────────────────────────────────────────── */
         if (location.hostname.endsWith('github.io')) return; /* ad-free mirror */
         if (!AD_CLIENT) return;
