@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.9';
+export const VERSION = '1.23.10';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.10',
+    date: '2026-06-28',
+    tr: [
+      'balance: Element zinciri tamamlandı — rüzgâr/toprak/karanlık/ışık/hiçlik artık kendi üstünlük halkasına sahip (×1.5 güçlü / ×0.7 zayıf), düz hasar değil',
+      'fix: Void (hiçlik) direnci eklendi — artık dirençlenebilir; ayrıca eksik element ad çevirileri (rüzgâr/toprak/karanlık/ışık/hiçlik) 3 dilde eklendi',
+    ],
+    en: [
+      'balance: Element chart completed — wind/earth/dark/light/void now have their own advantage cycle (×1.5 strong / ×0.7 weak) instead of flat damage',
+      'fix: Added void resistance — void can now be resisted; also added missing element name translations (wind/earth/dark/light/void) in 3 languages',
+    ],
+    ru: [
+      'balance: Таблица стихий дополнена — ветер/земля/тьма/свет/пустота теперь имеют свой круг преимуществ (×1.5 / ×0.7), а не плоский урон',
+      'fix: Добавлено сопротивление пустоте — её теперь можно сопротивлять; также добавлены недостающие переводы названий стихий (3 языка)',
+    ],
+  },
   {
     v: '1.23.9',
     date: '2026-06-28',

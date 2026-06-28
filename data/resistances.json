@@ -110,5 +110,12 @@
     "damageType": "light",
     "lvMax": 10,
     "nullityKey": "res.light_immunity.name"
+  },
+  {
+    "id": "void_res",
+    "locKey": "res.void_res.name",
+    "damageType": "void",
+    "lvMax": 10,
+    "nullityKey": "res.void_immunity.name"
   }
 ]
