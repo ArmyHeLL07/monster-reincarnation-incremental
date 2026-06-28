@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.3';
+export const VERSION = '1.23.4';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.4',
+    date: '2026-06-28',
+    tr: [
+      'fix (telif): Telif riski olan isimler özgün isimlerle değiştirildi — Raphael→Marvion, Rimuru Tempest→Azure Tempest, Demon Lord Rimuru→Azure Demon Lord, örümcek gizli formları (Zoa Ele/Ede Saine/Zana Horowa)→Voidweaver/Doomspinner/Fateweaver; "Kumoko" göndermesi kaldırıldı. Sadece görünen isimler değişti, mekanikler aynı',
+    ],
+    en: [
+      'fix (copyright): Renamed copyright-risky names to original ones — Raphael→Marvion, Rimuru Tempest→Azure Tempest, Demon Lord Rimuru→Azure Demon Lord, spider secret forms (Zoa Ele/Ede Saine/Zana Horowa)→Voidweaver/Doomspinner/Fateweaver; removed the "Kumoko" reference. Display names only, mechanics unchanged',
+    ],
+    ru: [
+      'fix (авторские права): Имена с риском авторских прав заменены на оригинальные — Raphael→Marvion, Rimuru Tempest→Azure Tempest, Demon Lord Rimuru→Azure Demon Lord, секретные формы паука (Zoa Ele/Ede Saine/Zana Horowa)→Voidweaver/Doomspinner/Fateweaver; убрана отсылка к «Кумоко». Изменены только отображаемые имена, механика без изменений',
+    ],
+  },
   {
     v: '1.23.3',
     date: '2026-06-28',
