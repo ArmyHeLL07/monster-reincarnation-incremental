@@ -1585,6 +1585,7 @@
   "log.sig_web_trap": "🕸 Web trap: -{dmg} damage",
   "log.sig_heat_breath": "🔥 Heat burst: -{dmg} fire",
   "log.sig_stone_absorb": "🪨 Stone skin absorbed {absorbed} damage",
+  "log.demon_blood_pact": "🩸 Blood Pact: drew {hp} HP to fuel the cast",
   "sig.title": "Race Power",
   "sig.spider_hint": "≈{dmg} opening damage to the next enemy",
   "sig.spider_empty": "Weaves web while resting — bursts as a trap in combat",

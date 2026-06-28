@@ -642,3 +642,37 @@ export interface DifficultyDef {
   /** Hell-only: enemies hunt actively, hunger/exp are harsher. */
   brutal?: boolean;
 }
+
+/** Defines custom UI configurations mapping to the classic Gothic theme */
+export interface GothicUiTheme {
+  primaryBg: string;      // Color hex for general viewport, e.g. '#060408'
+  panelBg: string;        // Color hex for panel containers, e.g. '#15121b'
+  borderColor: string;    // Gold border hex, e.g. '#cfa74e'
+  glowColor: string;      // Pulse color hex, e.g. '#d2a73a'
+  fontDisplay: string;    // Fonts for headings, e.g. 'Cinzel'
+  fontBody: string;       // Fonts for details/numbers, e.g. 'Cormorant Garamond'
+  borderStyle: string;    // e.g. 'double'
+}
+
+/** Extended character race definition to support thematic overlays and signature mechanics */
+export interface ExtendedRace extends Race {
+  theme?: GothicUiTheme;
+  signatureMechanic: string;    // Name/identifier of the race's unique gimmick
+  signatureSkillId: string;     // Unique skill that activates or triggers the mechanic
+}
+
+/** Extended evolution stage details supporting branch groupings and specific mutations */
+export interface ExtendedEvolutionForm extends EvolutionForm {
+  branchId?: string;            // Groupings for multi-path choices, e.g. 'assassin', 'warden'
+  skillPrerequisites?: string[]; // Prerequisite skill IDs needed to choose this evolution form
+  formMutations?: string[];     // String IDs of mutations this form can trigger upon evolving
+}
+
+/** Extended active or passive skills to support Blood Pact and unique requirements */
+export interface ExtendedSkill extends Skill {
+  category: 'combat' | 'magic' | 'body' | 'perception' | 'resistance' | 'mind' | 'ruler' | 'secret';
+  hpCostPct?: number;           // HP cost (for Demon Soul Pact mechanics)
+  bloodWellCost?: number;       // Special resource requirement
+  hoardRequirement?: number;    // Gold/items needed in inventory to cast (e.g. dragon hoarding)
+  cooldownTicks: number;        // Cooldown timer in ticks
+}

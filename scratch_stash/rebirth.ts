@@ -1,11 +1,10 @@
-import type { Content } from './content';
+﻿import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated } from './state';
 import type { LootItem } from '@mri/shared';
 import { applyDifficultyStart } from './difficulty';
 import { applyRace } from './race';
 import { computeSoulGain } from './soul';
-import { rollRebirthPerks } from './teachings';
 
 type Log = (e: LogEvent) => void;
 
@@ -37,7 +36,6 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.tier = 0;
   state.level = 1;
   state.xp = 0;
-  state.evolveAckCount = 0;
   state.statPoints = boon * 3; // the small permanent kindness (§7.5.4)
   state.ep = 0;
   state.hunger = 0;
@@ -56,13 +54,6 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.scars = 0;
   state.pendingRoom = null;
   state.statusEffects = []; // a fresh life carries no lingering poison/burn…
-  state.minions = {
-    dps: 0,
-    tank: 0,
-    utility: 0,
-    tankHp: 0,
-    tankMaxHp: 0,
-  };
   state.roomCleared = false; // …nor a stuck "cleared room" flag…
   state.cooldowns = {}; // …nor old skill cooldowns.
   state.spiderlings = 0;
@@ -71,16 +62,6 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   state.resolvedEvents = []; // …and the fresh map's events re-trigger.
   state.bossRiddle = null; // …nor an open boss riddle…
   state.riddleLimits = {}; // …and riddle attempt-locks reset for the fresh run.
-  state.epStatsBought = 0;  // EP stat purchases reset — fresh life, fresh economy.
-  state.tempBuffs = {};     // Temporary buffs don't survive death.
-  state.webRoom = null;
-  state.webTicks = 0;
-  state.webAccEp = 0;
-  state.webAccFood = [];
-  state.webAccLoot = [];
-  state.mutations = [];
-  state.spiderlings = 0;
-  state.enemyStunTicks = 0;
   // formHistory is reset AFTER applyRace below, using the race's real starting form.
 
   // --- base stats reset (race-specific base applied by applyRace below) -----
@@ -110,8 +91,5 @@ export function rebirth(state: GameState, content: Content, log: Log): boolean {
   log({ key: 'log.rebirth_msg' });
   log({ key: 'log.rebirth_done', params: { n: state.rebirthCount } });
   log({ key: 'log.soul_gain', params: { souls: earnedSouls, total: state.souls } });
-  
-  state.pendingRebirthPerk = true;
-  state.rebirthPerkChoices = rollRebirthPerks(state);
   return true;
 }

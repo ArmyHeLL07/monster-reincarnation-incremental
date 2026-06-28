@@ -1,17 +1,13 @@
-import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
+﻿import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
-import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
-import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
+import { isHumanoidForm, availableEvolutions, canEvolve } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
 import { maxFoodSlots, refrigerated, isRotten } from './inventory';
-import { aggregateBonuses, specStat, type Bonuses } from './effects';
+import { aggregateBonuses, type Bonuses } from './effects';
 import { gainSin } from './ruler';
-import { checkAchievements } from './achievements';
-import { checkQuests } from './quests';
-import { checkLoreMastery } from './lorePassives';
 import { rollRoomEvent, outcomesFor, applyOutcome, condMet, roomKeyOf } from './roomevents';
 import {
   bossRiddleChance,
@@ -23,14 +19,11 @@ import {
   RIDDLE_FIGHT_MULTS,
 } from './riddles';
 import { meditateTick } from './meditation';
-import { riddleById, loreById } from './langContent';
-import { forage, autoResolveForage } from './forage';
-import { search, SEARCH_SP_COST } from './discovery';
+import { forage } from './forage';
+import { search } from './discovery';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
 import { soulLevel } from './soul';
-import { tickAutoHeal } from './autocombat';
-import { recordEncounter, type CombatEncounterLog } from './analytics';
 
 type Log = (e: LogEvent) => void;
 
@@ -40,7 +33,6 @@ const REST_SP_REGEN = 5;
 const REST_MP_REGEN = 2;
 const DEEP_READ_MP_COST = 5;
 const HUNGER_RISE_COMBAT = 0.7;
-const HUNGER_RISE_REST = HUNGER_RISE_COMBAT * 0.4; // resting still burns calories, just slower
 const DEEP_READ_XP = 5;
 const MP_TRANSFER_DISCOVER_CHANCE = 0.03;
 const LARDER_DISCOVER_CHANCE = 0.04;
@@ -57,29 +49,11 @@ const DEPTH_HP = 0.05; // enemy HP growth per room of depth
 const DEPTH_ATK = 0.045;
 const BOSS_HP = 2.5;
 const BOSS_ATK = 1.6;
-// Elite variants — rare, tougher, far more rewarding. Chance scales lightly with LUCK.
-const ELITE_CHANCE = 0.05;
-const ELITE_LUCK = 0.001;
-const ELITE_CHANCE_CAP = 0.20;
-const ELITE_HP = 2.2;
-const ELITE_ATK = 1.5;
-const ELITE_EP = 3; // EP (and thus XP) reward multiplier
-const ELITE_SAT = 1.5;
-// Cannibalism / Predator — learning a defeated foe's skill by devouring it.
-const DEVOUR_KIN_THRESHOLD = 100; // general races must devour the same kin this many times first
-const DEVOUR_KIN_CHANCE = 0.08;   // then each further kin kill has this chance to teach a skill
-const DEVOUR_SLIME_CHANCE = 0.05; // slime Predator: any foe, no threshold (its signature)
-const DEVOUR_SIN = 2;             // devouring another's essence to steal its power stains you
-// Slime Absorb — gains the foe's properties on every kill.
-const ABSORB_RESIST_GAIN = 2;     // resistance XP per absorbed element
-const ABSORB_HEAL_PCT = 0.04;     // heal this fraction of max HP per kill (biomass)
-const ABSORB_VIT_CHANCE = 0.02;   // chance for permanent +1 VIT (biomass growth), tier-capped
 const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
 const XP_PER_EP = 8;
-const SIN_PER_KILL = 3; // kin kills feed the dark axis (GDD §C)
-const SIN_PER_KILL_BOSS = 15; // boss kin = heinous transgression
+const SIN_PER_KILL = 1; // dark axis grows by killing (GDD §C)
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
 const STATUS_CHANCE = 0.3; // base chance an elemental enemy hit also applies a lingering status
 const DOT_TYPES: DamageType[] = ['poison', 'fire', 'acid', 'lightning', 'frost']; // types that linger as DoT
@@ -169,10 +143,6 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     state.lastSeen = Date.now();
     return; // frozen — no hunger, no regen, nothing happens
   }
-  state.totalTicks = (state.totalTicks ?? 0) + 1;
-  checkAchievements(state, content, log); // unlock milestones + grant rewards (idempotent, cheap)
-  checkQuests(state, content, log); // fill/complete repeatable quests
-  checkLoreMastery(state, content, log); // grant racial lore-mastery passive when all a race's books are read
 
   if (state.action === 'meditate') {
     meditateTick(state, content, log); // hidden zen gauge + virtue
@@ -191,19 +161,13 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     const b = aggregateBonuses(state, content);
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
     combatRound(state, content, log, b, isOffline);
-    tryAutoEvent(state, content, log); // auto-resolve events/riddles in combat too, not just rest
     processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
     if (state.hp <= 0) onDeath(state, content, log, b);
-    tryAutoSearch(state, content, log); // auto-forage/explore mid-combat too (SP-gated; one search/room)
     decayFood(state);
     if (state.autoEat) autoEat(state, content, log);
     if (hungerStage(state) >= 3) {
       state.hp = Math.max(0, state.hp - 1); // starvation
       if (state.hp <= 0) onDeath(state, content, log, b);
-    // --- Auto-heal macro (QoL: auto-eat when HP drops below threshold) ---
-    if (state.hp > 0) {
-      tickAutoHeal(state, (key, params) => log({ key, params }));
-    }
     }
   } else {
     restRound(state, content, log);
@@ -211,23 +175,7 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
   growStaminaRegen(state); // training raises SP regen (more in combat / low HP)
   if (state.forageCD > 0) state.forageCD = Math.max(0, state.forageCD - 1000);
   if ((state.searchCD ?? 0) > 0) state.searchCD = Math.max(0, state.searchCD - 1000);
-  if (state.webRoom) {
-    const b = aggregateBonuses(state, content);
-    tickWeb(state, b, log, isOffline);
-  }
   state.lastSeen = Date.now();
-}
-
-/**
- * Auto-resolve a pending event or boss riddle when the player enabled it (INT-gated).
- * Shared by the combat tick AND restRound so an event auto-resolves no matter which
- * mode it appears in. Previously this lived only in restRound, so events raised during
- * combat never auto-resolved → "event geliyor ama otomatik seçim yapmıyor".
- */
-function tryAutoEvent(state: GameState, content: Content, log: Log): void {
-  if (state.autoEventDecision && (state.pendingEvent || state.bossRiddle) && state.stats.INT >= 50) {
-    autoChooseEvent(state, content, log);
-  }
 }
 
 const EAT_THRESHOLD = 50;
@@ -246,19 +194,9 @@ function autoEat(state: GameState, content: Content, log: Log): void {
   }
   if (idx >= 0) {
     const [eaten] = state.inventory.splice(idx, 1);
-    const wasFullBefore = state.hunger <= 0;
     state.hunger = Math.max(0, state.hunger - eaten.satiety);
-    // Gluttony: feeding feeds the dark axis; eating while full gives more sin.
-    const tabooActiveAuto = state.ruler.taboo >= 1;
-    const sinGainAuto = wasFullBefore ? (tabooActiveAuto ? 10 : 2) : 0.25;
-    gainSin(state, content, sinGainAuto, log);
-    if (wasFullBefore && !state.ruler.powers.includes('gluttony')) {
-      const gluttonyChanceAuto = tabooActiveAuto ? 0.10 : 0.01;
-      if (Math.random() < gluttonyChanceAuto) {
-        state.ruler.powers.push('gluttony');
-        log({ key: 'log.gluttony_awaken' });
-      }
-    }
+    // Gluttony: feeding feeds the dark axis (GDD §7.4.5).
+    gainSin(state, content, 0.25, log);
 
     // Devouring mechanic: chance to learn a skill from the eaten enemy
     const enemyDef = content.enemies.get(eaten.enemyId);
@@ -289,19 +227,8 @@ export function eatFood(state: GameState, content: Content, index: number, log: 
     addResistExp(state, content, 'poison', 3, log); // rotten meat = passive poison resistance
     log({ key: 'log.ate_rotten' });
   } else {
-    const wasFullBefore = state.hunger <= 0;
     state.hunger = Math.max(0, state.hunger - it.satiety);
-    // Eating while full: greater sin + rare Gluttony awakening
-    const tabooActive = state.ruler.taboo >= 1;
-    const sinGain = wasFullBefore ? (tabooActive ? 10 : 2) : 0.25;
-    gainSin(state, content, sinGain, log);
-    if (wasFullBefore && !state.ruler.powers.includes('gluttony')) {
-      const gluttonyChance = tabooActive ? 0.10 : 0.01;
-      if (Math.random() < gluttonyChance) {
-        state.ruler.powers.push('gluttony');
-        log({ key: 'log.gluttony_awaken' });
-      }
-    }
+    gainSin(state, content, 0.25, log); // feeding feeds the dark axis (Gluttony)
     log({ key: 'log.ate', params: { sat: it.satiety } });
 
     // Devouring mechanic: chance to learn a skill from the eaten enemy
@@ -399,29 +326,6 @@ export function courtDeath(state: GameState, content: Content, log: Log): void {
 /** Minimum kills required before the Advance button unlocks (non-boss rooms only). */
 export const ROOM_KILL_QUOTA = 10;
 
-/** Rebirth scaling: each rebirth adds 10% to enemy power and all rewards. */
-export function rebirthMult(state: GameState): number {
-  return 1 + (state.rebirthCount ?? 0) * 0.10;
-}
-
-/** Effective room kill quota after soul upgrades (minimum 1). */
-export function roomQuota(state: GameState): number {
-  return Math.max(1, ROOM_KILL_QUOTA - soulLevel(state, 'room_quota_down'));
-}
-
-/** Story mode: mark the current chapter cleared, grant its rewards, then advance or end the campaign. */
-function storyClearChapter(state: GameState, content: Content, log: Log): void {
-  const ch = content.story.chapters.find((c) => c.id === state.storyChapter);
-  if (!ch || state.storyCleared.includes(ch.id)) return; // only fire once per chapter
-  state.storyCleared.push(ch.id);
-  const parts: string[] = [];
-  if (ch.rewards?.ep) { state.ep += ch.rewards.ep; parts.push(`+${ch.rewards.ep} EP`); }
-  if (ch.rewards?.statPoints) { state.statPoints += ch.rewards.statPoints; parts.push(`+${ch.rewards.statPoints} SP`); }
-  log({ key: 'log.story_chapter_clear', params: { reward: parts.join(' ') } });
-  if (ch.nextChapter) state.storyChapter = ch.nextChapter;
-  else state.storyEnded = true;
-}
-
 function clearRoom(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   const layer = currentLayer(state, content);
@@ -431,8 +335,6 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
     // Boss kill: advance or hold for the "Advance" tap. Reset room lock.
     state.roomKillCount = 0;
     state.roomEnemyId = null;
-    // Story mode: the floor boss IS the chapter boss → defeating it completes the chapter.
-    if (state.mode === 'story' && state.storyChapter) storyClearChapter(state, content, log);
     if (state.autoAdvance) advancePosition(state, content, log);
     else state.roomCleared = true;
     return;
@@ -441,7 +343,7 @@ function clearRoom(state: GameState, content: Content, log: Log): void {
   // Non-boss rooms: track the kill count and unlock the Advance button at quota.
   // Enemies KEEP spawning after quota — player farms freely until they press Advance.
   state.roomKillCount = (state.roomKillCount ?? 0) + 1;
-  if (state.roomKillCount >= roomQuota(state) && state.autoAdvance) {
+  if (state.roomKillCount >= ROOM_KILL_QUOTA && state.autoAdvance) {
     state.roomKillCount = 0;
     state.roomEnemyId = null;
     advancePosition(state, content, log);
@@ -462,17 +364,12 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
       const evId = rollRoomEvent(state, content);
       if (evId) {
         state.pendingEvent = { id: evId, roomKey: roomKeyOf(state) };
-        // Moral encounters auto-resolve per the player's setting so AFK play never locks on the prompt.
-        const evDef = content.events.get(evId);
-        if (evDef?.moral && state.moralAutoMode !== 'ask') {
-          chooseEvent(state, content, state.moralAutoMode === 'spare' ? 0 : 1, log, b); // 0 = spare, 1 = devour
-        }
-        return; // event set up (or already auto-resolved); the UI shows its panel if still pending
+        return; // event set up; the UI shows its panel
       }
     }
     // Boss room: a luck-rolled chance to become a riddle challenge instead of a straight fight.
     if (atBossRoom && evLayer && !state.resolvedEvents.includes(roomKeyOf(state)) && !isOffline) {
-      const riddle = pickBossRiddle();
+      const riddle = pickBossRiddle(content, evLayer.boss);
       if (riddle && Math.random() < bossRiddleChance(state)) {
         state.bossRiddle = { roomKey: roomKeyOf(state), riddleId: riddle.id, attempts: 0 };
         recordExplored(state);
@@ -489,17 +386,23 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   }
   if (state.roomCleared || !state.enemy) return;
   applyAmbient(state, content, log); // environmental burn (elemental layers only)
-  applyRoomModifierTick(state, content, log); // per-room modifier passive drain
-  applyRoomHazardTick(state, log); // passive room hazard drain
-  // --- Tick combat tracker for analytics ---
-  if (state.combatTracker) state.combatTracker.ticks++;
   if (state.hp <= 0) {
     onDeath(state, content, log, b);
     return;
   }
   sigCombatTick(state);
+
+  // Spiderling minion passive damage: each spiderling deals minor flat physical damage
+  if (state.spiderlings && state.spiderlings > 0 && state.enemy) {
+    const isSovereign = state.formId === 'arachnid_sovereign';
+    const multiplier = isSovereign ? 1.5 : 1.0;
+    const minionDmg = Math.round(state.spiderlings * 4 * multiplier);
+    state.enemy.hp = Math.max(0, state.enemy.hp - minionDmg);
+    log({ key: 'log.attack', params: { skill: 'Spiderling Minions', dmg: minionDmg, type: 'physical' } });
+  }
+
   applyCombatRegen(state, content, b);
-  state.mp = Math.min(state.maxMp, state.mp + Math.max(1, Math.round(COMBAT_MP_REGEN + b.mpRegen)));
+  state.mp = Math.min(state.maxMp, state.mp + COMBAT_MP_REGEN + b.mpRegen);
   drainStamina(state, content);
   tryLearnRegen(state, content, log, false);
   // Per-skill cooldowns pace attacks — no more "every skill every tick".
@@ -543,27 +446,6 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
       }
     }
   }
-  // DPS Minions damage tick
-  if (state.enemy && state.minions && state.minions.dps > 0) {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
-    const dmg = Math.round((5 + Math.max(effStat(state, 'INT'), effStat(state, 'WIS')) * 0.15) * state.minions.dps * effMult);
-    if (dmg > 0) {
-      const isPhysical = Math.random() < 0.5;
-      let finalDmg = dmg;
-      if (isPhysical) {
-        if (state.enemy.behavior?.armorPct) {
-          finalDmg = Math.max(1, Math.round(dmg * (1 - state.enemy.behavior.armorPct)));
-        }
-      }
-      state.enemy.hp -= finalDmg;
-      if (isPhysical) {
-        log({ key: 'log.minion_dps_phys', params: { dmg: finalDmg } });
-      } else {
-        log({ key: 'log.minion_dps_poison', params: { dmg: finalDmg } });
-      }
-    }
-  }
   if (state.enemy && state.enemy.hp <= 0) onKill(state, content, log, b, isOffline);
   // Enemy strikes on its own cadence (paced in both modes).
   if (state.enemy) {
@@ -591,20 +473,6 @@ function skillCooldown(def: Skill, state: GameState, lv: number): number {
   return Math.max(1, baseCd - agiReduce - intReduce);
 }
 
-/** Auto-forage + auto-explore — fires in BOTH rest and combat once unlocked, gated by SP so it never
- *  starves a fight. (In combat the search's own one-per-room lock paces it; rest allows repeat combing.) */
-function tryAutoSearch(state: GameState, content: Content, log: Log): void {
-  const autoSearchLv = soulLevel(state, 'auto_search');
-  if (!(state.autoSearchUnlocked || autoSearchLv >= 1)) return;
-  if (state.autoSearchFood && state.sp >= SEARCH_SP_COST && state.forageCD <= 0 && !state.pendingForage) {
-    forage(state, content, log);
-    autoResolveForage(state, content, log); // auto-food decides eat/discard — no manual prompt
-  }
-  if (state.autoSearchExplore && state.sp >= SEARCH_SP_COST && (state.searchCD ?? 0) <= 0) {
-    search(state, content, log);
-  }
-}
-
 function restRound(state: GameState, content: Content, log: Log): void {
   state.enemy = null;
   sigRestTick(state);
@@ -614,16 +482,20 @@ function restRound(state: GameState, content: Content, log: Log): void {
   const hp = (passiveHpRegen(state, content) * (1 + (b.regenMult - 1)) + 1) * REST_MULT;
   state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(hp)));
 
-  // Time still passes while resting — hunger drains at 40% of combat rate.
-  state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_REST * b.hungerMult);
-  // Starvation still bites during rest (just not enough food).
-  if (hungerStage(state) >= 3) {
-    state.hp = Math.max(0, state.hp - 1);
+  // Auto-search (forage + explore) — SP yeterliyse tetikle
+  if (state.autoSearchUnlocked) {
+    if (state.autoSearchFood && state.sp >= 25 && state.forageCD <= 0 && !state.pendingForage) {
+      forage(state, content, log);
+    }
+    if (state.autoSearchExplore && state.sp >= 25 && (state.searchCD ?? 0) <= 0) {
+      search(state, content, log);
+    }
   }
 
-  tryAutoSearch(state, content, log); // auto-forage + auto-explore (also runs in combat — see tick)
-
-  tryAutoEvent(state, content, log); // auto-resolve a pending event/riddle (shared with the combat tick)
+  // Auto-event kararı
+  if (state.autoEventDecision && state.pendingEvent && state.stats.INT >= 50) {
+    autoChooseEvent(state, content, log);
+  }
 
   decayFood(state);
   if (state.autoEat) autoEat(state, content, log);
@@ -639,7 +511,7 @@ function tryLearnRegen(state: GameState, content: Content, log: Log, forced: boo
   if (hasSkillLine(state, content, 'hp_regen')) return; // whole regen lineage, not just the base id
   const missing = 1 - state.hp / Math.max(1, state.maxHp);
   const nearDeath = forced || missing >= 0.6; // otherwise it's "normal" play — still possible, just rarer
-  const lore = state.booksFound.some((id) => loreById(id)?.hints === 'regen');
+  const lore = state.booksFound.some((id) => content.books.get(id)?.hints === 'regen');
   const chance = lore ? (nearDeath ? 0.3 : 0.1) : nearDeath ? 0.1 : 0.01;
   if (Math.random() < chance) {
     state.skills.push({ id: 'hp_regen', level: 1, exp: 0 });
@@ -694,14 +566,7 @@ function passiveHpRegen(state: GameState, content: Content): number {
 function applyCombatRegen(state: GameState, content: Content, b: Bonuses): void {
   const hp = passiveHpRegen(state, content) * b.regenMult;
   if (hp > 0 && state.hp < state.maxHp) {
-    const healVal = Math.round(hp * regenMult(state));
-    const finalHeal = Math.min(state.maxHp - state.hp, healVal);
-    if (finalHeal > 0) {
-      state.hp += finalHeal;
-      if (!state.floatingTexts) state.floatingTexts = [];
-      state.floatingTexts.push({ text: `+${finalHeal}`, color: 'green', target: 'player', ts: Date.now() });
-      if (state.combatTracker) state.combatTracker.healed += finalHeal;
-    }
+    state.hp = Math.min(state.maxHp, state.hp + Math.round(hp * regenMult(state)));
   }
 }
 
@@ -745,128 +610,6 @@ function roomHash(a: number, b: number, c: number): number {
   return (n % 100000) / 100000;
 }
 
-/** Per-room modifier definition — stat/drain penalties applied while in this room. */
-interface RoomModifierDef {
-  id: string;
-  locKey: string;
-  /** Flat dodge penalty (0–1). */
-  dodgePenalty?: number;
-  /** Additive dmgMult penalty. */
-  dmgPenalty?: number;
-  /** Additive regenMult penalty. */
-  regenPenalty?: number;
-  /** Hunger drain multiplier bonus (stacks with others). */
-  hungerMult?: number;
-  /** HP drain per tick as fraction of maxHP. */
-  hpDrainPct?: number;
-  /** Enemy ATK multiplier bonus (makes enemies hit harder). */
-  enemyAtkBonus?: number;
-}
-
-const ROOM_MODIFIERS: RoomModifierDef[] = [
-  { id: 'toxin_cloud',    locKey: 'modifier.toxin_cloud',    dodgePenalty: 0.05, hpDrainPct: 0.003 },
-  { id: 'root_web',       locKey: 'modifier.root_web',       dodgePenalty: 0.20, dmgPenalty: 0.10 },
-  { id: 'ember_rain',     locKey: 'modifier.ember_rain',     hpDrainPct: 0.005, regenPenalty: 0.30 },
-  { id: 'scorched_air',   locKey: 'modifier.scorched_air',   hungerMult: 1.40 },
-  { id: 'heavy_gravity',  locKey: 'modifier.heavy_gravity',  dodgePenalty: 0.20, dmgPenalty: 0.10 },
-  { id: 'echo_chamber',   locKey: 'modifier.echo_chamber',   enemyAtkBonus: 0.20 },
-  { id: 'soul_ebb',       locKey: 'modifier.soul_ebb',       regenPenalty: 0.50 },
-  { id: 'void_pressure',  locKey: 'modifier.void_pressure',  hpDrainPct: 0.004, regenPenalty: 0.40 },
-];
-
-/** Returns the active room modifier for the player's current position, or null if modifier-free. */
-export function currentRoomModifier(state: GameState, content: Content): RoomModifierDef | null {
-  const layer = currentLayer(state, content);
-  const pool = layer?.modifierPool;
-  if (!pool || pool.length === 0) return null;
-  const { layer: lId, floor, room } = state.pos;
-  // Modifier-free room check (different salt from exploration hash to avoid collision)
-  if (state.modifierFreeRooms) {
-    const freeChance = 0.10 + (state.stats.LUCK * 0.005);
-    const freeRoll = roomHash(lId + 999, floor, room);
-    if (freeRoll < freeChance) return null;
-  }
-  const pick = roomHash(lId + 500, floor, room);
-  const modId = pool[Math.floor(pick * pool.length)];
-  return ROOM_MODIFIERS.find((m) => m.id === modId) ?? null;
-}
-
-/** Apply per-tick room modifier drains (HP loss, extra ambient). Called once per tick in combat. */
-export function applyRoomModifierTick(state: GameState, content: Content, log: Log): void {
-  const mod = currentRoomModifier(state, content);
-  if (!mod?.hpDrainPct) return;
-  const drain = Math.max(1, Math.round(state.maxHp * mod.hpDrainPct));
-  state.hp = Math.max(0, state.hp - drain);
-  log({ key: 'log.modifier_drain', params: { name: mod.locKey, dmg: drain } });
-}
-
-// ---- Precognition (Önsezi) — WIS-tiered preview of the room you'd advance into -------------------
-export const FORESIGHT_WIS_HINT = 30;   // danger + event presence
-export const FORESIGHT_WIS_EXACT = 60;  // exact modifier / hazard / event
-export const FORESIGHT_WIS_ENEMY = 100; // + the enemy pool / element
-
-export interface RoomForesight {
-  wis: number;
-  danger: boolean;
-  hasEvent: boolean;
-  moral: boolean;
-  eventIcon?: string;
-  modifierKey?: string;
-  hazardKey?: string;
-  hazardIcon?: string;
-  enemyPool: string[];
-}
-
-/** Coordinates of the room the player would advance into next (null at the very end of the dungeon). */
-export function nextRoomPos(state: GameState, content: Content): { layer: number; floor: number; room: number } | null {
-  const layer = currentLayer(state, content);
-  if (!layer) return null;
-  const R = roomsOf(state, layer, state.pos.floor);
-  if (state.pos.room < R) return { layer: state.pos.layer, floor: state.pos.floor, room: state.pos.room + 1 };
-  if (state.pos.floor < floorsOf(state, layer)) return { layer: state.pos.layer, floor: state.pos.floor + 1, room: 1 };
-  const next = content.dungeon.layers.find((l) => l.id === state.pos.layer + 1);
-  return next ? { layer: next.id, floor: 1, room: 1 } : null;
-}
-
-/** WIS-gated foresight of the next room (null below the WIS hint threshold). Pure — probes a pos copy. */
-export function roomPreview(state: GameState, content: Content): RoomForesight | null {
-  const wis = effStat(state, 'WIS');
-  if (wis < FORESIGHT_WIS_HINT) return null;
-  const np = nextRoomPos(state, content);
-  if (!np) return null;
-  const probe = { ...state, pos: np } as GameState; // read-only probe — never mutates real state
-  const evId = rollRoomEvent(probe, content);
-  const evDef = evId ? content.events.get(evId) : null;
-  const mod = currentRoomModifier(probe, content);
-  const haz = currentRoomHazard(probe);
-  const layer = content.dungeon.layers.find((l) => l.id === np.layer);
-  return {
-    wis,
-    danger: !!mod || !!haz || !!evId,
-    hasEvent: !!evId,
-    moral: !!evDef?.moral,
-    eventIcon: evDef?.icon,
-    modifierKey: mod?.locKey,
-    hazardKey: haz?.locKey,
-    hazardIcon: haz?.icon,
-    enemyPool: layer?.enemyPool ?? [],
-  };
-}
-
-/** Apply per-tick room hazard drains (HP loss, SP loss). Called once per tick in combat. */
-export function applyRoomHazardTick(state: GameState, log: Log): void {
-  const hazard = currentRoomHazard(state);
-  if (!hazard) return;
-  if (hazard.hpDrainPct) {
-    const drain = Math.max(1, Math.round(state.maxHp * hazard.hpDrainPct));
-    state.hp = Math.max(0, state.hp - drain);
-    log({ key: 'log.hazard_drain', params: { name: hazard.locKey, dmg: drain } });
-  }
-  if (hazard.spDrain) {
-    state.sp = Math.max(0, state.sp - hazard.spDrain);
-  }
-}
-
 /** Is the player's current room a calm exploration room (no combat)? Never the entry or boss room. */
 function isExplorationRoom(state: GameState, content: Content): boolean {
   const layer = currentLayer(state, content);
@@ -883,7 +626,7 @@ function isExplorationRoom(state: GameState, content: Content): boolean {
 function resolveExploration(state: GameState, content: Content, log: Log): void {
   recordExplored(state); // light the room on the map
   const reward = diffDef(state, content).rewardMult ?? 1;
-  const ep = Math.max(1, Math.round(3 * reward * rebirthMult(state)));
+  const ep = Math.max(1, Math.round(3 * reward));
   state.ep += ep;
   state.hp = Math.min(state.maxHp, state.hp + Math.round(state.maxHp * 0.1)); // a calm, safe breather
   state.sp = Math.min(state.maxSp, state.sp + Math.round(state.maxSp * 0.2));
@@ -916,16 +659,6 @@ function recordExplored(state: GameState): void {
   const arr = (state.exploredMax[state.pos.layer] ??= []);
   const fi = state.pos.floor - 1;
   if ((arr[fi] ?? 0) < state.pos.room) arr[fi] = state.pos.room;
-  const { layer, floor, room } = state.pos;
-  if (
-    layer > (state.deepestLayer ?? 1) ||
-    (layer === (state.deepestLayer ?? 1) && floor > (state.deepestFloor ?? 1)) ||
-    (layer === (state.deepestLayer ?? 1) && floor === (state.deepestFloor ?? 1) && room > (state.deepestRoom ?? 1))
-  ) {
-    state.deepestLayer = layer;
-    state.deepestFloor = floor;
-    state.deepestRoom = room;
-  }
 }
 
 /** Luck-driven chance to sense a (gated) secret room when a floor is cleared (GDD §8.2). */
@@ -942,16 +675,13 @@ function trySenseRoom(state: GameState, content: Content, log: Log): void {
 }
 
 /** Build a depth-scaled enemy instance for the current position (shared by combat, event & riddle spawns). */
-function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean, mult = 1, elite = false): GameState['enemy'] {
+function makeEnemy(state: GameState, content: Content, archId: string, isBoss: boolean, mult = 1): GameState['enemy'] {
   const def = content.enemies.get(archId);
   if (!def) return null;
   const diff = diffDef(state, content);
   const depth = (state.pos.layer - 1) * 100 + (state.pos.floor - 1) * 15 + state.pos.room;
-  const rbMult = rebirthMult(state);
-  const roomMod = currentRoomModifier(state, content);
-  const roomAtkBonus = roomMod?.enemyAtkBonus ?? 0;
-  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * (elite ? ELITE_HP : 1) * diff.enemyMult * mult * rbMult;
-  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * (elite ? ELITE_ATK : 1) * diff.enemyMult * mult * rbMult * (1 + roomAtkBonus);
+  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * diff.enemyMult * mult;
+  const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * diff.enemyMult * mult;
   const hp = Math.round(def.hp * hpMult);
   return {
     id: archId,
@@ -961,10 +691,9 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
     attack: Math.max(1, Math.round(def.attack * atkMult)),
     damageType: def.damageType,
     damageType2: def.damageType2,
-    ep: Math.round(def.ep * (isBoss ? 3 : 1) * (elite ? ELITE_EP : 1) * mult), // reward scales with difficulty / elite
-    satiety: Math.round(def.satiety * (isBoss ? 2 : 1) * (elite ? ELITE_SAT : 1) * mult),
+    ep: Math.round(def.ep * (isBoss ? 3 : 1) * mult), // reward scales with the chosen/fail difficulty
+    satiety: Math.round(def.satiety * (isBoss ? 2 : 1) * mult),
     isBoss,
-    elite: elite || undefined,
     atkCd: ENEMY_ATK_INTERVAL,
     race: def.race,
     icon: def.icon,
@@ -974,53 +703,40 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
 }
 
 function spawnEnemy(state: GameState, content: Content, log: Log): void {
+  state.spiderlings = 0;
+  state.enemyStunTicks = 0;
   const layer = currentLayer(state, content);
-  if (!layer) return;
-  // Story mode: the current chapter's hand-authored area overrides the dungeon pool & boss.
-  const chapter = state.mode === 'story' && state.storyChapter
-    ? content.story.chapters.find((c) => c.id === state.storyChapter)
-    : undefined;
-  const pool = chapter ? chapter.areaEnemyPool : layer.enemyPool;
-  const bossArch = chapter ? chapter.bossId : layer.boss;
-  if (pool.length === 0) return;
+  if (!layer || layer.enemyPool.length === 0) return;
   const R = roomsOf(state, layer, state.pos.floor);
   recordExplored(state); // light the room on the map as we enter it
   const isBoss = state.pos.room >= R;
   // Non-boss rooms lock to one enemy type for the whole kill-quota run.
   let archId: string;
   if (isBoss) {
-    archId = bossArch;
+    archId = layer.boss;
     state.roomEnemyId = null;
   } else {
-    if (!state.roomEnemyId) state.roomEnemyId = pool[Math.floor(Math.random() * pool.length)];
+    if (!state.roomEnemyId) state.roomEnemyId = layer.enemyPool[Math.floor(Math.random() * layer.enemyPool.length)];
     archId = state.roomEnemyId;
   }
-  // New enemy hasn't seen any previous attacks — reset adaptation streak.
-  state.dmgStreak = 0;
-  state.dmgStreakType = undefined;
-  // Rare elite roll (non-boss only) — LUCK nudges the odds up.
-  const eliteChance = Math.min(ELITE_CHANCE_CAP, ELITE_CHANCE + effStat(state, 'LUCK') * ELITE_LUCK);
-  const elite = !isBoss && Math.random() < eliteChance;
-  const enemy = makeEnemy(state, content, archId, isBoss, 1, elite);
+  const enemy = makeEnemy(state, content, archId, isBoss);
   if (!enemy) return;
-  if (state.autoAppraise) enemy.analyzed = true;
   state.enemy = enemy;
-  log({ key: enemy.elite ? 'log.elite_spawn' : isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
+  log({ key: isBoss ? 'log.boss_spawn' : 'log.spawn', params: { enemy: enemy.locKey } });
   // Spider web trap: discharge accumulated gauge as opening burst damage.
   const webDmg = sigCombatStart(state);
   if (webDmg > 0) {
     state.enemy.hp = Math.max(1, state.enemy.hp - webDmg);
     log({ key: 'log.sig_web_trap', params: { dmg: webDmg } });
   }
-  // --- Initialize combat tracker for analytics ---
-  state.combatTracker = { damage: 0, ticks: 0, healed: 0, foodEaten: 0, epStart: state.ep };
 }
 
 /** Event outcome: start a specific (non-boss) enemy in this room. */
 export function spawnEventEnemy(state: GameState, content: Content, enemyId: string, log: Log): void {
+  state.spiderlings = 0;
+  state.enemyStunTicks = 0;
   const enemy = makeEnemy(state, content, enemyId, false);
   if (!enemy) return;
-  if (state.autoAppraise) enemy.analyzed = true;
   state.enemy = enemy;
   log({ key: 'log.ev_spawn', params: { enemy: enemy.locKey } });
 }
@@ -1036,11 +752,11 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
   // Boss riddle — ayrı sistem (text-answer tabanlı)
   if (state.bossRiddle) {
     const br = state.bossRiddle;
-    const riddle = riddleById(br.riddleId);
+    const riddle = content.bossRiddles.get(br.riddleId);
     const layer = currentLayer(state, content);
     if (!riddle || !layer) { state.bossRiddle = null; return; }
 
-    if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= RIDDLE_INT_SOLVE) {
+    if (state.autoEventPuzzleMode === 'solve' && state.stats.INT >= 100) {
       // Auto-solve: bilmece ödülünü ver, boss'u atla (gatekeeper/rebirth tetiklenir)
       applyRiddleReward(state, riddle.reward, log);
       state.resolvedEvents.push(br.roomKey);
@@ -1054,7 +770,6 @@ export function autoChooseEvent(state: GameState, content: Content, log: Log): v
       state.resolvedEvents.push(br.roomKey);
       state.bossRiddle = null;
       state.enemy = makeEnemy(state, content, layer.boss, true, 1);
-      if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
       log({ key: 'log.br_fight' });
     }
     return;
@@ -1135,41 +850,60 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
 
   // Level-scaled MP cost — applies to any skill with mpCost > 0 (magic AND active)
   const mpBase = def.mpCost ?? 0;
+  let effectiveMp = 0;
   if (mpBase > 0) {
     const lv = slot.level;
     const lvMax = def.lvMax ?? 10;
     const mpFloor = def.mpFloor ?? 5;
-    const effectiveMp = mpFloor + Math.round((mpBase - mpFloor) * (lvMax - lv) / Math.max(1, lvMax - 1));
-    if (effectiveMp > state.mp) {
-      // GDD §Demon Blood Pact: demon race can spend HP to cover the shortfall.
-      // The missing MP is drawn from HP at 1:1 ratio. Requires enough HP to survive the draw.
-      if (state.raceId === 'demon' && state.hp > effectiveMp - state.mp + 1) {
-        const hpDraw = effectiveMp - state.mp;
-        state.hp = Math.max(1, state.hp - hpDraw);
-        state.mp = 0;
-        log({ key: 'log.demon_blood_pact', params: { hp: hpDraw } });
-      } else {
-        return false; // not enough MP (and not a demon)
-      }
-    } else {
+    effectiveMp = mpFloor + Math.round((mpBase - mpFloor) * (lvMax - lv) / Math.max(1, lvMax - 1));
+  }
+
+  let consumedHp = 0;
+  if (state.raceId === 'demon') {
+    // Blood Pact: MP cost is subtracted from HP instead
+    if (effectiveMp > 0) {
+      if (effectiveMp >= state.hp) return false; // prevents suicide
+      state.hp = Math.max(1, state.hp - effectiveMp);
+    }
+    // Fraction of current HP cost (hpCost or hpCostPct)
+    const hpCostFrac = (def as any).hpCost ?? (def as any).hpCostPct ?? 0;
+    if (hpCostFrac > 0) {
+      consumedHp = Math.round(state.hp * hpCostFrac);
+      state.hp = Math.max(1, state.hp - consumedHp);
+    }
+  } else {
+    if (effectiveMp > 0) {
+      if (effectiveMp > state.mp) return false;
       state.mp = Math.max(0, state.mp - effectiveMp);
     }
   }
 
   const diff = diffDef(state, content);
 
-  const spec = specStat(state);
   let raw: number;
-  if (def.kind === 'magic') {
+  if (id === 'demonic_obliteration') {
+    raw = consumedHp * 4 + effStat(state, 'INT') * 1.5;
+  } else if (def.kind === 'magic') {
     raw = (def.damage ?? 0) + effStat(state, 'INT') * 0.6;
-    if (spec === 'INT') raw *= 1.5; // INT spec: Arcane Apex boosts magic damage
   } else {
     raw = (def.damage ?? 0) + Math.floor(effStat(state, 'STR') / 3);
   }
   raw += b.weaponPower; // equipped weapon power (0 for monsters / unarmed)
   raw += b.overdrawFrac * (state.maxHp - state.hp); // Overdraw: missing HP → power (§6.1)
+
+  // Golem Unmovable Core: add 15% of total armor to raw damage
+  if (state.skills.some((s) => s.id === 'unmovable_core')) {
+    raw += Math.round((b.armor ?? 0) * 0.15);
+  }
+
   raw *= b.dmgMult * diff.playerMult * levelPower(state); // auto power: each level adds a little punch
-  raw *= elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType); // element type-chart
+  
+  // Wyrmling True Fire: reduce disadvantage by 50%
+  let elemMult = elementMultiplier(content, def.damageType ?? 'physical', enemy.damageType);
+  if (state.raceId === 'wyrmling' && (def.damageType ?? 'physical') === 'fire' && elemMult < 1) {
+    elemMult = 1 - (1 - elemMult) * 0.5;
+  }
+  raw *= elemMult;
 
   // Adaptive resistance: spamming the same element lets the enemy adapt (GDD "Bilgi = Hayatta Kalma").
   const atkElem = def.damageType ?? 'physical';
@@ -1190,40 +924,29 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
 
   let dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   if (enemy.behavior?.armorPct) dmg = Math.max(1, Math.round(dmg * (1 - enemy.behavior.armorPct))); // armoured hide
-
-  // --- Critical Hit Logic (QoL/R3) ---
-  const isCrit = Math.random() < Math.min(0.5, 0.05 + effStat(state, 'LUCK') * 0.01);
-  if (isCrit) {
-    dmg = Math.round(dmg * 1.5);
-    state.screenShake = 15; // Trigger screen shake
-  }
-
   enemy.hp -= dmg;
-  log({ key: isCrit ? 'log.attack_crit' : 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
-
-  // --- Add floating combat text ---
-  if (!state.floatingTexts) state.floatingTexts = [];
-  state.floatingTexts.push({
-    text: isCrit ? `CRIT! ${dmg}` : `${dmg}`,
-    color: isCrit ? 'orange' : (def.damageType === 'poison' ? 'yellow' : 'white'),
-    target: 'enemy',
-    ts: Date.now()
-  });
-
-  // --- Track damage for analytics ---
-  if (state.combatTracker) {
-    state.combatTracker.damage += dmg;
-  }
-
+  log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
   // Wyrmling heat: each attack builds heat; at max the built-up energy releases as a bonus fire burst.
   const breathDmg = sigOnAttack(state);
   if (breathDmg > 0 && enemy.hp > 0) {
     enemy.hp = Math.max(0, enemy.hp - breathDmg);
     log({ key: 'log.sig_heat_breath', params: { dmg: breathDmg } });
-    state.floatingTexts.push({ text: `${breathDmg}`, color: 'red', target: 'enemy', ts: Date.now() });
-    if (state.combatTracker) state.combatTracker.damage += breathDmg;
   }
   if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state, slot.level);
+
+  if (id === 'sovereign_cocoon') {
+    state.enemyStunTicks = 3;
+    log({ key: 'log.cocoon_enemy' });
+  }
+  if (id === 'summon_spiderling') {
+    const isSovereign = state.formId === 'arachnid_sovereign';
+    const limit = isSovereign ? 6 : 3;
+    if (state.spiderlings === undefined) state.spiderlings = 0;
+    if (state.spiderlings < limit) {
+      state.spiderlings += 1;
+      log({ key: 'log.summon_spiderling', params: { count: state.spiderlings } });
+    }
+  }
 
   const gain = Math.max(1, Math.round((enemy.ep + 1 + Math.floor(slot.level * 0.3)) * b.xpMult));
   addSkillExp(state, content, slot, gain, log, b.xpMult, isOffline);
@@ -1239,9 +962,6 @@ function fireGaze(state: GameState, content: Content, log: Log): void {
     state.mp -= gz.mpCost;
     enemy.hp -= gz.damage;
     log({ key: 'log.gaze_hit', params: { dmg: gz.damage } });
-    if (!state.floatingTexts) state.floatingTexts = [];
-    state.floatingTexts.push({ text: `${gz.damage}`, color: 'cyan', target: 'enemy', ts: Date.now() });
-    if (state.combatTracker) state.combatTracker.damage += gz.damage;
   }
 }
 
@@ -1272,30 +992,6 @@ export function ensureEquipped(state: GameState, content: Content): void {
 /** Unequip every active skill at once (manual loadout reset). */
 export function unequipAll(state: GameState): void {
   state.equipped = [];
-}
-
-export const LOADOUT_SLOTS = 3;
-
-/** Save the current equipped set into a preset slot. */
-export function saveLoadout(state: GameState, slot: number): void {
-  if (slot < 0 || slot >= LOADOUT_SLOTS) return;
-  if (!state.loadouts) state.loadouts = [];
-  while (state.loadouts.length <= slot) state.loadouts.push([]);
-  state.loadouts[slot] = [...state.equipped];
-}
-
-/** Equip a saved preset — only skills still owned + equippable, trimmed to capacity. */
-export function loadLoadout(state: GameState, content: Content, slot: number): void {
-  const saved = state.loadouts?.[slot];
-  if (!saved || saved.length === 0) return;
-  const cap = skillSlots(state);
-  const next: string[] = [];
-  for (const id of saved) {
-    if (next.length >= cap) break;
-    const def = content.skills.get(id);
-    if (def && def.damage !== undefined && !next.includes(id) && state.skills.some((s) => s.id === id)) next.push(id);
-  }
-  state.equipped = next;
 }
 
 /** Equip / unequip an active skill (manual loadout, capped by skillSlots). */
@@ -1351,6 +1047,13 @@ export function useSkillManual(state: GameState, content: Content, id: string, l
 function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): void {
   const enemy = state.enemy;
   if (!enemy) return;
+
+  if (state.enemyStunTicks && state.enemyStunTicks > 0) {
+    state.enemyStunTicks -= 1;
+    log({ key: 'log.cocoon_active' });
+    return;
+  }
+
   if (Math.random() < gazeNegateChance(state, content)) {
     log({ key: 'log.flee', params: { enemy: enemy.locKey } });
     return;
@@ -1411,60 +1114,22 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   if (b.painNull > 0 && state.hp < state.maxHp * 0.5 && totalTaken > 0) {
     totalTaken = Math.max(0, Math.round(totalTaken * (1 - b.painNull)));
   }
-  // Tank Minion damage absorption
-  if (state.minions && state.minions.tank > 0 && totalTaken > 0) {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
-    const absorbPct = Math.min(0.75, state.minions.tank * 0.15 * effMult);
-    const absorbed = Math.round(totalTaken * absorbPct);
-    if (absorbed > 0) {
-      const actualAbsorb = Math.min(state.minions.tankHp, absorbed);
-      state.minions.tankHp -= actualAbsorb;
-      totalTaken -= actualAbsorb;
-      log({ key: 'log.minions_absorbed', params: { absorbed: actualAbsorb } });
-      if (state.minions.tankHp <= 0) {
-        state.minions.tank = 0;
-        state.minions.tankHp = 0;
-        state.minions.tankMaxHp = 0;
-        log({ key: 'log.tank_minions_slain' });
-      }
+
+  // Spiderling Minions: absorb 20% (30% for Sovereign) of incoming damage per active minion
+  if (state.spiderlings && state.spiderlings > 0) {
+    const absorbPctPerMinion = state.formId === 'arachnid_sovereign' ? 0.30 : 0.20;
+    const totalAbsorbPct = Math.min(0.9, state.spiderlings * absorbPctPerMinion);
+    if (totalAbsorbPct > 0) {
+      totalTaken = Math.round(totalTaken * (1 - totalAbsorbPct));
     }
   }
+
   state.hp = Math.max(0, state.hp - totalTaken);
-  if (!state.floatingTexts) state.floatingTexts = [];
-  state.floatingTexts.push({ text: `-${totalTaken}`, color: 'red', target: 'player', ts: Date.now() });
   if (enemy.behavior?.lifesteal && totalTaken > 0) {
     enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.round(totalTaken * enemy.behavior.lifesteal)); // drains your blood
-    state.floatingTexts.push({ text: `+${Math.round(totalTaken * enemy.behavior.lifesteal)}`, color: 'green', target: 'enemy', ts: Date.now() });
   }
   state.lastHit = { enemyKey: enemy.locKey, type: enemy.damageType };
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
-}
-
-type ReactionCombo = { a: DamageType; b: DamageType; key: string; burstMult: number; controlTicks?: number };
-const REACTION_COMBOS: ReactionCombo[] = [
-  { a: 'fire',  b: 'poison',    key: 'log.reaction_toxic_blaze',    burstMult: 3.0 },
-  { a: 'frost', b: 'lightning', key: 'log.reaction_frozen_circuit',  burstMult: 3.5 },
-  { a: 'fire',  b: 'frost',     key: 'log.reaction_steam_burst',     burstMult: 0,   controlTicks: 2 },
-  { a: 'acid',  b: 'fire',      key: 'log.reaction_corrosive_burn',  burstMult: 2.5 },
-];
-
-/** When a new status would be applied, check if it reacts with an existing one. Returns true if consumed. */
-function checkStatusReaction(state: GameState, newType: DamageType, newDmg: number, log: Log): boolean {
-  for (const combo of REACTION_COMBOS) {
-    const isA = newType === combo.a, isB = newType === combo.b;
-    if (!isA && !isB) continue;
-    const partnerType = isA ? combo.b : combo.a;
-    const partner = state.statusEffects.find((s) => s.type === partnerType);
-    if (!partner) continue;
-    state.statusEffects = state.statusEffects.filter((s) => s.type !== newType && s.type !== partnerType);
-    const burst = Math.max(0, Math.round((newDmg + partner.dmgPerTick) * combo.burstMult));
-    if (burst > 0) state.hp = Math.max(0, state.hp - burst);
-    if (combo.controlTicks) state.statusEffects.push({ type: 'petrify', ticksLeft: combo.controlTicks, dmgPerTick: 0, control: true });
-    log({ key: combo.key, params: { dmg: burst } });
-    return true;
-  }
-  return false;
 }
 
 /** Apply/refresh a lingering status: duration 1–10s and per-tick damage scale with the hit & resistance. */
@@ -1476,10 +1141,8 @@ function applyStatus(state: GameState, type: DamageType, share: number, reductio
     existing.ticksLeft = Math.max(existing.ticksLeft, dur);
     existing.dmgPerTick = Math.max(existing.dmgPerTick, dmgPerTick);
   } else {
-    if (!checkStatusReaction(state, type, dmgPerTick, log)) {
-      state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
-      log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
-    }
+    state.statusEffects.push({ type, ticksLeft: dur, dmgPerTick });
+    log({ key: 'log.status_on', params: { type: dmgTypeKey(type), sec: dur } });
   }
 }
 
@@ -1498,9 +1161,8 @@ function applyControl(state: GameState, type: DamageType, reduction: number, log
 }
 
 /** True while the player is locked out by a control condition (petrify/stun). */
-function isControlled(state: GameState): boolean {
-  // GDD §Golem Unmovable Core: golems with any stone layer built are immune to CC.
-  if (state.raceId === 'golem' && Number.isFinite(state.sig) && state.sig >= 1) return false;
+export function isControlled(state: GameState): boolean {
+  if (state.skills.some((s) => s.id === 'unmovable_core')) return false;
   return state.statusEffects.some((s) => s.control && s.ticksLeft > 0);
 }
 
@@ -1519,26 +1181,10 @@ function processStatuses(state: GameState, content: Content, log: Log): void {
   if (total > 0) state.hp = Math.max(0, state.hp - total);
 }
 
-/** Branches selectable at the current node: every non-secret child + any secret child whose hidden
- *  condition is already met (a secret form joins the menu as a bonus but never blocks the climb). */
-function selectableEvolutions(state: GameState, content: Content) {
-  return availableEvolutions(state, content).filter((f) => secretMet(state, f));
-}
-
-/** Auto-advance the evolution tier while grinding at the level cap.
- *  Empty tiers (nothing unlockable yet) climb silently — idle flow is preserved. But the moment a tier
- *  unlocks a NEW branch the player hasn't acknowledged (via "keep growing"), the climb STOPS so the
- *  combat-tab banner can offer "evolve now / keep growing". This lets staggered nodes (e.g. demon_slime
- *  T5 shortcut vs T10 siblings) be caught early OR climbed past, instead of silently overshooting. */
 function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boolean {
   const avail = availableEvolutions(state, content);
   if (avail.length === 0) return false; // terminal form reached — truly done
-  const selectable = selectableEvolutions(state, content);
-  const openCount = selectable.filter((f) => canEvolve(state, f)).length;
-  if (openCount > (state.evolveAckCount ?? 0)) return false; // a NEW branch opened — player chooses (no freeze)
-  // Player acknowledged the current open set (or nothing open yet) → climb toward the next branch.
-  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
-  if (state.tier >= needTier) return false; // top of node — every branch already open
+  if (avail.some((f) => canEvolve(state, f))) return false; // evolution already unlocked, player acts
   if (state.tier >= 10) return false; // T10 with tierReq still blocking = design gap, don't spiral
   state.tier = Math.min(10, state.tier + 1);
   state.level = 1;
@@ -1547,19 +1193,6 @@ function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boole
   log({ key: 'log.tier_advance', params: { tier: state.tier } });
   recomputeMaxes(state);
   return true;
-}
-
-/** "Keep growing" button: acknowledge the currently-open branches and resume climbing toward higher-tier
- *  siblings (auto-advance will stop again at the next new unlock, or at the top of the node). */
-export function keepGrowing(state: GameState, content: Content, log: Log): boolean {
-  if (state.level < LEVEL_CAP) return false; // only meaningful once capped
-  const selectable = selectableEvolutions(state, content);
-  const open = selectable.filter((f) => canEvolve(state, f));
-  if (open.length === 0) return false; // nothing open to grow past
-  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
-  if (state.tier >= needTier) return false; // already at the top — no higher sibling to reach
-  state.evolveAckCount = open.length; // dismiss the current menu, then climb
-  return tryAutoTierAdvance(state, content, log);
 }
 
 function gainXp(state: GameState, content: Content, amount: number, log: Log): void {
@@ -1606,37 +1239,12 @@ export function applyBossClear(state: GameState, content: Content, log: Log): vo
   }
 }
 
-/** INT needed to bypass a boss riddle with raw intellect (auto-solve or the manual "🧠 skip" button). */
-export const RIDDLE_INT_SOLVE = 100;
-
-/** Manually pass the active boss riddle via intellect (no answer needed) — INT-gated. Returns true on success. */
-export function intSkipRiddle(state: GameState, content: Content, log: Log): boolean {
-  const br = state.bossRiddle;
-  if (!br || state.stats.INT < RIDDLE_INT_SOLVE) return false;
-  const riddle = riddleById(br.riddleId);
-  const layer = currentLayer(state, content);
-  if (!riddle || !layer) return false;
-  applyRiddleReward(state, riddle.reward, log);
-  state.resolvedEvents.push(br.roomKey);
-  state.bossRiddle = null;
-  applyBossClear(state, content, log);
-  if (state.autoAdvance) advancePosition(state, content, log);
-  else state.roomCleared = true;
-  log({ key: 'log.br_skip' });
-  return true;
-}
-
 /** Type the answer to the active boss riddle. Correct → mark solved (UI offers skip/fight). Wrong → escalate. */
 export function answerBossRiddle(state: GameState, content: Content, answer: string, log: Log): boolean {
   const br = state.bossRiddle;
-  const riddle = br ? riddleById(br.riddleId) : null;
+  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
   const layer = currentLayer(state, content);
   if (!br || !riddle || !layer || br.attempts < 0) return false;
-  // Hard knowledge-gate: a riddle that requires unread lore can't be answered until you've found it.
-  if (riddle.loreReq && !state.booksFound.includes(riddle.loreReq)) {
-    log({ key: 'log.br_lore_locked', params: { lore: loreById(riddle.loreReq)?.title ?? riddle.loreReq } });
-    return false;
-  }
   if (checkBossAnswer(riddle, answer)) {
     br.attempts = -1; // solved → UI shows Skip / Fight
     log({ key: 'log.br_solved' });
@@ -1647,7 +1255,6 @@ export function answerBossRiddle(state: GameState, content: Content, answer: str
     // 3rd wrong → the real boss, strengthened, good reward.
     state.bossRiddle = null;
     state.enemy = makeEnemy(state, content, layer.boss, true, RIDDLE_FAILBOSS_MULT);
-    if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
     log({ key: 'log.br_fail_boss' });
   } else {
     // 1st/2nd wrong → a slightly strengthened guard; killing it returns to the riddle.
@@ -1655,7 +1262,6 @@ export function answerBossRiddle(state: GameState, content: Content, answer: str
     const guard = makeEnemy(state, content, archId, false, RIDDLE_GUARD_MULT);
     if (guard) {
       guard.riddleGuard = true;
-      if (state.autoAppraise) guard.analyzed = true;
       state.enemy = guard;
     }
     log({ key: 'log.br_wrong', params: { left: 3 - br.attempts } });
@@ -1672,7 +1278,7 @@ export function chooseBossOption(
   log: Log,
 ): void {
   const br = state.bossRiddle;
-  const riddle = br ? riddleById(br.riddleId) : null;
+  const riddle = br ? content.bossRiddles.get(br.riddleId) : null;
   const layer = currentLayer(state, content);
   if (!br || br.attempts !== -1 || !riddle || !layer) return; // only on a solved riddle
   if (mode === 'skip') {
@@ -1688,21 +1294,8 @@ export function chooseBossOption(
     state.resolvedEvents.push(br.roomKey);
     state.bossRiddle = null;
     state.enemy = makeEnemy(state, content, layer.boss, true, mult); // beat it → normal onKill → applyBossClear
-    if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
     log({ key: 'log.br_fight' });
   }
-}
-
-/** Give up on a lore-locked / unsolved riddle and just face the boss — no riddle reward. */
-export function abandonRiddleForBoss(state: GameState, content: Content, log: Log): void {
-  const br = state.bossRiddle;
-  const layer = currentLayer(state, content);
-  if (!br || !layer) return;
-  state.resolvedEvents.push(br.roomKey);
-  state.bossRiddle = null;
-  state.enemy = makeEnemy(state, content, layer.boss, true, 1);
-  if (state.autoAppraise && state.enemy) state.enemy.analyzed = true;
-  log({ key: 'log.br_fight' });
 }
 
 const RARITY_RANK: Record<string, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
@@ -1735,68 +1328,24 @@ function maybeDropLoot(
   log({ key: 'log.loot_drop', params: { item: lootDisplayName(item), rarity: `rarity.${item.rarity}` } });
 }
 
-/** Learn one un-owned skill from a defeated foe (Cannibalism / Predator). Returns true if learned. */
-function tryDevourSkill(state: GameState, content: Content, enemy: NonNullable<GameState['enemy']>, log: Log): boolean {
-  const pool = content.enemies.get(enemy.id)?.grantSkills ?? [];
-  const learnable = pool.filter((id) => content.skills.has(id) && !ownsSkillLine(state, content, id));
-  if (learnable.length === 0) return false;
-  const id = learnable[Math.floor(Math.random() * learnable.length)];
-  state.skills.push({ id, level: 1, exp: 0 });
-  gainSin(state, content, DEVOUR_SIN, log); // consuming another's essence for power is a transgression
-  log({ key: 'log.devour_skill', params: { enemy: enemy.locKey, skill: content.skills.get(id)!.locKeyName } });
-  return true;
-}
-
-/** Cannibalism (general races, kin-only) + slime Predator/Absorb — applied on each kill. */
-function cannibalizeAndAbsorb(state: GameState, content: Content, enemy: NonNullable<GameState['enemy']>, log: Log): void {
-  if (state.raceId === 'slime') {
-    // Predator: devour ANY foe's skill (chance, no threshold) — the slime signature.
-    if (Math.random() < DEVOUR_SLIME_CHANCE) tryDevourSkill(state, content, enemy, log);
-    // Absorb: take the foe's element(s) as resistance + biomass heal + bounded permanent VIT growth.
-    addResistExp(state, content, enemy.damageType, ABSORB_RESIST_GAIN, log);
-    if (enemy.damageType2) addResistExp(state, content, enemy.damageType2, ABSORB_RESIST_GAIN, log);
-    state.hp = Math.min(state.maxHp, state.hp + Math.max(1, Math.round(state.maxHp * ABSORB_HEAL_PCT)));
-    const vitCap = (state.tier + 1) * 2;
-    if ((state.absorbVit ?? 0) < vitCap && Math.random() < ABSORB_VIT_CHANCE) {
-      state.absorbVit = (state.absorbVit ?? 0) + 1;
-      state.stats.VIT += 1;
-      recomputeMaxes(state);
-      log({ key: 'log.absorb_vit' });
-    }
-    return;
-  }
-  // General races: cannibalism is kin-only and gated behind heavy investment (sin-laden power).
-  const isKin = !!enemy.race && enemy.race === state.raceId;
-  if (isKin && (state.killedEnemies[enemy.id] ?? 0) >= DEVOUR_KIN_THRESHOLD && Math.random() < DEVOUR_KIN_CHANCE) {
-    tryDevourSkill(state, content, enemy, log);
-  }
-}
-
 function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffline = false): void {
   const enemy = state.enemy;
   if (!enemy) return;
   const reward = diffDef(state, content).rewardMult ?? 1; // Hell pays more, Easy less
-  const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward * rebirthMult(state)));
+  const ep = Math.max(1, Math.round(enemy.ep * b.lootMult * reward));
   state.ep += ep;
   state.kills += 1;
   state.killedEnemies = state.killedEnemies ?? {};
   state.killedEnemies[enemy.id] = (state.killedEnemies[enemy.id] ?? 0) + 1;
-  // --- Record combat analytics ---
-  if (state.combatTracker) {
-    const tracker = state.combatTracker;
-    const encounter: CombatEncounterLog = {
-      enemyId: enemy.id,
-      totalDamage: tracker.damage,
-      durationTicks: tracker.ticks,
-      epGained: ep,
-      hpHealed: tracker.healed,
-      foodConsumed: tracker.foodEaten,
-      timestamp: Date.now(),
-    };
-    recordEncounter(state, encounter);
-    state.combatTracker = null;
-  }
   sigOnKill(state, enemy.damageType);
+
+  // Slime Absorption & Replication:
+  if (state.raceId === 'slime' && state.skills.some((s) => s.id === 'absorption_replication')) {
+    if (enemy.race) {
+      state.replicatedRace = enemy.race;
+      state.sig = 0;
+    }
+  }
   // Harvest Festival (easter egg): a slime that has reaped enough souls awakens a hidden path.
   if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });
   // The Labyrinth (easter egg): a spider that survives enough kills awakens the hidden Kumoko path.
@@ -1812,21 +1361,16 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   }
   // Sin grows ONLY from killing your OWN kin (surviving the dungeon isn't a sin — it's instinct, §C).
   if (enemy.race && enemy.race === state.raceId) {
-    gainSin(state, content, enemy.isBoss ? SIN_PER_KILL_BOSS : SIN_PER_KILL, log);
+    gainSin(state, content, SIN_PER_KILL * (enemy.isBoss ? 5 : 1), log);
     log({ key: 'log.sin_kill', params: { enemy: enemy.locKey } }); // a clear "you sinned" beat
   }
-  cannibalizeAndAbsorb(state, content, enemy, log); // devour a skill (kin / slime) + slime absorb
 
   const satiety = Math.round(enemy.satiety * b.lootMult);
   if (state.inventory.length < maxFoodSlots(state)) {
     state.inventory.push({ enemyId: enemy.id, satiety, decay: 0 });
     state.larderFullNotified = false;
   } else {
-    const hungerBefore = state.hunger;
     state.hunger = Math.max(0, state.hunger - satiety);
-    // Satiety that couldn't reduce hunger (already full) converts to EP at 50% rate.
-    const overflow = satiety - (hungerBefore - state.hunger);
-    if (overflow > 0) state.ep += Math.round(overflow * 0.5);
     if (!state.larderFullNotified) {
       log({ key: 'log.larder_full' });
       state.larderFullNotified = true;
@@ -1881,79 +1425,6 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
     state.skills.push({ id: 'dread_gaze', level: 1, exp: 0 });
     log({ key: 'log.discover_dread' });
   }
-}
-
-// ---- EP Shop ---------------------------------------------------------------
-
-const EP_STAT_BASE_COST = 100;
-/** Per-purchase cost growth for EP-bought stat points (×1.3 each buy this life). */
-const EP_STAT_COST_GROWTH = 1.3;
-
-/** Cost of the next EP-purchased stat point (grows ×1.3 with each purchase this life). */
-export function epStatCost(state: GameState): number {
-  return Math.round(EP_STAT_BASE_COST * Math.pow(EP_STAT_COST_GROWTH, state.epStatsBought ?? 0));
-}
-
-/** Buy one stat point with EP. Returns true on success. */
-export function buyStatPointEp(state: GameState): boolean {
-  const cost = epStatCost(state);
-  if (state.ep < cost) return false;
-  state.ep -= cost;
-  state.statPoints += 1;
-  state.epStatsBought = (state.epStatsBought ?? 0) + 1;
-  return true;
-}
-
-/** Temporary buff definitions: id → { cost in EP, duration in ms }. */
-export const EP_BUFF_DEFS: Record<string, { cost: number; durationMs: number }> = {
-  slow_hunger: { cost: 100, durationMs: 3_600_000 },  // 1 saat — yarı açlık hızı
-  xp_rush:     { cost: 150, durationMs: 1_800_000 },  // 30 dk — +%50 XP
-  regen_surge: { cost: 80,  durationMs: 1_800_000 },  // 30 dk — +%100 HP rejenerasyon
-};
-
-/** Buy a temporary buff with EP. Stacks duration if already active. */
-export function buyTempBuff(state: GameState, buffId: string): boolean {
-  const def = EP_BUFF_DEFS[buffId];
-  if (!def || state.ep < def.cost) return false;
-  state.ep -= def.cost;
-  state.tempBuffs = state.tempBuffs ?? {};
-  const existing = state.tempBuffs[buffId] ?? 0;
-  state.tempBuffs[buffId] = Math.max(existing, Date.now()) + def.durationMs;
-  return true;
-}
-
-/** Rank-based EP cost multiplier for skill XP injection. */
-const INJECT_RANK_MULT: Record<string, number> = {
-  F: 0.5, E: 1, D: 1.5, C: 2, B: 3, A: 5, S: 8, SS: 12,
-};
-
-/** EP cost to inject one level's worth of XP into a skill at its current level. */
-export function injectSkillXpCost(state: GameState, content: Content, skillId: string): number {
-  const slot = state.skills.find((s) => s.id === skillId);
-  const def = content.skills.get(skillId);
-  if (!slot || !def || slot.level >= (def.lvMax ?? 10)) return Infinity;
-  const rankMult = INJECT_RANK_MULT[def.rank ?? 'E'] ?? 1;
-  return Math.max(30, Math.round((15 + slot.level * 10) * rankMult));
-}
-
-/** Inject one level's worth of XP into a skill, paying EP. Returns true on success. */
-export function injectSkillXp(state: GameState, content: Content, skillId: string, log: Log): boolean {
-  const slot = state.skills.find((s) => s.id === skillId);
-  const def = content.skills.get(skillId);
-  if (!slot || !def) return false;
-  const lvMax = def.lvMax ?? 10;
-  if (slot.level >= lvMax) return false;
-  const cost = injectSkillXpCost(state, content, skillId);
-  if (!Number.isFinite(cost) || state.ep < cost) return false;
-  state.ep -= cost;
-  const xpChunk = 15 + slot.level * 10;
-  slot.exp += xpChunk;
-  while (slot.level < lvMax && slot.exp >= (15 + slot.level * 10)) {
-    slot.exp -= 15 + slot.level * 10;
-    slot.level += 1;
-    log({ key: 'log.skill_up', params: { skill: def.locKeyName, lvLabel: LV_LABEL, lv: slot.level } });
-  }
-  return true;
 }
 
 /** Player tapped "Advance" (manual progression) — move one room forward, abandoning the current foe. */
@@ -2016,32 +1487,17 @@ function onDeath(state: GameState, content: Content, log: Log, b: Bonuses): void
     return;
   }
   const diff = diffDef(state, content);
-  state.deaths = (state.deaths ?? 0) + 1; // a real death (feeds the survivor achievement)
 
   // Permadeath in Hell = a true wipe (§8.5.2) — only permanent meta survives.
   if (state.permadeath && diff.brutal) {
     const keepHell = [...state.hellClears];
     const keepUnlocks = [...state.unlocks];
     const keepBoon = state.rebirthBoon;
-    const keepAch = [...state.achievements];        // achievements + their lifetime trackers are permanent
-    const keepFusions = state.fusionCount;
-    const keepSwitches = state.branchSwitchCount;
-    const keepDeaths = state.deaths;
-    const keepRaces = [...state.racesPlayed];
-    const keepGks = [...state.gatekeepersByRace];
-    const keepTrees = [...state.treesCompleted];
     const fresh = newGame();
     Object.assign(state, fresh);
     state.hellClears = keepHell;
     state.unlocks = keepUnlocks;
     state.rebirthBoon = keepBoon;
-    state.achievements = keepAch;
-    state.fusionCount = keepFusions;
-    state.branchSwitchCount = keepSwitches;
-    state.deaths = keepDeaths;
-    state.racesPlayed = keepRaces;
-    state.gatekeepersByRace = keepGks;
-    state.treesCompleted = keepTrees;
     log({ key: 'log.permadeath' });
     return;
   }
@@ -2127,8 +1583,6 @@ function skillLevelUp(slot: SkillSlot, state: GameState, content: Content, log: 
     const next = content.skills.get(nextId);
     if (next) {
       log({ key: 'log.evolve', params: { from: def.locKeyName, to: next.locKeyName } });
-      const eIdx = state.equipped.indexOf(def.id);
-      if (eIdx >= 0) state.equipped[eIdx] = nextId;
       slot.id = nextId;
       slot.tier = (slot.tier ?? 1) + 1;
       slot.level = 1;
@@ -2256,6 +1710,9 @@ function chainResistBonus(state: GameState, content: Content, type: DamageType):
 }
 
 function resistReduction(state: GameState, content: Content, type: DamageType): number {
+  if (state.skills.some((s) => s.id === 'absorption_replication') && (type === 'poison' || type === 'acid')) {
+    return 1.0;
+  }
   const slot = ensureResistSlot(state, content, type);
   if (!slot) return 0;
   if (slot.nullified) return 0.95;
@@ -2411,130 +1868,5 @@ export function chooseHumanPath(state: GameState, content: Content, pathId: stri
     }
   }
   log({ key: 'log.human_path_chosen', params: { path: `human.path.${pathId}` } });
-  return true;
-}
-
-export function spinWeb(state: GameState, log: Log): boolean {
-  if (!state.roomCleared) return false;
-  if (state.raceId !== 'spider' || state.tier < 3) return false;
-  if (state.sp < 20 || state.sig < 10) return false;
-
-  state.sp -= 20;
-  state.sig -= 10;
-  state.webRoom = { ...state.pos };
-  state.webTicks = state.formId === 'arachnid_sovereign' ? 1000 : 500;
-  state.webAccEp = 0;
-  state.webAccFood = [];
-  state.webAccLoot = [];
-
-  log({ key: 'log.web_spun', params: { pos: `${state.pos.layer}.${state.pos.floor}.${state.pos.room}` } });
-  return true;
-}
-
-export function collectWeb(state: GameState, log: Log): void {
-  if (!state.webRoom) return;
-
-  const ep = Math.round(state.webAccEp);
-  state.ep += ep;
-
-  let foodCount = 0;
-  let foodMeltedEp = 0;
-  const maxFood = maxFoodSlots(state);
-  for (const food of state.webAccFood) {
-    if (state.inventory.length < maxFood) {
-      state.inventory.push(food);
-      foodCount++;
-    } else {
-      const overflowEp = Math.round(food.satiety * 0.5);
-      state.ep += overflowEp;
-      foodMeltedEp += overflowEp;
-    }
-  }
-
-  let lootCount = 0;
-  let lootMeltedEp = 0;
-  for (const loot of state.webAccLoot) {
-    if (state.inventoryItems.length < MAX_INVENTORY) {
-      state.inventoryItems.push(loot);
-      lootCount++;
-    } else {
-      state.ep += loot.value;
-      lootMeltedEp += loot.value;
-    }
-  }
-
-  log({
-    key: 'log.web_collect',
-    params: {
-      ep: ep + foodMeltedEp + lootMeltedEp,
-      food: foodCount,
-      loot: lootCount
-    }
-  });
-
-  state.webAccEp = 0;
-  state.webAccFood = [];
-  state.webAccLoot = [];
-}
-
-export function tickWeb(state: GameState, b: Bonuses, log: Log, isOffline: boolean): void {
-  if (!state.webRoom) return;
-  state.webTicks = (state.webTicks ?? 0) - 1;
-  if (state.webTicks <= 0) {
-    state.webRoom = null;
-    state.webTicks = 0;
-    log({ key: 'log.web_broke' });
-    return;
-  }
-
-  const isSovereign = state.formId === 'arachnid_sovereign';
-  const yieldMult = isSovereign ? 1.5 : 1.0;
-  const offlinePenalty = isOffline ? 0.5 : 1.0;
-
-  // EP Accumulation
-  const epGain = 0.5 * b.lootMult * b.idleMult * yieldMult * offlinePenalty;
-  state.webAccEp = (state.webAccEp ?? 0) + epGain;
-
-  // Food roll (2% online, 1% offline due to 50% penalty)
-  const foodChance = isOffline ? 0.01 : 0.02;
-  if (Math.random() < foodChance) {
-    state.webAccFood = state.webAccFood ?? [];
-    state.webAccFood.push({ enemyId: 'cave_pest', satiety: 15, decay: 0 });
-  }
-
-  // Loot roll (0.5% online, 0.25% offline) in layer > 2
-  if (state.webRoom.layer > 2) {
-    const lootChance = isOffline ? 0.0025 : 0.005;
-    if (Math.random() < lootChance) {
-      const ilvl = state.webRoom.layer * 10 + state.level;
-      const luck = effStat(state, 'LUCK');
-      const item = generateLoot(ilvl, luck);
-      state.webAccLoot = state.webAccLoot ?? [];
-      state.webAccLoot.push(item);
-    }
-  }
-}
-
-export function spawnMinion(state: GameState, type: 'dps' | 'tank' | 'utility'): boolean {
-  if (!state.minions) {
-    state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
-  }
-  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
-  const limit = (Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1)) + perkBonus;
-  const currentTotal = state.minions.dps + state.minions.tank + state.minions.utility;
-  if (currentTotal >= limit) return false;
-  if (state.sp < 10 || state.mp < 5) return false;
-
-  state.sp -= 10;
-  state.mp -= 5;
-  state.hunger = Math.min(100, state.hunger + 15);
-
-  state.minions[type]++;
-  if (type === 'tank') {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
-    state.minions.tankMaxHp = (20 + effStat(state, 'VIT') * 2) * state.minions.tank * effMult;
-    state.minions.tankHp = state.minions.tankMaxHp;
-  }
   return true;
 }

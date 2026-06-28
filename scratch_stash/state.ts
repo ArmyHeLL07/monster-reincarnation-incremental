@@ -1,7 +1,4 @@
-import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot, EnemyBehavior } from '@mri/shared';
-import type { AutoCombatConfig } from './autocombat';
-import { defaultAutoCombatConfig } from './autocombat';
-import type { CombatEncounterLog } from './analytics';
+﻿import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot, EnemyBehavior } from '@mri/shared';
 
 /** Bag capacity for humanoid races (slot-based; materials/stacks are a future extension). */
 export const MAX_INVENTORY = 20;
@@ -102,8 +99,6 @@ export interface EnemyInstance {
   riddleGuard?: boolean;
   /** Special combat behaviour copied from the archetype (regen/double-strike/enrage/armour/…). */
   behavior?: EnemyBehavior;
-  /** A rare elite variant — tougher (more HP/ATK) but drops far more EP/XP. Marked with a star badge. */
-  elite?: boolean;
 }
 
 export const MAX_HUNGER = 100;
@@ -154,8 +149,6 @@ export interface GameState {
   atkCd: number;
   /** Equipped active-skill ids — only these are used in combat (limited by skillSlots). */
   equipped: string[];
-  /** Saved equipped-skill presets (loadouts) — quickly swap builds. Up to LOADOUT_SLOTS slots. */
-  loadouts: string[][];
   /** Combat control: `auto` fires ready equipped skills; `manual` waits for taps. */
   combatMode: 'auto' | 'manual';
   /** Per-skill cooldown timers (ticks remaining), keyed by skill id. */
@@ -173,10 +166,6 @@ export interface GameState {
   enemy: EnemyInstance | null;
   /** Active spiderling minions count (Spider T9/T10). */
   spiderlings?: number;
-  /** Slime replicated race (GDD absorption & replication). */
-  replicatedRace?: string;
-  /** Decrements in combat, cocooning the enemy (Spider T10). */
-  enemyStunTicks?: number;
   /** Active damage-over-time statuses on the player (poison/fire/…), ticking during combat. */
   statusEffects: StatusEffect[];
   /** Global discovery pool skeleton — a combo is produced once (local for now). */
@@ -189,32 +178,8 @@ export interface GameState {
   difficulty: Difficulty;
   /** Hell-only: death is a true wipe. */
   permadeath: boolean;
-  /** Settings toggle: allow modifier-free rooms (base 10% + LUCK×0.5% chance). Default off. */
-  modifierFreeRooms: boolean;
   /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
   hellClears: string[];
-
-  // --- achievements / lifetime counters (never reset by rebirth/race change) -
-  /** Unlocked achievement ids (permanent across lives). */
-  achievements: string[];
-  /** Lore-mastery passive ids earned (permanent; drives the once-only celebration). */
-  loreMasteries: string[];
-  /** Active repeatable quests: template id + the metric value when it was assigned (delta = progress). */
-  activeQuests: { id: string; base: number }[];
-  /** Lifetime quests completed (a small bragging counter). */
-  questsDone: number;
-  /** Lifetime fusion discoveries — feeds the fusion achievement. */
-  fusionCount: number;
-  /** Lifetime branch switches — feeds the branch-switch achievement. */
-  branchSwitchCount: number;
-  /** Lifetime deaths — feeds the survivor achievement. */
-  deaths: number;
-  /** Race ids the player has ever played (per-race achievements). */
-  racesPlayed: string[];
-  /** Race ids whose gatekeeper the player has cleared at least once. */
-  gatekeepersByRace: string[];
-  /** Race ids whose evolution tree the player has completed (reached a terminal form). */
-  treesCompleted: string[];
 
   // --- rebirth / prestige (GDD §7.5) ----------------------------------------
   rebirthCount: number;
@@ -284,14 +249,6 @@ export interface GameState {
   // --- race selection ---------------------------------------------------------
   /** False on a fresh game — shows the race selection screen before play begins. */
   raceConfirmed: boolean;
-  /** Which game mode this save belongs to. Story mode persists to its own slot (save.ts). */
-  mode: 'normal' | 'story';
-  /** Story mode: current chapter id ('' when not in a story run). */
-  storyChapter: string;
-  /** Story mode: cleared chapter ids. */
-  storyCleared: string[];
-  /** Story mode: campaign finished (final chapter cleared). */
-  storyEnded: boolean;
   /** Suppresses repeated "larder full" log spam — set when first notified, cleared when inventory drops below cap. */
   larderFullNotified?: boolean;
 
@@ -312,17 +269,16 @@ export interface GameState {
   sig: number;
   /** Slime elemental absorption — active element + remaining ticks (null = no absorb active). */
   sigAbsorb: { type: DamageType; ticks: number } | null;
+  /** Slime replicated race (GDD absorption & replication). */
+  replicatedRace?: string;
+  /** Decrements in combat, cocooning the enemy (Spider T10). */
+  enemyStunTicks?: number;
 
   // --- Human Path (Tier-0 LV10 specialisation) ------------------------------
   /** Chosen path id ('tank'|'mage'|'assassin'|'healer'); undefined until chosen. */
   humanPath?: string;
   /** True when the human player hit LV10 T0 and must choose a path before continuing. */
   pendingHumanPath: boolean;
-  /** How many evolution branches at the CURRENT node the player has already acknowledged via
-   *  "keep growing". Auto-tier-advance stops whenever more branches are open than this, so a
-   *  staggered node (e.g. demon_slime T5 shortcut vs T10 siblings) lets the player grab an early
-   *  branch OR climb past it. Reset to 0 on evolve / rebirth / race change. */
-  evolveAckCount: number;
 
   // --- Room progression (10-kill quota before advance) -----------------------
   /** Enemies killed in the current room; resets on room advance. */
@@ -341,8 +297,6 @@ export interface GameState {
   vitEnduranceXP: number;
   /** Permanent VIT bonus earned from Threshold Endurance this race life. Cap = tier × 2. Resets on race change. */
   vitEndurancePerm: number;
-  /** Permanent VIT a slime has absorbed (biomass growth). Cap = (tier+1) × 2. Resets on race change. */
-  absorbVit: number;
 
   // --- Yemek Ara (forage mechanic) -------------------------------------------
   /** Cooldown remaining in ms before the forage button is usable again (0 = ready). */
@@ -361,8 +315,6 @@ export interface GameState {
   totalSearchCount: number;
   /** Unlocked when totalSearchCount >= 100. Stays unlocked through rebirth. */
   autoSearchUnlocked: boolean;
-  /** Taboo rank 4 unlock: enemies are auto-appraised on encounter. */
-  autoAppraise: boolean;
   /** Auto-forage toggle (requires autoSearchUnlocked). */
   autoSearchFood: boolean;
   /** Auto-explore toggle (requires autoSearchUnlocked). */
@@ -373,62 +325,6 @@ export interface GameState {
   autoEventDecision: boolean;
   /** Puzzle behaviour when autoEventDecision is on: skip combat | solve (INT >= 100). */
   autoEventPuzzleMode: 'skip' | 'solve';
-  /** Moral encounter handling: 'ask' pauses for a choice; 'spare'/'devour' auto-resolve (so AFK play
-   *  never locks on the prompt). */
-  moralAutoMode: 'ask' | 'spare' | 'devour';
-
-  // --- EP Shop ----------------------------------------------------------------
-  /** How many stat points have been bought with EP this life (cost doubles each purchase; resets on rebirth). */
-  epStatsBought: number;
-  /** Active temporary buffs: buffId → real-time expiry timestamp (ms since epoch). */
-  tempBuffs: Record<string, number>;
-
-  // --- Save versiyonu -------------------------------------------------------
-  /** Incremented when the save schema changes; used by migrate() to patch old saves. */
-  saveVersion: number;
-
-  // --- İstatistik paneli ---------------------------------------------------
-  /** Non-idle ticks elapsed ≈ active seconds played. Never resets on rebirth. */
-  totalTicks: number;
-  /** Furthest layer/floor/room ever reached across all runs. Never resets. */
-  deepestLayer: number;
-  deepestFloor: number;
-  deepestRoom: number;
-  minions: {
-    dps: number;
-    tank: number;
-    utility: number;
-    tankHp: number;
-    tankMaxHp: number;
-  };
-
-  // --- Idle Web Hunting ---
-  webRoom: DungeonPos | null;
-  webTicks: number;
-  webAccEp: number;
-  webAccFood: FoodItem[];
-  webAccLoot: LootItem[];
-
-  // --- Evolution Mutations ---
-  mutations: string[];
-
-  // --- Rebirth Teachings ---
-  rebirthPerks: string[];
-  pendingRebirthPerk: boolean;
-  rebirthPerkChoices: string[];
-
-  // --- Auto-Combat Macros (QoL) ---
-  autoCombatConfig: AutoCombatConfig;
-
-  // --- Combat Analytics ---
-  combatAnalytics: CombatEncounterLog[];
-  /** Tracks in-progress fight stats (damage dealt, ticks, healed, etc.) */
-  combatTracker: { damage: number; ticks: number; healed: number; foodEaten: number; epStart: number } | null;
-
-  // --- Floating Combat Text queue (visual feedback) ---
-  floatingTexts: { text: string; color: string; target: 'player' | 'enemy'; ts: number }[];
-  /** Screen shake intensity (0 = none, decays each frame) */
-  screenShake: number;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -453,18 +349,9 @@ export function equipStatBonus(state: GameState): Record<StatKey, number> {
   return out;
 }
 
-/** Effective value of one stat = allocated base + equipment bonus + rebirth perks. */
+/** Effective value of one stat = allocated base + equipment bonus. */
 export function effStat(state: GameState, k: StatKey): number {
   let val = state.stats[k] + equipStatBonus(state)[k];
-  if (state.rebirthPerks) {
-    for (const p of state.rebirthPerks) {
-      if (p === 'lucky_charm' && k === 'LUCK') val += 1;
-      else if (p === 'brute_strength' && k === 'STR') val += 1;
-      else if (p === 'inner_peace' && k === 'WIS') val += 1;
-      else if (p === 'quick_feet' && k === 'AGI') val += 1;
-      else if (p === 'sharp_mind' && k === 'INT') val += 1;
-    }
-  }
   if (k === 'AGI' && state.raceId === 'beastkin' && state.hp < state.maxHp * 0.35) {
     val = Math.round(val * 1.4);
   }
@@ -474,27 +361,13 @@ export function effStat(state: GameState, k: StatKey): number {
 /** Recompute max HP/MP/SP from effective stats (base + equipment) and clamp current values. */
 export function recomputeMaxes(state: GameState): void {
   const effLvl = state.tier * LEVEL_CAP + state.level; // auto growth: a small max bump per level
-  const VIT = effStat(state, 'VIT');
-  const INT = effStat(state, 'INT');
-  const AGI = effStat(state, 'AGI');
+  const eq = equipStatBonus(state); // equipped gear feeds HP/MP/SP via its VIT/INT/AGI
+  const VIT = state.stats.VIT + eq.VIT;
+  const INT = state.stats.INT + eq.INT;
+  const AGI = state.stats.AGI + eq.AGI;
   state.maxHp = 20 + VIT * 4 + effLvl * 2; // VIT → HP (+2/level)
   state.maxMp = 10 + INT * 3 + effLvl; // INT → MP (+1/level)
   state.maxSp = 10 + VIT * 2 + AGI * 2 + effLvl; // grows with VIT/AGI (+1/level)
-
-  // Stat spec: VIT×1.5 maxHp, INT×1.5 maxMp — only when exactly one stat is at ≥100 allocated.
-  const _alloc = state.allocated ?? {};
-  const _specKeys = (Object.keys(_alloc) as StatKey[]).filter((k) => (_alloc[k] ?? 0) >= 100);
-  if (_specKeys.length === 1) {
-    if (_specKeys[0] === 'VIT') state.maxHp = Math.round(state.maxHp * 1.5);
-    if (_specKeys[0] === 'INT') state.maxMp = Math.round(state.maxMp * 1.5);
-  }
-
-  if (state.rebirthPerks) {
-    for (const p of state.rebirthPerks) {
-      if (p === 'vital_force') state.maxHp += 5;
-    }
-  }
-
   state.hp = Math.min(state.hp, state.maxHp);
   state.mp = Math.min(state.mp, state.maxMp);
   state.sp = Math.min(state.sp, state.maxSp);
@@ -515,21 +388,19 @@ export function newGame(): GameState {
     tier: 0,
     xp: 0,
     statPoints: 0,
-    evolveAckCount: 0,
     autosaveMin: 5,
     hunger: 0,
     inventory: [],
     ep: 0,
     pos: { layer: 1, floor: 1, room: 1 },
     raceId: 'spider',
-    formId: 'hatchling_spider',
+    formId: 'cave_spiderling',
     eyeAssignments: { e1: null }, // Appraisal is no longer free — it must be discovered, then slotted.
     action: 'idle',
     autoResume: false,
     mpTransferUnlocked: false,
     atkCd: 0,
     equipped: ['venom_bite', 'sharp_claw', 'silk_thread'],
-    loadouts: [],
     combatMode: 'auto',
     cooldowns: {},
     autoEat: true,
@@ -557,22 +428,7 @@ export function newGame(): GameState {
     lastSeen: Date.now(),
     difficulty: 'normal',
     permadeath: false,
-    modifierFreeRooms: false,
     hellClears: [],
-    achievements: [],
-    loreMasteries: [],
-    mode: 'normal',
-    storyChapter: '',
-    storyCleared: [],
-    storyEnded: false,
-    activeQuests: [],
-    questsDone: 0,
-    fusionCount: 0,
-    branchSwitchCount: 0,
-    deaths: 0,
-    racesPlayed: [],
-    gatekeepersByRace: [],
-    treesCompleted: [],
     rebirthCount: 0,
     unlocks: [],
     kills: 0,
@@ -615,48 +471,17 @@ export function newGame(): GameState {
     nearDeathCount: 0,
     vitEnduranceXP: 0,
     vitEndurancePerm: 0,
-    absorbVit: 0,
     forageCD: 0,
     pendingForage: null,
     tutorialStep: 0,
     seenHints: [],
     totalSearchCount: 0,
     autoSearchUnlocked: false,
-    autoAppraise: false,
     autoSearchFood: false,
     autoSearchExplore: false,
     searchCD: 0,
     autoEventDecision: false,
     autoEventPuzzleMode: 'skip',
-    moralAutoMode: 'ask',
-    epStatsBought: 0,
-    tempBuffs: {},
-    saveVersion: 1,
-    totalTicks: 0,
-    deepestLayer: 1,
-    deepestFloor: 1,
-    deepestRoom: 1,
-    minions: {
-      dps: 0,
-      tank: 0,
-      utility: 0,
-      tankHp: 0,
-      tankMaxHp: 0,
-    },
-    webRoom: null,
-    webTicks: 0,
-    webAccEp: 0,
-    webAccFood: [],
-    webAccLoot: [],
-    mutations: [],
-    rebirthPerks: [],
-    pendingRebirthPerk: false,
-    rebirthPerkChoices: [],
-    autoCombatConfig: defaultAutoCombatConfig(),
-    combatAnalytics: [],
-    combatTracker: null,
-    floatingTexts: [],
-    screenShake: 0,
     spiderlings: 0,
     enemyStunTicks: 0,
   };

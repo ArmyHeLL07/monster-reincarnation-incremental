@@ -1,4 +1,4 @@
-import type { DamageType } from '@mri/shared';
+﻿import type { DamageType } from '@mri/shared';
 import type { GameState } from './state';
 
 /** Maximum of the numeric signature gauge per race. 0 = race uses sigAbsorb or no gauge. */
@@ -9,8 +9,8 @@ export const SIG_MAX: Record<string, number> = {
   golem: 5,      // stone layers (float 0–5): build at rest, ALL layers absorb the next hit then reset
   slime: 0,      // uses sigAbsorb: absorbs the element of the last killed enemy (temp resistance)
   human: 0,      // no gauge — humanoid equipment access is their signature advantage
-  beastkin: 10,  // fury stacks: +2 per kill, decay at rest; each stack = +5% damage
   demon: 0,
+  beastkin: 0,
 };
 
 const GOLEM_BUILD_RATE = 1 / 60; // one full stone layer per 60 rest ticks (~1 min)
@@ -39,10 +39,6 @@ export function sigRestTick(state: GameState): void {
         state.sigAbsorb.ticks -= 1;
         if (state.sigAbsorb.ticks <= 0) state.sigAbsorb = null;
       }
-      break;
-    case 'beastkin':
-      // Resting calms the fury — lose 1 stack per rest tick
-      if (sigCur(state) > 0) state.sig = Math.max(0, sigCur(state) - 1);
       break;
   }
 }
@@ -79,30 +75,18 @@ export function sigOnKill(state: GameState, enemyDmgType: DamageType): void {
       // Pulverising an enemy rewards a sliver of stone
       state.sig = Math.min(SIG_MAX.golem ?? 5, sigCur(state) + 0.1);
       break;
-    case 'beastkin':
-      // Blood frenzy: each kill builds 2 fury stacks (max 10)
-      state.sig = Math.min(SIG_MAX.beastkin ?? 10, sigCur(state) + 2);
-      break;
   }
 }
 
 /**
- * Called at COMBAT START (each enemy spawn) — spider discharges web gauge;
- * beastkin at max fury lunges for a burst strike without consuming stacks.
- * Returns bonus trap/lunge damage to apply to the freshly spawned enemy.
+ * Called at COMBAT START (each enemy spawn) — spider discharges web gauge.
+ * Returns bonus trap damage to apply to the freshly spawned enemy.
  */
 export function sigCombatStart(state: GameState): number {
-  if (effectiveRace(state) === 'spider') {
-    if (sigCur(state) <= 0) return 0;
-    const dmg = Math.round((sigCur(state) / 100) * (state.stats.STR * 2 + state.level));
-    state.sig = 0; // web discharged
-    return dmg;
-  }
-  if (effectiveRace(state) === 'beastkin' && sigCur(state) >= (SIG_MAX.beastkin ?? 10)) {
-    // Full fury — opening lunge burst (stacks are NOT consumed, just a bonus)
-    return Math.round(state.stats.STR * 1.5 + state.level);
-  }
-  return 0;
+  if (effectiveRace(state) !== 'spider' || sigCur(state) <= 0) return 0;
+  const dmg = Math.round((sigCur(state) / 100) * (state.stats.STR * 2 + state.level));
+  state.sig = 0; // web discharged
+  return dmg;
 }
 
 /**
