@@ -1,7 +1,11 @@
 # 🕷️ Monster Reincarnation — Incremental
 
 > A *kill → skill → evolve → reincarnate* idle/incremental game where **knowledge is survival power**.
-> Inspired by the *spider reincarnation* premise — all names original and copyright-safe.
+>
+> **The spark:** inspired by *I'm a Spider, So What?* (*Kumo Desu ga, Nani ka?*) — specifically the
+> idea that **the damage you survive makes you stronger** (take fire damage → build fire resistance →
+> eventually nullify it). I looked for an idle game built around that loop and never found one, so we
+> made it. Names and content are all original and copyright-safe; the anime is just the spark.
 
 ## ▶ Play — free, in your browser (no install)
 
