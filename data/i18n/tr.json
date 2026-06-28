@@ -1598,6 +1598,7 @@
   "sig.slime_hint": "{elem} hasarına %30 direnç",
   "sig.golem_hint": "Vurulunca {absorb} hasar taş zırhla emilir",
   "dmgtype.petrify": "taşlaşma",
+  "log.demon_blood_pact": "🩸 Kan Paktı: büyüyü beslemek için {hp} HP çekildi",
   "dmgtype.stun": "sersemletme",
   "res.petrify_res.name": "Taşlaşma Direnci",
   "res.stun_res.name": "Sersemletme Direnci",

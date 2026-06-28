@@ -1598,6 +1598,7 @@
   "sig.slime_hint": "30% сопротивления урону ({elem})",
   "sig.golem_hint": "Поглощает {absorb} урона каменной кожей при ударе",
   "dmgtype.petrify": "окаменение",
+  "log.demon_blood_pact": "🩸 Кровавый пакт: для заклинания взято {hp} HP",
   "dmgtype.stun": "оглушение",
   "res.petrify_res.name": "Сопротивление окаменению",
   "res.stun_res.name": "Сопротивление оглушению",

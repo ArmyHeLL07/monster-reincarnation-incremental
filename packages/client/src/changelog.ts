@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.11';
+export const VERSION = '1.23.12';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.12',
+    date: '2026-06-28',
+    tr: [
+      'feat: Şeytan "Kan Paktı" — MP yetmeyince eksik kısım HP\'den karşılanır, büyü iptal olmaz; Golem "Sarsılmaz Çekirdek" — tam taş katmanıyla kontrol (CC) etkilerine bağışıklık',
+      'fix: Eksik çeviriler tamamlandı (Kan Paktı mesajı TR/RU)',
+    ],
+    en: [
+      'feat: Demon "Blood Pact" — when MP runs short the shortfall is paid from HP, so the cast still fires; Golem "Unmovable Core" — a full stone layer grants immunity to control (CC) effects',
+      'fix: Completed missing translations (Blood Pact message in TR/RU)',
+    ],
+    ru: [
+      'feat: Демон «Кровавый пакт» — при нехватке MP недостаток берётся из HP, заклинание не отменяется; Голем «Незыблемое ядро» — полный каменный слой даёт иммунитет к контролю (CC)',
+      'fix: Добавлены недостающие переводы (сообщение Кровавого пакта на TR/RU)',
+    ],
+  },
   {
     v: '1.23.11',
     date: '2026-06-28',
