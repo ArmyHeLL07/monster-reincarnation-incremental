@@ -2,6 +2,9 @@ import type { Content } from './content';
 import type { GameState } from './state';
 import { recomputeMaxes } from './state';
 
+/** Races with complete content (lore, etc.). The rest are placeholders — shown but locked in the picker until finished. */
+export const OFFICIAL_RACES = new Set(['spider', 'human', 'slime', 'skeleton', 'wyrmling', 'golem']);
+
 /**
  * Apply race-specific starting configuration to an existing state (for race selection and rebirth).
  * Sets raceId, formId, starting skills, resistances, and eye assignment slots.

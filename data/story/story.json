@@ -3,8 +3,8 @@
     {
       "id": "ch_forest",
       "order": 1,
-      "areaEnemyPool": ["cave_pest", "venom_toad", "ember_crawler"],
-      "bossId": "venom_brute",
+      "areaEnemyPool": ["elroe_frog", "elroe_geafrog", "small_lesser_taratect", "small_poison_taratect"],
+      "bossId": "lesser_taratect",
       "levelHint": 3,
       "rewards": { "ep": 50, "statPoints": 2 },
       "nextChapter": ""

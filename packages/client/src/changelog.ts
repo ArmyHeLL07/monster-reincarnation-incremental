@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.8';
+export const VERSION = '1.23.9';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.9',
+    date: '2026-06-28',
+    tr: [
+      'fix: Hikaye Modu savaşı düzeltildi — Orman bölümü var olmayan düşmanları çağırıyordu; gerçek düşmanlarla değiştirildi',
+      'fix: Eksik çeviriler eklendi — rüzgâr/toprak/karanlık/ışık direnç adları + birkaç UI etiketi (3 dil) artık ham anahtar yerine düzgün metin',
+      'feat: Henüz tamamlanmamış ırklar (beastman/vampire/lycan/fiend/celestial) listede 🔒 kilitli gösteriliyor — içerikleri hazır olunca açılacak',
+    ],
+    en: [
+      'fix: Story Mode combat fixed — the Forest chapter referenced enemies that did not exist; replaced with real ones',
+      'fix: Added missing translations — wind/earth/dark/light resistance names + a couple of UI labels (3 languages) now show proper text instead of raw keys',
+      'feat: Unfinished races (beastman/vampire/lycan/fiend/celestial) now appear 🔒 locked in the picker — they unlock once their content is ready',
+    ],
+    ru: [
+      'fix: Бой в Сюжетном режиме исправлен — глава «Лес» ссылалась на несуществующих врагов; заменены на реальных',
+      'fix: Добавлены недостающие переводы — названия сопротивлений ветру/земле/тьме/свету + пара UI-меток (3 языка) теперь корректны',
+      'feat: Незавершённые расы (beastman/vampire/lycan/fiend/celestial) теперь показаны 🔒 заблокированными — откроются, когда будет готов контент',
+    ],
+  },
   {
     v: '1.23.8',
     date: '2026-06-28',

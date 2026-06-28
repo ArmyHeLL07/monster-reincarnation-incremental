@@ -5,7 +5,7 @@ import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
 import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, abandonRiddleForBoss, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
-import { applyRace } from './game/race';
+import { applyRace, OFFICIAL_RACES } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
@@ -359,6 +359,7 @@ async function init(): Promise<void> {
       render(state);
     },
     onSelectRace: (raceId) => {
+      if (!OFFICIAL_RACES.has(raceId)) return; // unofficial races are locked until their content is ready
       if (state.kills > 0 || state.tier > 0 || state.level > 1) return; // race locked after first kill
       applyRace(state, raceId, content);
       state.raceConfirmed = true;

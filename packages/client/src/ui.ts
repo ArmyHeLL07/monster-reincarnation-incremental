@@ -18,6 +18,7 @@ import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/in
 import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS, RIDDLE_INT_SOLVE } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
+import { OFFICIAL_RACES } from './game/race';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
 import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
@@ -2834,6 +2835,7 @@ function raceSelectScreen(state: GameState): string {
   const raceCards = [...CONTENT.races.values()]
     .map((r) => {
       const active = r.id === state.raceId;
+      const locked = !OFFICIAL_RACES.has(r.id);
       const eyeCount = r.head.eyes.length;
       const startSkillNames = (r.startSkills ?? [])
         .map((id) => {
@@ -2844,11 +2846,12 @@ function raceSelectScreen(state: GameState): string {
       // The race's own portrait fills the card behind a dark gradient (keeps text legible).
       const bg = `linear-gradient(180deg, rgba(14,12,20,0.15) 0%, rgba(14,12,20,0.55) 55%, rgba(14,12,20,0.92) 100%), url('${assetUrl(`races/${r.id}.png`)}')`;
       return `
-        <button class="race-card${active ? ' race-card-active' : ''}" data-race="${r.id}" style="background-image:${bg}">
+        <button class="race-card${active ? ' race-card-active' : ''}${locked ? ' race-card-locked' : ''}"${locked ? ' disabled' : ` data-race="${r.id}"`} style="background-image:${bg}${locked ? ';filter:grayscale(0.75) brightness(0.55)' : ''}">
+          ${locked ? `<div style="position:absolute;top:0.4rem;right:0.5rem;font-size:0.7rem;background:rgba(0,0,0,0.65);border-radius:6px;padding:0.12rem 0.45rem;color:var(--ash)">🔒 ${t('ui.race_locked')}</div>` : ''}
           <div class="race-card-name">${t(r.locKey)}</div>
           <div class="muted">${t('ui.eyes')}: ${eyeCount}</div>
-          ${startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
-          ${raceHintPanel(r.id, state.lang ?? 'en')}
+          ${locked ? '' : startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
+          ${locked ? '' : raceHintPanel(r.id, state.lang ?? 'en')}
         </button>`;
     })
     .join('');
@@ -2937,7 +2940,8 @@ function racePanel(state: GameState): string {
     ? [...CONTENT.races.values()]
         .map((r) => {
           const active = r.id === state.raceId;
-          return `<button class="racepick${active ? ' active' : ''}" data-race="${r.id}">${t(r.locKey)}</button>`;
+          const locked = !OFFICIAL_RACES.has(r.id);
+          return `<button class="racepick${active ? ' active' : ''}"${locked ? ' disabled' : ` data-race="${r.id}"`}>${t(r.locKey)}${locked ? ' 🔒' : ''}</button>`;
         })
         .join('')
     : '';
