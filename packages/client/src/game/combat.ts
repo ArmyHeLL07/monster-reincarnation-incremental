@@ -29,6 +29,8 @@ import { search, SEARCH_SP_COST } from './discovery';
 import { diffDef } from './difficulty';
 import { sigRestTick, sigCombatTick, sigOnKill, sigCombatStart, sigOnAttack, sigStoneAbsorb, sigSlimeResist } from './signature';
 import { soulLevel } from './soul';
+import { tickAutoHeal } from './autocombat';
+import { recordEncounter, type CombatEncounterLog } from './analytics';
 
 type Log = (e: LogEvent) => void;
 
@@ -197,6 +199,10 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     if (hungerStage(state) >= 3) {
       state.hp = Math.max(0, state.hp - 1); // starvation
       if (state.hp <= 0) onDeath(state, content, log, b);
+    // --- Auto-heal macro (QoL: auto-eat when HP drops below threshold) ---
+    if (state.hp > 0) {
+      tickAutoHeal(state, (key, params) => log({ key, params }));
+    }
     }
   } else {
     restRound(state, content, log);
@@ -472,6 +478,8 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   applyAmbient(state, content, log); // environmental burn (elemental layers only)
   applyRoomModifierTick(state, content, log); // per-room modifier passive drain
   applyRoomHazardTick(state, log); // passive room hazard drain
+  // --- Tick combat tracker for analytics ---
+  if (state.combatTracker) state.combatTracker.ticks++;
   if (state.hp <= 0) {
     onDeath(state, content, log, b);
     return;
@@ -677,7 +685,14 @@ function passiveHpRegen(state: GameState, content: Content): number {
 function applyCombatRegen(state: GameState, content: Content, b: Bonuses): void {
   const hp = passiveHpRegen(state, content) * b.regenMult;
   if (hp > 0 && state.hp < state.maxHp) {
-    state.hp = Math.min(state.maxHp, state.hp + Math.round(hp * regenMult(state)));
+    const healVal = Math.round(hp * regenMult(state));
+    const finalHeal = Math.min(state.maxHp - state.hp, healVal);
+    if (finalHeal > 0) {
+      state.hp += finalHeal;
+      if (!state.floatingTexts) state.floatingTexts = [];
+      state.floatingTexts.push({ text: `+${finalHeal}`, color: 'green', target: 'player', ts: Date.now() });
+      if (state.combatTracker) state.combatTracker.healed += finalHeal;
+    }
   }
 }
 
@@ -988,6 +1003,8 @@ function spawnEnemy(state: GameState, content: Content, log: Log): void {
     state.enemy.hp = Math.max(1, state.enemy.hp - webDmg);
     log({ key: 'log.sig_web_trap', params: { dmg: webDmg } });
   }
+  // --- Initialize combat tracker for analytics ---
+  state.combatTracker = { damage: 0, ticks: 0, healed: 0, foodEaten: 0, epStart: state.ep };
 }
 
 /** Event outcome: start a specific (non-boss) enemy in this room. */
@@ -1152,13 +1169,38 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
 
   let dmg = Math.max(1, Math.round(raw * damageMult(state)) - state.scars);
   if (enemy.behavior?.armorPct) dmg = Math.max(1, Math.round(dmg * (1 - enemy.behavior.armorPct))); // armoured hide
+
+  // --- Critical Hit Logic (QoL/R3) ---
+  const isCrit = Math.random() < Math.min(0.5, 0.05 + effStat(state, 'LUCK') * 0.01);
+  if (isCrit) {
+    dmg = Math.round(dmg * 1.5);
+    state.screenShake = 15; // Trigger screen shake
+  }
+
   enemy.hp -= dmg;
-  log({ key: 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
+  log({ key: isCrit ? 'log.attack_crit' : 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
+
+  // --- Add floating combat text ---
+  if (!state.floatingTexts) state.floatingTexts = [];
+  state.floatingTexts.push({
+    text: isCrit ? `CRIT! ${dmg}` : `${dmg}`,
+    color: isCrit ? 'orange' : (def.damageType === 'poison' ? 'yellow' : 'white'),
+    target: 'enemy',
+    ts: Date.now()
+  });
+
+  // --- Track damage for analytics ---
+  if (state.combatTracker) {
+    state.combatTracker.damage += dmg;
+  }
+
   // Wyrmling heat: each attack builds heat; at max the built-up energy releases as a bonus fire burst.
   const breathDmg = sigOnAttack(state);
   if (breathDmg > 0 && enemy.hp > 0) {
     enemy.hp = Math.max(0, enemy.hp - breathDmg);
     log({ key: 'log.sig_heat_breath', params: { dmg: breathDmg } });
+    state.floatingTexts.push({ text: `${breathDmg}`, color: 'red', target: 'enemy', ts: Date.now() });
+    if (state.combatTracker) state.combatTracker.damage += breathDmg;
   }
   if (!ignoreCd) state.cooldowns[id] = skillCooldown(def, state, slot.level);
 
@@ -1176,6 +1218,9 @@ function fireGaze(state: GameState, content: Content, log: Log): void {
     state.mp -= gz.mpCost;
     enemy.hp -= gz.damage;
     log({ key: 'log.gaze_hit', params: { dmg: gz.damage } });
+    if (!state.floatingTexts) state.floatingTexts = [];
+    state.floatingTexts.push({ text: `${gz.damage}`, color: 'cyan', target: 'enemy', ts: Date.now() });
+    if (state.combatTracker) state.combatTracker.damage += gz.damage;
   }
 }
 
@@ -1365,8 +1410,11 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
     }
   }
   state.hp = Math.max(0, state.hp - totalTaken);
+  if (!state.floatingTexts) state.floatingTexts = [];
+  state.floatingTexts.push({ text: `-${totalTaken}`, color: 'red', target: 'player', ts: Date.now() });
   if (enemy.behavior?.lifesteal && totalTaken > 0) {
     enemy.hp = Math.min(enemy.maxHp, enemy.hp + Math.round(totalTaken * enemy.behavior.lifesteal)); // drains your blood
+    state.floatingTexts.push({ text: `+${Math.round(totalTaken * enemy.behavior.lifesteal)}`, color: 'green', target: 'enemy', ts: Date.now() });
   }
   state.lastHit = { enemyKey: enemy.locKey, type: enemy.damageType };
   log({ key: 'log.hit', params: { enemy: enemy.locKey, dmg: totalTaken, type: dmgTypeKey(enemy.damageType) } });
@@ -1710,6 +1758,21 @@ function onKill(state: GameState, content: Content, log: Log, b: Bonuses, isOffl
   state.kills += 1;
   state.killedEnemies = state.killedEnemies ?? {};
   state.killedEnemies[enemy.id] = (state.killedEnemies[enemy.id] ?? 0) + 1;
+  // --- Record combat analytics ---
+  if (state.combatTracker) {
+    const tracker = state.combatTracker;
+    const encounter: CombatEncounterLog = {
+      enemyId: enemy.id,
+      totalDamage: tracker.damage,
+      durationTicks: tracker.ticks,
+      epGained: ep,
+      hpHealed: tracker.healed,
+      foodConsumed: tracker.foodEaten,
+      timestamp: Date.now(),
+    };
+    recordEncounter(state, encounter);
+    state.combatTracker = null;
+  }
   sigOnKill(state, enemy.damageType);
   // Harvest Festival (easter egg): a slime that has reaped enough souls awakens a hidden path.
   if (state.kills === SECRET_HARVEST_SOULS && state.raceId === 'slime') log({ key: 'log.harvest_festival' });

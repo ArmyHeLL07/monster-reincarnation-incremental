@@ -5,7 +5,7 @@ import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
 import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
-import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
+import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
 import { equipSetTier, specStat } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
 import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
@@ -22,6 +22,7 @@ import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
 import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
 import { diffDef } from './game/difficulty';
+import { computeAnalyticsSummary } from './game/analytics';
 import { t, tmsg } from './i18n';
 import { VERSION, CHANGELOG } from './changelog';
 import { TUTORIAL_STEPS, HINT_DEFS, shouldShowHint, markHintSeen, type TutorialStep } from './tutorial';
@@ -113,6 +114,9 @@ export interface UiActions {
   onSpinWeb(): void;
   onCollectWeb(): void;
   onChooseRebirthPerk(perkId: string): void;
+  onToggleAutoCastSkills?: () => void;
+  onToggleAutoHeal?: () => void;
+  onSetAutoHealThreshold?: (val: number) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
@@ -320,6 +324,8 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
       <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
+      <!-- Floating damage text overlay layer -->
+      <div id="damage-text-layer" style="position:fixed; inset:0; pointer-events:none; z-index:99999;"></div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
@@ -380,11 +386,65 @@ function structureSig(state: GameState): string {
   ].join('|');
 }
 
+function spawnFloatingText(text: string, color: string, target: 'player' | 'enemy'): void {
+  const layer = document.querySelector<HTMLElement>('#damage-text-layer');
+  if (!layer) return;
+
+  let targetEl: HTMLElement | null = null;
+  if (target === 'player') {
+    targetEl = document.querySelector<HTMLElement>('#ministatus') || document.querySelector<HTMLElement>('#topbar');
+  } else {
+    targetEl = document.querySelector<HTMLElement>('.enemy-panel');
+  }
+
+  if (!targetEl) return;
+  const rect = targetEl.getBoundingClientRect();
+  const x = rect.left + rect.width / 2 + (Math.random() - 0.5) * 40;
+  const y = rect.top + rect.height / 2 + (Math.random() - 0.5) * 20;
+
+  const el = document.createElement('div');
+  el.className = 'floating-damage-text';
+  el.style.position = 'fixed';
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.style.color = color;
+  el.style.pointerEvents = 'none';
+  el.style.fontWeight = 'bold';
+  el.style.fontSize = '1.6rem';
+  el.style.fontFamily = 'var(--disp), sans-serif';
+  el.style.zIndex = '99999';
+  el.style.textShadow = '1px 1px 3px black, -1px -1px 3px black';
+  el.style.whiteSpace = 'nowrap';
+  el.textContent = text;
+
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
 /** Per-tick light update: top bar + mini HUD (smooth bars), logs, and the active tab. */
 export function live(state: GameState): void {
   CURSTATE = state;
   syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
   syncLoreMasteryFx(state); // …and for any racial lore-mastery passive earned this tick
+
+  // --- Render floating combat texts (QoL/R3) ---
+  if (state.floatingTexts && state.floatingTexts.length > 0) {
+    for (const f of state.floatingTexts) {
+      spawnFloatingText(f.text, f.color, f.target);
+    }
+    state.floatingTexts = []; // clear queue
+  }
+
+  // --- Screen Shake (QoL/R3) ---
+  if (state.screenShake > 0) {
+    const gameEl = document.querySelector<HTMLElement>('.game');
+    if (gameEl) {
+      gameEl.classList.remove('shake');
+      void gameEl.offsetWidth; // trigger reflow
+      gameEl.classList.add('shake');
+    }
+    state.screenShake = 0; // reset
+  }
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) {
     if (!top.firstElementChild) {
@@ -810,6 +870,9 @@ function renderItemDetail(state: GameState): string {
     );
     reqLine = `<div class="it-req"><span class="muted">${t('ui.it_req')}:</span> ${parts.join(' · ')}</div>`;
   }
+  const score = itemScore(it);
+  const scoreLine = `<div class="it-score" style="font-size:0.85rem; margin-top:0.4rem; color:var(--ember); font-weight:bold;">${t('ui.power_score')}: ${Math.round(score)}</div>`;
+
   const fCost = forgeCost(it);
   const actions = bagItem
     ? `<button class="it-equip" data-uid="${it.uid}"${canEquip(state, it) ? '' : ' disabled'}>${t('ui.equip')}</button>
@@ -818,6 +881,7 @@ function renderItemDetail(state: GameState): string {
     : `<button class="it-unequip" data-slot="${equippedSlot}">${t('ui.unequip')}</button>`;
   return `<section class="panel it-detail r-${it.rarity}">
     <div class="row"><span class="it-name r-${it.rarity}">${it.icon} ${lootDisplayName(it)}</span><span class="muted">${t(`rarity.${it.rarity}`)} · ${t(`slot.${it.type === 'accessory' ? 'acc1' : it.type}`)}</span></div>
+    ${scoreLine}
     <ul class="it-stats">${lines}</ul>${reqLine}${compare}
     <div class="controls">${actions}</div></section>`;
 }
@@ -833,16 +897,38 @@ function inventoryTab(state: GameState): string {
   const slotCell = (slot: EquipSlot): string => {
     const it = state.equipment[slot];
     if (!it) return `<div class="eq-slot empty" data-eqslot="${slot}"><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
-    return `<div class="eq-slot r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-eqslot="${slot}" data-uid="${it.uid}" title="${lootDisplayName(it)}">
+    return `<div class="eq-slot r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-eqslot="${slot}" data-uid="${it.uid}" title="${lootDisplayName(it)} (${t('ui.power_score')}: ${Math.round(itemScore(it))})">
       <span class="eq-ic">${it.icon}</span><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
   };
   const doll = `<div class="paperdoll">${EQUIP_SLOTS.map(slotCell).join('')}</div>`;
   const sorted = [...state.inventoryItems].sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity));
   const bag = sorted.length
-    ? sorted.map((it) => `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)}">${it.icon}</button>`).join('')
+    ? sorted.map((it) => {
+        // Calculate power score comparison with equipped item
+        let slot: EquipSlot = it.type as EquipSlot;
+        if (it.type === 'accessory') {
+          const acc1 = state.equipment.acc1;
+          const acc2 = state.equipment.acc2;
+          const s1 = acc1 ? itemScore(acc1) : 0;
+          const s2 = acc2 ? itemScore(acc2) : 0;
+          slot = s1 <= s2 ? 'acc1' : 'acc2';
+        }
+        const equipped = state.equipment[slot];
+        const eqScore = equipped ? itemScore(equipped) : 0;
+        const score = itemScore(it);
+        let badge = '';
+        if (eqScore > 0) {
+          const diff = Math.round(((score - eqScore) / eqScore) * 100);
+          const color = diff >= 0 ? '#4caf50' : '#bb4140';
+          badge = `<span style="font-size:0.75rem; color:${color}; font-weight:bold; margin-left:0.35rem;">(${diff >= 0 ? '+' : ''}${diff}%)</span>`;
+        } else {
+          badge = `<span style="font-size:0.75rem; color:#4caf50; font-weight:bold; margin-left:0.35rem;">(New)</span>`;
+        }
+        return `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)} (${t('ui.power_score')}: ${Math.round(score)})">${it.icon}${badge}</button>`;
+      }).join('')
     : `<p class="muted">${t('ui.bag_empty')}</p>`;
   const toolbar = `<div class="controls" style="margin:.2rem 0 0">
-      <button class="inv-auto ghost">${t('ui.auto_equip')}</button>
+      <button class="inv-auto ghost">${t('ui.equip_best')}</button>
       <button class="inv-scrap ghost">${t('ui.scrap_common')}</button>
     </div>`;
   return `
@@ -1295,6 +1381,31 @@ function evolveBannerHtml(state: GameState): string {
   </section>`;
 }
 
+function autoCombatPanel(state: GameState): string {
+  const cfg = state.autoCombatConfig || { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+  return `
+    <section class="panel autocombat-panel" style="border-color:var(--chitin);">
+      <h2>⚔ ${t('ui.autocombat_title')}</h2>
+      <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
+        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <input type="checkbox" id="ac-cast" ${cfg.autoCastSkills ? 'checked' : ''} />
+          <span>${t('ui.autocombat_cast')}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <input type="checkbox" id="ac-heal" ${cfg.autoHealEnabled ? 'checked' : ''} />
+          <span>${t('ui.autocombat_heal')}</span>
+        </label>
+        ${cfg.autoHealEnabled ? `
+        <div style="display:flex; align-items:center; gap:0.8rem; margin-left:1.5rem;">
+          <span>${t('ui.autocombat_threshold')}:</span>
+          <input type="range" id="ac-threshold" min="10" max="90" step="5" value="${Math.round(cfg.autoHealThreshold * 100)}" style="flex:1;" />
+          <span style="font-family:var(--mono); min-width:2.5rem; text-align:right;">%${Math.round(cfg.autoHealThreshold * 100)}</span>
+        </div>` : ''}
+      </div>
+    </section>
+  `;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -1374,6 +1485,7 @@ function combatTab(state: GameState): string {
     </div>
     ${foragePanel(state)}
     ${webPanel(state)}
+    ${autoCombatPanel(state)}
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
       <ul>${resists}</ul>
@@ -1480,6 +1592,18 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => { const f = b.getAttribute('data-form'); if (f) ACTIONS.onEvolve(f); });
   });
   el.querySelector<HTMLButtonElement>('#keep-grow')?.addEventListener('click', ACTIONS.onKeepGrow);
+
+  // --- Auto-Combat Macros event listeners (QoL/R2) ---
+  el.querySelector<HTMLInputElement>('#ac-cast')?.addEventListener('change', () => {
+    ACTIONS.onToggleAutoCastSkills?.();
+  });
+  el.querySelector<HTMLInputElement>('#ac-heal')?.addEventListener('change', () => {
+    ACTIONS.onToggleAutoHeal?.();
+  });
+  el.querySelector<HTMLInputElement>('#ac-threshold')?.addEventListener('input', (e) => {
+    const val = Number((e.target as HTMLInputElement).value);
+    ACTIONS.onSetAutoHealThreshold?.(val);
+  });
 }
 
 // ---- MAP -------------------------------------------------------------------
@@ -2468,6 +2592,38 @@ function specBuffPanel(state: GameState): string {
   return `<p style="font-size:.82rem;margin:.35rem 0 0;color:${colour}">${icon} ${t('ui.spec_buff')}: <b>${label}</b></p>`;
 }
 
+function analyticsPanel(state: GameState): string {
+  const summary = computeAnalyticsSummary(state);
+  if (summary.totalEncounters === 0) {
+    return `
+      <section class="panel">
+        <h2>📊 ${t('ui.analytics_title')}</h2>
+        <p class="muted" style="margin:0.5rem 0 0;">${t('ui.analytics_none')}</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="panel">
+      <h2>📊 ${t('ui.analytics_title')}</h2>
+      <div style="display:flex; flex-direction:column; gap:0.4rem; margin-top:0.5rem; font-size:0.85rem;">
+        <div class="row">
+          <span class="muted">${t('ui.analytics_dps')}</span>
+          <b style="font-family:var(--mono); color:#e0902f;">${summary.avgDps}</b>
+        </div>
+        <div class="row">
+          <span class="muted">${t('ui.analytics_ep')}</span>
+          <b style="font-family:var(--mono); color:#bb4140;">${summary.avgEpPerSec}</b>
+        </div>
+        <div class="row">
+          <span class="muted">${t('ui.analytics_regen')}</span>
+          <b style="font-family:var(--mono); color:#6fae53;">${summary.avgRegenEfficiency}</b>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
@@ -2489,6 +2645,7 @@ function statsTab(state: GameState): string {
     ${epShopPanel(state)}
     ${questsPanel(state)}
     ${statisticsPanel(state)}
+    ${analyticsPanel(state)}
     ${achievementsPanel(state)}
     ${minionPanel(state)}
     ${mutationsPanel(state)}

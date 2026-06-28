@@ -291,6 +291,24 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onToggleAutoCastSkills: () => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoCastSkills = !state.autoCombatConfig.autoCastSkills;
+      save(state);
+      render(state);
+    },
+    onToggleAutoHeal: () => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoHealEnabled = !state.autoCombatConfig.autoHealEnabled;
+      save(state);
+      render(state);
+    },
+    onSetAutoHealThreshold: (val) => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoHealThreshold = val / 100;
+      save(state);
+      render(state);
+    },
     onCourtDeath: () => {
       courtDeath(state, content, logFn);
       save(state);

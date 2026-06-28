@@ -1,4 +1,7 @@
 import type { StatKey, FusionResult, ComboAttempt, EyeMode, DamageType, Difficulty, LootItem, EquipSlot, EnemyBehavior } from '@mri/shared';
+import type { AutoCombatConfig } from './autocombat';
+import { defaultAutoCombatConfig } from './autocombat';
+import type { CombatEncounterLog } from './analytics';
 
 /** Bag capacity for humanoid races (slot-based; materials/stacks are a future extension). */
 export const MAX_INVENTORY = 20;
@@ -407,6 +410,19 @@ export interface GameState {
   rebirthPerks: string[];
   pendingRebirthPerk: boolean;
   rebirthPerkChoices: string[];
+
+  // --- Auto-Combat Macros (QoL) ---
+  autoCombatConfig: AutoCombatConfig;
+
+  // --- Combat Analytics ---
+  combatAnalytics: CombatEncounterLog[];
+  /** Tracks in-progress fight stats (damage dealt, ticks, healed, etc.) */
+  combatTracker: { damage: number; ticks: number; healed: number; foodEaten: number; epStart: number } | null;
+
+  // --- Floating Combat Text queue (visual feedback) ---
+  floatingTexts: { text: string; color: string; target: 'player' | 'enemy'; ts: number }[];
+  /** Screen shake intensity (0 = none, decays each frame) */
+  screenShake: number;
 }
 
 /** lvLabel localization key reused across log lines. */
@@ -627,6 +643,11 @@ export function newGame(): GameState {
     rebirthPerks: [],
     pendingRebirthPerk: false,
     rebirthPerkChoices: [],
+    autoCombatConfig: defaultAutoCombatConfig(),
+    combatAnalytics: [],
+    combatTracker: null,
+    floatingTexts: [],
+    screenShake: 0,
   };
   recomputeMaxes(state);
   state.hp = state.maxHp;
