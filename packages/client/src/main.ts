@@ -31,11 +31,13 @@ async function init(): Promise<void> {
   await loadI18n(base, lang);
   await loadLangContent(base, lang); // native riddles + lore for this language
   const content = await loadContent(base);
+  // Register fused skills FIRST so repairSave/ensureEquipped recognize them — otherwise
+  // ensureEquipped pruned equipped fusion skills on every load (they weren't in content yet).
+  for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
   recomputeMaxes(state);
   repairSave(state, content); // content-aware fixes (dedupe skill lineages, remap removed forms) — BEFORE offline
   ensureLayerRooms(state, content); // roll this player's random rooms-per-floor once
   ensureEquipped(state, content); // backfill the equipped loadout from owned active skills
-  for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
 
   function logFn(e: LogEvent): void {
     pushLog(e.key, e.params);

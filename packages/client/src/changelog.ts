@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.1';
+export const VERSION = '1.23.2';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.2',
+    date: '2026-06-28',
+    tr: [
+      'fix: Fusion skill\'leri yeniden yükleme sonrası equipped\'ten düşüyordu — açılışta fused skill\'ler content\'e kaydedilmeden önce equipped süzülüyordu (boot sırası). Artık kayıt önce yapılıyor; fusion skill\'lerin equipped kalır',
+      'fix: Aynı-element füzyonları hep "Reinforced" adıyla çıkıyordu (birden çok aynı isimli skill) — artık her birine benzersiz isim verilir (▲ synergy tipi korunur)',
+      'fix: Raphael füzyon önerileri aynı sonucu birden çok kombodan öneriyordu (ör. iki farklı kombo → envenom pierce) — artık öneriler efekte göre tekilleştirildi, hep farklı seçenekler',
+      'qol: Otomatik Event Kararı\'nın INT ≥ 50 şartı artık renkli + mevcut INT ile gösteriliyor (yetersizse kırmızı)',
+    ],
+    en: [
+      'fix: Fusion skills fell out of your equipped set after a reload — on load the equipped list was filtered before fused skills were registered (boot order). They\'re now registered first, so equipped fusions stick',
+      'fix: Same-element fusions were all named "Reinforced" (multiple identically-named skills) — each now gets a unique name (still a ▲ synergy type)',
+      'fix: Raphael fusion suggestions recommended the same result from multiple combos (e.g. two combos → envenom pierce) — suggestions are now deduped by effect, always distinct picks',
+      'qol: The Auto Event Decision\'s INT ≥ 50 requirement is now color-coded and shows your current INT (red if too low)',
+    ],
+    ru: [
+      'fix: Скилы слияния выпадали из набора экипировки после перезагрузки — при загрузке список фильтровался до регистрации слитых скилов (порядок инициализации). Теперь они регистрируются первыми и остаются экипированными',
+      'fix: Слияния одной стихии все назывались «Reinforced» (несколько одноимённых скилов) — теперь у каждого уникальное имя (тип ▲ синергия сохраняется)',
+      'fix: Подсказки слияния Рафаэля предлагали один результат из разных комбо (напр. два комбо → envenom pierce) — теперь подсказки дедуплицируются по эффекту, всегда разные варианты',
+      'qol: Требование INT ≥ 50 для Авто-решения событий теперь выделено цветом и показывает текущий INT (красный, если мало)',
+    ],
+  },
   {
     v: '1.23.1',
     date: '2026-06-28',

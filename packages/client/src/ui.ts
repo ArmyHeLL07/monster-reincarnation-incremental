@@ -1992,7 +1992,19 @@ function skillsTab(state: GameState): string {
       if (aSpec !== bSpec) return bSpec - aSpec;
       return b.mag - a.mag;
     });
-    const top = list.slice(0, 3);
+    // Dedupe by effect so the same result isn't suggested from multiple combos
+    // (e.g. death_scythe+X and toxic_cloud+X both → envenom_pierce). Sorted best-first,
+    // so the first combo per effect wins; 'mix' stays varied (each is a distinct coined result).
+    const seenEffect = new Set<string>();
+    const top: Sugg[] = [];
+    for (const s of list) {
+      if (s.effect !== 'mix') {
+        if (seenEffect.has(s.effect)) continue;
+        seenEffect.add(s.effect);
+      }
+      top.push(s);
+      if (top.length >= 3) break;
+    }
     if (!top.length) return '';
     const rows = top.map(({ a, b, cls, effect, mag }) => {
       const clsIcon  = cls === 'synergy' ? '▲' : '◆';
@@ -3225,7 +3237,7 @@ function settingsTab(state: GameState): string {
         <button id="auto-event-toggle" class="${state.autoEventDecision ? 'actbtn active' : 'ghost'}">
           ${t('auto.event.label')}: ${state.autoEventDecision ? t('auto.on') : t('auto.off')}
         </button>
-        <span class="muted" style="font-size:0.78rem">${t('auto.event.hint')}</span>
+        <span style="font-size:0.78rem;color:${state.stats.INT >= 50 ? '#7a6' : '#c66'}">${t('auto.event.hint')} (INT: ${state.stats.INT}/50)</span>
       </div>
       ${state.autoEventDecision ? `
       <div class="controls" style="margin-top:0.4rem;">

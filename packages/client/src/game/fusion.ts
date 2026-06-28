@@ -63,8 +63,9 @@ export function resolveFusion(aId: string, bId: string, content: Content): Fusio
 
   const pool = content.fusionRules.magnitudePools[cls];
   const magnitude = pool[0] + (h % (pool[1] - pool[0] + 1));
-  // Curated effects get a localized name; procedural "mix" combos get a unique coined name.
-  const locKeyName = effect === 'mix' ? coinName(h) : `fusion.effect.${effect}`;
+  // Curated effects get a localized name; generic fallbacks ('mix' and same-element 'reinforce')
+  // get a unique coined name — otherwise every same-element fusion was identically named "Reinforced".
+  const locKeyName = effect === 'mix' || effect === 'reinforce' ? coinName(h) : `fusion.effect.${effect}`;
   return { id: `fz_${key}`, aId, bId, locKeyName, cls, effectType: effect, magnitude };
 }
 
