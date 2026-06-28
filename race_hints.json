@@ -1,0 +1,102 @@
+{
+  "spider": {
+    "tr": {
+      "strength": "Zehir + ipek kombinasyonu, erken oyunda güçlü sürekli hasar",
+      "weakness": "Düşük başlangıç HP — dikkatli oynamak gerekir",
+      "growth": "Hatchling Spider → Cave Spider → Poison Weaver / Web Hunter / ...",
+      "note": "Fusion sistemi erken açılır; skill kombinasyonları zengindir"
+    },
+    "en": {
+      "strength": "Venom + silk combo deals strong sustained damage early",
+      "weakness": "Low starting HP — requires careful play",
+      "growth": "Hatchling Spider → Cave Spider → Poison Weaver / Web Hunter / ...",
+      "note": "Fusion unlocks early; rich skill combination options"
+    },
+    "ru": {
+      "strength": "Комбинация яда и шёлка даёт стабильный урон с первых минут",
+      "weakness": "Низкий начальный HP — требует аккуратной игры",
+      "growth": "Hatchling Spider → Cave Spider → Poison Weaver / Web Hunter / ...",
+      "note": "Fusion открывается рано; богатые комбинации навыков"
+    }
+  },
+  "slime": {
+    "tr": {
+      "strength": "Yüksek dayanıklılık ve absorbsiyon yeteneği",
+      "weakness": "Saldırı gücü başlangıçta düşük",
+      "growth": "Slime → Poison Slime / Armored Slime → ...",
+      "note": "Resistance odaklı evrim ağacı"
+    },
+    "en": {
+      "strength": "High durability and absorption ability",
+      "weakness": "Low attack power at the start",
+      "growth": "Slime → Poison Slime / Armored Slime → ...",
+      "note": "Resistance-focused evolution tree"
+    },
+    "ru": {
+      "strength": "Высокая выносливость и способность к поглощению",
+      "weakness": "Низкая атака в начале игры",
+      "growth": "Slime → Poison Slime / Armored Slime → ...",
+      "note": "Дерево эволюции сфокусировано на сопротивлениях"
+    }
+  },
+  "skeleton": {
+    "tr": {
+      "strength": "Yüksek fiziksel saldırı, erken silah uzmanlığı",
+      "weakness": "Isı/ışık hasarına karşı savunmasız",
+      "growth": "Skeleton → Skeleton Warrior → Death Knight / Lich → ...",
+      "note": "Ölüm enerjisi mekanikleri ile benzersiz oynanış"
+    },
+    "en": {
+      "strength": "High physical attack, early weapon specialization",
+      "weakness": "Vulnerable to heat/light damage",
+      "growth": "Skeleton → Skeleton Warrior → Death Knight / Lich → ...",
+      "note": "Unique gameplay with death energy mechanics"
+    },
+    "ru": {
+      "strength": "Высокая физическая атака, ранняя специализация оружия",
+      "weakness": "Уязвимость к тепловому/световому урону",
+      "growth": "Skeleton → Skeleton Warrior → Death Knight / Lich → ...",
+      "note": "Уникальный геймплей с механиками энергии смерти"
+    }
+  },
+  "golem": {
+    "tr": {
+      "strength": "En yüksek başlangıç savunması, yüksek HP",
+      "weakness": "Yavaş hareket, düşük AGI",
+      "growth": "Stone Golem → Iron Golem / Magma Golem → ...",
+      "note": "Tank oynanışı — hasar almak skill exp kazandırır"
+    },
+    "en": {
+      "strength": "Highest starting defense, high HP",
+      "weakness": "Slow movement, low AGI",
+      "growth": "Stone Golem → Iron Golem / Magma Golem → ...",
+      "note": "Tank playstyle — taking damage also earns skill exp"
+    },
+    "ru": {
+      "strength": "Наибольшая начальная защита и HP",
+      "weakness": "Медленное передвижение, низкий AGI",
+      "growth": "Stone Golem → Iron Golem / Magma Golem → ...",
+      "note": "Стиль танка — получение урона тоже даёт опыт навыков"
+    }
+  },
+  "human": {
+    "tr": {
+      "strength": "Dengeli başlangıç statları, geniş evrim seçenekleri",
+      "weakness": "Başlangıçta özel avantajı yok",
+      "growth": "Human → Swordsman / Mage / Ranger → ...",
+      "note": "İnsan Yolu sistemiyle benzersiz uzmanlaşma dalları"
+    },
+    "en": {
+      "strength": "Balanced starting stats, wide evolution options",
+      "weakness": "No special starting advantage",
+      "growth": "Human → Swordsman / Mage / Ranger → ...",
+      "note": "Unique specialization branches via the Human Path system"
+    },
+    "ru": {
+      "strength": "Сбалансированные начальные характеристики, широкие варианты эволюции",
+      "weakness": "Нет особых стартовых преимуществ",
+      "growth": "Human → Swordsman / Mage / Ranger → ...",
+      "note": "Уникальные ветки специализации через систему Пути Человека"
+    }
+  }
+}

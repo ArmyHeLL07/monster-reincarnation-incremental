@@ -1,0 +1,1086 @@
+[
+  {
+    "id": "fork",
+    "icon": "🔀",
+    "locKey": "ev.fork.text",
+    "weight": 2,
+    "revealReq": {
+      "appraisalTier": 2,
+      "int": 25
+    },
+    "choices": [
+      {
+        "locKey": "ev.fork.left",
+        "random": [
+          {
+            "weight": 3,
+            "outcomes": [
+              {
+                "kind": "ep",
+                "amount": 8,
+                "locKeyResult": "ev.fork.left_ok"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "hp",
+                "amount": -10,
+                "locKeyResult": "ev.fork.left_bad"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.fork.right",
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "lore",
+            "amount": 1,
+            "locKeyResult": "ev.fork.right_ok"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "trap",
+    "icon": "🪤",
+    "locKey": "ev.trap.text",
+    "revealReq": {
+      "appraisalTier": 1
+    },
+    "choices": [
+      {
+        "locKey": "ev.trap.disarm",
+        "requires": {
+          "int": 30
+        },
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 12,
+            "locKeyResult": "ev.trap.disarm_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.trap.force",
+        "outcomes": [
+          {
+            "kind": "hp",
+            "amount": -40,
+            "locKeyResult": "ev.trap.force_hurt"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.trap.retreat",
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": -5,
+            "locKeyResult": "ev.trap.retreat"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "carcass",
+    "icon": "⚰️",
+    "locKey": "ev.carcass.text",
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.carcass.loot",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "food",
+                "value": "elroe_geafrog",
+                "amount": 40,
+                "locKeyResult": "ev.carcass.loot_food"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "fragment",
+                "value": "map",
+                "amount": 1,
+                "locKeyResult": "ev.carcass.loot_map"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "poison",
+                "amount": 6,
+                "locKeyResult": "ev.carcass.loot_poison"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.carcass.leave",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.carcass.leave_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "altar",
+    "icon": "🔮",
+    "locKey": "ev.altar.text",
+    "revealReq": {
+      "int": 30
+    },
+    "choices": [
+      {
+        "locKey": "ev.altar.offer",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "stat",
+                "value": "WIS",
+                "amount": 2,
+                "locKeyResult": "ev.altar.offer_stat"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "ep",
+                "amount": -10,
+                "locKeyResult": "ev.altar.offer_fail"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.altar.decode",
+        "requires": {
+          "int": 35
+        },
+        "outcomes": [
+          {
+            "kind": "skill",
+            "value": "lucky_find",
+            "locKeyResult": "ev.altar.decode_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.altar.ignore",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.altar.ignore_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "egg",
+    "icon": "🥚",
+    "locKey": "ev.egg.text",
+    "revealReq": {
+      "appraisalTier": 3
+    },
+    "choices": [
+      {
+        "locKey": "ev.egg.crack",
+        "random": [
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "spawn",
+                "value": "elroe_geafrog",
+                "locKeyResult": "ev.egg.crack_spawn"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "food",
+                "value": "elroe_frog",
+                "amount": 35,
+                "locKeyResult": "ev.egg.crack_food"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.egg.incubate",
+        "requires": {
+          "stat": {
+            "WIS": 20
+          }
+        },
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 18,
+            "locKeyResult": "ev.egg.incubate_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.egg.leave",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.egg.leave_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "passage",
+    "icon": "🚪",
+    "locKey": "ev.passage.text",
+    "revealReq": {
+      "appraisalTier": 1
+    },
+    "choices": [
+      {
+        "locKey": "ev.passage.perceive",
+        "requires": {
+          "appraisalTier": 2
+        },
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "lore",
+            "amount": 2,
+            "locKeyResult": "ev.passage.perceive_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.passage.leave",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.passage.leave_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oldweb",
+    "icon": "🕸️",
+    "locKey": "ev.oldweb.text",
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.oldweb.loot",
+        "random": [
+          {
+            "weight": 3,
+            "outcomes": [
+              {
+                "kind": "food",
+                "value": "elroe_frog",
+                "amount": 30,
+                "locKeyResult": "ev.oldweb.loot_food"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "poison",
+                "amount": 5,
+                "locKeyResult": "ev.oldweb.loot_bad"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.oldweb.absorb",
+        "requires": {
+          "skill": {
+            "id": "silk_thread",
+            "level": 1
+          }
+        },
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 10,
+            "locKeyResult": "ev.oldweb.absorb_ok"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cocoon",
+    "icon": "🧵",
+    "locKey": "ev.cocoon.text",
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.cocoon.open",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "food",
+                "value": "elroe_geafrog",
+                "amount": 45,
+                "locKeyResult": "ev.cocoon.open_food"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "spawn",
+                "value": "venom_brute",
+                "locKeyResult": "ev.cocoon.open_spawn"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.cocoon.peer",
+        "requires": {
+          "appraisalTier": 3
+        },
+        "outcomes": [
+          {
+            "kind": "food",
+            "value": "elroe_geafrog",
+            "amount": 45,
+            "locKeyResult": "ev.cocoon.peer_ok"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wounded",
+    "icon": "🩸",
+    "locKey": "ev.wounded.text",
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.wounded.devour",
+        "outcomes": [
+          {
+            "kind": "food",
+            "value": "elroe_frog",
+            "amount": 35,
+            "locKeyResult": "ev.wounded.devour_food"
+          },
+          {
+            "kind": "sin",
+            "amount": 2,
+            "locKeyResult": "ev.wounded.devour_sin"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.wounded.spare",
+        "outcomes": [
+          {
+            "kind": "virtue",
+            "amount": 2,
+            "locKeyResult": "ev.wounded.spare_virtue"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.wounded.ignore",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.wounded.ignore_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hatchling",
+    "icon": "👶",
+    "locKey": "ev.hatchling.text",
+    "choices": [
+      {
+        "locKey": "ev.hatchling.feed",
+        "outcomes": [
+          {
+            "kind": "hunger",
+            "amount": 20,
+            "locKeyResult": "ev.hatchling.feed_h"
+          },
+          {
+            "kind": "virtue",
+            "amount": 2,
+            "locKeyResult": "ev.hatchling.feed_virtue"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.hatchling.eat",
+        "outcomes": [
+          {
+            "kind": "food",
+            "value": "elroe_frog",
+            "amount": 25,
+            "locKeyResult": "ev.hatchling.eat_food"
+          },
+          {
+            "kind": "sin",
+            "amount": 2,
+            "locKeyResult": "ev.hatchling.eat_sin"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.hatchling.pass",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.hatchling.pass_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "reincarnate",
+    "icon": "🤝",
+    "locKey": "ev.reincarnate.text",
+    "weight": 1,
+    "revealReq": {
+      "int": 30
+    },
+    "choices": [
+      {
+        "locKey": "ev.reincarnate.ally",
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "lore",
+            "amount": 1,
+            "locKeyResult": "ev.reincarnate.ally_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.reincarnate.eat",
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 14,
+            "locKeyResult": "ev.reincarnate.eat_ep"
+          },
+          {
+            "kind": "sin",
+            "amount": 3,
+            "locKeyResult": "ev.reincarnate.eat_sin"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.reincarnate.pass",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.reincarnate.pass_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elementfont",
+    "icon": "🔥",
+    "locKey": "ev.elementfont.text",
+    "layers": [
+      2,
+      3
+    ],
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.elementfont.touch",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "ep",
+                "amount": 10,
+                "locKeyResult": "ev.elementfont.touch_ok"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "fire",
+                "amount": 6,
+                "locKeyResult": "ev.elementfont.touch_burn"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.elementfont.draw",
+        "requires": {
+          "stat": {
+            "VIT": 25
+          }
+        },
+        "outcomes": [
+          {
+            "kind": "stat",
+            "value": "VIT",
+            "amount": 1,
+            "locKeyResult": "ev.elementfont.draw_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.elementfont.flee",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.elementfont.flee_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "journal",
+    "icon": "📖",
+    "locKey": "ev.journal.text",
+    "choices": [
+      {
+        "locKey": "ev.journal.read",
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "lore",
+            "amount": 2,
+            "locKeyResult": "ev.journal.read_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.journal.eat",
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 6,
+            "locKeyResult": "ev.journal.eat_ep"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.journal.keep",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.journal.keep_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lorestone",
+    "icon": "🕯️",
+    "locKey": "ev.lorestone.text",
+    "revealReq": {
+      "int": 25
+    },
+    "choices": [
+      {
+        "locKey": "ev.lorestone.solve",
+        "requires": {
+          "int": 35
+        },
+        "outcomes": [
+          {
+            "kind": "unlock",
+            "value": "lorestone_insight",
+            "locKeyResult": "ev.lorestone.solve_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.lorestone.memorize",
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "lore",
+            "amount": 1,
+            "locKeyResult": "ev.lorestone.memorize_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.lorestone.break",
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 8,
+            "locKeyResult": "ev.lorestone.break_ok"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "watcher",
+    "icon": "👁️",
+    "locKey": "ev.watcher.text",
+    "revealReq": {
+      "appraisalTier": 3
+    },
+    "choices": [
+      {
+        "locKey": "ev.watcher.stare",
+        "requires": {
+          "skill": {
+            "id": "appraisal",
+            "level": 1
+          }
+        },
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "stat",
+                "value": "INT",
+                "amount": 1,
+                "locKeyResult": "ev.watcher.stare_ok"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "fear",
+                "amount": 5,
+                "locKeyResult": "ev.watcher.stare_dread"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.watcher.blind",
+        "outcomes": [
+          {
+            "kind": "hp",
+            "amount": -20,
+            "locKeyResult": "ev.watcher.blind_hurt"
+          },
+          {
+            "kind": "ep",
+            "amount": 8,
+            "locKeyResult": "ev.watcher.blind_ep"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.watcher.flee",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.watcher.flee_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rift",
+    "icon": "🌀",
+    "locKey": "ev.rift.text",
+    "layers": [
+      3
+    ],
+    "revealReq": {
+      "int": 35
+    },
+    "choices": [
+      {
+        "locKey": "ev.rift.gaze",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "fragment",
+                "value": "lore",
+                "amount": 2,
+                "locKeyResult": "ev.rift.gaze_ok"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "fear",
+                "amount": 7,
+                "locKeyResult": "ev.rift.gaze_mad"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.rift.reach",
+        "random": [
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "skill",
+                "value": "spatial_web",
+                "locKeyResult": "ev.rift.reach_skill"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "scar",
+                "amount": 1,
+                "locKeyResult": "ev.rift.reach_scar"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.rift.away",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.rift.away_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sovereign",
+    "icon": "💀",
+    "locKey": "ev.sovereign.text",
+    "revealReq": {
+      "appraisalTier": 3
+    },
+    "choices": [
+      {
+        "locKey": "ev.sovereign.respect",
+        "outcomes": [
+          {
+            "kind": "virtue",
+            "amount": 3,
+            "locKeyResult": "ev.sovereign.respect_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.sovereign.steal",
+        "outcomes": [
+          {
+            "kind": "ep",
+            "amount": 16,
+            "locKeyResult": "ev.sovereign.steal_ep"
+          },
+          {
+            "kind": "sin",
+            "amount": 2,
+            "locKeyResult": "ev.sovereign.steal_sin"
+          },
+          {
+            "kind": "hp",
+            "amount": -25,
+            "locKeyResult": "ev.sovereign.steal_hurt"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.sovereign.study",
+        "requires": {
+          "appraisalTier": 4
+        },
+        "outcomes": [
+          {
+            "kind": "unlock",
+            "value": "sovereign_lore",
+            "locKeyResult": "ev.sovereign.study_ok"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "skitter",
+    "icon": "🐀",
+    "locKey": "ev.skitter.text",
+    "revealReq": {
+      "appraisalTier": 2
+    },
+    "choices": [
+      {
+        "locKey": "ev.skitter.follow",
+        "outcomes": [
+          {
+            "kind": "fragment",
+            "value": "map",
+            "amount": 1,
+            "locKeyResult": "ev.skitter.follow_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.skitter.ambush",
+        "outcomes": [
+          {
+            "kind": "spawn",
+            "value": "elroe_frog",
+            "locKeyResult": "ev.skitter.ambush_spawn"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.skitter.flee",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.skitter.flee_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "reflection",
+    "icon": "🪞",
+    "locKey": "ev.reflection.text",
+    "revealReq": {
+      "int": 30
+    },
+    "choices": [
+      {
+        "locKey": "ev.reflection.look",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "ep",
+                "amount": 7,
+                "locKeyResult": "ev.reflection.look_ok"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "fear",
+                "amount": 4,
+                "locKeyResult": "ev.reflection.look_dread"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.reflection.drink",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "hp",
+                "amount": 30,
+                "locKeyResult": "ev.reflection.drink_heal"
+              }
+            ]
+          },
+          {
+            "weight": 1,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "poison",
+                "amount": 6,
+                "locKeyResult": "ev.reflection.drink_poison"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.reflection.pass",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.reflection.pass_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "larder",
+    "icon": "🍖",
+    "locKey": "ev.larder.text",
+    "revealReq": {
+      "appraisalTier": 2,
+      "int": 25
+    },
+    "choices": [
+      {
+        "locKey": "ev.larder.eatall",
+        "random": [
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "hunger",
+                "amount": -40,
+                "locKeyResult": "ev.larder.eatall_ok"
+              }
+            ]
+          },
+          {
+            "weight": 2,
+            "outcomes": [
+              {
+                "kind": "status",
+                "value": "poison",
+                "amount": 6,
+                "locKeyResult": "ev.larder.eatall_rot"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "locKey": "ev.larder.pick",
+        "requires": {
+          "appraisalTier": 2
+        },
+        "outcomes": [
+          {
+            "kind": "food",
+            "value": "elroe_geafrog",
+            "amount": 45,
+            "locKeyResult": "ev.larder.pick_ok"
+          }
+        ]
+      },
+      {
+        "locKey": "ev.larder.leave",
+        "outcomes": [
+          {
+            "kind": "none",
+            "locKeyResult": "ev.larder.leave_r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "moral_wounded",
+    "icon": "🩸",
+    "locKey": "ev.moral_wounded.text",
+    "weight": 2,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_wounded.spare", "outcomes": [{ "kind": "virtue", "amount": 3, "locKeyResult": "ev.moral_wounded.spare_r" }] },
+      { "locKey": "ev.moral_wounded.devour", "outcomes": [{ "kind": "sin", "amount": 2, "locKeyResult": "ev.moral_wounded.devour_r" }, { "kind": "hunger", "amount": -30, "locKeyResult": "ev.moral_wounded.devour_eat" }] }
+    ]
+  },
+  {
+    "id": "moral_surrender",
+    "icon": "🙏",
+    "locKey": "ev.moral_surrender.text",
+    "weight": 2,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_surrender.spare", "outcomes": [{ "kind": "virtue", "amount": 3, "locKeyResult": "ev.moral_surrender.spare_r" }] },
+      { "locKey": "ev.moral_surrender.devour", "outcomes": [{ "kind": "sin", "amount": 2, "locKeyResult": "ev.moral_surrender.devour_r" }, { "kind": "ep", "amount": 12, "locKeyResult": "ev.moral_surrender.devour_ep" }] }
+    ]
+  },
+  {
+    "id": "moral_brood",
+    "icon": "🥚",
+    "locKey": "ev.moral_brood.text",
+    "weight": 1,
+    "moral": true,
+    "choices": [
+      { "locKey": "ev.moral_brood.spare", "outcomes": [{ "kind": "virtue", "amount": 4, "locKeyResult": "ev.moral_brood.spare_r" }] },
+      { "locKey": "ev.moral_brood.devour", "outcomes": [{ "kind": "sin", "amount": 3, "locKeyResult": "ev.moral_brood.devour_r" }, { "kind": "hunger", "amount": -40, "locKeyResult": "ev.moral_brood.devour_eat" }] }
+    ]
+  }
+]

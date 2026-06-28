@@ -1,0 +1,15 @@
+{
+  "opening.truck": [
+    "You noticed the oncoming truck a heartbeat too late.",
+    "A screech of tires, a flash of white — then silence.",
+    "Cold earth. Unfamiliar scents. This body... is not yours.",
+    "A voice whispers in the dark: \"You are reborn. In this world the weak are prey. Only those who understand survive.\""
+  ],
+  "opening.prompt": "What was the last thought to cross your dying mind?",
+  "choice.survive": "\"Whatever it takes... I must live.\"",
+  "choice.fade": "\"Let it all melt away...\"",
+  "choice.power": "\"Never weak again. I want power.\"",
+  "intro.ch_forest": "You open your eyes on a dim forest floor. Vast roots, damp air, danger in every shadow. To survive you must hunt — and this forest has a guardian.",
+  "outro.ch_forest": "The guardian falls. A cold draft rises from deeper in the wood; greater things await ahead. But you are no longer as weak as you were.",
+  "ending": "The story pauses here for now — new chapters are on the way. Keep surviving."
+}

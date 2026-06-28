@@ -1,18 +1,469 @@
 [
-  { "id": "cave_pest", "locKey": "enemy.cave_pest.name", "hp": 12, "attack": 2, "damageType": "physical", "satiety": 8, "ep": 1 },
-  { "id": "ember_crawler", "locKey": "enemy.ember_crawler.name", "hp": 18, "attack": 3, "damageType": "fire", "damageType2": "pierce", "satiety": 12, "ep": 2 },
-  { "id": "venom_toad", "locKey": "enemy.venom_toad.name", "hp": 15, "attack": 3, "damageType": "poison", "satiety": 10, "ep": 2 },
-  { "id": "cave_lurker", "locKey": "enemy.cave_lurker.name", "hp": 42, "attack": 7, "damageType": "physical", "satiety": 16, "ep": 4 },
-  { "id": "frost_mite", "locKey": "enemy.frost_mite.name", "hp": 24, "attack": 4, "damageType": "frost", "satiety": 11, "ep": 3 },
-  { "id": "acid_slug", "locKey": "enemy.acid_slug.name", "hp": 30, "attack": 5, "damageType": "acid", "satiety": 13, "ep": 3 },
-  { "id": "flame_jaw", "locKey": "enemy.flame_jaw.name", "hp": 48, "attack": 9, "damageType": "fire", "damageType2": "physical", "satiety": 18, "ep": 5 },
-  { "id": "spark_wisp", "locKey": "enemy.spark_wisp.name", "hp": 36, "attack": 8, "damageType": "lightning", "satiety": 14, "ep": 5 },
-  { "id": "venom_brute", "locKey": "enemy.venom_brute.name", "hp": 64, "attack": 11, "damageType": "poison", "damageType2": "physical", "satiety": 24, "ep": 8 },
-  { "id": "bone_render", "locKey": "enemy.bone_render.name", "hp": 78, "attack": 14, "damageType": "pierce", "satiety": 26, "ep": 10 },
-  { "id": "shade_wraith", "locKey": "enemy.shade_wraith.name", "hp": 70, "attack": 13, "damageType": "fear", "damageType2": "magic", "satiety": 20, "ep": 12 },
-  { "id": "magma_titan", "locKey": "enemy.magma_titan.name", "hp": 120, "attack": 18, "damageType": "fire", "damageType2": "physical", "satiety": 34, "ep": 16 },
-  { "id": "soul_eater", "locKey": "enemy.soul_eater.name", "hp": 110, "attack": 17, "damageType": "soul", "damageType2": "magic", "satiety": 30, "ep": 18 },
-  { "id": "abyss_horror", "locKey": "enemy.abyss_horror.name", "hp": 160, "attack": 22, "damageType": "soul", "damageType2": "fear", "satiety": 40, "ep": 24 },
-  { "id": "warden_gate", "locKey": "enemy.warden_gate.name", "hp": 90, "attack": 15, "damageType": "physical", "damageType2": "magic", "satiety": 28, "ep": 14 },
-  { "id": "first_devourer", "locKey": "enemy.first_devourer.name", "hp": 240, "attack": 28, "damageType": "soul", "damageType2": "fear", "satiety": 50, "ep": 40 }
+  {
+    "id": "elroe_frog",
+    "locKey": "enemy.elroe_frog.name",
+    "hp": 10,
+    "attack": 2,
+    "damageType": "physical",
+    "satiety": 8,
+    "ep": 1,
+    "icon": "🐸",
+    "grantSkills": [
+      "pounce"
+    ],
+    "image": "monsters/elroe_frog.png"
+  },
+  {
+    "id": "elroe_geafrog",
+    "locKey": "enemy.elroe_geafrog.name",
+    "hp": 16,
+    "attack": 3,
+    "damageType": "poison",
+    "satiety": 12,
+    "ep": 2,
+    "icon": "🐸",
+    "grantSkills": [
+      "venom_bite"
+    ],
+    "behavior": {
+      "statusBoost": 1.6
+    },
+    "image": "monsters/elroe_geafrog.png"
+  },
+  {
+    "id": "small_lesser_taratect",
+    "locKey": "enemy.small_lesser_taratect.name",
+    "hp": 14,
+    "attack": 3,
+    "damageType": "poison",
+    "satiety": 10,
+    "ep": 2,
+    "icon": "🕷️",
+    "grantSkills": [
+      "venom_bite",
+      "silk_thread"
+    ],
+    "race": "spider",
+    "image": "monsters/small_lesser_taratect.png"
+  },
+  {
+    "id": "small_poison_taratect",
+    "locKey": "enemy.small_poison_taratect.name",
+    "hp": 18,
+    "attack": 3,
+    "damageType": "poison",
+    "satiety": 12,
+    "ep": 2,
+    "icon": "🕷️",
+    "grantSkills": [
+      "venom_bite",
+      "sticky_coat"
+    ],
+    "race": "spider",
+    "behavior": {
+      "statusBoost": 1.7
+    },
+    "image": "monsters/small_poison_taratect.png"
+  },
+  {
+    "id": "elroe_basilisk",
+    "locKey": "enemy.elroe_basilisk.name",
+    "hp": 22,
+    "attack": 4,
+    "damageType": "physical",
+    "satiety": 14,
+    "ep": 3,
+    "icon": "🦎",
+    "grantSkills": [
+      "chitin_hide"
+    ],
+    "damageType2": "petrify",
+    "behavior": {
+      "armorPct": 0.3,
+      "statusBoost": 1.4
+    },
+    "image": "monsters/elroe_basilisk.png"
+  },
+  {
+    "id": "elroe_pebbluck",
+    "locKey": "enemy.elroe_pebbluck.name",
+    "hp": 30,
+    "attack": 3,
+    "damageType": "physical",
+    "satiety": 16,
+    "ep": 3,
+    "icon": "🐢",
+    "grantSkills": [
+      "chitin_hide"
+    ],
+    "behavior": {
+      "armorPct": 0.5
+    },
+    "image": "monsters/elroe_pebbluck.png"
+  },
+  {
+    "id": "lesser_taratect",
+    "locKey": "enemy.lesser_taratect.name",
+    "hp": 42,
+    "attack": 6,
+    "damageType": "poison",
+    "satiety": 22,
+    "ep": 6,
+    "icon": "🕷️",
+    "grantSkills": [
+      "venom_bite",
+      "binding_silk"
+    ],
+    "race": "spider",
+    "behavior": {
+      "regen": 0.03
+    },
+    "image": "monsters/lesser_taratect.png"
+  },
+  {
+    "id": "elroe_gunerush",
+    "locKey": "enemy.elroe_gunerush.name",
+    "hp": 45,
+    "attack": 9,
+    "damageType": "fire",
+    "satiety": 24,
+    "ep": 5,
+    "icon": "🐉",
+    "grantSkills": [
+      "flame_bolt"
+    ],
+    "image": "monsters/elroe_gunerush.png"
+  },
+  {
+    "id": "elroe_gunerave",
+    "locKey": "enemy.elroe_gunerave.name",
+    "hp": 50,
+    "attack": 8,
+    "damageType": "fire",
+    "satiety": 26,
+    "ep": 5,
+    "icon": "🐍",
+    "grantSkills": [
+      "flame_bolt"
+    ],
+    "behavior": {
+      "doubleStrike": true
+    },
+    "image": "monsters/elroe_gunerave.png"
+  },
+  {
+    "id": "elroe_gunesohka",
+    "locKey": "enemy.elroe_gunesohka.name",
+    "hp": 55,
+    "attack": 10,
+    "damageType": "fire",
+    "satiety": 28,
+    "ep": 6,
+    "icon": "🔥",
+    "grantSkills": [
+      "fire_breath"
+    ],
+    "behavior": {
+      "enrage": 0.5
+    },
+    "image": "monsters/elroe_gunesohka.png"
+  },
+  {
+    "id": "elroe_guneseven",
+    "locKey": "enemy.elroe_guneseven.name",
+    "hp": 60,
+    "attack": 11,
+    "damageType": "fire",
+    "satiety": 30,
+    "ep": 6,
+    "icon": "🔥",
+    "grantSkills": [
+      "fire_breath"
+    ],
+    "damageType2": "physical",
+    "behavior": {
+      "lifesteal": 0.2
+    },
+    "image": "monsters/elroe_guneseven.png"
+  },
+  {
+    "id": "magma_newt",
+    "locKey": "enemy.magma_newt.name",
+    "hp": 48,
+    "attack": 9,
+    "damageType": "fire",
+    "satiety": 24,
+    "ep": 5,
+    "icon": "🦎",
+    "grantSkills": [
+      "flame_bolt"
+    ],
+    "behavior": {
+      "armorPct": 0.25
+    },
+    "image": "monsters/magma_newt.png"
+  },
+  {
+    "id": "elroe_cohgou",
+    "locKey": "enemy.elroe_cohgou.name",
+    "hp": 52,
+    "attack": 10,
+    "damageType": "physical",
+    "satiety": 26,
+    "ep": 5,
+    "icon": "🐒",
+    "grantSkills": [
+      "fist_strike",
+      "pounce"
+    ],
+    "damageType2": "stun",
+    "behavior": {
+      "doubleStrike": true
+    },
+    "image": "monsters/elroe_cohgou.png"
+  },
+  {
+    "id": "flame_jaw",
+    "locKey": "enemy.flame_jaw.name",
+    "hp": 95,
+    "attack": 16,
+    "damageType": "fire",
+    "satiety": 34,
+    "ep": 11,
+    "icon": "🐲",
+    "grantSkills": [
+      "fire_breath"
+    ],
+    "behavior": {
+      "enrage": 0.6
+    },
+    "image": "monsters/flame_jaw.png"
+  },
+  {
+    "id": "finjicote",
+    "locKey": "enemy.finjicote.name",
+    "hp": 110,
+    "attack": 20,
+    "damageType": "pierce",
+    "satiety": 40,
+    "ep": 12,
+    "icon": "🐝",
+    "grantSkills": [
+      "sharp_claw"
+    ],
+    "behavior": {
+      "doubleStrike": true,
+      "statusBoost": 1.5
+    },
+    "image": "monsters/finjicote.png"
+  },
+  {
+    "id": "greater_taratect",
+    "locKey": "enemy.greater_taratect.name",
+    "hp": 140,
+    "attack": 22,
+    "damageType": "poison",
+    "satiety": 46,
+    "ep": 14,
+    "icon": "🕸️",
+    "grantSkills": [
+      "necro_toxin",
+      "cutting_wire"
+    ],
+    "damageType2": "physical",
+    "race": "spider",
+    "behavior": {
+      "regen": 0.04
+    },
+    "image": "monsters/greater_taratect.png"
+  },
+  {
+    "id": "shade_wraith",
+    "locKey": "enemy.shade_wraith.name",
+    "hp": 120,
+    "attack": 24,
+    "damageType": "soul",
+    "satiety": 42,
+    "ep": 13,
+    "icon": "👻",
+    "grantSkills": [
+      "shadow_bolt",
+      "soul_gaze"
+    ],
+    "behavior": {
+      "statusBoost": 1.5
+    },
+    "image": "monsters/shade_wraith.png"
+  },
+  {
+    "id": "venom_brute",
+    "locKey": "enemy.venom_brute.name",
+    "hp": 130,
+    "attack": 21,
+    "damageType": "poison",
+    "satiety": 44,
+    "ep": 13,
+    "icon": "🦂",
+    "grantSkills": [
+      "venom_bite",
+      "maul"
+    ],
+    "damageType2": "acid",
+    "behavior": {
+      "lifesteal": 0.15
+    },
+    "image": "monsters/venom_brute.png"
+  },
+  {
+    "id": "abyss_stalker",
+    "locKey": "enemy.abyss_stalker.name",
+    "hp": 125,
+    "attack": 23,
+    "damageType": "pierce",
+    "satiety": 42,
+    "ep": 13,
+    "icon": "🦂",
+    "grantSkills": [
+      "reaper_edge"
+    ],
+    "behavior": {
+      "doubleStrike": true
+    },
+    "image": "monsters/abyss_stalker.png"
+  },
+  {
+    "id": "cave_horror",
+    "locKey": "enemy.cave_horror.name",
+    "hp": 135,
+    "attack": 25,
+    "damageType": "fear",
+    "satiety": 46,
+    "ep": 14,
+    "icon": "👹",
+    "grantSkills": [
+      "shadow_bolt"
+    ],
+    "damageType2": "frost",
+    "behavior": {
+      "statusBoost": 1.8
+    },
+    "image": "monsters/cave_horror.png"
+  },
+  {
+    "id": "earth_dragon_araba",
+    "locKey": "enemy.earth_dragon_araba.name",
+    "hp": 210,
+    "attack": 30,
+    "damageType": "physical",
+    "satiety": 60,
+    "ep": 22,
+    "icon": "🐲",
+    "grantSkills": [
+      "heavy_slam",
+      "shattering_strike"
+    ],
+    "behavior": {
+      "armorPct": 0.35,
+      "enrage": 0.5
+    },
+    "image": "monsters/earth_dragon_araba.png"
+  },
+  {
+    "id": "earth_dragon_kaguna",
+    "locKey": "enemy.earth_dragon_kaguna.name",
+    "hp": 280,
+    "attack": 38,
+    "damageType": "physical",
+    "satiety": 70,
+    "ep": 28,
+    "icon": "🐉",
+    "grantSkills": [
+      "shattering_strike"
+    ],
+    "damageType2": "lightning",
+    "behavior": {
+      "armorPct": 0.4,
+      "regen": 0.03
+    },
+    "image": "monsters/earth_dragon_kaguna.png"
+  },
+  {
+    "id": "earth_dragon_rendill",
+    "locKey": "enemy.earth_dragon_rendill.name",
+    "hp": 300,
+    "attack": 42,
+    "damageType": "fire",
+    "satiety": 72,
+    "ep": 30,
+    "icon": "🐉",
+    "grantSkills": [
+      "fire_breath",
+      "scorching_breath"
+    ],
+    "behavior": {
+      "enrage": 0.6,
+      "lifesteal": 0.2
+    },
+    "image": "monsters/earth_dragon_rendill.png"
+  },
+  {
+    "id": "queen_taratect",
+    "locKey": "enemy.queen_taratect.name",
+    "hp": 320,
+    "attack": 40,
+    "damageType": "magic",
+    "satiety": 80,
+    "ep": 32,
+    "icon": "👑",
+    "grantSkills": [
+      "necro_toxin",
+      "spatial_web"
+    ],
+    "damageType2": "poison",
+    "race": "spider",
+    "behavior": {
+      "regen": 0.05,
+      "statusBoost": 1.6
+    },
+    "image": "monsters/queen_taratect.png"
+  },
+  {
+    "id": "abyss_horror",
+    "locKey": "enemy.abyss_horror.name",
+    "hp": 290,
+    "attack": 44,
+    "damageType": "soul",
+    "satiety": 74,
+    "ep": 30,
+    "icon": "👁️",
+    "grantSkills": [
+      "shadow_bolt",
+      "soul_gaze"
+    ],
+    "behavior": {
+      "statusBoost": 2.0
+    },
+    "image": "monsters/abyss_horror.png"
+  },
+  {
+    "id": "system_guardian",
+    "locKey": "enemy.system_guardian.name",
+    "hp": 460,
+    "attack": 55,
+    "damageType": "physical",
+    "satiety": 100,
+    "ep": 45,
+    "icon": "🐲",
+    "grantSkills": [
+      "shattering_strike",
+      "soul_gaze"
+    ],
+    "damageType2": "soul",
+    "behavior": {
+      "armorPct": 0.4,
+      "enrage": 0.5,
+      "regen": 0.04
+    },
+    "image": "monsters/system_guardian.png"
+  }
 ]

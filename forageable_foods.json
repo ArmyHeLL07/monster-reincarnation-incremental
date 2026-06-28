@@ -1,0 +1,255 @@
+[
+  {
+    "id": "cave_moss",
+    "locKey": "food.cave_moss",
+    "element": "neutral",
+    "satiety": 4,
+    "dangerLevel": "safe",
+    "rarity": "common"
+  },
+  {
+    "id": "rock_grub",
+    "locKey": "food.rock_grub",
+    "element": "neutral",
+    "satiety": 6,
+    "dangerLevel": "safe",
+    "rarity": "common"
+  },
+  {
+    "id": "toxic_beetle",
+    "locKey": "food.toxic_beetle",
+    "element": "poison",
+    "satiety": 7,
+    "dangerLevel": "risky",
+    "rarity": "common",
+    "dangerEffect": {
+      "type": "poison",
+      "dmg": 5
+    }
+  },
+  {
+    "id": "poison_shroom",
+    "locKey": "food.poison_shroom",
+    "element": "poison",
+    "satiety": 12,
+    "dangerLevel": "toxic",
+    "rarity": "uncommon",
+    "dangerEffect": {
+      "type": "poison",
+      "dmg": 4,
+      "duration": 4
+    }
+  },
+  {
+    "id": "death_cap",
+    "locKey": "food.death_cap",
+    "element": "poison",
+    "satiety": 18,
+    "dangerLevel": "lethal",
+    "rarity": "very_rare",
+    "minDepth": 2,
+    "dangerEffect": {
+      "type": "poison",
+      "dmg": 999
+    }
+  },
+  {
+    "id": "ember_berry",
+    "locKey": "food.ember_berry",
+    "element": "fire",
+    "satiety": 8,
+    "dangerLevel": "safe",
+    "rarity": "common"
+  },
+  {
+    "id": "scorched_vine",
+    "locKey": "food.scorched_vine",
+    "element": "fire",
+    "satiety": 10,
+    "dangerLevel": "risky",
+    "rarity": "uncommon",
+    "dangerEffect": {
+      "type": "fire",
+      "dmg": 6
+    }
+  },
+  {
+    "id": "magma_truffle",
+    "locKey": "food.magma_truffle",
+    "element": "fire",
+    "satiety": 20,
+    "dangerLevel": "toxic",
+    "rarity": "rare",
+    "dangerEffect": {
+      "type": "fire",
+      "dmg": 5,
+      "duration": 3
+    }
+  },
+  {
+    "id": "stone_lichen",
+    "locKey": "food.stone_lichen",
+    "element": "physical",
+    "satiety": 5,
+    "dangerLevel": "safe",
+    "rarity": "common"
+  },
+  {
+    "id": "iron_worm",
+    "locKey": "food.iron_worm",
+    "element": "physical",
+    "satiety": 9,
+    "dangerLevel": "safe",
+    "rarity": "uncommon"
+  },
+  {
+    "id": "crystal_spore",
+    "locKey": "food.crystal_spore",
+    "element": "physical",
+    "satiety": 15,
+    "dangerLevel": "risky",
+    "rarity": "rare",
+    "dangerEffect": {
+      "type": "magic",
+      "dmg": 8
+    }
+  },
+  {
+    "id": "acid_moss",
+    "locKey": "food.acid_moss",
+    "element": "acid",
+    "satiety": 6,
+    "dangerLevel": "risky",
+    "rarity": "common",
+    "dangerEffect": {
+      "type": "acid",
+      "dmg": 4
+    }
+  },
+  {
+    "id": "caustic_fungi",
+    "locKey": "food.caustic_fungi",
+    "element": "acid",
+    "satiety": 14,
+    "dangerLevel": "toxic",
+    "rarity": "uncommon",
+    "dangerEffect": {
+      "type": "acid",
+      "dmg": 5,
+      "duration": 3
+    }
+  },
+  {
+    "id": "frost_berry",
+    "locKey": "food.frost_berry",
+    "element": "frost",
+    "satiety": 7,
+    "dangerLevel": "safe",
+    "rarity": "common"
+  },
+  {
+    "id": "ice_worm",
+    "locKey": "food.ice_worm",
+    "element": "frost",
+    "satiety": 10,
+    "dangerLevel": "risky",
+    "rarity": "uncommon",
+    "dangerEffect": {
+      "type": "frost",
+      "dmg": 5
+    }
+  },
+  {
+    "id": "shock_shroom",
+    "locKey": "food.shock_shroom",
+    "element": "lightning",
+    "satiety": 5,
+    "dangerLevel": "risky",
+    "rarity": "common",
+    "dangerEffect": {
+      "type": "lightning",
+      "dmg": 4
+    }
+  },
+  {
+    "id": "static_lichen",
+    "locKey": "food.static_lichen",
+    "element": "lightning",
+    "satiety": 8,
+    "dangerLevel": "safe",
+    "rarity": "uncommon"
+  },
+  {
+    "id": "thorn_berry",
+    "locKey": "food.thorn_berry",
+    "element": "pierce",
+    "satiety": 7,
+    "dangerLevel": "risky",
+    "rarity": "common",
+    "dangerEffect": {
+      "type": "poison",
+      "dmg": 5
+    }
+  },
+  {
+    "id": "razor_weed",
+    "locKey": "food.razor_weed",
+    "element": "pierce",
+    "satiety": 9,
+    "dangerLevel": "safe",
+    "rarity": "uncommon"
+  },
+  {
+    "id": "arcane_spore",
+    "locKey": "food.arcane_spore",
+    "element": "magic",
+    "satiety": 10,
+    "dangerLevel": "safe",
+    "rarity": "uncommon"
+  },
+  {
+    "id": "mana_crystal",
+    "locKey": "food.mana_crystal",
+    "element": "magic",
+    "satiety": 18,
+    "dangerLevel": "risky",
+    "rarity": "rare",
+    "dangerEffect": {
+      "type": "magic",
+      "dmg": 10
+    }
+  },
+  {
+    "id": "pale_spore",
+    "locKey": "food.pale_spore",
+    "element": "soul",
+    "satiety": 12,
+    "dangerLevel": "risky",
+    "rarity": "uncommon",
+    "dangerEffect": {
+      "type": "poison",
+      "dmg": 7
+    }
+  },
+  {
+    "id": "spirit_fruit",
+    "locKey": "food.spirit_fruit",
+    "element": "soul",
+    "satiety": 20,
+    "dangerLevel": "safe",
+    "rarity": "rare"
+  },
+  {
+    "id": "corruption_flesh",
+    "locKey": "food.corruption_flesh",
+    "element": "soul",
+    "satiety": 30,
+    "dangerLevel": "lethal",
+    "rarity": "very_rare",
+    "minDepth": 2,
+    "dangerEffect": {
+      "type": "soul",
+      "dmg": 999
+    }
+  }
+]

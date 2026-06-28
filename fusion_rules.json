@@ -1,37 +1,308 @@
 {
   "magnitudePools": {
-    "synergy": [8, 20],
-    "quirk": [4, 14],
-    "backfire": [2, 8]
+    "synergy": [
+      8,
+      20
+    ],
+    "quirk": [
+      4,
+      14
+    ],
+    "backfire": [
+      2,
+      8
+    ]
   },
   "matrix": [
-    { "a": "poison", "b": "silk", "effect": "poison_web", "cls": "synergy" },
-    { "a": "poison", "b": "physical", "effect": "tainted_strike", "cls": "synergy" },
-    { "a": "physical", "b": "silk", "effect": "snare_strike", "cls": "quirk" },
-    { "a": "physical", "b": "pierce", "effect": "rend", "cls": "synergy" },
-    { "a": "fire", "b": "wind", "effect": "flame_storm", "cls": "synergy" },
-    { "a": "water", "b": "fire", "effect": "steam", "cls": "quirk" },
-    { "a": "fire", "b": "frost", "effect": "thermal_shock", "cls": "backfire" },
-    { "a": "water", "b": "lightning", "effect": "conductive_shock", "cls": "synergy" },
-    { "a": "earth", "b": "water", "effect": "mud", "cls": "quirk" },
-    { "a": "acid", "b": "physical", "effect": "corrode", "cls": "synergy" },
-    { "a": "acid", "b": "silk", "effect": "dissolve_web", "cls": "quirk" },
-    { "a": "acid", "b": "poison", "effect": "necrosis", "cls": "synergy" },
-    { "a": "frost", "b": "wind", "effect": "blizzard", "cls": "synergy" },
-    { "a": "lightning", "b": "wind", "effect": "tempest", "cls": "synergy" },
-    { "a": "fire", "b": "earth", "effect": "magma", "cls": "synergy" },
-    { "a": "frost", "b": "lightning", "effect": "superconductor", "cls": "backfire" },
-    { "a": "pierce", "b": "poison", "effect": "envenom_pierce", "cls": "synergy" },
-    { "a": "void", "b": "soul", "effect": "oblivion", "cls": "synergy" },
-    { "a": "fear", "b": "soul", "effect": "despair", "cls": "synergy" },
-    { "a": "void", "b": "physical", "effect": "phase_rend", "cls": "quirk" }
+    {
+      "a": "poison",
+      "b": "silk",
+      "effect": "poison_web",
+      "cls": "synergy"
+    },
+    {
+      "a": "poison",
+      "b": "physical",
+      "effect": "tainted_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "physical",
+      "b": "silk",
+      "effect": "snare_strike",
+      "cls": "quirk"
+    },
+    {
+      "a": "physical",
+      "b": "pierce",
+      "effect": "rend",
+      "cls": "synergy"
+    },
+    {
+      "a": "fire",
+      "b": "wind",
+      "effect": "flame_storm",
+      "cls": "synergy"
+    },
+    {
+      "a": "water",
+      "b": "fire",
+      "effect": "steam",
+      "cls": "quirk"
+    },
+    {
+      "a": "fire",
+      "b": "frost",
+      "effect": "thermal_shock",
+      "cls": "backfire"
+    },
+    {
+      "a": "water",
+      "b": "lightning",
+      "effect": "conductive_shock",
+      "cls": "synergy"
+    },
+    {
+      "a": "earth",
+      "b": "water",
+      "effect": "mud",
+      "cls": "quirk"
+    },
+    {
+      "a": "acid",
+      "b": "physical",
+      "effect": "corrode",
+      "cls": "synergy"
+    },
+    {
+      "a": "acid",
+      "b": "silk",
+      "effect": "dissolve_web",
+      "cls": "quirk"
+    },
+    {
+      "a": "acid",
+      "b": "poison",
+      "effect": "necrosis",
+      "cls": "synergy"
+    },
+    {
+      "a": "frost",
+      "b": "wind",
+      "effect": "blizzard",
+      "cls": "synergy"
+    },
+    {
+      "a": "lightning",
+      "b": "wind",
+      "effect": "tempest",
+      "cls": "synergy"
+    },
+    {
+      "a": "fire",
+      "b": "earth",
+      "effect": "magma",
+      "cls": "synergy"
+    },
+    {
+      "a": "frost",
+      "b": "lightning",
+      "effect": "superconductor",
+      "cls": "backfire"
+    },
+    {
+      "a": "pierce",
+      "b": "poison",
+      "effect": "envenom_pierce",
+      "cls": "synergy"
+    },
+    {
+      "a": "void",
+      "b": "soul",
+      "effect": "oblivion",
+      "cls": "synergy"
+    },
+    {
+      "a": "fear",
+      "b": "soul",
+      "effect": "despair",
+      "cls": "synergy"
+    },
+    {
+      "a": "void",
+      "b": "physical",
+      "effect": "phase_rend",
+      "cls": "quirk"
+    },
+    {
+      "a": "dark",
+      "b": "fear",
+      "cls": "synergy",
+      "effect": "terror_shadow"
+    },
+    {
+      "a": "dark",
+      "b": "void",
+      "cls": "synergy",
+      "effect": "abyss"
+    },
+    {
+      "a": "dark",
+      "b": "physical",
+      "cls": "quirk",
+      "effect": "cursed_strike"
+    },
+    {
+      "a": "light",
+      "b": "void",
+      "cls": "backfire",
+      "effect": "annihilation"
+    },
+    {
+      "a": "light",
+      "b": "dark",
+      "cls": "backfire",
+      "effect": "paradox"
+    },
+    {
+      "a": "light",
+      "b": "fire",
+      "cls": "synergy",
+      "effect": "holy_fire"
+    },
+    {
+      "a": "water",
+      "b": "wind",
+      "cls": "synergy",
+      "effect": "hurricane"
+    },
+    {
+      "a": "water",
+      "b": "frost",
+      "cls": "synergy",
+      "effect": "absolute_zero"
+    }
   ],
   "special": [
-    { "a": "sharp_claw", "b": "quick_thought", "effect": "precise_strike", "cls": "synergy" },
-    { "a": "hp_regen", "b": "venom_bite", "effect": "toxic_blood", "cls": "quirk" },
-    { "a": "all_sight", "b": "precognition", "effect": "omniscience", "cls": "synergy" },
-    { "a": "endless_mana", "b": "mana_mastery", "effect": "mana_singularity", "cls": "synergy" },
-    { "a": "soul_gaze", "b": "inner_silence", "effect": "apex_soul", "cls": "synergy" },
-    { "a": "apex_predator", "b": "stealth", "effect": "perfect_predator", "cls": "synergy" }
+    {
+      "a": "sharp_claw",
+      "b": "quick_thought",
+      "effect": "precise_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "fist_strike",
+      "b": "quick_thought",
+      "effect": "precise_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "sword_slash",
+      "b": "quick_thought",
+      "effect": "precise_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "dragon_claw",
+      "b": "quick_thought",
+      "effect": "precise_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "bone_arrow",
+      "b": "quick_thought",
+      "effect": "precise_strike",
+      "cls": "synergy"
+    },
+    {
+      "a": "hp_regen",
+      "b": "venom_bite",
+      "effect": "toxic_blood",
+      "cls": "quirk"
+    },
+    {
+      "a": "all_sight",
+      "b": "precognition",
+      "effect": "omniscience",
+      "cls": "synergy"
+    },
+    {
+      "a": "endless_mana",
+      "b": "mana_mastery",
+      "effect": "mana_singularity",
+      "cls": "synergy"
+    },
+    {
+      "a": "soul_gaze",
+      "b": "inner_silence",
+      "effect": "apex_soul",
+      "cls": "synergy"
+    },
+    {
+      "a": "apex_predator",
+      "b": "stealth",
+      "effect": "perfect_predator",
+      "cls": "synergy"
+    },
+    {
+      "a": "dragon_claw",
+      "b": "fire_breath",
+      "cls": "synergy",
+      "effect": "dragon_inferno"
+    },
+    {
+      "a": "earth_pillar",
+      "b": "heavy_slam",
+      "cls": "synergy",
+      "effect": "earthquake"
+    },
+    {
+      "a": "void_step",
+      "b": "spatial_web",
+      "cls": "synergy",
+      "effect": "void_web"
+    },
+    {
+      "a": "soul_web",
+      "b": "chaos_thread",
+      "cls": "synergy",
+      "effect": "soul_chaos"
+    },
+    {
+      "a": "primal_roar",
+      "b": "apex_frenzy",
+      "cls": "synergy",
+      "effect": "primal_apex"
+    },
+    {
+      "a": "forbidden_amalgam",
+      "b": "soul_web",
+      "cls": "synergy",
+      "effect": "forbidden_soul"
+    },
+    {
+      "a": "venom_bite",
+      "b": "acid_spit",
+      "cls": "synergy",
+      "effect": "toxic_deluge"
+    },
+    {
+      "a": "hp_regen",
+      "b": "carapace",
+      "cls": "synergy",
+      "effect": "living_fortress"
+    },
+    {
+      "a": "silk_thread",
+      "b": "void_step",
+      "cls": "quirk",
+      "effect": "shadow_web"
+    },
+    {
+      "a": "water_bolt",
+      "b": "earth_pillar",
+      "cls": "quirk",
+      "effect": "mud_surge"
+    }
   ]
 }

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "r1",
+    "text": "I have no voice, yet I answer in the dark; call into the cavern and I call back. What am I?",
+    "clue": "Caves love to repeat me.",
+    "answers": ["echo", "an echo"],
+    "reward": { "kind": "ep", "value": 25 }
+  },
+  {
+    "id": "r2",
+    "text": "I swell while you wait and fade the moment you feed. What am I?",
+    "clue": "The dungeon's quietest killer.",
+    "answers": ["hunger", "starvation"],
+    "reward": { "kind": "fragment", "value": "lore", "amount": 2 }
+  },
+  {
+    "id": "r3",
+    "text": "Eight legs weave my silent trap; the careless become my supper. What am I?",
+    "clue": "Look up before you walk.",
+    "answers": ["spider", "a spider", "web", "spider web", "cobweb"],
+    "reward": { "kind": "ep", "value": 30 }
+  },
+  {
+    "id": "r4",
+    "text": "Name me and you destroy me; meditation only deepens me. What am I?",
+    "clue": "Virtue feeds on it.",
+    "answers": ["silence", "stillness", "quiet"],
+    "reward": { "kind": "stat", "value": "WIS", "amount": 2 }
+  },
+  {
+    "id": "r5",
+    "text": "The first to fall taught the last to rise. Name the cycle written in the First Tome.",
+    "clue": "Read the oldest book to know the word.",
+    "answers": ["rebirth", "reincarnation", "the cycle"],
+    "reward": { "kind": "ep", "value": 60 },
+    "loreReq": "lore_1"
+  },
+  {
+    "id": "r6",
+    "text": "I am always coming but never arrive; the deeper you descend, the closer I get. What am I?",
+    "clue": "Every floor brings me nearer.",
+    "answers": ["death", "the end"],
+    "reward": { "kind": "ep", "value": 35 }
+  },
+  {
+    "id": "r7",
+    "text": "I have many teeth but never bite, and I open the way only for those who know my shape. What am I?",
+    "clue": "Riddles are my cousins.",
+    "answers": ["key", "a key"],
+    "reward": { "kind": "ep", "value": 40 }
+  },
+  {
+    "id": "r8",
+    "text": "Cut me and I multiply; ignore me and I fade. I am the dark ruler's harvest. What am I?",
+    "clue": "Killing your own kin feeds me.",
+    "answers": ["sin"],
+    "reward": { "kind": "stat", "value": "INT", "amount": 2 }
+  },
+  {
+    "id": "r9",
+    "text": "I am born in the chest in the dark and make cowards of the brave; LUCK is my enemy. What am I?",
+    "clue": "It feeds the dark ruler's axis.",
+    "answers": ["fear", "dread"],
+    "reward": { "kind": "ep", "value": 30 }
+  },
+  {
+    "id": "r10",
+    "text": "The more of me you spill, the weaker you grow, yet I am the price of every blow you take. What am I?",
+    "clue": "The red ledger of survival.",
+    "answers": ["blood"],
+    "reward": { "kind": "fragment", "value": "map", "amount": 2 }
+  }
+]

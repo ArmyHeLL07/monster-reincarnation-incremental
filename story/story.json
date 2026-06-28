@@ -1,0 +1,20 @@
+{
+  "chapters": [
+    {
+      "id": "ch_forest",
+      "order": 1,
+      "areaEnemyPool": ["elroe_frog", "elroe_geafrog", "small_lesser_taratect", "small_poison_taratect"],
+      "bossId": "lesser_taratect",
+      "levelHint": 3,
+      "rewards": { "ep": 50, "statPoints": 2 },
+      "nextChapter": ""
+    }
+  ],
+  "opening": {
+    "choices": [
+      { "id": "survive", "race": "spider" },
+      { "id": "fade", "race": "slime" },
+      { "id": "power", "race": "wyrmling" }
+    ]
+  }
+}

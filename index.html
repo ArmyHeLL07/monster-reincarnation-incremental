@@ -43,8 +43,8 @@
       .muted { color: var(--ash); }
 
       .game {
-        display: grid; gap: 0.6rem; max-width: 940px; margin: 0 auto;
-        grid-template-columns: 168px 1fr;
+        display: grid; gap: 0.6rem; max-width: 980px; margin: 0 auto;
+        grid-template-columns: 200px 1fr;
         grid-template-areas: "top top" "side main" "side log";
       }
       .topbar {
@@ -116,8 +116,33 @@
       .equipbtn.on { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
       .skillrow { cursor: pointer; }
       .skilldesc { margin: 0.2rem 0 0.4rem 1rem; padding: 0.4rem 0.6rem; font-size: 0.8rem; color: var(--ash); background: #0e0c14; border-left: 2px solid var(--venom-dim); border-radius: 6px; }
+      /* Status HUD: in-flow at the top of the left sidebar (no overlap with the tab buttons). */
+      .ministatus {
+        width: 100%; margin-bottom: 0.55rem; padding: 0.7rem 0.8rem;
+        font-size: 0.82rem; font-family: var(--mono); color: var(--ash);
+        background: linear-gradient(180deg, #1c1827, #131019); border: 1px solid var(--chitin);
+        border-radius: 10px; border-bottom: 2px solid var(--venom-dim);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      }
+      .ministatus .mf { font-family: var(--disp); color: var(--bone); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.4rem; }
+      .ministatus .mr { display: flex; justify-content: space-between; gap: 0.4rem; margin-top: 0.15rem; }
+      .ministatus .mbar { height: 7px; border-radius: 4px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; margin: 2px 0 5px; }
+      .ministatus .mbar > i { display: block; height: 100%; transition: width 0.55s ease-out; }
+      .skillgroup h3 { margin: 0.55rem 0 0.2rem; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+      /* Skills screen: list (left) + fusion lab (right); category sub-tabs above the list. */
+      .skillscols { display: grid; gap: 0.6rem; grid-template-columns: 1fr 300px; align-items: start; }
+      @media (max-width: 760px) { .skillscols { grid-template-columns: 1fr; } }
+      .skillscols .panel { margin: 0; }
+      .subtabs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.4rem 0 0.2rem; }
+      .subtab { min-height: 32px; padding: 0.25rem 0.6rem; font-size: 0.8rem; background: #191522; border: 1px solid var(--chitin); border-radius: 8px; color: var(--ash); cursor: pointer; }
+      .subtab.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
+      /* HUD lives in the sidebar (desktop/tablet) → hide the duplicate top bars there.
+         On mobile the sidebar is a horizontal row, so hide the HUD and use the top bars instead. */
+      @media (min-width: 641px) { .topbar .bars { display: none; } }
+      @media (max-width: 640px) { .ministatus { display: none; } }
       .toasts { position: fixed; top: 0.6rem; right: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; z-index: 60; max-width: 72vw; pointer-events: none; }
-      .toast { background: linear-gradient(180deg, #20300f, #16110f); border: 1px solid var(--venom); border-left: 3px solid var(--venom); color: var(--bone); padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); transition: opacity 0.4s ease, transform 0.4s ease; }
+      .toast { background: linear-gradient(180deg, #20300f, #16110f); border: 1px solid var(--venom); border-left: 3px solid var(--venom); color: var(--bone); padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: auto; cursor: pointer; }
+      .toast::after { content: " ✕"; color: var(--ash); font-size: 0.72rem; }
       .toast.out { opacity: 0; transform: translateX(24px); }
       .floorbtn { min-width: 40px; min-height: 36px; padding: 0.2rem 0.5rem; flex: 0 0 auto; }
       span.floorbtn.current { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
@@ -126,18 +151,21 @@
       .evoready { color: var(--ember); font-family: var(--disp); letter-spacing: 0.08em; animation: pulse 1.8s ease-in-out infinite; }
 
       /* --- dungeon map (fog-of-war grid) --- */
-      .dmap { display: flex; flex-direction: column; gap: 5px; margin: 0.4rem 0; }
-      .dmap-floor { display: grid; grid-template-columns: 16px repeat(var(--cols), 1fr); gap: 4px; align-items: center; }
+      /* Natural cell size + horizontal scroll — don't squeeze a 20-room floor into the panel width. */
+      .dmap { display: flex; flex-direction: column; gap: 5px; margin: 0.4rem 0; overflow-x: auto; align-items: flex-start; padding-bottom: 4px; }
+      .dmap-floor { display: grid; grid-template-columns: 18px repeat(var(--cols), 24px); gap: 4px; align-items: center; }
       .dmap-floor .flabel { font-family: var(--mono); font-size: 0.6rem; color: var(--ash); text-align: right; opacity: 0.65; }
       .dcell {
         aspect-ratio: 1 / 1; border-radius: 4px; display: flex; align-items: center; justify-content: center;
         font-size: 0.62rem; line-height: 1; background: #100e16; border: 1px solid #1d1925; color: var(--ash);
         transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
       }
-      .dcell.fog { background: #0b0a10; border-color: #15121d; color: transparent; }
+      .dcell.fog { background: #000000; border-color: #000000; color: transparent; }
       .dcell.lit { background: linear-gradient(180deg, #21311b, #16210f); border-color: var(--venom-dim); color: var(--venom); box-shadow: inset 0 0 6px rgba(138, 178, 63, 0.14); }
-      .dcell.boss.fog { border-color: #2a2016; }
+      .dcell.boss.fog { background: #000000; border-color: #000000; }
       .dcell.boss.lit { color: var(--ember); border-color: var(--ember); box-shadow: inset 0 0 9px rgba(224, 144, 47, 0.3); }
+      .dcell.clickable { cursor: pointer; }
+      .dcell.clickable:hover { border-color: var(--venom); box-shadow: 0 0 8px rgba(138, 178, 63, 0.5); }
       .dcell.current { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); border-color: var(--bone); color: var(--abyss); font-weight: 700; box-shadow: 0 0 12px rgba(138, 178, 63, 0.55); animation: pulse 1.6s ease-in-out infinite; }
       .dlegend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.72rem; color: var(--ash); margin-top: 0.5rem; }
       .dlegend span { display: inline-flex; align-items: center; gap: 0.32rem; }
@@ -147,6 +175,212 @@
       .dlegend i.fog { background: #0b0a10; }
       .dlegend i.boss { background: #2a2016; border-color: var(--ember); }
 
+      /* Evrim ağacı — dikey, alttan-yukarı dallanan dairesel düğümler ve SVG bağlantıları */
+      .evotree-viewport {
+        overflow-x: auto; width: 100%; border-radius: var(--rad);
+        border: 1px solid var(--chitin); background: rgba(10, 9, 16, 0.45);
+        margin: 0.4rem 0 0.8rem;
+      }
+      .evotree-container {
+        position: relative; width: 100%; min-width: 640px; height: 420px;
+        overflow: hidden;
+      }
+      @media (min-width: 641px) {
+        .evotree-container {
+          min-width: 100%;
+          height: 440px;
+        }
+      }
+      .evotree-svg {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 1;
+      }
+      .evo-path {
+        stroke-width: 3px; fill: none; transition: stroke 0.35s ease, stroke-dasharray 0.35s ease;
+        vector-effect: non-scaling-stroke;
+      }
+      .evo-path.unlocked {
+        stroke: var(--venom);
+        filter: drop-shadow(0 0 3px var(--venom-dim));
+      }
+      .evo-path.locked {
+        stroke: #2d263b;
+        stroke-dasharray: 5 5;
+      }
+      .evo-node {
+        position: absolute; z-index: 2; transform: translate(-50%, -50%);
+        display: flex; flex-direction: column; align-items: center;
+        cursor: pointer; transition: transform 0.2s ease-in-out;
+        user-select: none; -webkit-user-drag: none;
+      }
+      .evo-node:hover {
+        transform: translate(-50%, -50%) scale(1.08);
+      }
+      .evo-circle {
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: #14121b; border: 2.5px solid #2a2536;
+        transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        color: var(--bone);
+      }
+      
+      /* Düğüm boyutları ve yazı büyüklükleri (Tier'a göre küçülür, böylece sıkışmazlar) */
+      .evo-node.tier-0 .evo-circle,
+      .evo-node.tier-1 .evo-circle {
+        width: 44px; height: 44px; font-size: 1.2rem;
+      }
+      .evo-node.tier-2 .evo-circle {
+        width: 40px; height: 40px; font-size: 1.1rem;
+      }
+      .evo-node.tier-3 .evo-circle {
+        width: 36px; height: 36px; font-size: 1rem;
+      }
+      .evo-node.tier-4 .evo-circle {
+        width: 32px; height: 32px; font-size: 0.9rem;
+      }
+      .evo-node.tier-5 .evo-circle {
+        width: 28px; height: 28px; font-size: 0.8rem;
+      }
+
+      .evo-node.current .evo-circle {
+        border-color: #8c66ff;
+        background: radial-gradient(circle, #2a165c 0%, #0e0a1a 100%);
+        box-shadow: 0 0 16px rgba(140, 102, 255, 0.75), inset 0 0 8px rgba(140, 102, 255, 0.4);
+        animation: current-pulse 2s infinite ease-in-out;
+      }
+      .evo-node.past .evo-circle {
+        border-color: var(--venom-dim);
+        background: radial-gradient(circle, #1c2b14 0%, #090e06 100%);
+        box-shadow: 0 0 8px rgba(88, 111, 44, 0.45);
+        color: var(--venom);
+      }
+      .evo-node.available .evo-circle {
+        border-color: var(--venom);
+        background: radial-gradient(circle, #3d5222 0%, #151e0b 100%);
+        box-shadow: 0 0 16px rgba(138, 178, 63, 0.7);
+        animation: evoglow 1.8s infinite ease-in-out;
+        color: var(--venom);
+      }
+      .evo-node.locked .evo-circle {
+        border-color: #3b354d;
+        background: #181622;
+        color: var(--ash);
+        opacity: 0.9;
+      }
+      .evo-node.missed .evo-circle {
+        border-color: #452a2a;
+        background: #1a0f0f;
+        color: #7a5454;
+        opacity: 0.45;
+        border-style: dashed;
+      }
+      .evo-node.hidden .evo-circle {
+        border-color: #242130;
+        background: #121018;
+        color: #555166;
+        opacity: 0.35;
+        border-style: dashed;
+      }
+      .evo-node.selected .evo-circle {
+        outline: 2px solid var(--bone);
+        outline-offset: 2px;
+      }
+      
+      .evo-node-label {
+        font-family: var(--mono); color: var(--ash);
+        margin-top: 0.35rem; text-align: center;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9); transition: color 0.2s;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .evo-node.tier-0 .evo-node-label,
+      .evo-node.tier-1 .evo-node-label {
+        font-size: 0.68rem; max-width: 80px;
+      }
+      .evo-node.tier-2 .evo-node-label {
+        font-size: 0.65rem; max-width: 70px;
+      }
+      .evo-node.tier-3 .evo-node-label {
+        font-size: 0.62rem; max-width: 60px;
+      }
+      .evo-node.tier-4 .evo-node-label {
+        font-size: 0.58rem; max-width: 50px;
+      }
+      .evo-node.tier-5 .evo-node-label {
+        font-size: 0.54rem; max-width: 42px;
+      }
+
+      .evo-node:hover .evo-node-label,
+      .evo-node.selected .evo-node-label {
+        color: var(--bone);
+      }
+      .evo-node.current .evo-node-label {
+        color: #aa94ff; font-weight: 700;
+      }
+      .evo-node.available .evo-node-label {
+        color: var(--venom);
+      }
+
+      /* Info kartı */
+      .evo-info-card {
+        background: linear-gradient(180deg, #1b1727, #110e1a);
+        border: 1px solid var(--chitin); border-radius: var(--rad);
+        padding: 0.95rem 1.15rem; margin-top: 0.7rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+        border-left: 4px solid var(--chitin);
+        transition: border-left-color 0.3s ease;
+      }
+      .evo-info-card.status-current, .evo-info-card.status-past {
+        border-left-color: #8c66ff;
+      }
+      .evo-info-card.status-available {
+        border-left-color: var(--venom);
+      }
+      .evo-info-card.status-locked {
+        border-left-color: var(--ember);
+      }
+      .evo-info-card.status-missed, .evo-info-card.status-hidden {
+        border-left-color: var(--blood);
+        opacity: 0.7;
+      }
+      .evo-info-header {
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 0.5rem; margin-bottom: 0.7rem;
+      }
+      .evo-info-title {
+        font-family: var(--disp); font-size: 0.98rem;
+        text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+      }
+      .evo-info-status {
+        font-size: 0.7rem; font-family: var(--mono); text-transform: uppercase;
+        letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 4px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .evo-info-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1.5rem;
+      }
+      .evo-info-section-title {
+        font-size: 0.72rem; text-transform: uppercase;
+        letter-spacing: 0.08em; color: var(--venom); margin-bottom: 0.25rem;
+      }
+
+      @keyframes evoglow {
+        0%, 100% { box-shadow: 0 0 5px rgba(138, 178, 63, 0.4); }
+        50% { box-shadow: 0 0 16px rgba(138, 178, 63, 0.85); }
+      }
+      @keyframes current-pulse {
+        0%, 100% { box-shadow: 0 0 6px rgba(140, 102, 255, 0.4); transform: scale(1); }
+        50% { box-shadow: 0 0 18px rgba(140, 102, 255, 0.85); transform: scale(1.05); }
+      }
+
+      .evpanel .ev-head { font-size: 0.95rem; margin-bottom: 0.3rem; }
+      .ev-choices { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.5rem; }
+      .evchoice { text-align: left; }
+      .ev-foresee { font-size: 0.72rem; margin: -0.25rem 0 0.15rem 0.5rem; color: var(--ash); }
+      .brpanel { border-color: var(--ember); }
+      .brpanel .ev-head { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--ember); }
+      .br-fights { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.2rem; }
+
       .log {
         max-height: 180px; overflow-y: auto; font-family: var(--mono); font-size: 0.76rem; color: var(--ash);
         background: #0e0c14; border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.5rem 0.65rem;
@@ -155,17 +389,383 @@
       .log div:first-child { color: var(--bone); }
       .head { width: 100%; max-width: 300px; height: auto; display: block; margin: 0.3rem auto 0.7rem; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); }
       .eye:active circle { opacity: 0.8; }
+      .erow { display: flex; align-items: center; gap: 0.7rem; }
+      .eportrait {
+        flex: none; display: inline-flex; align-items: center; justify-content: center;
+        width: 64px; height: 64px; font-size: 2.2rem; line-height: 1;
+        border: 2px solid var(--chitin); border-radius: 12px;
+        background: radial-gradient(circle at 50% 38%, #23202e, #0e0c14);
+      }
+      .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; }
+      /* Hand-drawn portraits: larger frame, image fills it (transparent PNGs). */
+      .eportrait.has-img { width: 84px; height: 84px; overflow: hidden; }
+      .eportrait.boss.has-img { width: 104px; height: 104px; }
+      .eportrait-img { width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
+      .bc-img { width: 100%; height: 100%; object-fit: contain; }
+      .bestiary-card .bc-icon:has(.bc-img) { height: 64px; }
+
+      /* --- combat & rest stage animations -------------------------------------
+         The combat tab re-renders every game tick (1000ms). Any animation whose
+         duration divides 1000ms restarts at phase 0 on each re-render → a seamless
+         loop. A 1s "attack" thus plays exactly once per combat round (in sync). */
+      @keyframes enemy-attack {
+        0%   { transform: translateX(0) scale(1); }
+        16%  { transform: translateX(-9px) scale(1.13); }
+        34%  { transform: translateX(0) scale(1); }
+        100% { transform: translateX(0) scale(1); }
+      }
+      @keyframes enemy-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+      @keyframes boss-glow {
+        0%, 100% { box-shadow: 0 0 10px currentColor; }
+        50%      { box-shadow: 0 0 24px 3px currentColor; }
+      }
+      .eportrait.combat-active { animation: enemy-attack 1s ease-out; }
+      .eportrait.boss.combat-active { animation: enemy-attack 1s ease-out, boss-glow 1s ease-in-out infinite; }
+      .eportrait.idle-foe { animation: enemy-breathe 1s ease-in-out; } /* enemy present but combat paused */
+
+      .rest-stage { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.4rem 0 0.2rem; }
+      .rest-bars { width: 90%; max-width: 240px; display: flex; flex-direction: column; gap: 0.25rem; }
+      .rest-bar-row { display: flex; align-items: center; gap: 0.4rem; }
+      .rest-bar-row .bar { flex: 1; height: 8px; }
+      .rest-bar-row span:last-child { min-width: 3.5rem; text-align: right; font-size: 0.78rem; }
+      .rest-stage .rest-aura { border-radius: 50%; display: inline-flex; }
+      .rest-stage .head { max-width: 116px; margin: 0; }
+      .rest-stage .rest-portrait { width: 132px; height: 132px; object-fit: contain; display: block;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+      .rest-stage .rest-label { font-family: var(--disp); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.74rem; }
+      .rest-stage.resting    .head, .rest-stage.resting    .rest-portrait { animation: rest-breathe 1s ease-in-out; }
+      .rest-stage.resting    .rest-aura{ animation: rest-aura 1s ease-in-out; }
+      .rest-stage.resting    .rest-label { color: var(--venom); }
+      .rest-stage.meditating .head, .rest-stage.meditating .rest-portrait { animation: med-float 1s ease-in-out; }
+      .rest-stage.meditating .rest-aura{ animation: med-aura 1s ease-in-out; }
+      .rest-stage.meditating .rest-label { color: var(--mp); }
+      @keyframes rest-breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.045) translateY(-3px); } }
+      @keyframes med-float    { 0%, 100% { transform: translateY(0); }        50% { transform: translateY(-5px); } }
+      @keyframes rest-aura { 0%, 100% { box-shadow: 0 0 0 0 rgba(111, 174, 83, 0); } 50% { box-shadow: 0 0 26px 6px rgba(111, 174, 83, 0.4); } }
+      @keyframes med-aura  { 0%, 100% { box-shadow: 0 0 0 0 rgba(79, 134, 194, 0); } 50% { box-shadow: 0 0 28px 7px rgba(79, 134, 194, 0.45); } }
+
+      .fs-btn {
+        background: linear-gradient(180deg, #1d1928, #161320); color: var(--ash);
+        border: 1px solid var(--chitin); border-radius: 8px; cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+        font-family: var(--disp); font-weight: 600; letter-spacing: 0.05em;
+      }
+      .fs-btn:hover { color: var(--bone); border-color: var(--venom-dim); }
+      .fs-btn.active { color: var(--abyss); background: linear-gradient(180deg, var(--venom), var(--venom-dim)); border-color: var(--venom); box-shadow: 0 0 10px rgba(138, 178, 63, 0.25); }
+
+      /* --- evolution burst: a one-shot fullscreen flash, appended to <body> on evolve --- */
+      .evo-burst { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .evo-burst-ring {
+        position: absolute; width: 44px; height: 44px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(224, 144, 47, 0.95), rgba(138, 178, 63, 0.45) 42%, transparent 70%);
+        animation: evo-burst-ring 1.2s ease-out forwards;
+      }
+      .evo-burst-rays {
+        position: absolute; width: 4px; height: 240px;
+        background: linear-gradient(transparent, rgba(224, 144, 47, 0.55), transparent);
+        animation: evo-burst-rays 1s ease-out forwards;
+      }
+      .evo-burst-text {
+        position: relative; text-align: center; font-family: var(--disp); color: var(--bone);
+        letter-spacing: 0.2em; text-transform: uppercase; font-size: 1.05rem;
+        text-shadow: 0 0 14px var(--ember), 0 0 30px var(--venom);
+        animation: evo-burst-text 1.9s ease-out forwards;
+      }
+      .evo-burst-text span { display: block; margin-top: 0.35rem; font-size: 1.55rem; color: var(--ember); letter-spacing: 0.12em; }
+      /* Achievement burst — same animation as evolution, gold-tinted to set it apart. */
+      .ach-burst .evo-burst-ring { background: radial-gradient(circle, rgba(230, 197, 88, 0.95), rgba(201, 162, 58, 0.45) 42%, transparent 70%); }
+      .ach-burst .evo-burst-rays { background: linear-gradient(transparent, rgba(230, 197, 88, 0.6), transparent); }
+      .ach-burst .evo-burst-text { text-shadow: 0 0 14px #e6c558, 0 0 30px #c9a23a; }
+      .ach-burst .evo-burst-text span { color: #e6c558; }
+      @keyframes evo-burst-ring { 0% { transform: scale(0.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(24); opacity: 0; } }
+      @keyframes evo-burst-rays { 0% { transform: scale(0.2) rotate(0deg); opacity: 0; } 25% { opacity: 0.9; } 100% { transform: scale(1.4) rotate(40deg); opacity: 0; } }
+      @keyframes evo-burst-text {
+        0% { transform: scale(0.6); opacity: 0; }
+        18% { transform: scale(1.12); opacity: 1; }
+        30% { transform: scale(1); }
+        76% { opacity: 1; }
+        100% { opacity: 0; transform: scale(1.05); }
+      }
+
+      /* --- rebirth: a dramatic death→soul-light→rebirth arc (longer & darker than evolve) --- */
+      .rb-burst { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .rb-veil { position: absolute; inset: 0; animation: rb-veil 2.4s ease-in-out forwards; }
+      @keyframes rb-veil {
+        0%   { background: radial-gradient(circle at 50% 58%, rgba(10, 9, 16, 0), rgba(10, 9, 16, 0)); }
+        24%  { background: radial-gradient(circle at 50% 58%, rgba(10, 9, 16, 0.86), rgba(6, 5, 10, 0.96)); }   /* death — screen darkens */
+        56%  { background: radial-gradient(circle at 50% 54%, rgba(180, 160, 235, 0.85), rgba(20, 16, 32, 0.8)); } /* soul light blooms */
+        100% { background: radial-gradient(circle at 50% 50%, rgba(180, 160, 235, 0), rgba(10, 9, 16, 0)); }       /* clears */
+      }
+      .rb-soul {
+        position: absolute; width: 150px; height: 150px; border-radius: 50%; filter: blur(2px);
+        background: radial-gradient(circle, rgba(224, 216, 255, 0.95), rgba(154, 127, 208, 0.5) 45%, transparent 70%);
+        animation: rb-soul 2.4s ease-out forwards;
+      }
+      @keyframes rb-soul {
+        0%   { transform: translateY(60px) scale(0.25); opacity: 0; }
+        30%  { opacity: 0.35; }
+        56%  { transform: translateY(-26px) scale(1.25); opacity: 1; }
+        100% { transform: translateY(-130px) scale(0.55); opacity: 0; }
+      }
+      .rb-text {
+        position: relative; text-align: center; font-family: var(--disp); color: var(--bone);
+        letter-spacing: 0.22em; text-transform: uppercase; font-size: 1.1rem;
+        text-shadow: 0 0 16px #9a7fd0, 0 0 34px #4f86c2; animation: rb-text 2.4s ease-out forwards;
+      }
+      .rb-text span { display: block; margin-top: 0.4rem; font-size: 0.95rem; color: #b9a8e6; letter-spacing: 0.1em; }
+      @keyframes rb-text {
+        0%, 35% { transform: scale(0.7); opacity: 0; }
+        50%  { transform: scale(1.1); opacity: 1; }
+        60%  { transform: scale(1); }
+        82%  { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      /* --- inventory / equipment (humanoid races) --- */
+      .r-common { color: #b8b3a4; } .r-uncommon { color: #6fae53; } .r-rare { color: #4f86c2; }
+      .r-epic { color: #9a7fd0; } .r-legendary { color: #e0902f; }
+      .paperdoll { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin: 0.4rem 0 0.2rem; }
+      .eq-slot {
+        min-height: 58px; border: 1px solid var(--chitin); border-radius: 9px; background: #14121b;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+        cursor: pointer; padding: 0.3rem; text-align: center; transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .eq-slot:hover { border-color: var(--venom-dim); }
+      .eq-slot.empty { opacity: 0.55; border-style: dashed; }
+      .eq-slot.sel { box-shadow: 0 0 9px rgba(138, 178, 63, 0.45); }
+      .eq-slot .eq-ic { font-size: 1.5rem; line-height: 1; }
+      .eq-slot .eq-lbl { font-size: 0.6rem; color: var(--ash); text-transform: uppercase; letter-spacing: 0.04em; }
+      .eq-slot.r-uncommon { border-color: #6fae53; } .eq-slot.r-rare { border-color: #4f86c2; }
+      .eq-slot.r-epic { border-color: #9a7fd0; } .eq-slot.r-legendary { border-color: #e0902f; box-shadow: 0 0 9px rgba(224, 144, 47, 0.35); }
+      .eq-sum { font-size: 0.8rem; margin: 0.3rem 0 0; }
+      .bag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 0.4rem; margin-top: 0.45rem; }
+      .bag-cell { min-height: 46px; font-size: 1.5rem; line-height: 1; border: 1px solid var(--chitin); border-radius: 8px; background: #14121b; cursor: pointer; padding: 0; }
+      .bag-cell:hover { border-color: var(--venom-dim); }
+      .bag-cell.r-uncommon { border-color: #6fae53; } .bag-cell.r-rare { border-color: #4f86c2; }
+      .bag-cell.r-epic { border-color: #9a7fd0; } .bag-cell.r-legendary { border-color: #e0902f; box-shadow: 0 0 9px rgba(224, 144, 47, 0.4); }
+      .bag-cell.sel { outline: 2px solid var(--venom); outline-offset: 1px; }
+      .it-detail .it-name { font-weight: 600; }
+      .it-stats { margin: 0.35rem 0; padding-left: 1.1rem; font-size: 0.86rem; }
+      .it-cmp { font-size: 0.82rem; margin: 0.2rem 0 0.4rem; }
+      .it-req { font-size: 0.82rem; margin: 0.1rem 0 0.3rem; }
+      .eq-set { font-size: 0.8rem; margin: 0.25rem 0 0; }
+      .d-up { color: #6fae53; } .d-down { color: #bb4140; }
+
+      /* --- version badge + changelog popover --- */
+      .version-badge {
+        position: relative; display: inline-flex; align-items: center; gap: 0.25rem;
+        font-family: var(--mono); font-size: 0.72rem; color: var(--ash); cursor: help;
+        border: 1px solid var(--chitin); border-radius: 7px; padding: 0.2rem 0.45rem;
+        background: #14121b; transition: color 0.15s, border-color 0.15s;
+      }
+      .version-badge:hover, .version-badge:focus-within { color: var(--venom); border-color: var(--venom-dim); outline: none; }
+      .version-badge .ver-ic { color: var(--ember); }
+      .version-pop {
+        display: none; position: absolute; top: calc(100% + 6px); right: 0; z-index: 200;
+        width: min(300px, 78vw); max-height: 60vh; overflow-y: auto;
+        background: linear-gradient(180deg, var(--stone2), var(--stone)); border: 1px solid var(--chitin);
+        border-radius: 10px; padding: 0.6rem 0.7rem; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+        text-align: left; cursor: default;
+      }
+      .version-badge:hover .version-pop, .version-badge:focus-within .version-pop { display: block; }
+      .version-pop .cl-title { font-family: var(--disp); color: var(--venom); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; margin-bottom: 0.4rem; }
+      .version-pop .cl-entry { margin-bottom: 0.55rem; }
+      .version-pop .cl-entry:last-child { margin-bottom: 0; }
+      .version-pop .cl-ver { font-family: var(--mono); font-size: 0.74rem; color: var(--bone); margin-bottom: 0.15rem; }
+      .version-pop .cl-latest .cl-ver { color: var(--ember); }
+      .version-pop ul { padding-left: 1rem; margin: 0; }
+      .version-pop li { font-size: 0.76rem; color: var(--ash); margin: 0.1rem 0; }
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
-        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; }
+        body { padding: 0.4rem; }
+        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
         .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; }
-        .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; }
-        .topbar .bars { grid-template-columns: 1fr; }
+        .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; min-height: 40px; font-size: 0.75rem; }
+        .tabbtn svg { width: 15px; height: 15px; }
+        .topbar .bars { grid-template-columns: 1fr; gap: 0.2rem; }
+        .topbar { padding: 0.5rem 0.7rem; }
+        .topbar .sub { font-size: 0.75rem; }
+        .panel { padding: 0.6rem 0.75rem; margin: 0 0 0.5rem; }
+        .head { max-width: 160px; margin: 0.2rem auto 0.5rem; }
+        .log { max-height: 110px; }
+        .controls button { flex: 1 1 45%; min-height: 48px; font-size: 0.88rem; padding: 0.4rem 0.6rem; }
+        /* Changelog popover: anchor to viewport centre on mobile so it can't slide off-screen. */
+        .version-pop {
+          position: fixed; top: 50%; left: 50%; right: auto;
+          transform: translate(-50%, -50%);
+          width: min(340px, 92vw); max-height: 80vh;
+        }
       }
       @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+      /* Race selection screen */
+      .race-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; margin: 0.8rem 0; }
+      .race-card {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
+        background: linear-gradient(180deg, #1e1a2c, #151220); border: 1px solid var(--chitin);
+        border-radius: 10px; padding: 0.8rem 0.9rem; min-height: 210px; text-align: left;
+        cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+        /* the race portrait sits behind, a dark gradient keeps the text readable */
+        background-size: cover; background-position: center 22%; background-repeat: no-repeat;
+        justify-content: flex-end; position: relative; overflow: hidden;
+      }
+      .race-card:hover { border-color: var(--venom-dim); }
+      .race-card-active { border-color: var(--venom) !important; box-shadow: 0 0 14px rgba(138, 178, 63, 0.45); }
+      .race-card-name { font-family: var(--disp); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone); font-weight: 600; text-shadow: 0 1px 3px #000; }
+      .race-card .muted { text-shadow: 0 1px 3px #000; }
+      .racepick { flex: 1 1 auto; }
+      /* Bestiary cols & split layout */
+      .bestiary-cols { display: grid; gap: 0.6rem; grid-template-columns: 240px 1fr; align-items: start; }
+      @media (max-width: 760px) { .bestiary-cols { grid-template-columns: 1fr; } }
+      .bestiary-list { max-height: 480px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.3rem; padding-right: 0.2rem; }
+      .bestiary-list-item {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem;
+        background: #191522; border: 1px solid var(--chitin); border-radius: 8px;
+        color: var(--ash); cursor: pointer; text-align: left; width: 100%; transition: background 0.15s, border-color 0.15s;
+        font-family: var(--body); font-size: 0.85rem;
+      }
+      .bestiary-list-item:hover { border-color: var(--venom-dim); color: var(--bone); }
+      .bestiary-list-item.active { background: rgba(138, 178, 63, 0.08); border-color: var(--venom); color: var(--venom); font-weight: 600; }
+      .bestiary-list-item.locked { opacity: 0.5; cursor: default; }
+      .bestiary-list-item.locked:hover { border-color: var(--chitin); color: var(--ash); }
+      .bestiary-list-item .bc-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+      .bestiary-list-item .bc-img { width: 20px; height: 20px; object-fit: contain; }
+      .bestiary-detail-pane {
+        background: rgba(255,255,255,0.02); border: 1px solid var(--chitin); border-radius: var(--rad); padding: 0.8rem 1rem;
+        min-height: 350px;
+      }
+      .bestiary-detail-pane h3 { font-family: var(--disp); font-size: 1.15rem; color: var(--ember); margin: 0 0 0.5rem; text-align: center; }
+      .bestiary-detail-table { width: 100%; border-collapse: collapse; margin-top: 0.6rem; margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .bestiary-detail-table td { padding: 0.35rem 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+      .bestiary-detail-table td:first-child { font-weight: 600; color: var(--ash); width: 45%; }
+      .bestiary-detail-table td:last-child { font-family: var(--mono); text-align: right; }
+      .bestiary-flavor {
+        font-style: italic; font-size: 0.82rem; color: var(--bone); opacity: 0.85; line-height: 1.4;
+        background: rgba(0,0,0,0.25); border-left: 2px solid var(--venom-dim); padding: 0.5rem 0.6rem; border-radius: 4px;
+        margin-top: 0.5rem;
+      }
+      .beh-tag { background: rgba(138,178,63,0.15); border: 1px solid rgba(138,178,63,0.3); border-radius: 4px; padding: 0.1rem 0.3rem; font-size: 0.68rem; color: var(--venom); }
+      /* Enemy panel — fixed minimum height so layout doesn't jump when a foe dies/spawns. */
+      .enemy-panel { min-height: 130px; }
+      /* Soul prestige tree */
+      .soul-panel { border-color: rgba(154,127,208,0.4); }
+      .soul-bal { font-family: var(--disp); color: #b79de0; font-weight: 600; }
+      .soul-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.45rem; }
+      .soul-row { background: rgba(154,127,208,0.07); border: 1px solid rgba(154,127,208,0.18); border-radius: 8px; padding: 0.45rem 0.6rem; }
+      .soul-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.88rem; }
+      .soul-desc { font-size: 0.76rem; margin: 0.15rem 0 0.35rem; }
+      .soul-act { display: flex; justify-content: flex-end; }
+      .soul-buy { background: linear-gradient(180deg,#3a2f55,#241d36); color: #d9cdf0; border: 1px solid #6f5aa0; border-radius: 7px; padding: 0.25rem 0.7rem; font-size: 0.8rem; cursor: pointer; }
+      .soul-buy.disabled { opacity: 0.4; cursor: not-allowed; }
+      .soul-max { color: var(--venom); font-size: 0.78rem; font-weight: 600; }
+
+      /* Race signature gauge panel */
+      .sig-panel { border-color: rgba(138,178,63,0.35); }
+      .sig-block { margin: 0.2rem 0; }
+      .sig-block .row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem; }
+      .sig-val { color: var(--bone); font-weight: 600; }
+      .sig-hint { font-size: 0.72rem; color: var(--ash); margin-top: 0.25rem; }
+
+      /* Skill tree */
+      .sk-tree { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.4rem 0; }
+      .sk-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem; }
+      .sk-arrow { color: var(--ash); margin: 0 0.1rem; }
+      .sk-node { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.8rem; border: 1px solid transparent; }
+      .sk-node.sk-owned    { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
+      .sk-node.sk-available { background: #2a2038; border-color: var(--bone); color: var(--bone); }
+      .sk-node.sk-locked   { background: #1a1525; border-color: #444; color: var(--ash); }
+      .sk-node.sk-seen     { background: #1a1525; border-color: #555; color: #888; font-style: italic; }
+      .sk-node.sk-hidden   { background: #111; border-color: #333; color: #444; font-style: italic; }
+      .sk-rank { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 0 0.25rem; margin-right: 0.2rem; border-radius: 4px; background: rgba(0,0,0,0.3); }
+      .sk-rank-SS { color: #e6c449; }
+      .sk-rank-S  { color: #c678e6; }
+      .sk-rank-A  { color: #e66e6e; }
+      .sk-rank-B  { color: #e6a34a; }
+      .sk-rank-C  { color: #4ac8e6; }
+      .sk-derived-title { font-size: 0.75rem; border-top: 1px solid #333; padding-top: 0.4rem; margin-top: 0.4rem; }
+      .human-path-btn { background: #1a1525; border: 1px solid var(--chitin); border-radius: 8px; padding: 0.6rem 0.8rem; width: 100%; transition: border-color 0.15s; }
+      .human-path-btn:hover { border-color: var(--venom); }
+
+      /* Kill quota badge */
+      .kill-badge { position: absolute; top: 0.2rem; right: 0.2rem; font-size: 0.72rem; font-family: var(--mono); color: var(--ash); background: rgba(0,0,0,0.55); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; }
+      .kill-badge.kill-quota-met { color: var(--venom); font-weight: 700; }
+      .elite-badge { position: absolute; top: 0.2rem; left: 0.2rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; box-shadow: 0 0 8px rgba(230,197,88,0.6); z-index: 2; }
+
+      /* Log panels — collapsible */
+      .logpanel { display: flex; flex-direction: column; gap: 0.35rem; }
+      .logcol-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0.3rem 0.6rem; background: #191522; border: 1px solid var(--chitin); border-radius: 8px 8px 0 0; user-select: none; }
+      .logcol-header h3 { margin: 0; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+      .logcol-toggle { font-size: 0.65rem; color: var(--ash); }
+      .logcol-body { overflow-y: auto; padding: 0.3rem 0.7rem; background: #0e0c14; border: 1px solid var(--chitin); border-top: none; border-radius: 0 0 8px 8px; margin-bottom: 0.15rem; }
+      .logcol-body.collapsed { display: none; }
+      .logcol-body li { margin: 0.18rem 0; font-size: 0.8rem; }
+      .logcol-body.lore-body { max-height: 240px; }
+      .logcol-body.short-body { max-height: 140px; }
+      .forage-panel { border: 1px solid var(--venom); background: #0e1208; margin-top: .5rem; }
+      .forage-panel h2 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--venom); margin: 0 0 .4rem; }
+      .forage-info { font-size: .9rem; display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+      .tutorial-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(0,0,0,0.55); display: flex;
+        align-items: center; justify-content: center;
+        padding: 1rem;
+      }
+      .tutorial-overlay.hidden { display: none; }
+      .tutorial-box {
+        background: var(--panel, #1a1725); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px; padding: 1.5rem; max-width: 480px; width: 100%;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      }
+      .tutorial-box h2 { margin: 0 0 0.75rem; font-size: 1.1rem; color: var(--venom, #6fae53); }
+      .tutorial-box p { margin: 0 0 1.2rem; line-height: 1.6; color: rgba(255,255,255,0.85); font-size:0.92rem; }
+      .tutorial-step-count { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; }
+      .tutorial-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+      .tutorial-goto { margin-right: auto; }
+      .guide-link {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5);
+        font-size: 0.7rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.12);
+        margin-left: 0.3rem; vertical-align: middle; flex-shrink: 0;
+        transition: background 0.15s;
+      }
+      .guide-link:hover { background: rgba(255,255,255,0.18); color: #fff; }
+      @keyframes floatUpFade {
+        0% {
+          transform: translate(-50%, 0) scale(0.8);
+          opacity: 0;
+        }
+        15% {
+          transform: translate(-50%, -20px) scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -80px) scale(1);
+          opacity: 0;
+        }
+      }
+      .floating-damage-text {
+        animation: floatUpFade 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      }
+      @keyframes shakeAnimation {
+        0% { transform: translate(0, 0); }
+        10% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+        20% { transform: translate(4px, -3px) rotate(0.5deg); }
+        30% { transform: translate(-3px, -4px) rotate(-0.5deg); }
+        40% { transform: translate(3px, 4px) rotate(0.5deg); }
+        50% { transform: translate(-4px, 2px) rotate(0deg); }
+        60% { transform: translate(4px, -2px) rotate(-0.5deg); }
+        70% { transform: translate(-3px, 3px) rotate(0.5deg); }
+        80% { transform: translate(3px, -3px) rotate(-0.5deg); }
+        90% { transform: translate(-2px, -2px) rotate(0deg); }
+        100% { transform: translate(0, 0); }
+      }
+      .shake {
+        animation: shakeAnimation 0.3s ease-in-out;
+      }
     </style>
-    <script type="module" crossorigin src="/monster-reincarnation-incremental/assets/index-DRE0QPGj.js"></script>
+    <script type="module" crossorigin src="/assets/index-blUrL3b9.js"></script>
   </head>
   <body>
     <div id="app"></div>

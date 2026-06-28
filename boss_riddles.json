@@ -1,0 +1,75 @@
+[
+  {
+    "id": "br_cave",
+    "bossId": "lesser_taratect",
+    "locKey": "br.cave.text",
+    "locKeyClue": "br.cave.clue",
+    "answers": {
+      "tr": [
+        "karanlik",
+        "karanlık",
+        "gece",
+        "yokluk"
+      ],
+      "en": [
+        "darkness",
+        "dark",
+        "night",
+        "absence"
+      ]
+    },
+    "reward": {
+      "kind": "ep",
+      "value": 25
+    }
+  },
+  {
+    "id": "br_flame",
+    "bossId": "flame_jaw",
+    "locKey": "br.flame.text",
+    "locKeyClue": "br.flame.clue",
+    "answers": {
+      "tr": [
+        "kul",
+        "kül",
+        "ates",
+        "ateş"
+      ],
+      "en": [
+        "ash",
+        "ashes",
+        "fire"
+      ]
+    },
+    "reward": {
+      "kind": "stat",
+      "value": "INT",
+      "amount": 2
+    }
+  },
+  {
+    "id": "br_bone",
+    "bossId": "system_guardian",
+    "locKey": "br.bone.text",
+    "locKeyClue": "br.bone.clue",
+    "answers": {
+      "tr": [
+        "hatira",
+        "hatıra",
+        "ani",
+        "anı",
+        "isim",
+        "ad"
+      ],
+      "en": [
+        "memory",
+        "memories",
+        "name"
+      ]
+    },
+    "reward": {
+      "kind": "unlock",
+      "value": "gatekeeper_riddle"
+    }
+  }
+]

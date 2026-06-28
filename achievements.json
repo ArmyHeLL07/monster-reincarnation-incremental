@@ -1,0 +1,37 @@
+[
+  { "id": "first_evolution", "locKey": "ach.first_evolution", "icon": "🥚", "metric": "evolutions", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "hunter", "locKey": "ach.hunter", "icon": "🐛", "metric": "kills", "threshold": 100, "reward": { "ep": 50 } },
+  { "id": "slayer", "locKey": "ach.slayer", "icon": "⚔️", "metric": "kills", "threshold": 1000, "reward": { "statPoints": 1 } },
+  { "id": "first_fusion", "locKey": "ach.first_fusion", "icon": "🧬", "metric": "fusions", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "branch_switcher", "locKey": "ach.branch_switcher", "icon": "🔀", "metric": "branchSwitches", "threshold": 1, "reward": { "ep": 50 } },
+  { "id": "gatekeeper", "locKey": "ach.gatekeeper", "icon": "🏆", "metric": "gatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "hell_winner", "locKey": "ach.hell_winner", "icon": "🔥", "metric": "hellClears", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "reborn", "locKey": "ach.reborn", "icon": "♻️", "metric": "rebirths", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "veteran", "locKey": "ach.veteran", "icon": "💪", "metric": "rebirths", "threshold": 5, "reward": { "souls": 1 } },
+  { "id": "apex", "locKey": "ach.apex", "icon": "👑", "metric": "tier", "threshold": 10, "reward": { "souls": 1 } },
+  { "id": "scholar", "locKey": "ach.scholar", "icon": "📖", "metric": "enemyTypes", "threshold": 25, "reward": { "ep": 50 } },
+  { "id": "delver", "locKey": "ach.delver", "icon": "🕳️", "metric": "deepestLayer", "threshold": 3, "reward": { "ep": 50 } },
+  { "id": "persistent", "locKey": "ach.persistent", "icon": "⏳", "metric": "playtime", "threshold": 3600, "reward": { "ep": 50 } },
+  { "id": "survivor", "locKey": "ach.survivor", "icon": "💀", "metric": "deaths", "threshold": 1, "reward": { "ep": 50 } },
+
+  { "id": "race_played_human", "locKey": "ach.race_played", "param": "human", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+  { "id": "race_played_slime", "locKey": "ach.race_played", "param": "slime", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+  { "id": "race_played_spider", "locKey": "ach.race_played", "param": "spider", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+  { "id": "race_played_skeleton", "locKey": "ach.race_played", "param": "skeleton", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+  { "id": "race_played_wyrmling", "locKey": "ach.race_played", "param": "wyrmling", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+  { "id": "race_played_golem", "locKey": "ach.race_played", "param": "golem", "icon": "🎭", "metric": "racePlayed", "threshold": 1, "reward": { "ep": 25 } },
+
+  { "id": "race_boss_human", "locKey": "ach.race_boss", "param": "human", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "race_boss_slime", "locKey": "ach.race_boss", "param": "slime", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "race_boss_spider", "locKey": "ach.race_boss", "param": "spider", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "race_boss_skeleton", "locKey": "ach.race_boss", "param": "skeleton", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "race_boss_wyrmling", "locKey": "ach.race_boss", "param": "wyrmling", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+  { "id": "race_boss_golem", "locKey": "ach.race_boss", "param": "golem", "icon": "🛡️", "metric": "raceGatekeeper", "threshold": 1, "reward": { "statPoints": 1 } },
+
+  { "id": "race_tree_human", "locKey": "ach.race_tree", "param": "human", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "race_tree_slime", "locKey": "ach.race_tree", "param": "slime", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "race_tree_spider", "locKey": "ach.race_tree", "param": "spider", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "race_tree_skeleton", "locKey": "ach.race_tree", "param": "skeleton", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "race_tree_wyrmling", "locKey": "ach.race_tree", "param": "wyrmling", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } },
+  { "id": "race_tree_golem", "locKey": "ach.race_tree", "param": "golem", "icon": "🌳", "metric": "raceTreeDone", "threshold": 1, "reward": { "souls": 1 } }
+]

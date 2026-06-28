@@ -2,30 +2,367 @@
   {
     "id": "spider",
     "locKey": "race.spider.name",
+    "startSkills": [
+      "venom_bite",
+      "sharp_claw",
+      "silk_thread",
+      "quick_thought",
+      "chitin_hide",
+      "many_legged_gait"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res",
+      "poison_res",
+      "fire_res"
+    ],
     "head": {
       "viewBox": "0 0 220 180",
       "silhouette": "<ellipse cx='110' cy='90' rx='96' ry='66' fill='#241f2b' stroke='#4a4458' stroke-width='3'/><ellipse cx='110' cy='150' rx='34' ry='22' fill='#1d1922' stroke='#4a4458' stroke-width='2'/>",
       "eyes": [
-        { "id": "e1", "x": 66, "y": 66, "r": 8 },
-        { "id": "e2", "x": 92, "y": 62, "r": 8 },
-        { "id": "e3", "x": 128, "y": 62, "r": 8 },
-        { "id": "e4", "x": 154, "y": 66, "r": 8 },
-        { "id": "e5", "x": 96, "y": 94, "r": 12 },
-        { "id": "e6", "x": 124, "y": 94, "r": 12 },
-        { "id": "e7", "x": 72, "y": 118, "r": 8 },
-        { "id": "e8", "x": 148, "y": 118, "r": 8 }
+        {
+          "id": "e1",
+          "x": 66,
+          "y": 66,
+          "r": 8
+        },
+        {
+          "id": "e2",
+          "x": 92,
+          "y": 62,
+          "r": 8
+        },
+        {
+          "id": "e3",
+          "x": 128,
+          "y": 62,
+          "r": 8
+        },
+        {
+          "id": "e4",
+          "x": 154,
+          "y": 66,
+          "r": 8
+        },
+        {
+          "id": "e5",
+          "x": 96,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e6",
+          "x": 124,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e7",
+          "x": 72,
+          "y": 118,
+          "r": 8
+        },
+        {
+          "id": "e8",
+          "x": 148,
+          "y": 118,
+          "r": 8
+        }
       ]
+    },
+    "startStats": {
+      "STR": 4,
+      "VIT": 4,
+      "AGI": 8,
+      "INT": 6,
+      "WIS": 4,
+      "LUCK": 4
     }
   },
   {
     "id": "human",
     "locKey": "race.human.name",
+    "startSkills": [
+      "fist_strike",
+      "sword_slash",
+      "quick_thought",
+      "hp_regen"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
     "head": {
       "viewBox": "0 0 160 200",
       "silhouette": "<ellipse cx='80' cy='96' rx='58' ry='78' fill='#241f2b' stroke='#4a4458' stroke-width='3'/>",
       "eyes": [
-        { "id": "e1", "x": 58, "y": 92, "r": 12 },
-        { "id": "e2", "x": 102, "y": 92, "r": 12 }
+        {
+          "id": "e1",
+          "x": 58,
+          "y": 92,
+          "r": 12
+        },
+        {
+          "id": "e2",
+          "x": 102,
+          "y": 92,
+          "r": 12
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 5,
+      "VIT": 6,
+      "AGI": 5,
+      "INT": 5,
+      "WIS": 4,
+      "LUCK": 6
+    },
+    "humanoid": true
+  },
+  {
+    "id": "slime",
+    "locKey": "race.slime.name",
+    "startSkills": [
+      "acid_spit",
+      "toxic_cloud",
+      "sticky_coat",
+      "predator_instinct"
+    ],
+    "startResistances": [
+      "physical_res",
+      "acid_res"
+    ],
+    "head": {
+      "viewBox": "0 0 180 180",
+      "silhouette": "<ellipse cx='90' cy='104' rx='78' ry='68' fill='#1e3a2a' stroke='#2d6b44' stroke-width='3'/><ellipse cx='90' cy='158' rx='50' ry='20' fill='#162e1f' stroke='#2d6b44' stroke-width='2'/><ellipse cx='90' cy='104' rx='60' ry='52' fill='none' stroke='#3a8a58' stroke-width='1' opacity='0.4'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 82,
+          "y": 90,
+          "r": 14
+        },
+        {
+          "id": "e2",
+          "x": 116,
+          "y": 72,
+          "r": 8
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 3,
+      "VIT": 7,
+      "AGI": 4,
+      "INT": 6,
+      "WIS": 5,
+      "LUCK": 5
+    }
+  },
+  {
+    "id": "skeleton",
+    "locKey": "race.skeleton.name",
+    "startSkills": [
+      "bone_arrow",
+      "sword_slash",
+      "undead_vigor",
+      "bone_armor"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "head": {
+      "viewBox": "0 0 160 200",
+      "silhouette": "<ellipse cx='80' cy='84' rx='56' ry='70' fill='#2a2418' stroke='#6a5c3c' stroke-width='3'/><rect x='50' y='150' width='60' height='24' rx='5' fill='#1c1610' stroke='#6a5c3c' stroke-width='2'/><line x1='62' y1='150' x2='62' y2='174' stroke='#6a5c3c' stroke-width='1'/><line x1='74' y1='150' x2='74' y2='174' stroke='#6a5c3c' stroke-width='1'/><line x1='86' y1='150' x2='86' y2='174' stroke='#6a5c3c' stroke-width='1'/><line x1='98' y1='150' x2='98' y2='174' stroke='#6a5c3c' stroke-width='1'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 54,
+          "y": 78,
+          "r": 15
+        },
+        {
+          "id": "e2",
+          "x": 106,
+          "y": 78,
+          "r": 15
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 6,
+      "VIT": 7,
+      "AGI": 4,
+      "INT": 5,
+      "WIS": 3,
+      "LUCK": 5
+    },
+    "humanoid": true
+  },
+  {
+    "id": "wyrmling",
+    "locKey": "race.wyrmling.name",
+    "startSkills": [
+      "dragon_claw",
+      "fire_breath",
+      "draconic_blood"
+    ],
+    "startResistances": [
+      "fire_res",
+      "physical_res"
+    ],
+    "head": {
+      "viewBox": "0 0 200 180",
+      "silhouette": "<ellipse cx='100' cy='96' rx='84' ry='64' fill='#2e1a0e' stroke='#8b3a0f' stroke-width='3'/><polygon points='100,18 118,46 82,46' fill='#1e0f06' stroke='#8b3a0f' stroke-width='2'/><polygon points='150,24 168,52 132,50' fill='#1e0f06' stroke='#8b3a0f' stroke-width='2'/><polygon points='50,24 32,52 68,50' fill='#1e0f06' stroke='#8b3a0f' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 68,
+          "y": 86,
+          "r": 13
+        },
+        {
+          "id": "e2",
+          "x": 132,
+          "y": 86,
+          "r": 13
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 7,
+      "VIT": 5,
+      "AGI": 5,
+      "INT": 6,
+      "WIS": 4,
+      "LUCK": 4
+    }
+  },
+  {
+    "id": "golem",
+    "locKey": "race.golem.name",
+    "startSkills": [
+      "stone_spike",
+      "heavy_slam",
+      "toughness",
+      "stone_nature"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<rect x='18' y='30' width='144' height='150' rx='12' fill='#252222' stroke='#555050' stroke-width='3'/><rect x='28' y='16' width='124' height='24' rx='4' fill='#1a1818' stroke='#555050' stroke-width='2'/><line x1='18' y1='80' x2='162' y2='80' stroke='#3a3838' stroke-width='2'/><line x1='18' y1='130' x2='162' y2='130' stroke='#3a3838' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 60,
+          "y": 95,
+          "r": 15
+        },
+        {
+          "id": "e2",
+          "x": 120,
+          "y": 95,
+          "r": 15
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 7,
+      "VIT": 9,
+      "AGI": 2,
+      "INT": 4,
+      "WIS": 4,
+      "LUCK": 4
+    }
+  },
+  {
+    "id": "beastkin",
+    "locKey": "race.beastkin.name",
+    "startSkills": [
+      "beast_claw",
+      "rend",
+      "primal_surge"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "humanoid": true,
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='106' rx='62' ry='74' fill='#1a1525' stroke='#6a4a8a' stroke-width='3'/><polygon points='52,46 32,4 72,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><polygon points='128,46 148,4 108,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><ellipse cx='90' cy='148' rx='22' ry='13' fill='#11090e' stroke='#6a4a8a' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 66,
+          "y": 96,
+          "r": 13
+        },
+        {
+          "id": "e2",
+          "x": 114,
+          "y": 96,
+          "r": 13
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 7,
+      "VIT": 5,
+      "AGI": 7,
+      "INT": 3,
+      "WIS": 3,
+      "LUCK": 5
+    }
+  },
+  {
+    "id": "demon",
+    "locKey": "race.demon.name",
+    "humanoid": true,
+    "startSkills": [
+      "hellfire",
+      "shadow_bolt",
+      "fel_armor"
+    ],
+    "startResistances": [
+      "fire_res",
+      "physical_res"
+    ],
+    "startStats": {
+      "STR": 6,
+      "VIT": 5,
+      "AGI": 4,
+      "INT": 8,
+      "WIS": 3,
+      "LUCK": 4
+    },
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='108' rx='54' ry='70' fill='#1f0a0a' stroke='#9a2020' stroke-width='3'/><polygon points='54,46 36,4 74,30' fill='#150606' stroke='#9a2020' stroke-width='2'/><polygon points='126,46 144,4 106,30' fill='#150606' stroke='#9a2020' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 64,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e2",
+          "x": 116,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e3",
+          "x": 90,
+          "y": 76,
+          "r": 8
+        }
       ]
     }
   }

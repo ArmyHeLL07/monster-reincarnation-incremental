@@ -9,6 +9,11 @@
     "frost": "fire",
     "fire": "lightning",
     "lightning": "magic",
-    "magic": "physical"
+    "magic": "physical",
+    "wind": "earth",
+    "earth": "light",
+    "light": "dark",
+    "dark": "void",
+    "void": "wind"
   }
 }

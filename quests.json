@@ -1,0 +1,8 @@
+[
+  { "id": "q_hunt", "locKey": "quest.q_hunt", "icon": "⚔️", "metric": "kills", "target": 25, "reward": { "ep": 60 } },
+  { "id": "q_glutton", "locKey": "quest.q_glutton", "icon": "🍖", "metric": "kills", "target": 40, "reward": { "ep": 90 } },
+  { "id": "q_slaughter", "locKey": "quest.q_slaughter", "icon": "💀", "metric": "kills", "target": 75, "reward": { "statPoints": 1 } },
+  { "id": "q_culling", "locKey": "quest.q_culling", "icon": "🏆", "metric": "kills", "target": 150, "reward": { "ep": 250 } },
+  { "id": "q_fuse", "locKey": "quest.q_fuse", "icon": "🧬", "metric": "fusions", "target": 1, "reward": { "ep": 80 } },
+  { "id": "q_naturalist", "locKey": "quest.q_naturalist", "icon": "📖", "metric": "enemyTypes", "target": 3, "reward": { "ep": 70 } }
+]

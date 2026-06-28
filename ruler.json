@@ -1,11 +1,11 @@
 [
-  { "id": "pride",      "pole": "sin",    "locKeyName": "ruler.pride.name",      "locKeyDesc": "ruler.pride.desc",      "threshold": 50,  "statBonus": { "STR": 2, "VIT": 2, "AGI": 2, "INT": 2, "WIS": 2, "LUCK": 2 }, "dmgMult": 0.1 },
-  { "id": "wrath",      "pole": "sin",    "locKeyName": "ruler.wrath.name",      "locKeyDesc": "ruler.wrath.desc",      "threshold": 120, "dmgMult": 0.25 },
-  { "id": "greed",      "pole": "sin",    "locKeyName": "ruler.greed.name",      "locKeyDesc": "ruler.greed.desc",      "threshold": 220, "lootMult": 0.3 },
-  { "id": "gluttony",   "pole": "sin",    "locKeyName": "ruler.gluttony.name",   "locKeyDesc": "ruler.gluttony.desc",   "threshold": 350, "statBonus": { "VIT": 3 }, "lootMult": 0.15 },
-  { "id": "envy",       "pole": "sin",    "locKeyName": "ruler.envy.name",       "locKeyDesc": "ruler.envy.desc",       "threshold": 500, "dmgMult": 0.15 },
-  { "id": "sloth",      "pole": "sin",    "locKeyName": "ruler.sloth.name",      "locKeyDesc": "ruler.sloth.desc",      "threshold": 700, "idleMult": 0.5 },
-  { "id": "lust",       "pole": "sin",    "locKeyName": "ruler.lust.name",       "locKeyDesc": "ruler.lust.desc",       "threshold": 950, "statBonus": { "STR": 3, "AGI": 3, "LUCK": 3 } },
+  { "id": "pride",      "pole": "sin",    "locKeyName": "ruler.pride.name",      "locKeyDesc": "ruler.pride.desc",      "threshold": 40,  "statBonus": { "STR": 2, "VIT": 2, "AGI": 2, "INT": 2, "WIS": 2, "LUCK": 2 }, "dmgMult": 0.1 },
+  { "id": "wrath",      "pole": "sin",    "locKeyName": "ruler.wrath.name",      "locKeyDesc": "ruler.wrath.desc",      "threshold": 95,  "dmgMult": 0.25 },
+  { "id": "greed",      "pole": "sin",    "locKeyName": "ruler.greed.name",      "locKeyDesc": "ruler.greed.desc",      "threshold": 175, "lootMult": 0.3 },
+  { "id": "gluttony",   "pole": "sin",    "locKeyName": "ruler.gluttony.name",   "locKeyDesc": "ruler.gluttony.desc",   "threshold": 280 },
+  { "id": "envy",       "pole": "sin",    "locKeyName": "ruler.envy.name",       "locKeyDesc": "ruler.envy.desc",       "threshold": 400, "dmgMult": 0.15 },
+  { "id": "sloth",      "pole": "sin",    "locKeyName": "ruler.sloth.name",      "locKeyDesc": "ruler.sloth.desc",      "threshold": 560, "idleMult": 0.5 },
+  { "id": "lust",       "pole": "sin",    "locKeyName": "ruler.lust.name",       "locKeyDesc": "ruler.lust.desc",       "threshold": 760, "statBonus": { "STR": 3, "AGI": 3, "LUCK": 3 } },
 
   { "id": "patience",   "pole": "virtue", "locKeyName": "ruler.patience.name",   "locKeyDesc": "ruler.patience.desc",   "threshold": 50,  "statBonus": { "VIT": 2 }, "regenMult": 0.2 },
   { "id": "temperance", "pole": "virtue", "locKeyName": "ruler.temperance.name", "locKeyDesc": "ruler.temperance.desc", "threshold": 120, "regenMult": 0.2 },
