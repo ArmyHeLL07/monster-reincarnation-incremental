@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.6';
+export const VERSION = '1.23.7';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.7',
+    date: '2026-06-28',
+    tr: [
+      'feat: 💜 Destekçiler paneli (Ayarlar) — Patreon destekçileri oyun içinde tier\'e göre listelenir (Apex/Evolved/Spiderling). Şimdilik boş ("ilk sen ol"); destekçi geldikçe eklenir',
+    ],
+    en: [
+      'feat: 💜 Supporters panel (Settings) — Patreon supporters are listed in-game by tier (Apex/Evolved/Spiderling). Empty for now ("be the first"); names are added as supporters join',
+    ],
+    ru: [
+      'feat: 💜 Панель спонсоров (Настройки) — спонсоры Patreon показываются в игре по тиру (Apex/Evolved/Spiderling). Пока пусто; имена добавляются по мере появления',
+    ],
+  },
   {
     v: '1.23.6',
     date: '2026-06-28',

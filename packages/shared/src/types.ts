@@ -531,6 +531,13 @@ export interface StoryConfig {
   opening: { choices: { id: string; race: string }[] };
 }
 
+/** Patreon supporters shown in-game, grouped by tier (manually maintained; auto via Worker later). */
+export interface SupportersData {
+  apex: string[];
+  evolved: string[];
+  spiderling: string[];
+}
+
 /** A hard riddle that may gate a boss room (GDD §8.2 — "knowledge defeats the boss"). */
 export interface BossRiddle {
   id: string;

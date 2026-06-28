@@ -137,6 +137,8 @@
   "ui.support": "💜 Patreon'da Destekle",
   "ui.play_supported": "✨ Desteklenen sürümü oyna",
   "ui.play_supported_hint": "Bu sürüm reklamsız bir aynadır; desteklenen sürüm geliştirmeyi finanse eder.",
+  "ui.supporters_title": "💜 Destekçiler",
+  "ui.supporters_empty": "Henüz destekçi yok — ilk sen ol! 💜 (yukarıdaki Patreon)",
   "ui.save": "Kaydet",
   "ui.export_save": "Kaydı dışa aktar",
   "ui.import_save": "Kaydı içe aktar",

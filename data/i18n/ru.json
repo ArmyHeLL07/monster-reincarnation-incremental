@@ -137,6 +137,8 @@
   "ui.support": "💜 Поддержать на Patreon",
   "ui.play_supported": "✨ Играть в поддерживаемой версии",
   "ui.play_supported_hint": "Это зеркало без рекламы; поддерживаемая версия финансирует разработку.",
+  "ui.supporters_title": "💜 Спонсоры",
+  "ui.supporters_empty": "Пока нет спонсоров — стань первым! 💜 (Patreon выше)",
   "ui.save": "Сохранить",
   "ui.export_save": "Экспорт сохранения",
   "ui.import_save": "Импорт сохранения",

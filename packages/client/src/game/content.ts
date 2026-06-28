@@ -16,6 +16,7 @@ import type {
   Achievement,
   Quest,
   StoryConfig,
+  SupportersData,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -41,10 +42,12 @@ export interface Content {
   quests: Map<string, Quest>;
   /** Story-Mode config (chapters + opening "last thought" choices). */
   story: StoryConfig;
+  /** Patreon supporters by tier (manually maintained; auto via Worker later). */
+  supporters: SupportersData;
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives, story] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives, story, supporters] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -64,6 +67,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<Quest[]>(`${base}quests.json`),
       fetchJson<Skill[]>(`${base}lore_passives.json`),
       fetchJson<StoryConfig>(`${base}story/story.json`),
+      fetchJson<SupportersData>(`${base}supporters.json`),
     ]);
   return {
     skills: byId([...skills, ...lorePassives]),
@@ -83,6 +87,7 @@ export async function loadContent(base: string): Promise<Content> {
     achievements: byId(achievements),
     quests: byId(quests),
     story,
+    supporters,
   };
 }
 

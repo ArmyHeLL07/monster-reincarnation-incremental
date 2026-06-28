@@ -137,6 +137,8 @@
   "ui.support": "💜 Support on Patreon",
   "ui.play_supported": "✨ Play the supported version",
   "ui.play_supported_hint": "This is an ad-free mirror; the supported version funds development.",
+  "ui.supporters_title": "💜 Supporters",
+  "ui.supporters_empty": "No supporters yet — be the first! 💜 (Patreon above)",
   "ui.save": "Save",
   "ui.export_save": "Export save",
   "ui.import_save": "Import save",

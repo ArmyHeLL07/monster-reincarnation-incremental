@@ -3283,7 +3283,31 @@ function settingsTab(state: GameState): string {
       </div>
       ${location.hostname.endsWith('github.io') ? `<span class="muted" style="font-size:0.78rem">${t('ui.play_supported_hint')}</span>` : ''}
     </section>
+    <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.supporters_title')}</h3>
+      ${supportersHtml()}
+    </section>
   `;
+}
+
+/** Render the in-game supporters list (from data/supporters.json), grouped by tier. */
+function supportersHtml(): string {
+  const s = CONTENT.supporters;
+  const esc = (n: string): string =>
+    n.replace(/[&<>"]/g, (c) => (({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as Record<string, string>)[c] ?? c));
+  const groups: Array<[string[], string, string]> = [
+    [s.apex ?? [], '👑 Apex', '#e6c558'],
+    [s.evolved ?? [], '🐉 Evolved', '#e0902f'],
+    [s.spiderling ?? [], '🕷️ Spiderling', '#8ab23f'],
+  ];
+  const total = groups.reduce((n, [list]) => n + list.length, 0);
+  if (total === 0) return `<p class="muted" style="font-size:0.82rem">${t('ui.supporters_empty')}</p>`;
+  return groups
+    .filter(([list]) => list.length > 0)
+    .map(([list, label, color]) =>
+      `<div style="margin:0.35rem 0"><span style="color:${color};font-family:var(--disp);font-size:0.78rem;letter-spacing:0.06em">${label}</span> <span style="font-size:0.85rem;color:var(--bone)">${list.map(esc).join(' · ')}</span></div>`,
+    )
+    .join('');
 }
 
 function wireSettings(el: HTMLElement): void {
