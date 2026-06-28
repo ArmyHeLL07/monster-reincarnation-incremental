@@ -15,7 +15,7 @@ import { riddleById, loreById, storyText, storyLines } from './game/langContent'
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS, RIDDLE_INT_SOLVE } from './game/combat';
+import { xpToNext, resistReduction, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS, RIDDLE_INT_SOLVE } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
 import { OFFICIAL_RACES } from './game/race';
@@ -1407,6 +1407,44 @@ function autoCombatPanel(state: GameState): string {
   `;
 }
 
+/**
+ * Nullification roadmap: shows the path from resistances → group nullification → ultimate.
+ * Each step's name is revealed only if the player owns it OR has Insight ("knowledge = power");
+ * otherwise it shows as "???".
+ */
+function nullificationRoadmap(state: GameState): string {
+  const mergers = [...CONTENT.resistanceMergers.values()];
+  if (mergers.length === 0) return '';
+  const hasInsight = ownsSkill(state, 'insight');
+  const owns = (id: string) => state.skills.some((s) => s.id === id);
+  const rows = mergers
+    .map((m) => {
+      const achieved = owns(m.id);
+      const total = m.requires.length;
+      const have = m.requires.filter((req) => owns(req.skillId)).length;
+      const chips = m.requires
+        .map((req) => {
+          const rdef = CONTENT.skills.get(req.skillId);
+          const nm = rdef ? t(rdef.locKeyName) : req.skillId;
+          if (owns(req.skillId)) return `<span style="color:var(--venom)">✓ ${nm}</span>`;
+          if (hasInsight) return `<span class="muted">${nm}</span>`;
+          return `<span class="muted">???</span>`;
+        })
+        .join(' · ');
+      const status = achieved
+        ? `<span style="color:var(--gold)">✦ ${t('ui.nullif_achieved')}</span>`
+        : `<span class="muted">${have}/${total}</span>`;
+      return `<li style="margin-bottom:0.45rem"><b>${t(m.locKey)}</b> — ${status}<div style="font-size:0.78rem;margin-top:0.15rem">${chips}</div></li>`;
+    })
+    .join('');
+  return `
+    <section class="panel">
+      <h2>${t('ui.nullif_roadmap')}</h2>
+      <ul style="list-style:none;padding-left:0;margin:0">${rows}</ul>
+      ${hasInsight ? '' : `<p class="muted" style="font-size:0.8rem;margin:0.4rem 0 0">${t('ui.nullif_hint')}</p>`}
+    </section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -1421,8 +1459,9 @@ function combatTab(state: GameState): string {
     .map((r) => {
       const def = CONTENT.resistances.get(r.id);
       const name = def ? t(def.locKey) : r.id;
-      const right = r.nullified && def ? t(def.nullityKey) : `${t('ui.lv')} ${r.level} · ${Math.min(r.level * 5, 90)}%`;
-      return `<li><b>${name}</b> — ${right}</li>`;
+      // Effective per-type reduction (innate slot ≤20% or resistance-chain tier ≤85%).
+      const pct = def ? Math.round(resistReduction(state, CONTENT, def.damageType) * 100) : 0;
+      return `<li><b>${name}</b> — ${t('ui.lv')} ${r.level} · ${pct}%</li>`;
     })
     .join('');
   const act = (a: 'combat' | 'rest' | 'idle', label: string) =>
@@ -1491,6 +1530,7 @@ function combatTab(state: GameState): string {
       <h2>${t('ui.resistances')}</h2>
       <ul>${resists}</ul>
     </section>
+    ${nullificationRoadmap(state)}
   `;
 }
 

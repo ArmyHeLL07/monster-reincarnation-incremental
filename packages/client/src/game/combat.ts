@@ -2255,14 +2255,15 @@ function chainResistBonus(state: GameState, content: Content, type: DamageType):
   return 0;
 }
 
-function resistReduction(state: GameState, content: Content, type: DamageType): number {
+export function resistReduction(state: GameState, content: Content, type: DamageType): number {
+  // Innate exposure resistance caps at 20% (the "T1" baseline). The climb beyond that comes from
+  // the resistance-skill chain (T1→T5, up to 85%); full 100% immunity only from Ultimate
+  // Nullification (applied as a separate layer in combatRound). Group Nullification stacks on top too.
   const slot = ensureResistSlot(state, content, type);
-  if (!slot) return 0;
-  if (slot.nullified) return 0.95;
-  const statReduction = Math.min(slot.level * 0.05, 0.9);
-  const chainBonus = chainResistBonus(state, content, type);
-  // Combined cap at 0.95 to reserve 5% floor until Ultimate Nullification
-  return Math.min(statReduction + chainBonus, 0.95);
+  const slotR = slot ? Math.min(slot.level * 0.04, 0.2) : 0;
+  const chainR = chainResistBonus(state, content, type);
+  // Slot and chain are the same resistance — take the stronger source, don't stack them.
+  return Math.min(Math.max(slotR, chainR), 0.85);
 }
 
 /** Returns the applicable group nullification percentage (0–85) for a damage type. */
@@ -2343,7 +2344,7 @@ function addResistExp(state: GameState, content: Content, type: DamageType, amou
   const slot = ensureResistSlot(state, content, type);
   if (!slot) return;
   const def = content.resistances.get(slot.id);
-  if (!def || slot.nullified) return;
+  if (!def) return;
   // Auto-unlock T1 chain skill on first exposure to this damage type.
   autoUnlockChainSkill(state, content, type, log);
   slot.exp += amount;
@@ -2352,10 +2353,8 @@ function addResistExp(state: GameState, content: Content, type: DamageType, amou
     slot.level += 1;
     log({ key: 'log.resist_up', params: { res: def.locKey, lvLabel: LV_LABEL, lv: slot.level } });
   }
-  if (slot.level >= def.lvMax) {
-    slot.nullified = true;
-    log({ key: 'log.nullity', params: { res: def.locKey, nullity: def.nullityKey } });
-  }
+  // The innate slot caps at 20% (Lv-driven) — it no longer grants immunity on its own.
+  // Real nullification now comes only from the chain + Nullification mergers + Ultimate.
   // Distribute XP to resistance chain skills and active nullification skills.
   // Chain skills (have resistType) receive amount/2 (depth=2: group null + ultimate).
   // Nullification skills (no resistType) receive amount (depth=1).

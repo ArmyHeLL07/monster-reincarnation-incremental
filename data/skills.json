@@ -3002,7 +3002,7 @@
     ],
     "resistType": "fire_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "flame_resistance",
@@ -3018,7 +3018,7 @@
     ],
     "resistType": "fire_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "magma_resistance",
@@ -3034,7 +3034,7 @@
     ],
     "resistType": "fire_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "heat_resistance",
@@ -3050,7 +3050,7 @@
     ],
     "resistType": "fire_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "volcanic_resistance",
@@ -3064,7 +3064,7 @@
     "evolvesTo": [],
     "resistType": "fire_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "ice_resistance",
@@ -3080,7 +3080,7 @@
     ],
     "resistType": "frost_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "frost_resistance",
@@ -3096,7 +3096,7 @@
     ],
     "resistType": "frost_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "freeze_resistance",
@@ -3112,7 +3112,7 @@
     ],
     "resistType": "frost_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "glacial_resistance",
@@ -3128,7 +3128,7 @@
     ],
     "resistType": "frost_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "blizzard_resistance",
@@ -3142,7 +3142,7 @@
     "evolvesTo": [],
     "resistType": "frost_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "lightning_resistance",
@@ -3158,7 +3158,7 @@
     ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "bolt_resistance",
@@ -3174,7 +3174,7 @@
     ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "storm_resistance",
@@ -3190,7 +3190,7 @@
     ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "thunder_resistance",
@@ -3206,7 +3206,7 @@
     ],
     "resistType": "lightning_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "tempest_resistance",
@@ -3220,7 +3220,7 @@
     "evolvesTo": [],
     "resistType": "lightning_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "wind_resistance",
@@ -3236,7 +3236,7 @@
     ],
     "resistType": "wind_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "gale_resistance",
@@ -3252,7 +3252,7 @@
     ],
     "resistType": "wind_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "whirlwind_resistance",
@@ -3268,7 +3268,7 @@
     ],
     "resistType": "wind_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "cyclone_resistance",
@@ -3284,7 +3284,7 @@
     ],
     "resistType": "wind_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "tornado_resistance",
@@ -3298,7 +3298,7 @@
     "evolvesTo": [],
     "resistType": "wind_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "earth_resistance",
@@ -3314,7 +3314,7 @@
     ],
     "resistType": "earth_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "stone_resistance",
@@ -3330,7 +3330,7 @@
     ],
     "resistType": "earth_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "boulder_resistance",
@@ -3346,7 +3346,7 @@
     ],
     "resistType": "earth_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "terrain_resistance",
@@ -3362,7 +3362,7 @@
     ],
     "resistType": "earth_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "tectonic_resistance",
@@ -3376,7 +3376,7 @@
     "evolvesTo": [],
     "resistType": "earth_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "dark_resistance",
@@ -3392,7 +3392,7 @@
     ],
     "resistType": "dark_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "shadow_resistance",
@@ -3408,7 +3408,7 @@
     ],
     "resistType": "dark_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "black_resistance",
@@ -3424,7 +3424,7 @@
     ],
     "resistType": "dark_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "void_resistance",
@@ -3440,7 +3440,7 @@
     ],
     "resistType": "dark_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "abyss_resistance",
@@ -3454,7 +3454,7 @@
     "evolvesTo": [],
     "resistType": "dark_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "light_resistance",
@@ -3470,7 +3470,7 @@
     ],
     "resistType": "light_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "holy_resistance",
@@ -3486,7 +3486,7 @@
     ],
     "resistType": "light_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "radiant_resistance",
@@ -3502,7 +3502,7 @@
     ],
     "resistType": "light_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "divine_resistance",
@@ -3518,7 +3518,7 @@
     ],
     "resistType": "light_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "sacred_resistance",
@@ -3532,7 +3532,7 @@
     "evolvesTo": [],
     "resistType": "light_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "acid_resistance",
@@ -3548,7 +3548,7 @@
     ],
     "resistType": "acid_res",
     "chainGroup": "magic",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "caustic_resistance",
@@ -3564,7 +3564,7 @@
     ],
     "resistType": "acid_res",
     "chainGroup": "magic",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "corrosive_resistance",
@@ -3580,7 +3580,7 @@
     ],
     "resistType": "acid_res",
     "chainGroup": "magic",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "dissolving_resistance",
@@ -3596,7 +3596,7 @@
     ],
     "resistType": "acid_res",
     "chainGroup": "magic",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "melting_resistance",
@@ -3610,7 +3610,7 @@
     "evolvesTo": [],
     "resistType": "acid_res",
     "chainGroup": "magic",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "impact_resistance",
@@ -3626,7 +3626,7 @@
     ],
     "resistType": "physical_res",
     "chainGroup": "physical",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "bludgeon_resistance",
@@ -3642,7 +3642,7 @@
     ],
     "resistType": "physical_res",
     "chainGroup": "physical",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "crush_resistance",
@@ -3658,7 +3658,7 @@
     ],
     "resistType": "physical_res",
     "chainGroup": "physical",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "shatter_resistance",
@@ -3674,7 +3674,7 @@
     ],
     "resistType": "physical_res",
     "chainGroup": "physical",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "devastation_resistance",
@@ -3688,7 +3688,7 @@
     "evolvesTo": [],
     "resistType": "physical_res",
     "chainGroup": "physical",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "pierce_resistance",
@@ -3704,7 +3704,7 @@
     ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "stab_resistance",
@@ -3720,7 +3720,7 @@
     ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "impale_resistance",
@@ -3736,7 +3736,7 @@
     ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "perforate_resistance",
@@ -3752,7 +3752,7 @@
     ],
     "resistType": "pierce_res",
     "chainGroup": "physical",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "annihilation_resistance",
@@ -3766,7 +3766,7 @@
     "evolvesTo": [],
     "resistType": "pierce_res",
     "chainGroup": "physical",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "poison_resistance",
@@ -3782,7 +3782,7 @@
     ],
     "resistType": "poison_res",
     "chainGroup": "status",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "venom_resistance",
@@ -3798,7 +3798,7 @@
     ],
     "resistType": "poison_res",
     "chainGroup": "status",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "toxin_resistance",
@@ -3814,7 +3814,7 @@
     ],
     "resistType": "poison_res",
     "chainGroup": "status",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "plague_resistance",
@@ -3830,7 +3830,7 @@
     ],
     "resistType": "poison_res",
     "chainGroup": "status",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "death_venom_resistance",
@@ -3844,7 +3844,7 @@
     "evolvesTo": [],
     "resistType": "poison_res",
     "chainGroup": "status",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "stun_resistance",
@@ -3860,7 +3860,7 @@
     ],
     "resistType": "stun_res",
     "chainGroup": "status",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "shock_resistance",
@@ -3876,7 +3876,7 @@
     ],
     "resistType": "stun_res",
     "chainGroup": "status",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "bind_resistance",
@@ -3892,7 +3892,7 @@
     ],
     "resistType": "stun_res",
     "chainGroup": "status",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "petrify_resistance",
@@ -3908,7 +3908,7 @@
     ],
     "resistType": "stun_res",
     "chainGroup": "status",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "immobilize_resistance",
@@ -3922,7 +3922,7 @@
     "evolvesTo": [],
     "resistType": "stun_res",
     "chainGroup": "status",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "fear_resistance",
@@ -3938,7 +3938,7 @@
     ],
     "resistType": "fear_res",
     "chainGroup": "status",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "dread_resistance",
@@ -3954,7 +3954,7 @@
     ],
     "resistType": "fear_res",
     "chainGroup": "status",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "terror_resistance",
@@ -3970,7 +3970,7 @@
     ],
     "resistType": "fear_res",
     "chainGroup": "status",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "horror_resistance",
@@ -3986,7 +3986,7 @@
     ],
     "resistType": "fear_res",
     "chainGroup": "status",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "abyss_fear_resistance",
@@ -4000,7 +4000,7 @@
     "evolvesTo": [],
     "resistType": "fear_res",
     "chainGroup": "status",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "soul_resistance",
@@ -4016,7 +4016,7 @@
     ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
-    "tierStatBonus": 5
+    "tierStatBonus": 20
   },
   {
     "id": "spirit_resistance",
@@ -4032,7 +4032,7 @@
     ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
-    "tierStatBonus": 10
+    "tierStatBonus": 40
   },
   {
     "id": "ethereal_resistance",
@@ -4048,7 +4048,7 @@
     ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
-    "tierStatBonus": 18
+    "tierStatBonus": 60
   },
   {
     "id": "phantom_resistance",
@@ -4064,7 +4064,7 @@
     ],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
-    "tierStatBonus": 28
+    "tierStatBonus": 75
   },
   {
     "id": "transcendent_resistance",
@@ -4078,7 +4078,7 @@
     "evolvesTo": [],
     "resistType": "soul_res",
     "chainGroup": "ultimate",
-    "tierStatBonus": 40
+    "tierStatBonus": 85
   },
   {
     "id": "physical_nullification",

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.10';
+export const VERSION = '1.23.11';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.11',
+    date: '2026-06-28',
+    tr: [
+      'balance: Direnç/Nullification yeniden dengelendi — temel direnç artık max %20 (eskiden lv10\'da aniden ~%95 oluyordu); gerçek azaltma zincir kademelerinden (%20→%85) ve Nullification yolundan geliyor; Ultimate Nullification = %100 tam bağışıklık',
+      'feat: Dirençler ekranına "Nullification Yolu" paneli eklendi — her gruba giden ilerleme (X/N) görünür; insight (kavrayış) yoksa kilitli adımlar ??? olarak gösterilir',
+    ],
+    en: [
+      'balance: Resistance/Nullification reworked — base resistance now caps at 20% (it used to jump to ~95% at Lv10); real reduction comes from chain tiers (20%→85%) and the Nullification path; Ultimate Nullification = 100% full immunity',
+      'feat: Added a "Nullification Path" panel to the Resistances screen — shows progress (X/N) toward each group; locked steps show as ??? until you have Insight',
+    ],
+    ru: [
+      'balance: Сопротивления/нуллификация переработаны — базовое сопротивление теперь не выше 20% (раньше на ур.10 скакало до ~95%); реальное снижение даёт цепочка (20%→85%) и путь нуллификации; Ultimate Nullification = 100% полный иммунитет',
+      'feat: На экран сопротивлений добавлен «Путь нуллификации» — прогресс (X/N) к каждой группе; закрытые шаги показаны как ??? без Озарения',
+    ],
+  },
   {
     v: '1.23.10',
     date: '2026-06-28',
