@@ -4552,6 +4552,8 @@
       "chaos_nova"
     ],
     "damage": 14,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "soul",
     "element": "soul"
   },
@@ -4585,6 +4587,8 @@
       "soul_cascade"
     ],
     "damage": 22,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "soul",
     "element": "soul"
   },
@@ -4636,6 +4640,8 @@
       "dark_nova"
     ],
     "damage": 13,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "dark",
     "element": "dark"
   },
@@ -4736,6 +4742,8 @@
       "torrent"
     ],
     "damage": 4,
+    "mpCost": 12,
+    "mpFloor": 5,
     "damageType": "magic",
     "element": "water"
   },
@@ -4753,6 +4761,8 @@
       "tidal_wave"
     ],
     "damage": 9,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "magic",
     "element": "water"
   },
@@ -4770,6 +4780,8 @@
       "deluge"
     ],
     "damage": 20,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "magic",
     "element": "water"
   },
@@ -4785,6 +4797,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 35,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "magic",
     "element": "water"
   },
@@ -4802,6 +4816,8 @@
       "divine_beam"
     ],
     "damage": 5,
+    "mpCost": 12,
+    "mpFloor": 5,
     "damageType": "magic",
     "element": "light"
   },
@@ -4819,6 +4835,8 @@
       "radiance_burst"
     ],
     "damage": 11,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "magic",
     "element": "light"
   },
@@ -4836,6 +4854,8 @@
       "divine_judgment"
     ],
     "damage": 22,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "magic",
     "element": "light"
   },
@@ -4851,6 +4871,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 38,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "magic",
     "element": "light"
   },
@@ -4868,6 +4890,8 @@
       "void_darkness"
     ],
     "damage": 25,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "dark",
     "element": "dark"
   },
@@ -4883,6 +4907,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 42,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "dark",
     "element": "dark"
   },
@@ -4900,6 +4926,8 @@
       "dissolution"
     ],
     "damage": 16,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "acid",
     "element": "acid"
   },
@@ -4915,6 +4943,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 28,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "acid",
     "element": "acid"
   },
@@ -5075,6 +5105,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 50,
+    "mpCost": 90,
+    "mpFloor": 45,
     "damageType": "void",
     "element": "void"
   },
@@ -5107,6 +5139,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 38,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "void",
     "element": "void"
   },
@@ -5139,6 +5173,8 @@
       "entropy_obliteration"
     ],
     "damage": 24,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "soul",
     "element": "soul"
   },
@@ -5154,6 +5190,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 40,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "soul",
     "element": "soul"
   },
@@ -5203,6 +5241,8 @@
       "soul_annihilation"
     ],
     "damage": 34,
+    "mpCost": 60,
+    "mpFloor": 30,
     "damageType": "soul",
     "element": "soul"
   },
@@ -5218,6 +5258,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 52,
+    "mpCost": 90,
+    "mpFloor": 45,
     "damageType": "soul",
     "element": "soul"
   },
@@ -5335,6 +5377,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 9,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "magic",
     "element": "fire"
   },
@@ -5441,6 +5485,8 @@
       "infernal_storm"
     ],
     "damage": 10,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "fire",
     "element": "fire"
   },
@@ -5498,6 +5544,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 16,
+    "mpCost": 38,
+    "mpFloor": 20,
     "damageType": "fire",
     "element": "fire"
   },
@@ -5543,6 +5591,8 @@
       "judgment"
     ],
     "damage": 8,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "light",
     "element": "light"
   },
@@ -5570,6 +5620,8 @@
     "lvMax": 10,
     "evolvesTo": [],
     "damage": 13,
+    "mpCost": 22,
+    "mpFloor": 10,
     "damageType": "light",
     "element": "light"
   }

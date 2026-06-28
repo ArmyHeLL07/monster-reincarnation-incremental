@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.4';
+export const VERSION = '1.23.5';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.5',
+    date: '2026-06-28',
+    tr: [
+      'balance: INT\'e geçen büyülere MP maliyeti eklendi — artık tüm büyüler aynı kademeli mantıkla MP harcar (hasara göre 12/22/38/60/90, seviye arttıkça azalır). Önceden bu 26 büyü "bedava" magic\'ti',
+    ],
+    en: [
+      'balance: The reclassified INT spells now cost MP — every magic skill spends MP on the same tiered curve (12/22/38/60/90 by damage, scaling down with level). Those 26 spells were previously "free" magic',
+    ],
+    ru: [
+      'balance: Переведённые на INT заклинания теперь стоят MP — все магические скилы тратят MP по одной ступенчатой шкале (12/22/38/60/90 по урону, снижается с уровнем). Раньше эти 26 заклинаний были «бесплатной» магией',
+    ],
+  },
   {
     v: '1.23.4',
     date: '2026-06-28',
