@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.14';
+export const VERSION = '1.23.15';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.15',
+    date: '2026-06-28',
+    tr: [
+      'fix: Dil — ilk açılışta tarayıcı diline göre otomatik seçilir (TR/RU/EN) + ırk seçim ekranına dil butonları eklendi; artık ilk ekrandan dil değiştirilebiliyor (güçlü/zayıf yön açıklamaları doğru dilde gelir)',
+    ],
+    en: [
+      'fix: Language — auto-detects from your browser on first run (TR/RU/EN) + language buttons added to the race-select screen; you can now switch language from the very first screen (race strengths/weaknesses show in the right language)',
+    ],
+    ru: [
+      'fix: Язык — при первом запуске определяется по браузеру (TR/RU/EN) + кнопки языка на экране выбора расы; теперь язык можно сменить с первого экрана',
+    ],
+  },
   {
     v: '1.23.14',
     date: '2026-06-28',

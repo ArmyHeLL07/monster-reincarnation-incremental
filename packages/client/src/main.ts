@@ -23,11 +23,20 @@ import type { Difficulty } from '@mri/shared';
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
 
 
+/** First-run language: honour a saved choice, else detect from the browser (tr/ru/en). */
+function detectLang(): 'tr' | 'en' | 'ru' {
+  const l = (navigator.language || '').toLowerCase();
+  if (l.startsWith('tr')) return 'tr';
+  if (l.startsWith('ru')) return 'ru';
+  return 'en';
+}
+
 async function init(): Promise<void> {
   const base = import.meta.env.BASE_URL;
   let state = load() ?? newGame();
   migrate(state);
-  const lang = state.lang ?? 'en';
+  const lang = state.lang ?? detectLang();
+  state.lang = lang; // persist the detected/chosen language so the UI (incl. race-select) reflects it
   await loadI18n(base, lang);
   await loadLangContent(base, lang); // native riddles + lore for this language
   const content = await loadContent(base);

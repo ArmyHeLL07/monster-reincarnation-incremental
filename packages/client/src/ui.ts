@@ -2900,6 +2900,9 @@ function raceSelectScreen(state: GameState): string {
     <section class="panel" style="max-width:min(960px,100%);margin:2rem auto">
       <h2>${t('ui.race_select')}</h2>
       <p class="muted">${t('ui.race_select_info')}</p>
+      <div class="controls" style="margin-bottom:0.8rem;">
+        ${(['tr', 'en', 'ru'] as const).map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${({ tr: 'Türkçe', en: 'English', ru: 'Русский' } as Record<string, string>)[l]}</button>`).join('')}
+      </div>
       <div class="race-grid">${raceCards}</div>
       <div style="margin-top:1.2rem">
         <button id="confirm-race" class="actbtn active">
@@ -2912,6 +2915,9 @@ function raceSelectScreen(state: GameState): string {
 }
 
 function wireRaceSelect(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
+    b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en' | 'ru'));
+  });
   el.querySelectorAll<HTMLButtonElement>('.race-card').forEach((b) => {
     b.addEventListener('click', () => {
       const r = b.getAttribute('data-race');
