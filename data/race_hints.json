@@ -98,5 +98,25 @@
       "growth": "Human → Swordsman / Mage / Ranger → ...",
       "note": "Уникальные ветки специализации через систему Пути Человека"
     }
+  },
+  "wyrmling": {
+    "tr": {
+      "strength": "Yüksek ateş hasarı ve güçlü saldırı; ejderha nefesi sert vurur",
+      "weakness": "Ateş büyüleri MP ister; erken savunması Golem kadar yüksek değil",
+      "growth": "Fire Wyrmling → Flame Drake → Ember Dragon → … → Dragon Lord",
+      "note": "Ateş elementi uzmanı; geç oyunda en yüksek hasarlı ırklardan biri"
+    },
+    "en": {
+      "strength": "High fire damage and strong offense; draconic breath hits hard",
+      "weakness": "Fire spells cost MP; early defense isn't as high as the Golem's",
+      "growth": "Fire Wyrmling → Flame Drake → Ember Dragon → … → Dragon Lord",
+      "note": "Fire-element specialist; one of the highest-damage races in the late game"
+    },
+    "ru": {
+      "strength": "Высокий огненный урон и сильная атака; мощное драконье дыхание",
+      "weakness": "Огненные заклинания тратят MP; ранняя защита ниже, чем у Голема",
+      "growth": "Fire Wyrmling → Flame Drake → Ember Dragon → … → Dragon Lord",
+      "note": "Специалист по огню; одна из самых высокоуронных рас в поздней игре"
+    }
   }
 }

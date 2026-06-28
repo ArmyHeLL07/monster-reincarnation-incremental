@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.13';
+export const VERSION = '1.23.14';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.14',
+    date: '2026-06-28',
+    tr: [
+      'fix: Evrim ağaçları yeniden DALLANIYOR — her ırkın dallanan evrim ağacı geri geldi (geçici olarak düz tek-yola dönmüştü)',
+      'feat: Wyvern (Wyrmling) ırkına güçlü/zayıf yön bilgisi eklendi (ırk seçim ekranında)',
+      'note: Beastkin ve Demon ırkları geçici olarak kilitlendi — dallanan evrim ağaçları bağlanınca geri açılacak',
+    ],
+    en: [
+      'fix: Evolution trees branch again — each race\'s branching tree is back (it had temporarily become a single linear path)',
+      'feat: Added strengths/weaknesses info for the Wyrmling (wyvern) race in the picker',
+      'note: Beastkin & Demon are temporarily locked — they return once their branching trees are connected',
+    ],
+    ru: [
+      'fix: Деревья эволюции снова ветвятся — ветвящееся дерево каждой расы вернулось (временно стало линейным)',
+      'feat: Добавлена информация о сильных/слабых сторонах расы Wyrmling (виверна) при выборе расы',
+      'note: Расы Beastkin и Demon временно заблокированы — вернутся, когда подключим их ветвящиеся деревья',
+    ],
+  },
   {
     v: '1.23.13',
     date: '2026-06-28',

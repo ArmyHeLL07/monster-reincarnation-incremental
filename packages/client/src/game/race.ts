@@ -2,8 +2,13 @@ import type { Content } from './content';
 import type { GameState } from './state';
 import { recomputeMaxes } from './state';
 
-/** Playable races (mechanics + evolution forms complete). Any race not listed is shown but locked in the picker until it's finished. */
-export const OFFICIAL_RACES = new Set(['spider', 'human', 'slime', 'skeleton', 'wyrmling', 'golem', 'beastkin', 'demon']);
+/**
+ * Playable races. Beastkin & Demon are built (mechanics done) but TEMPORARILY locked: the
+ * evolution tree was reverted to the original branching version, which doesn't include their
+ * forms yet. Re-add them here once their branching trees are connected. Any race not listed
+ * is shown but locked in the picker.
+ */
+export const OFFICIAL_RACES = new Set(['spider', 'human', 'slime', 'skeleton', 'wyrmling', 'golem']);
 
 /**
  * Apply race-specific starting configuration to an existing state (for race selection and rebirth).
