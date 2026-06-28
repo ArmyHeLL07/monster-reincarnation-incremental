@@ -67,7 +67,7 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<Quest[]>(`${base}quests.json`),
       fetchJson<Skill[]>(`${base}lore_passives.json`),
       fetchJson<StoryConfig>(`${base}story/story.json`),
-      fetchJson<SupportersData>(`${base}supporters.json`),
+      fetchSupporters(base),
     ]);
   return {
     skills: byId([...skills, ...lorePassives]),
@@ -89,6 +89,21 @@ export async function loadContent(base: string): Promise<Content> {
     story,
     supporters,
   };
+}
+
+/** Live supporters from the Worker (auto-synced from Patreon daily); falls back to the bundled snapshot. */
+const SUPPORTERS_URL = 'https://mri-server.armyhell07.workers.dev/supporters';
+async function fetchSupporters(base: string): Promise<SupportersData> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+    const r = await fetch(SUPPORTERS_URL, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (r.ok) return (await r.json()) as SupportersData;
+  } catch {
+    /* worker unreachable / blocked — use the bundled file */
+  }
+  return fetchJson<SupportersData>(`${base}supporters.json`);
 }
 
 function fetchJson<T>(url: string): Promise<T> {

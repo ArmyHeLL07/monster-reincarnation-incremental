@@ -2,6 +2,14 @@ name = "mri-server"
 main = "src/index.ts"
 compatibility_date = "2025-06-01"
 
+# Supporters: KV cache + daily cron that pulls active patrons from the Patreon API.
+[[kv_namespaces]]
+binding = "SUPPORTERS"
+id = "6ca04e2d7d734374b0b9314f79945798"
+
+[triggers]
+crons = ["0 6 * * *"]
+
 # Backend bindings — uncomment and fill in after `wrangler login` and creating the resources:
 #
 # [[r2_buckets]]

@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.7';
+export const VERSION = '1.23.8';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.8',
+    date: '2026-06-28',
+    tr: [
+      'feat: Destekçi listesi artık Patreon\'dan OTOMATİK güncelleniyor — oyun destekçileri arka plandaki bir servisten canlı çeker (günde 1 senkron). Biri abone olunca elle uğraşmadan listede belirir',
+    ],
+    en: [
+      'feat: The supporters list now auto-updates from Patreon — the game pulls supporters live from a background service (synced daily). New patrons appear automatically, no manual edits',
+    ],
+    ru: [
+      'feat: Список спонсоров теперь автоматически обновляется из Patreon — игра подтягивает спонсоров из фонового сервиса (синхронизация раз в день). Новые спонсоры появляются сами',
+    ],
+  },
   {
     v: '1.23.7',
     date: '2026-06-28',
