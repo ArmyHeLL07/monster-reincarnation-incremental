@@ -383,6 +383,8 @@
   "ui.stats": "Stats",
   "ui.evo_requires": "Requires",
   "ui.race_locked": "Soon",
+  "ui.update_available": "New version available",
+  "ui.refresh": "Refresh",
   "ui.nullif_roadmap": "Nullification Path",
   "ui.nullif_achieved": "Achieved",
   "ui.nullif_hint": "Tip: gain Insight to reveal the names of locked steps.",

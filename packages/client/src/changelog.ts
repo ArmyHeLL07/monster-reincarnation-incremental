@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.16';
+export const VERSION = '1.23.17';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.17',
+    date: '2026-06-28',
+    tr: [
+      'feat: Otomatik güncelleme bildirimi — yeni sürüm yayınlanınca oyun "Yenile" uyarısı gösterir; artık önbelleğe takılı eski sürümde kalmazsın (eski service worker\'lar da temizlenir)',
+      'fix: Evrim ağacı düzeni dengelendi — kök ortada, dallar simetrik açılıp tek üst forma birleşiyor (büyük ırklardaki sola yığılma/karışıklık düzeldi)',
+    ],
+    en: [
+      'feat: Auto update notice — when a new version ships, the game shows a "Refresh" prompt, so you no longer get stuck on a stale cached build (it also clears old service workers)',
+      'fix: Evolution tree layout balanced — root centered, branches fan out symmetrically and converge to the final form (fixes the left-pile/tangle on the bigger races)',
+    ],
+    ru: [
+      'feat: Авто-уведомление об обновлении — при выходе новой версии игра показывает кнопку «Обновить», чтобы вы не застревали на старой закэшированной сборке (также очищаются старые service worker)',
+      'fix: Раскладка дерева эволюции выровнена — корень по центру, ветви симметричны и сходятся к финальной форме (исправлен перекос у больших рас)',
+    ],
+  },
   {
     v: '1.23.16',
     date: '2026-06-28',

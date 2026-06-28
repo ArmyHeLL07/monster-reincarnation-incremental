@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { VERSION } from './src/changelog';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -11,4 +12,13 @@ export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   publicDir: resolve(here, '../../data'),
   server: { port: 5173 },
+  plugins: [
+    {
+      // Emit a tiny, uncached version.json so the running client can detect a fresh deploy.
+      name: 'emit-version-json',
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ version: VERSION }) });
+      },
+    },
+  ],
 });

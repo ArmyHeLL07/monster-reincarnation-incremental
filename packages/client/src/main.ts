@@ -17,7 +17,8 @@ import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
 import { markSeenSkills } from './game/skill_tree';
-import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, type UiActions } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, showUpdateBanner, type UiActions } from './ui';
+import { VERSION } from './changelog';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
@@ -549,6 +550,22 @@ async function init(): Promise<void> {
     live(state);
   });
   clock.start();
+
+  // Don't let players get stuck on a stale cached build: drop any old service worker, and poll for a
+  // newer deployed version (version.json is emitted at build time), offering a one-click refresh.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+  }
+  const checkVersion = async (): Promise<void> => {
+    try {
+      const r = await fetch(`${base}version.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!r.ok) return;
+      const data = (await r.json()) as { version?: string };
+      if (data.version && data.version !== VERSION) showUpdateBanner();
+    } catch { /* offline or not deployed yet — ignore */ }
+  };
+  void checkVersion();
+  setInterval(() => void checkVersion(), 180_000); // re-check every 3 minutes
 
   window.addEventListener('beforeunload', () => save(state));
 

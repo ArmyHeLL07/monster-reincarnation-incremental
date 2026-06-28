@@ -383,6 +383,8 @@
   "ui.stats": "Statlar",
   "ui.evo_requires": "Gerekir",
   "ui.race_locked": "Yakında",
+  "ui.update_available": "Yeni sürüm mevcut",
+  "ui.refresh": "Yenile",
   "ui.nullif_roadmap": "Nullification Yolu",
   "ui.nullif_achieved": "Açıldı",
   "ui.nullif_hint": "İpucu: Insight (Kavrayış) edinince kilitli adımların adları açılır.",

@@ -2419,41 +2419,38 @@ function evolutionTree(state: GameState): string {
   const marginY = 12; // vertical margin percentage
   const marginX = 6;
 
-  // Tidy-tree x layout: each leaf gets the next horizontal slot, and every parent is centred
-  // over its children — so each subtree stays clustered under its parent instead of being
-  // smeared evenly across the whole width (which made the bigger trees look tangled/disconnected).
-  // DAG-safe (cross-branch forms can have several parents) via a per-walk "visiting" guard.
-  const byId = new Map<string, EvoNode>(nodes.map((n) => [n.id, n]));
-  const rawX = new Map<string, number>();
-  let nextLeaf = 0;
-  const assignX = (id: string, seen: Set<string>): number => {
-    const done = rawX.get(id);
-    if (done !== undefined) return done;
-    const node = byId.get(id);
-    if (!node || seen.has(id)) return nextLeaf; // missing or cycle
-    seen.add(id);
-    const kids = node.children.filter((c) => byId.has(c));
-    const x = kids.length === 0
-      ? nextLeaf++
-      : kids.map((c) => assignX(c, seen)).reduce((a, b) => a + b, 0) / kids.length;
-    seen.delete(id);
-    rawX.set(id, x);
-    return x;
+  // Layered (Sugiyama-style) layout: place nodes by tier (y); within each tier run a few
+  // barycenter passes (order by the average position of parents + children) to cut edge
+  // crossings, then snap to a shared column grid with narrower tiers centred. This keeps the
+  // diverge-then-converge evolution DAGs balanced — a child-centred "tidy tree" collapses them
+  // (these trees fan out then funnel back into a single ultimate form).
+  const tierList = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
+  const byTier = new Map<number, EvoNode[]>(
+    tierList.map((t) => [t, nodes.filter((n) => n.tier === t).sort((a, b) => a.id.localeCompare(b.id))]),
+  );
+  const idx = new Map<string, number>();
+  const reindex = (): void => { for (const t of tierList) byTier.get(t)!.forEach((n, i) => idx.set(n.id, i)); };
+  reindex();
+  const bary = (n: EvoNode, ids: string[]): number => {
+    const ps = ids.map((id) => idx.get(id)).filter((v): v is number => v !== undefined);
+    return ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : (idx.get(n.id) ?? 0);
   };
-  const roots = nodes.filter((n) => n.tier === 0 || n.parents.length === 0).sort((a, b) => a.id.localeCompare(b.id));
-  for (const r of roots) assignX(r.id, new Set());
-  for (const n of nodes) if (!rawX.has(n.id)) assignX(n.id, new Set()); // any leftovers (cycles/orphans)
-
-  const xsAll = [...rawX.values()];
-  const minX = Math.min(0, ...xsAll);
-  const span = Math.max(1, ...xsAll) - minX || 1;
-  for (const n of nodes) {
-    const x = marginX + (((rawX.get(n.id) ?? 0) - minX) / span) * (100 - 2 * marginX);
-    const y = 100 - marginY - (n.tier / maxTier) * (100 - 2 * marginY);
-    coords.set(n.id, { x, y });
+  for (let pass = 0; pass < 4; pass++) {
+    for (const t of tierList) { byTier.get(t)!.sort((a, b) => bary(a, a.parents) - bary(b, b.parents)); reindex(); }
+    for (let i = tierList.length - 1; i >= 0; i--) { const t = tierList[i]; byTier.get(t)!.sort((a, b) => bary(a, a.children) - bary(b, b.children)); reindex(); }
   }
-  // Wider trees need more horizontal room: scale the container so nodes don't cram (the viewport scrolls).
-  const treeW = Math.max(680, nextLeaf * 56);
+  const maxWidth = Math.max(1, ...tierList.map((t) => byTier.get(t)!.length));
+  for (const t of tierList) {
+    const arr = byTier.get(t)!;
+    const offset = (maxWidth - arr.length) / 2; // centre narrower tiers within the shared grid
+    arr.forEach((n, i) => {
+      const x = marginX + ((i + offset + 0.5) / maxWidth) * (100 - 2 * marginX);
+      const y = 100 - marginY - (t / maxTier) * (100 - 2 * marginY);
+      coords.set(n.id, { x, y });
+    });
+  }
+  // Wider trees need more horizontal room: scale the container so nodes don't cram (viewport scrolls).
+  const treeW = Math.max(680, maxWidth * 64);
 
   let pathsHtml = '';
   for (const node of nodes) {
@@ -3200,6 +3197,20 @@ async function loadRaceHints(base: string): Promise<void> {
   } catch {
     raceHintsCache = {};
   }
+}
+
+/** Bottom banner shown when a newer build has been deployed — one click reloads to the fresh version. */
+export function showUpdateBanner(): void {
+  if (document.getElementById('update-banner')) return;
+  const el = document.createElement('div');
+  el.id = 'update-banner';
+  el.style.cssText =
+    'position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:0.8rem;align-items:center;' +
+    'background:linear-gradient(180deg,#20300f,#16110f);border:1px solid var(--venom);border-radius:10px;padding:0.55rem 0.9rem;' +
+    'box-shadow:0 8px 24px rgba(0,0,0,0.6);font-size:0.88rem;color:var(--bone);max-width:92vw;';
+  el.innerHTML = `<span>🔄 ${t('ui.update_available')}</span><button id="update-reload" class="active" style="min-height:36px;padding:0.3rem 0.85rem;">${t('ui.refresh')}</button>`;
+  document.body.appendChild(el);
+  el.querySelector<HTMLButtonElement>('#update-reload')?.addEventListener('click', () => location.reload());
 }
 
 function raceHintPanel(raceId: string, lang: string): string {

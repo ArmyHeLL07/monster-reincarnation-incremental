@@ -383,6 +383,8 @@
   "ui.stats": "Характеристики",
   "ui.evo_requires": "Требуется",
   "ui.race_locked": "Скоро",
+  "ui.update_available": "Доступна новая версия",
+  "ui.refresh": "Обновить",
   "ui.nullif_roadmap": "Путь нуллификации",
   "ui.nullif_achieved": "Открыто",
   "ui.nullif_hint": "Подсказка: получите Озарение, чтобы открыть названия закрытых шагов.",
