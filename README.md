@@ -1,81 +1,52 @@
-# Monster Reincarnation — Incremental
+# 🕷️ Monster Reincarnation — Incremental
 
-> A *kill → skill → evolve → reincarnate* incremental/idle game where **knowledge is survival power**.
+> A *kill → skill → evolve → reincarnate* idle/incremental game where **knowledge is survival power**.
 > Inspired by the *spider reincarnation* premise — all names original and copyright-safe.
 
-**Status:** 🚧 Early prototype (design-complete, scaffolding in progress). Free browser demo first; Steam later via a desktop wrapper.
+## ▶ Play — free, in your browser (no install)
 
----
+- **▶ Play now:** https://monster-reincarnation.pages.dev
+- **Ad-free mirror:** https://armyhell07.github.io/monster-reincarnation-incremental/
+- 🌍 English · Türkçe · Русский &nbsp;·&nbsp; 📱 works on mobile
 
-## Highlights
+## 💜 Support
 
-- **Knowledge = survival.** Progress comes from *understanding* which skill/combination beats which threat — not brute numbers.
-- **Skill evolution chains.** Every skill levels LV1→LV10, then evolves into a stronger form (no infinite number bloat).
-- **Branching race evolution**, damage-based resistances → immunities, hunger/feeding, a stamina (SP) layer that limits idle farming, and a layered eye-slot system (Appraisal, gradual info reveal).
-- **Deterministic skill fusion** with a shared **global discovery pool** (a combo is generated once, universe-wide) — the game is single-player, but discoveries are common.
-- **Data-driven & multilanguage by construction.** All content lives in JSON; no language is hardcoded — every player-facing string comes from a localization table.
-- **Mobile-first.** Responsive, touch-friendly UI — plays in the phone browser; the demo auto-deploys to GitHub Pages on every push to `main`.
+Made by a solo dev and free to play. If you'd like to support development — and get your
+name on the in-game **Supporters** board (it can even name a monster):
 
-## AI & data
+- **Patreon:** https://www.patreon.com/cw/ArmyHeLL07
 
-Skill fusion is **AI-assisted**: the in-game result is computed instantly and offline, and
-anonymous *gameplay* data (which combinations players try, how they solve things — **never
-personal data**) is collected to help an AI suggest better fusion names, lore, and balance
-over time. Telemetry stays in a local outbox until you choose to share it.
+Supporters show up in-game (Settings → Supporters) and sync automatically.
 
-## Tech stack
+## What makes it different
 
-| Layer | Choice |
-|-------|--------|
-| Client | TypeScript + Vite (DOM/Canvas — no 3D) |
-| Backend | Cloudflare Workers + R2 (telemetry mailbox) + KV/D1 (global fusion cache) |
-| Shared | `@mri/shared` — types shared between client & worker |
-| Later | Steam via Electron/Tauri wrapper |
+- **Knowledge = survival.** Progress comes from *understanding* which skill/element beats which threat — not brute numbers.
+- **Evolution everywhere.** Skills level LV1→LV10 then evolve; forms branch into a 10-tier tree; **8 playable races** — Spider, Human, Slime, Skeleton, Wyrmling, Golem, Beastkin, Demon.
+- **Elements & nullification.** A full element advantage cycle, damage resistances that climb toward true 100% immunity, and status effects.
+- **Deterministic skill fusion** — combine skills into new ones; results are consistent and shareable.
+- **Idle-friendly,** with a stamina layer (no infinite AFK), dungeons, a bestiary, a story mode, and rebirth/prestige.
+- **Privacy-friendly:** your save lives in your own browser, no account needed. [Privacy policy](https://monster-reincarnation.pages.dev/privacy.html).
 
-## Repository layout
+## Development
 
-```
-.
-├─ docs/            # design documents (GDD, skill catalog, race data)
-├─ data/            # data-driven JSON: skills, i18n, … (single source of content)
-├─ packages/
-│  ├─ shared/       # @mri/shared — shared TS types + fusion hash
-│  ├─ client/       # @mri/client — Vite web demo
-│  └─ server/       # @mri/server — Cloudflare Worker (mailbox + global cache)
-└─ package.json     # npm workspaces root
-```
-
-## Quickstart
+TypeScript + Vite client, Cloudflare Workers backend, npm workspaces.
 
 ```bash
 npm install
-
-# run the web demo (http://localhost:5173)
-npm run dev
-
-# run the backend worker locally
-npm run server:dev
-
-# type-check everything
-npm run typecheck
+npm run dev          # web client → http://localhost:5173
+npm run typecheck    # type-check all packages
+npm run build        # production build
 ```
 
-## Design docs
-
-The full game design lives in [`docs/`](./docs):
-
-- [`docs/GDD.md`](./docs/GDD.md) — Game Design Document (core loop, stats & skills, evolution, stamina, idle, rebirth…)
-- [`docs/Skill_Catalog.md`](./docs/Skill_Catalog.md) — comprehensive skill reference
-- [`docs/Spider_Race_Data.md`](./docs/Spider_Race_Data.md) — the first race's data tables
-
-## Roadmap
-
-1. **Vertical-slice prototype** — core loop, idle, hunger, stamina, one eye slot, a minimal deterministic fusion + local telemetry outbox.
-2. **Backend** — Cloudflare mailbox + global fusion cache.
-3. **Steam** — desktop wrapper.
+```
+packages/
+├─ shared/   # @mri/shared — shared TS types
+├─ client/   # the Vite web game
+└─ server/   # Cloudflare Worker (supporters sync, …)
+data/        # data-driven JSON: skills, races, i18n, …
+```
 
 ## License
 
-**Proprietary — all rights reserved.** Copyright © 2026 Atıl (ArmyHeLL07).
+**Proprietary — all rights reserved.** © 2026 Atıl (ArmyHeLL07).
 No use, copying, modification, or distribution without prior written permission.
-See [`LICENSE`](./LICENSE).
