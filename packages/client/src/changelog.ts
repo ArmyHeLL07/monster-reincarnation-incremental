@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.15';
+export const VERSION = '1.23.16';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.16',
+    date: '2026-06-28',
+    tr: [
+      'fix: Evrim ağacı düzeni iyileştirildi — formlar artık ebeveynlerinin altında hizalı (büyük ırklarda dağınık/kopuk görünen ağaç düzeldi); geniş ağaçlar yatay kayar',
+      'feat: 5 ek ırk (Beastman/Vampire/Lycan/Fiend/Celestial) listeye 🔒 kilitli olarak geri eklendi — tasarımları hazır olunca açılacak',
+    ],
+    en: [
+      'fix: Evolution tree layout improved — forms now sit aligned under their parents (fixes the tangled/disconnected look on the bigger races); wide trees scroll horizontally',
+      'feat: 5 more races (Beastman/Vampire/Lycan/Fiend/Celestial) re-added as 🔒 locked in the picker — they unlock when their designs are ready',
+    ],
+    ru: [
+      'fix: Улучшена раскладка дерева эволюции — формы теперь выровнены под родителями (исправлен запутанный вид у больших рас); широкие деревья прокручиваются',
+      'feat: Снова добавлены 5 рас (Beastman/Vampire/Lycan/Fiend/Celestial) как 🔒 заблокированные — откроются, когда будут готовы их дизайны',
+    ],
+  },
   {
     v: '1.23.15',
     date: '2026-06-28',

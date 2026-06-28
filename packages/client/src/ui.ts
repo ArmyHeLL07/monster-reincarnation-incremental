@@ -2413,43 +2413,47 @@ function evolutionTree(state: GameState): string {
     selectedEvoNodeId = nodes[0]?.id || null;
   }
 
-  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
-  const maxTier = tiers.length > 1 ? tiers[tiers.length - 1] : 1;
+  const maxTier = Math.max(1, ...nodes.map((n) => n.tier));
 
   const coords = new Map<string, { x: number; y: number }>();
   const marginY = 12; // vertical margin percentage
+  const marginX = 6;
 
-  for (const tier of tiers) {
-    const tierNodes = nodes.filter((n) => n.tier === tier);
-    if (tier > 0) {
-      tierNodes.sort((a, b) => {
-        const getParentAvgX = (node: EvoNode): number => {
-          if (!node.parents.length) return 50;
-          let sum = 0, count = 0;
-          for (const pId of node.parents) {
-            const pCoord = coords.get(pId);
-            if (pCoord) { sum += pCoord.x; count++; }
-          }
-          return count > 0 ? sum / count : 50;
-        };
-        const ax = getParentAvgX(a);
-        const bx = getParentAvgX(b);
-        if (Math.abs(ax - bx) < 0.01) {
-          return a.id.localeCompare(b.id);
-        }
-        return ax - bx;
-      });
-    } else {
-      tierNodes.sort((a, b) => a.id.localeCompare(b.id));
-    }
+  // Tidy-tree x layout: each leaf gets the next horizontal slot, and every parent is centred
+  // over its children — so each subtree stays clustered under its parent instead of being
+  // smeared evenly across the whole width (which made the bigger trees look tangled/disconnected).
+  // DAG-safe (cross-branch forms can have several parents) via a per-walk "visiting" guard.
+  const byId = new Map<string, EvoNode>(nodes.map((n) => [n.id, n]));
+  const rawX = new Map<string, number>();
+  let nextLeaf = 0;
+  const assignX = (id: string, seen: Set<string>): number => {
+    const done = rawX.get(id);
+    if (done !== undefined) return done;
+    const node = byId.get(id);
+    if (!node || seen.has(id)) return nextLeaf; // missing or cycle
+    seen.add(id);
+    const kids = node.children.filter((c) => byId.has(c));
+    const x = kids.length === 0
+      ? nextLeaf++
+      : kids.map((c) => assignX(c, seen)).reduce((a, b) => a + b, 0) / kids.length;
+    seen.delete(id);
+    rawX.set(id, x);
+    return x;
+  };
+  const roots = nodes.filter((n) => n.tier === 0 || n.parents.length === 0).sort((a, b) => a.id.localeCompare(b.id));
+  for (const r of roots) assignX(r.id, new Set());
+  for (const n of nodes) if (!rawX.has(n.id)) assignX(n.id, new Set()); // any leftovers (cycles/orphans)
 
-    for (let i = 0; i < tierNodes.length; i++) {
-      const node = tierNodes[i];
-      const x = ((i + 0.5) / tierNodes.length) * 100;
-      const y = 100 - marginY - (tier / maxTier) * (100 - 2 * marginY);
-      coords.set(node.id, { x, y });
-    }
+  const xsAll = [...rawX.values()];
+  const minX = Math.min(0, ...xsAll);
+  const span = Math.max(1, ...xsAll) - minX || 1;
+  for (const n of nodes) {
+    const x = marginX + (((rawX.get(n.id) ?? 0) - minX) / span) * (100 - 2 * marginX);
+    const y = 100 - marginY - (n.tier / maxTier) * (100 - 2 * marginY);
+    coords.set(n.id, { x, y });
   }
+  // Wider trees need more horizontal room: scale the container so nodes don't cram (the viewport scrolls).
+  const treeW = Math.max(680, nextLeaf * 56);
 
   let pathsHtml = '';
   for (const node of nodes) {
@@ -2496,7 +2500,7 @@ function evolutionTree(state: GameState): string {
 
   return `
     <div class="evotree-viewport">
-      <div class="evotree-container">
+      <div class="evotree-container" style="min-width:${treeW}px;">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="evotree-svg">
           ${pathsHtml}
         </svg>

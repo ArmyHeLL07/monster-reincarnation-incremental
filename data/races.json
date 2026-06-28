@@ -365,5 +365,223 @@
         }
       ]
     }
+  },
+  {
+    "id": "beastman",
+    "locKey": "race.beastman.name",
+    "startSkills": [
+      "beast_claw",
+      "rend",
+      "primal_surge"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "humanoid": true,
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='106' rx='62' ry='74' fill='#1a1525' stroke='#6a4a8a' stroke-width='3'/><polygon points='52,46 32,4 72,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><polygon points='128,46 148,4 108,32' fill='#14101e' stroke='#6a4a8a' stroke-width='2'/><ellipse cx='90' cy='148' rx='22' ry='13' fill='#11090e' stroke='#6a4a8a' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 66,
+          "y": 96,
+          "r": 13
+        },
+        {
+          "id": "e2",
+          "x": 114,
+          "y": 96,
+          "r": 13
+        }
+      ]
+    },
+    "startStats": {
+      "STR": 7,
+      "VIT": 5,
+      "AGI": 7,
+      "INT": 3,
+      "WIS": 3,
+      "LUCK": 5
+    }
+  },
+  {
+    "id": "vampire",
+    "locKey": "race.vampire.name",
+    "humanoid": true,
+    "startSkills": [
+      "blood_drain",
+      "sharp_claw",
+      "night_veil"
+    ],
+    "startResistances": [
+      "physical_res",
+      "poison_res"
+    ],
+    "startStats": {
+      "STR": 5,
+      "VIT": 5,
+      "AGI": 7,
+      "INT": 6,
+      "WIS": 3,
+      "LUCK": 5
+    },
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='106' rx='55' ry='72' fill='#1a0f1f' stroke='#6a2a8a' stroke-width='3'/><polygon points='42,50 22,4 64,34' fill='#120b17' stroke='#6a2a8a' stroke-width='2'/><polygon points='138,50 158,4 116,34' fill='#120b17' stroke='#6a2a8a' stroke-width='2'/><ellipse cx='90' cy='152' rx='20' ry='12' fill='#0d0810' stroke='#6a2a8a' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 66,
+          "y": 96,
+          "r": 12
+        },
+        {
+          "id": "e2",
+          "x": 114,
+          "y": 96,
+          "r": 12
+        }
+      ]
+    }
+  },
+  {
+    "id": "lycan",
+    "locKey": "race.lycan.name",
+    "humanoid": true,
+    "startSkills": [
+      "feral_claw",
+      "rend",
+      "regeneration"
+    ],
+    "startResistances": [
+      "physical_res",
+      "pierce_res"
+    ],
+    "startStats": {
+      "STR": 8,
+      "VIT": 6,
+      "AGI": 6,
+      "INT": 3,
+      "WIS": 3,
+      "LUCK": 4
+    },
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='108' rx='58' ry='68' fill='#1a1510' stroke='#8a6030' stroke-width='3'/><polygon points='48,52 26,6 68,38' fill='#13100c' stroke='#8a6030' stroke-width='2'/><polygon points='132,52 154,6 112,38' fill='#13100c' stroke='#8a6030' stroke-width='2'/><ellipse cx='90' cy='148' rx='22' ry='14' fill='#0e0b08' stroke='#8a6030' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 66,
+          "y": 96,
+          "r": 13
+        },
+        {
+          "id": "e2",
+          "x": 114,
+          "y": 96,
+          "r": 13
+        }
+      ]
+    }
+  },
+  {
+    "id": "fiend",
+    "locKey": "race.fiend.name",
+    "humanoid": true,
+    "startSkills": [
+      "hellfire",
+      "shadow_bolt",
+      "fel_armor"
+    ],
+    "startResistances": [
+      "fire_res",
+      "physical_res"
+    ],
+    "startStats": {
+      "STR": 6,
+      "VIT": 5,
+      "AGI": 4,
+      "INT": 8,
+      "WIS": 3,
+      "LUCK": 4
+    },
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='108' rx='54' ry='70' fill='#1f0a0a' stroke='#9a2020' stroke-width='3'/><polygon points='54,46 36,4 74,30' fill='#150606' stroke='#9a2020' stroke-width='2'/><polygon points='126,46 144,4 106,30' fill='#150606' stroke='#9a2020' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 64,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e2",
+          "x": 116,
+          "y": 94,
+          "r": 12
+        },
+        {
+          "id": "e3",
+          "x": 90,
+          "y": 76,
+          "r": 8
+        }
+      ]
+    }
+  },
+  {
+    "id": "celestial",
+    "locKey": "race.celestial.name",
+    "humanoid": true,
+    "startSkills": [
+      "holy_strike",
+      "healing_light",
+      "guardian_aura"
+    ],
+    "startResistances": [
+      "fear_res",
+      "soul_res"
+    ],
+    "startStats": {
+      "STR": 5,
+      "VIT": 6,
+      "AGI": 4,
+      "INT": 5,
+      "WIS": 7,
+      "LUCK": 3
+    },
+    "head": {
+      "viewBox": "0 0 180 200",
+      "silhouette": "<ellipse cx='90' cy='106' rx='52' ry='68' fill='#0f141f' stroke='#6a8aaa' stroke-width='3'/><circle cx='90' cy='34' r='26' fill='none' stroke='#c0d0e0' stroke-width='2'/>",
+      "eyes": [
+        {
+          "id": "e1",
+          "x": 64,
+          "y": 90,
+          "r": 10
+        },
+        {
+          "id": "e2",
+          "x": 116,
+          "y": 90,
+          "r": 10
+        },
+        {
+          "id": "e3",
+          "x": 72,
+          "y": 110,
+          "r": 8
+        },
+        {
+          "id": "e4",
+          "x": 108,
+          "y": 110,
+          "r": 8
+        }
+      ]
+    }
   }
 ]
