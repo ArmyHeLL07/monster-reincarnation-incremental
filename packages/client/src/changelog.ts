@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.18';
+export const VERSION = '1.23.19';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.19',
+    date: '2026-06-29',
+    tr: [
+      'feat: 5 yeni ırk oynanabilir hale getirildi — Hayvan-İnsan, İblis, Vampir, Lycan ve Melek artık ırk seçim ekranında seçilebilir',
+    ],
+    en: [
+      'feat: 5 new races are now playable — Beastkin, Demon, Vampire, Lycan, and Celestial are unlocked in the race selection screen',
+    ],
+    ru: [
+      'feat: 5 новых рас теперь доступны для игры — Зверолюд, Демон, Вампир, Ликан и Небожитель разблокированы в экране выбора расы',
+    ],
+  },
   {
     v: '1.23.18',
     date: '2026-06-29',
