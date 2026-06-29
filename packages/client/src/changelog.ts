@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.17';
+export const VERSION = '1.23.18';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.18',
+    date: '2026-06-29',
+    tr: [
+      'feat: 5 yeni ırk için tam evrim ağaçları eklendi — Hayvan-İnsan, İblis, Vampir, Lycan ve Melek ırkları artık her biri 33 formlu (T0→T10) ikili dallanma ağacına ve gizli apex formuna sahip',
+      'chore: Yinelenen beastman ve fiend ırk girdileri silindi (beastkin ve demon ile birebir aynıydı)',
+    ],
+    en: [
+      'feat: Full evolution trees added for 5 races — Beastkin, Demon, Vampire, Lycan, and Celestial each now have a 33-form binary branching tree (T0→T10) with a secret apex form',
+      'chore: Duplicate beastman and fiend race entries removed (were identical to beastkin and demon)',
+    ],
+    ru: [
+      'feat: Полные деревья эволюции добавлены для 5 рас — Зверолюд, Демон, Вампир, Ликан и Небожитель теперь имеют дерево из 33 форм (T0→T10) с секретной вершиной',
+      'chore: Удалены дублирующиеся расы beastman и fiend (были идентичны beastkin и demon)',
+    ],
+  },
   {
     v: '1.23.17',
     date: '2026-06-28',
