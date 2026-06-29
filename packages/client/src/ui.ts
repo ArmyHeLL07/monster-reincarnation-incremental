@@ -1009,7 +1009,7 @@ function assetUrl(rel: string): string {
 }
 
 /** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
-const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human']);
+const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human', 'beastkin', 'demon', 'vampire', 'lycan', 'celestial']);
 
 /** Animated player presence while resting / meditating — portrait + live HP/SP/MP bars. */
 function restStage(state: GameState): string {
