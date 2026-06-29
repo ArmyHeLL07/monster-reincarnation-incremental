@@ -4663,7 +4663,7 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": {},
+    "grantSkills": [],
     "tierReq": 0
   },
   {
@@ -5320,7 +5320,7 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": {},
+    "grantSkills": [],
     "tierReq": 0
   },
   {
@@ -5975,7 +5975,7 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": {},
+    "grantSkills": [],
     "tierReq": 0
   },
   {
@@ -6632,7 +6632,7 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": {},
+    "grantSkills": [],
     "tierReq": 0
   },
   {
@@ -7288,7 +7288,7 @@
     ],
     "levelReq": 1,
     "statBonus": {},
-    "grantSkills": {},
+    "grantSkills": [],
     "tierReq": 0
   },
   {
@@ -7535,7 +7535,7 @@
     "raceId": "celestial",
     "locKey": "form.storm_archangel.name",
     "evolvesTo": [
-      "storm_sovereign",
+      "celestial_storm_sovereign",
       "thunder_archangel"
     ],
     "levelReq": 10,
@@ -7791,9 +7791,9 @@
     "tierReq": 10
   },
   {
-    "id": "storm_sovereign",
+    "id": "celestial_storm_sovereign",
     "raceId": "celestial",
-    "locKey": "form.storm_sovereign.name",
+    "locKey": "form.celestial_storm_sovereign.name",
     "evolvesTo": [
       "divine_ascendant"
     ],
