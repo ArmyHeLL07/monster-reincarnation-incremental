@@ -5397,7 +5397,8 @@
     },
     "grantSkills": [
       "infernal_storm",
-      "fel_armor"
+      "fel_armor",
+      "fiend_fury"
     ],
     "tierReq": 6
   },
