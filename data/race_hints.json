@@ -118,5 +118,105 @@
       "growth": "Fire Wyrmling → Flame Drake → Ember Dragon → … → Dragon Lord",
       "note": "Специалист по огню; одна из самых высокоуронных рас в поздней игре"
     }
+  },
+  "beastkin": {
+    "tr": {
+      "strength": "Yüksek STR/AGI — pençe + katliam becerileriyle en hızlı fiziksel hasar",
+      "weakness": "Büyü direnci düşük; sihirli saldırılara açık",
+      "growth": "Cub → Young Beastkin / Feral Beastkin → Swift Predator / Gore … → Apex Beastlord",
+      "note": "Ne kadar çok öldürürsen o kadar güçlenirsin; Apex Beastlord 1 yeniden doğuş ve yüksek kill sayısı ister"
+    },
+    "en": {
+      "strength": "High STR/AGI — claw and slaughter skills deliver the fastest raw physical damage",
+      "weakness": "Low magic resistance; vulnerable to spellcasters",
+      "growth": "Cub → Young Beastkin / Feral Beastkin → Swift Predator / Gore … → Apex Beastlord",
+      "note": "More kills = more power; Apex Beastlord requires 1 rebirth and a high kill count"
+    },
+    "ru": {
+      "strength": "Высокий STR/AGI — когти и навыки резни дают максимальный физический урон",
+      "weakness": "Низкое магическое сопротивление; уязвимость к заклинателям",
+      "growth": "Cub → Young Beastkin / Feral Beastkin → Swift Predator / Gore … → Apex Beastlord",
+      "note": "Больше убийств — больше силы; Apex Beastlord требует 1 перерождения и высокого числа убийств"
+    }
+  },
+  "demon": {
+    "tr": {
+      "strength": "INT/STR hibrit — cehennem ateşi + karanlık büyüler hem büyü hem fizik hasarını birleştirir",
+      "weakness": "Kutsal/ışık hasarına savunmasız; VIT başlangıçta düşük",
+      "growth": "Imp → Young Demon / Infernal Demon → Hellforged / Void Demon … → Demon Overlord",
+      "note": "Günah sistemi güç katar; Demon Overlord yüksek günah + kill + 1 yeniden doğuş ister"
+    },
+    "en": {
+      "strength": "INT/STR hybrid — hellfire + dark spells blend magical and physical damage",
+      "weakness": "Vulnerable to holy/light damage; low starting VIT",
+      "growth": "Imp → Young Demon / Infernal Demon → Hellforged / Void Demon … → Demon Overlord",
+      "note": "Sin ruler buffs apply; Demon Overlord requires high sin + kills + 1 rebirth"
+    },
+    "ru": {
+      "strength": "Гибрид INT/STR — адский огонь и тёмные заклинания сочетают магический и физический урон",
+      "weakness": "Уязвимость к святому/световому урону; низкий стартовый VIT",
+      "growth": "Imp → Young Demon / Infernal Demon → Hellforged / Void Demon … → Demon Overlord",
+      "note": "Бонусы правителя греха усиливают класс; Demon Overlord требует высокого греха + убийств + 1 перерождения"
+    }
+  },
+  "vampire": {
+    "tr": {
+      "strength": "AGI/INT — kan emme + hız kombinasyonu; kendini iyileştirirken düşmanı eritir",
+      "weakness": "Kutsal/güneş hasarı kritik zayıflık; gündüz hasar çarpanı yüksek",
+      "growth": "Fledgling Vampire → Blood Vampire / Night Vampire → Sanguine Lord / Shadow … → Vampire Sovereign",
+      "note": "Taboo sistemi güç açar; Vampire Sovereign yüksek taboo + kill + 1 yeniden doğuş ister"
+    },
+    "en": {
+      "strength": "AGI/INT — lifesteal + speed combo drains enemies while staying self-sufficient",
+      "weakness": "Holy/light damage is a critical weakness; high daytime damage modifier",
+      "growth": "Fledgling Vampire → Blood Vampire / Night Vampire → Sanguine Lord / Shadow … → Vampire Sovereign",
+      "note": "Taboo system unlocks power; Vampire Sovereign requires high taboo + kills + 1 rebirth"
+    },
+    "ru": {
+      "strength": "AGI/INT — похищение жизни + скорость истощает врагов, сохраняя самодостаточность",
+      "weakness": "Критическая слабость к святому/световому урону; высокий дневной множитель урона",
+      "growth": "Fledgling Vampire → Blood Vampire / Night Vampire → Sanguine Lord / Shadow … → Vampire Sovereign",
+      "note": "Система табу открывает силу; Vampire Sovereign требует высокого табу + убийств + 1 перерождения"
+    }
+  },
+  "lycan": {
+    "tr": {
+      "strength": "STR/VIT — yüksek HP + doğal yenilenme; uzun soluklu dövüşlerde üstün",
+      "weakness": "Gümüş/kutsal hasarına karşı zayıf; büyü hasarı düşük",
+      "growth": "Wolf Pup → Young Lycan / Feral Lycan → Werewolf / Dire Lycan … → Great Wolf",
+      "note": "Erdem yolu güç verir; Great Wolf 1 yeniden doğuş + yüksek kill + erdem hizalaması ister"
+    },
+    "en": {
+      "strength": "STR/VIT — high HP and natural regeneration dominate prolonged fights",
+      "weakness": "Weak to silver/holy damage; low magical offense",
+      "growth": "Wolf Pup → Young Lycan / Feral Lycan → Werewolf / Dire Lycan … → Great Wolf",
+      "note": "Virtue path buffs apply; Great Wolf requires 1 rebirth + high kills + virtue alignment"
+    },
+    "ru": {
+      "strength": "STR/VIT — высокий HP и естественная регенерация доминируют в затяжных боях",
+      "weakness": "Слабость к серебряному/святому урону; низкая магическая атака",
+      "growth": "Wolf Pup → Young Lycan / Feral Lycan → Werewolf / Dire Lycan … → Great Wolf",
+      "note": "Бонусы пути добродетели применяются; Great Wolf требует 1 перерождения + убийств + выравнивания добродетели"
+    }
+  },
+  "celestial": {
+    "tr": {
+      "strength": "WIS/VIT — kutsal hasar çoğu direnci aşar; en güçlü savunma büyüleri",
+      "weakness": "Başlangıç STR/AGI en düşük; yakın dövüşte zayıf",
+      "growth": "Celestial Child → Young Celestial / Guardian → Holy Guardian / Archangel … → Divine Ascendant",
+      "note": "Erdem yolu zorunlu; Divine Ascendant 1 yeniden doğuş + yüksek kill + erdem hizalaması ister"
+    },
+    "en": {
+      "strength": "WIS/VIT — holy damage pierces most resistances; strongest defensive magic",
+      "weakness": "Lowest starting STR/AGI; weak in direct melee",
+      "growth": "Celestial Child → Young Celestial / Guardian → Holy Guardian / Archangel … → Divine Ascendant",
+      "note": "Virtue alignment is essential; Divine Ascendant requires 1 rebirth + high kills + virtue alignment"
+    },
+    "ru": {
+      "strength": "WIS/VIT — святой урон пробивает большинство сопротивлений; сильнейшая защитная магия",
+      "weakness": "Наименьший начальный STR/AGI; слабость в ближнем бою",
+      "growth": "Celestial Child → Young Celestial / Guardian → Holy Guardian / Archangel … → Divine Ascendant",
+      "note": "Выравнивание добродетели обязательно; Divine Ascendant требует 1 перерождения + убийств + выравнивания добродетели"
+    }
   }
 }

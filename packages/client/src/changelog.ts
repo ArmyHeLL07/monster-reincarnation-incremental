@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.19';
+export const VERSION = '1.23.20';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.20',
+    date: '2026-06-29',
+    tr: [
+      'feat: 5 yeni ırk için açıklama kartları eklendi — Güçlü/Zayıf Yön, Gelişim Yolu ve Not bilgileri artık gösteriliyor',
+    ],
+    en: [
+      'feat: added race hint panels for 5 new races — Strength, Weakness, Growth Path and Note now shown on race cards',
+    ],
+    ru: [
+      'feat: добавлены подсказки для 5 новых рас — Сила, Слабость, Путь роста и Примечание теперь отображаются на карточках рас',
+    ],
+  },
   {
     v: '1.23.19',
     date: '2026-06-29',
