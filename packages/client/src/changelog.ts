@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.21';
+export const VERSION = '1.23.22';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.22',
+    date: '2026-06-30',
+    tr: [
+      'chore: Lansman cilası — sekme ikonu (favicon), sosyal medya paylaşım önizlemesi (Open Graph) ve sayfa dili otomatik (tr/en/ru)',
+    ],
+    en: [
+      'chore: Launch polish — tab favicon, social share preview (Open Graph), and automatic page language (tr/en/ru)',
+    ],
+    ru: [
+      'chore: Подготовка к запуску — иконка вкладки (favicon), превью для соцсетей (Open Graph), автоопределение языка страницы (tr/en/ru)',
+    ],
+  },
   {
     v: '1.23.21',
     date: '2026-06-30',

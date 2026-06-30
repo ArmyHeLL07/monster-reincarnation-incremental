@@ -38,6 +38,7 @@ async function init(): Promise<void> {
   migrate(state);
   const lang = state.lang ?? detectLang();
   state.lang = lang; // persist the detected/chosen language so the UI (incl. race-select) reflects it
+  document.documentElement.lang = lang; // keep <html lang> in sync with the active language (SEO/a11y)
   await loadI18n(base, lang);
   await loadLangContent(base, lang); // native riddles + lore for this language
   const content = await loadContent(base);
@@ -485,6 +486,7 @@ async function init(): Promise<void> {
     },
     onSetLang: (l) => {
       state.lang = l;
+      document.documentElement.lang = l;
       void Promise.all([loadI18n(base, l), loadLangContent(base, l)]).then(() => {
         save(state);
         mount(state, content, actions); // re-build shell so sidebar tab labels + native riddles/lore update

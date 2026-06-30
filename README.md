@@ -25,7 +25,7 @@ Supporters show up in-game (Settings → Supporters) and sync automatically.
 ## What makes it different
 
 - **Knowledge = survival.** Progress comes from *understanding* which skill/element beats which threat — not brute numbers.
-- **Evolution everywhere.** Skills level LV1→LV10 then evolve; forms branch into a 10-tier tree; **8 playable races** — Spider, Human, Slime, Skeleton, Wyrmling, Golem, Beastkin, Demon.
+- **Evolution everywhere.** Skills level LV1→LV10 then evolve; forms branch into a 10-tier tree; **11 playable races** — Spider, Human, Slime, Skeleton, Wyrmling, Golem, Beastkin, Demon, Vampire, Lycan, Celestial.
 - **Elements & nullification.** A full element advantage cycle, damage resistances that climb toward true 100% immunity, and status effects.
 - **Deterministic skill fusion** — combine skills into new ones; results are consistent and shareable.
 - **Idle-friendly,** with a stamina layer (no infinite AFK), dungeons, a bestiary, a story mode, and rebirth/prestige.
