@@ -15,7 +15,7 @@
 
 ## 💜 Support
 
-Made by a solo dev and free to play. If you'd like to support development — and get your
+Made by two friends in our spare time, and free to play. If you'd like to support development — and get your
 name on the in-game **Supporters** board (it can even name a monster):
 
 - **Patreon:** https://www.patreon.com/cw/ArmyHeLL07
