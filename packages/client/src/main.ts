@@ -692,6 +692,19 @@ function migrate(s: GameState): void {
   if (!Number.isFinite(s.hp)) s.hp = Number.isFinite(s.maxHp) ? s.maxHp : 1;
   if (!Number.isFinite(s.mp)) s.mp = Number.isFinite(s.maxMp) ? s.maxMp : 0;
   if (!Number.isFinite(s.sp)) s.sp = Number.isFinite(s.maxSp) ? s.maxSp : 0;
+  // stats feed recomputeMaxes() — a single NaN stat makes maxHp/maxMp/maxSp NaN and soft-locks the
+  // game, so sanitize each to a finite value (audit #5: corrupt or hand-edited saves).
+  if (!s.stats || typeof s.stats !== 'object') {
+    s.stats = d.stats;
+  } else {
+    const ds = d.stats as Record<string, number>;
+    const ss = s.stats as Record<string, number>;
+    for (const k of Object.keys(ds)) ss[k] = Number.isFinite(ss[k]) ? Math.max(1, Math.floor(ss[k])) : ds[k];
+  }
+  if (!Number.isFinite(s.level) || s.level < 1) s.level = 1;
+  for (const k of ['xp', 'statPoints', 'tier', 'ep', 'kills', 'hunger'] as const) {
+    if (!Number.isFinite(s[k])) s[k] = 0;
+  }
   // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
