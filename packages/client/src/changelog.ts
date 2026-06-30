@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.24';
+export const VERSION = '1.23.25';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.25',
+    date: '2026-06-30',
+    tr: [
+      'güvenlik: İçe aktarılan bozuk/kötü-niyetli kayıtların oyuna zararlı kod (HTML/script) enjekte etmesi engellendi — paylaşılan kayıt dosyalarına karşı XSS koruması',
+    ],
+    en: [
+      'security: hardened save import against injected markup/script — stored-XSS protection from crafted or shared save files',
+    ],
+    ru: [
+      'безопасность: защита импорта сохранений от внедрённого HTML/скрипта — защита от XSS из подделанных или общих файлов сохранений',
+    ],
+  },
   {
     v: '1.23.24',
     date: '2026-06-30',

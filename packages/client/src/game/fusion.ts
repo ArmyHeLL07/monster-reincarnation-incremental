@@ -136,7 +136,10 @@ function fusionSkillDef(content: Content, result: FusionResult): Skill {
   const kind: Skill['kind'] = skA?.kind === 'magic' && skB?.kind === 'magic' ? 'magic' : 'active';
   return {
     id: result.id,
-    locKeyName: result.locKeyName,
+    // SECURITY: this name is rendered via t()→innerHTML in ~20 places, and t() returns unknown
+    // keys verbatim. Legit names are coined words or i18n keys (/^[\w.]+$/); a crafted/imported
+    // save could otherwise inject "<img onerror=…>" here → stored XSS. Fall back to the safe id.
+    locKeyName: /^[\w.]+$/.test(result.locKeyName) ? result.locKeyName : result.id,
     locKeyDesc: `fusion.effect.${result.effectType}.desc`,
     kind,
     stats,

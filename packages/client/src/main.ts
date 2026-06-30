@@ -705,6 +705,16 @@ function migrate(s: GameState): void {
   for (const k of ['xp', 'statPoints', 'tier', 'ep', 'kills', 'hunger'] as const) {
     if (!Number.isFinite(s[k])) s[k] = 0;
   }
+  // SECURITY: drop id-bearing fields a crafted/imported save could weaponise — an id like
+  // "<img onerror=…>" renders raw via the t() name fallback (→ stored XSS on import). Real skill
+  // ids (incl. fused fz_… combos) only use [A-Za-z0-9_+-]; anything else is malicious data.
+  const idOk = (id: unknown): id is string => typeof id === 'string' && /^[\w+-]+$/.test(id);
+  s.skills = (s.skills ?? []).filter((sk) => sk != null && idOk(sk.id));
+  s.equipped = (s.equipped ?? []).filter(idOk);
+  s.loadouts = (s.loadouts ?? []).map((lo) => (Array.isArray(lo) ? lo.filter(idOk) : []));
+  for (const eye of Object.keys(s.eyeAssignments ?? {})) {
+    if (s.eyeAssignments[eye] != null && !idOk(s.eyeAssignments[eye])) s.eyeAssignments[eye] = null;
+  }
   // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
