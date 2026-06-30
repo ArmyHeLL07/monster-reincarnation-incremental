@@ -9,8 +9,8 @@
 
 ## ▶ Play — free, in your browser (no install)
 
-- **▶ Play now:** https://monster-reincarnation.pages.dev
-- **Ad-free mirror:** https://armyhell07.github.io/monster-reincarnation-incremental/
+- **▶ Play now:** https://armyhell07.github.io/monster-reincarnation-incremental/
+- **Mirror:** https://monster-reincarnation.pages.dev
 - 🌍 English · Türkçe · Русский &nbsp;·&nbsp; 📱 works on mobile
 
 ## 💜 Support
@@ -29,7 +29,7 @@ Supporters show up in-game (Settings → Supporters) and sync automatically.
 - **Elements & nullification.** A full element advantage cycle, damage resistances that climb toward true 100% immunity, and status effects.
 - **Deterministic skill fusion** — combine skills into new ones; results are consistent and shareable.
 - **Idle-friendly,** with a stamina layer (no infinite AFK), dungeons, a bestiary, a story mode, and rebirth/prestige.
-- **Privacy-friendly:** your save lives in your own browser, no account needed. [Privacy policy](https://monster-reincarnation.pages.dev/privacy.html).
+- **Privacy-friendly:** your save lives in your own browser, no account needed. [Privacy policy](https://armyhell07.github.io/monster-reincarnation-incremental/privacy.html).
 
 ## Development
 
