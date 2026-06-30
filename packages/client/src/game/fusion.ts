@@ -188,6 +188,7 @@ export function fuse(
   }
 
   state.outbox.push({ aId, bId, resultId: result.id, cls: result.cls, ts: Date.now() });
+  if (state.outbox.length > 200) state.outbox = state.outbox.slice(-200); // cap local telemetry (no drain yet) so the save can't bloat over a very long session
   log({
     key: discovered ? 'log.fuse_new' : 'log.fuse_cached',
     params: { cls: `fusion.${result.cls}`, mag: result.magnitude },

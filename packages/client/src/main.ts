@@ -816,7 +816,7 @@ const REPO = 'https://github.com/ArmyHeLL07/monster-reincarnation-incremental';
 function openIssue(state: GameState, kind: 'bug' | 'suggestion'): void {
   const desc = window.prompt(t(kind === 'bug' ? 'ui.bug_prompt' : 'ui.suggest_prompt')) ?? '';
   if (!desc.trim()) return;
-  const tag = kind === 'bug' ? '[bug]' : '[öneri]';
+  const tag = kind === 'bug' ? '[bug]' : '[suggestion]';
   const label = kind === 'bug' ? 'bug' : 'enhancement';
   const footer =
     kind === 'bug'

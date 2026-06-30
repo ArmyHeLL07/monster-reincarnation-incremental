@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.23';
+export const VERSION = '1.23.24';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.24',
+    date: '2026-06-30',
+    tr: [
+      'fix: Çok uzun oturumlarda füzyon telemetrisinin kaydı şişirmesi engellendi (son 200 ile sınırlı); hata-bildirim etiketi tutarlı hale getirildi',
+    ],
+    en: [
+      'fix: fusion telemetry can no longer bloat the save over very long sessions (capped at the last 200); consistent bug-report tag',
+    ],
+    ru: [
+      'fix: телеметрия слияний больше не раздувает сохранение в долгих сессиях (ограничена последними 200); единый тег отчётов об ошибках',
+    ],
+  },
   {
     v: '1.23.23',
     date: '2026-06-30',
