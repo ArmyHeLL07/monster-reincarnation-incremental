@@ -715,6 +715,20 @@ function migrate(s: GameState): void {
   for (const eye of Object.keys(s.eyeAssignments ?? {})) {
     if (s.eyeAssignments[eye] != null && !idOk(s.eyeAssignments[eye])) s.eyeAssignments[eye] = null;
   }
+  // raceId/formId/etc. have raw text fallbacks ("…: state.raceId") rendered OUTSIDE t(), and the
+  // persisted combat foe's image/icon go straight into <img src>/text — so a tampered save could
+  // inject markup there even with t() escaping. Reset/clear anything that isn't a plain id.
+  if (!idOk(s.raceId)) s.raceId = d.raceId;
+  if (s.formId != null && !idOk(s.formId)) s.formId = d.formId;
+  if (s.replicatedRace != null && !idOk(s.replicatedRace)) s.replicatedRace = undefined;
+  if (s.humanPath != null && !idOk(s.humanPath)) s.humanPath = undefined;
+  if (s.enemy) {
+    const e = s.enemy as { id?: unknown; image?: unknown; icon?: unknown; name?: unknown };
+    const strSafe = (v: unknown): boolean => v == null || (typeof v === 'string' && !/[<>"]/.test(v));
+    if (!idOk(typeof e.id === 'string' ? e.id : '') || !strSafe(e.image) || !strSafe(e.icon) || !strSafe(e.name)) {
+      s.enemy = null; // tampered foe — drop it; the room re-spawns a fresh one
+    }
+  }
   // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;

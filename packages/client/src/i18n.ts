@@ -8,11 +8,18 @@ export async function loadI18n(base: string, lang: string): Promise<void> {
   dict = await fetch(`${base}i18n/${lang}.json`).then((r) => r.json());
 }
 
-/** Translate a key, substituting `{name}` placeholders. Unknown keys return themselves. */
+/** HTML-escape the chars that break out of text / double-quoted attributes. i18n values are plain
+ *  text (verified: zero markup across tr/en/ru), so escaping here makes every t()→innerHTML render
+ *  XSS-safe — including the unknown-key passthrough (coined fusion names) and any untrusted param.
+ *  We deliberately skip & and ' to avoid cosmetic noise in confirm()/prompt() dialogs; <>" alone
+ *  prevent tag injection and double-quoted-attribute breakout (the templates use double quotes). */
+const HTML_ESC: Record<string, string> = { '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+
+/** Translate a key, substituting `{name}` placeholders. Unknown keys return themselves (escaped). */
 export function t(key: string, params: Params = {}): string {
   let s = dict[key] ?? key;
   for (const [k, v] of Object.entries(params)) s = s.replaceAll(`{${k}}`, String(v));
-  return s;
+  return s.replace(/[<>"]/g, (c) => HTML_ESC[c] ?? c);
 }
 
 /**
