@@ -783,50 +783,10 @@
   <body>
     <div id="app"></div>
 
-    <!-- Passive ad slot — sits BELOW the game (outside #app, so the game's re-renders never touch it
-         and the ad loads ONCE: no refresh = AdSense-policy-safe). Small, labelled, genuinely visible
-         (never hidden/1px — that would get the account banned). Hidden until you configure it, and
-         NEVER shown on the ad-free GitHub Pages mirror. -->
-    <footer id="ad-footer" style="display:none; max-width:980px; margin:0.8rem auto 0.2rem; text-align:center;">
-      <div style="font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ash); opacity:0.55; margin-bottom:0.25rem;">Reklam · Advertisement</div>
-      <ins class="adsbygoogle" id="ad-unit" style="display:block; min-height:90px;" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    </footer>
-    <!-- Always-visible privacy link (required for AdSense; discoverable during review even while the ad slot is off). -->
+    <!-- Privacy link — the save lives in the player's own browser; no account, no ads, no tracking. -->
     <div id="site-footer" style="text-align:center; margin:0.3rem auto 0.7rem; font-size:0.66rem;">
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ash); opacity:0.65; text-decoration:none;">Gizlilik · Privacy Policy</a>
     </div>
-    <script>
-      (function () {
-        /* ── AD CONFIG ─────────────────────────────────────────────────────────
-           1) Apply for Google AdSense using your Cloudflare URL
-              (monster-reincarnation.pages.dev) — needs a privacy policy + review.
-           2) Paste your publisher id below, deploy, then request the AdSense review
-              (the library must be live during review). AD_SLOT stays empty for now.
-           3) After approval, create an ad unit and paste its slot id → the banner shows.
-           Until AD_CLIENT is set nothing loads. Ads never load on the github.io mirror.
-           The ad loads once (no refresh) — policy-safe. */
-        var AD_CLIENT = ''; /* set once you have a WORKING web ad provider (fresh standalone AdSense, or a network like Adsterra). The old YouTube-AdSense id was a deactivated, web-incapable account. */
-        var AD_SLOT   = ''; /* ad-unit / zone id from that provider → banner appears */
-        /* ──────────────────────────────────────────────────────────────────── */
-        if (location.hostname.endsWith('github.io')) return; /* ad-free mirror */
-        if (!AD_CLIENT) return;
-        var meta = document.createElement('meta');
-        meta.name = 'google-adsense-account'; meta.content = AD_CLIENT;
-        document.head.appendChild(meta);
-        var s = document.createElement('script');
-        s.async = true; s.crossOrigin = 'anonymous';
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + AD_CLIENT;
-        document.head.appendChild(s);
-        if (!AD_SLOT) return; /* no unit yet (pre-approval): library loads for review, banner stays hidden */
-        var ins = document.getElementById('ad-unit');
-        ins.setAttribute('data-ad-client', AD_CLIENT);
-        ins.setAttribute('data-ad-slot', AD_SLOT);
-        s.addEventListener('load', function () {
-          document.getElementById('ad-footer').style.display = '';
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-        });
-      })();
-    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
