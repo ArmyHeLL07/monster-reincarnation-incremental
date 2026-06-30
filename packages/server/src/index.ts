@@ -32,7 +32,8 @@ export default {
 
     // Manual sync trigger — guarded by the Patreon client secret (for first run / testing).
     if (pathname === '/supporters/sync' && req.method === 'POST') {
-      if (!env.PATREON_CLIENT_SECRET || req.headers.get('x-sync-key') !== env.PATREON_CLIENT_SECRET) {
+      const syncKey = req.headers.get('x-sync-key') ?? '';
+      if (!env.PATREON_CLIENT_SECRET || !timingSafeEqual(syncKey, env.PATREON_CLIENT_SECRET)) {
         return json({ error: 'forbidden' }, 403);
       }
       try {
@@ -45,8 +46,12 @@ export default {
 
     // Mailbox: client drops a session summary (no personal data — behavior only).
     if (pathname === '/mailbox' && req.method === 'POST') {
-      const body = (await req.json()) as TelemetrySessionSummary;
-      const id = `${body.sessionId ?? crypto.randomUUID()}.json`;
+      const raw = await req.text();
+      if (raw.length > 16_384) return json({ error: 'too_large' }, 413); // cap R2 storage/cost abuse
+      let body: TelemetrySessionSummary;
+      try { body = JSON.parse(raw) as TelemetrySessionSummary; } catch { return json({ error: 'bad_json' }, 400); }
+      // Server-generated key ONLY — never trust a client sessionId as the R2 object key (key injection).
+      const id = `${crypto.randomUUID()}.json`;
       if (env.MAILBOX) await env.MAILBOX.put(id, JSON.stringify(body));
       return json({ ok: true, stored: Boolean(env.MAILBOX), id });
     }
@@ -63,6 +68,10 @@ export default {
       }
       if (req.method === 'PUT') {
         const val = await req.text();
+        if (val.length > 8_192) return json({ error: 'too_large' }, 413);
+        // The cache is shared with every player, so only store well-formed JSON — reject arbitrary
+        // payloads that could smuggle a stored-XSS string into a future client build.
+        try { JSON.parse(val); } catch { return json({ error: 'bad_json' }, 400); }
         if (env.FUSION_CACHE) await env.FUSION_CACHE.put(key, val);
         return json({ ok: true, cached: Boolean(env.FUSION_CACHE) });
       }
@@ -150,6 +159,13 @@ async function syncPatreon(env: Env): Promise<SupportersData> {
 
   await env.SUPPORTERS.put('supporters', JSON.stringify(out));
   return out;
+}
+
+/** Constant-time string compare so secret checks don't leak length/content via response timing. */
+function timingSafeEqual(a: string, b: string): boolean {
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i % (b.length || 1));
+  return diff === 0;
 }
 
 function json(data: unknown, status = 200): Response {
