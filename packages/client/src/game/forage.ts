@@ -6,7 +6,6 @@ type Log = (e: LogEvent) => void;
 
 export const FORAGE_CD_MS = 5000;
 // Single source of truth lives in discovery.ts (Forage and Explore searches share the same SP cost).
-export { SEARCH_SP_COST } from './discovery';
 import { SEARCH_SP_COST } from './discovery';
 const AUTO_SEARCH_UNLOCK = 100;
 
