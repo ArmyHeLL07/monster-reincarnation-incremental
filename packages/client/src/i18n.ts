@@ -18,7 +18,8 @@ const HTML_ESC: Record<string, string> = { '<': '&lt;', '>': '&gt;', '"': '&quot
 /** Translate a key, substituting `{name}` placeholders. Unknown keys return themselves (escaped). */
 export function t(key: string, params: Params = {}): string {
   let s = dict[key] ?? key;
-  for (const [k, v] of Object.entries(params)) s = s.replaceAll(`{${k}}`, String(v));
+  // split/join instead of replaceAll: Samsung Internet ≤13 (Chromium ≤84) lacks replaceAll → boot crash
+  for (const [k, v] of Object.entries(params)) s = s.split(`{${k}}`).join(String(v));
   return s.replace(/[<>"]/g, (c) => HTML_ESC[c] ?? c);
 }
 

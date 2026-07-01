@@ -787,6 +787,20 @@
     <div id="site-footer" style="text-align:center; margin:0.3rem auto 0.7rem; font-size:0.66rem;">
       <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ash); opacity:0.65; text-decoration:none;">Gizlilik · Privacy Policy</a>
     </div>
+    <!-- Boot-crash safety net: if the bundle throws before the game renders, show the error instead
+         of a blank page (ES5-only on purpose — must run even on browsers the bundle can't parse). -->
+    <script>
+      window.addEventListener('error', function (e) {
+        if (!e.message && !e.error) return; // resource-load errors (img/script 404) aren't boot crashes
+        var app = document.getElementById('app');
+        if (app && !app.firstChild) {
+          app.innerHTML = '<div style="max-width:520px;margin:2rem auto;padding:1rem;font-family:monospace;font-size:0.8rem;color:#d8d2c4;border:1px solid #5a4a3a;border-radius:8px;">' +
+            '<b>Oyun başlatılamadı / Game failed to start</b><br><br>' +
+            String((e.error && e.error.message) || e.message || e).replace(/</g, '&lt;') +
+            '<br><br>Tarayıcınızı güncelleyip tekrar deneyin · Try updating your browser</div>';
+        }
+      }, true);
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

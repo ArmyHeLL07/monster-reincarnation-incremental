@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.27';
+export const VERSION = '1.23.28';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.28',
+    date: '2026-07-02',
+    tr: [
+      'fix: Eski Samsung Internet / eski Android tarayıcılarında oyun boş siyah ekranda kalıyordu (replaceAll uyumluluğu) — artık açılıyor',
+      'iyileştirme: Oyun açılışta çökerse boş ekran yerine hata mesajı gösteriliyor',
+    ],
+    en: [
+      'fix: the game was stuck on a blank black screen on older Samsung Internet / older Android browsers (replaceAll compatibility) — it now boots',
+      'improvement: if the game crashes on startup, an error message is shown instead of a blank page',
+    ],
+    ru: [
+      'fix: на старых браузерах Samsung Internet / старом Android игра зависала на чёрном экране (совместимость replaceAll) — теперь запускается',
+      'улучшение: при сбое запуска вместо пустой страницы показывается сообщение об ошибке',
+    ],
+  },
   {
     v: '1.23.27',
     date: '2026-07-01',
