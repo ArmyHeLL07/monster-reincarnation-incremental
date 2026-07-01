@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.26';
+export const VERSION = '1.23.27';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.27',
+    date: '2026-07-01',
+    tr: [
+      'fix: Tiran/İmparator Aurası, Atletizm ve Dövüş Sanatları Ustalığı yeteneklerinin "tüm statlara +%" bonusu artık gerçekten uygulanıyor (eskiden hiçbir etkisi yoktu)',
+      'fix: forage ve explore aramalarının SP maliyeti iki ayrı yerde tanımlıydı, tek kaynağa indirildi',
+      'temizlik: kullanılmayan ölü kod kaldırıldı (eski gearscore modülü)',
+    ],
+    en: [
+      'fix: the "+% to all stats" bonus on Tyrant/Emperor Aura, Athletics and Martial Arts Mastery now actually applies (it previously did nothing)',
+      'fix: forage and explore search SP cost was defined in two places, consolidated to one source',
+      'cleanup: removed unused dead code (legacy gearscore module)',
+    ],
+    ru: [
+      'fix: бонус "+% ко всем характеристикам" у Аур Тирана/Императора, Атлетики и Мастерства боевых искусств теперь действительно работает (раньше не давал ничего)',
+      'fix: стоимость SP для поиска (forage/explore) была задана в двух местах, объединена в одном источнике',
+      'очистка: удалён неиспользуемый мёртвый код (старый модуль gearscore)',
+    ],
+  },
   {
     v: '1.23.26',
     date: '2026-06-30',

@@ -87,10 +87,12 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
     lifesteal: 0,
   };
 
+  let statMultSum = 0; // Σ skill statMult — cached on state for effStat (applied to all six stats).
   for (const slot of state.skills) {
     const def = content.skills.get(slot.id);
     if (!def) continue;
     const s = scale(slot.level, def.lvMax);
+    if (def.statMult) statMultSum += def.statMult * s;
     if (def.dmgMult) b.dmgMult += def.dmgMult * s;
     if (def.xpMult) b.xpMult += def.xpMult * s;
     if (def.lootMult) b.lootMult += def.lootMult * s;
@@ -117,6 +119,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
       }
     }
   }
+  state.statMultCache = statMultSum; // effStat reads this on its next call
 
   // Equipped loot (humanoid races) — flat sums; statBonus is handled separately via effStat.
   if (state.equipment) {

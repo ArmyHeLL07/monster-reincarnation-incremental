@@ -417,6 +417,9 @@ export interface GameState {
   pendingRebirthPerk: boolean;
   rebirthPerkChoices: string[];
 
+  /** Transient cache: Σ skill statMult (refreshed by aggregateBonuses) — read by effStat. Not persisted. */
+  statMultCache?: number;
+
   // --- Auto-Combat Macros (QoL) ---
   autoCombatConfig: AutoCombatConfig;
 
@@ -465,10 +468,14 @@ export function effStat(state: GameState, k: StatKey): number {
       else if (p === 'sharp_mind' && k === 'INT') val += 1;
     }
   }
+  // Skill statMult (Tyrant/Emperor Aura, Athletics, Martial Arts Mastery): flat % to all six stats.
+  // Cache is refreshed each aggregateBonuses pass; absent on old saves / before first tick → no-op.
+  const sm = state.statMultCache ?? 0;
+  if (sm > 0) val = val * (1 + sm);
   if (k === 'AGI' && state.raceId === 'beastkin' && state.hp < state.maxHp * 0.35) {
-    val = Math.round(val * 1.4);
+    val = val * 1.4;
   }
-  return val;
+  return Math.round(val);
 }
 
 /** Recompute max HP/MP/SP from effective stats (base + equipment) and clamp current values. */
