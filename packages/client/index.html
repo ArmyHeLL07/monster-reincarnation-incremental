@@ -58,8 +58,8 @@
       ::selection { background: var(--venom-dim); color: var(--bone); }
       html { scroll-behavior: smooth; }
       body {
-        margin: 0; padding: 0.7rem; line-height: 1.5; color: var(--bone);
-        font-family: var(--body); -webkit-text-size-adjust: 100%;
+        margin: 0; padding: 0; line-height: 1.5; color: var(--bone);
+        font-family: var(--body); -webkit-text-size-adjust: 100%; overflow: hidden;
         background: radial-gradient(1100px 480px at 50% -8%, #1b1828 0%, var(--abyss) 62%) fixed, var(--abyss);
       }
       /* Soft vignette for depth — sits under all fixed chrome (toasts 60, mobhud 55, tutorial 1000). */
@@ -79,10 +79,14 @@
       li { margin: 0.32rem 0; }
       .muted { color: var(--ash); }
 
+      /* Sahne kabuğu (gui-prototype.html): sabit tam-ekran ızgara — dashboard değil sahne.
+         üst / (sol ray · sahne · sağ dock) / alt olay akışı. */
       .game {
-        display: grid; gap: 0.6rem; max-width: 1060px; margin: 0 auto;
-        grid-template-columns: 200px 1fr;
-        grid-template-areas: "top top" "side main" "side log";
+        display: grid; gap: 0.5rem; height: 100vh; height: 100dvh; max-width: 1280px; margin: 0 auto;
+        padding: 0; box-sizing: border-box;
+        grid-template-columns: 210px 1fr 66px;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: "top top top" "rail stage dock" "stream stream dock";
       }
       .topbar {
         grid-area: top; border: 1px solid var(--chitin); border-radius: var(--rad);
@@ -98,14 +102,108 @@
       .topbar .sub { font-size: 0.8rem; margin: 0.35rem 0 0; color: var(--ash); }
       .topbar .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 0.9rem; margin-top: 0.6rem; }
 
-      .sidebar { grid-area: side; display: flex; flex-direction: column; gap: 0.4rem; }
-      .content { grid-area: main; min-width: 0; }
-      /* one-shot fade when the player switches tabs (class re-armed by the tab click handler) */
+      /* ---- Sol ray: beden (totem + halkalar + aksiyonlar) ---- */
+      .rail { grid-area: rail; display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+        padding: 0.9rem 0.7rem; border: 1px solid var(--chitin); border-radius: var(--rad);
+        background: linear-gradient(180deg, rgba(21,19,28,0.9), rgba(14,12,20,0.9)); overflow-y: auto; }
+      .totem { position: relative; width: 120px; height: 120px; margin-top: 0.4rem; flex: none; }
+      .totem .core { position: absolute; inset: 15px; border-radius: 50%; display: flex; align-items: center;
+        justify-content: center; overflow: hidden; background: radial-gradient(circle at 50% 36%, #262232, #0d0b13);
+        border: 1.5px solid var(--chitin); box-shadow: inset 0 0 18px rgba(0,0,0,0.7); }
+      .totem .core .totem-img { width: 78px; height: 78px; }
+      .totem .core svg.head { width: 66px; height: 66px; }
+      .ring { position: absolute; border-radius: 50%;
+        background: conic-gradient(from -90deg, var(--rc) calc(var(--v) * 1%), rgba(255,255,255,0.06) 0);
+        -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4.2px));
+                mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4.2px)); }
+      .ring.hp { inset: 6px;  --rc: #6fae53; } .ring.mp { inset: 0; --rc: var(--mp); }
+      .ring.sp { inset: -6px; --rc: var(--sp); } .ring.hg { inset: -12px; --rc: #a04a3c; opacity: 0.85; }
+      .ring.hp.low { animation: ring-low 1s ease-in-out infinite; }
+      @keyframes ring-low { 50% { filter: brightness(1.8) drop-shadow(0 0 6px var(--blood)); } }
+      .rl-vitals { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 0.15rem 0.4rem;
+        font-family: var(--mono); font-size: 0.66rem; color: var(--ash); }
+      .rl-vitals span { display: flex; align-items: center; gap: 0.25rem; white-space: nowrap; }
+      .rl-vitals i { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+      .rl-vitals b { color: var(--bone); font-weight: 600; }
+      .rl-form { font-family: var(--disp); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--bone); text-align: center; }
+      .rl-lv { width: 100%; }
+      .rl-lvtxt { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.64rem;
+        color: var(--ash); margin-bottom: 3px; }
+      .lvbar { height: 6px; border-radius: 3px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; }
+      .lvbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--venom-dim), var(--venom));
+        transition: width 0.45s ease-out; }
+      .rl-evolve { display: none; width: 100%; min-height: 40px; border-radius: 10px; cursor: pointer;
+        font-family: var(--disp); letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.76rem;
+        border: 1px solid var(--sp); color: #1a160c; background: linear-gradient(180deg, #f0d877, #c9a23a);
+        animation: evo-ready-glow 1.6s ease-in-out infinite; }
+      .rl-evolve.ready { display: block; }
+      @keyframes evo-ready-glow { 50% { box-shadow: 0 0 22px rgba(230,197,88,0.7); } }
+      .rl-acts { display: flex; gap: 0.4rem; width: 100%; }
+      .rl-acts button { flex: 1; min-height: 42px; border-radius: 10px; border: 1px solid var(--chitin);
+        background: linear-gradient(180deg, #241f31, #1a1725); color: var(--bone); font-size: 1.1rem; cursor: pointer;
+        transition: border-color 0.15s, filter 0.15s; }
+      .rl-acts button:hover:not(:disabled) { border-color: var(--venom-dim); filter: brightness(1.15); }
+      .rl-acts button:disabled { opacity: 0.4; cursor: default; }
+      .rl-acts button.on { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss);
+        border-color: var(--venom); box-shadow: 0 0 12px rgba(138,178,63,0.35); }
+
+      /* ---- Orta sahne: sabit backdrop + kaydırılabilir içerik ---- */
+      #stagewrap { grid-area: stage; position: relative; min-width: 0; min-height: 0;
+        border: 1px solid var(--chitin); border-radius: var(--rad); overflow: hidden;
+        background: linear-gradient(var(--abyss), #0c0a12); }
+      #stage-backdrop { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+        background: radial-gradient(80% 55% at 50% 118%, var(--amb-a, #16241c), transparent 70%),
+          radial-gradient(90% 70% at 50% -22%, var(--amb-a, #16241c), transparent 60%); transition: background 0.8s ease; }
+      #stage-backdrop .groundline { position: absolute; left: 8%; right: 8%; bottom: 16%; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--venom-dim), transparent); opacity: 0.5; }
+      #stage-backdrop .part { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--venom);
+        opacity: 0.3; filter: blur(1px); animation: stage-drift linear infinite; }
+      @keyframes stage-drift { from { transform: translateY(10vh); } to { transform: translateY(-60vh); } }
+      .content { position: relative; z-index: 1; height: 100%; overflow-y: auto; padding: 0.7rem 0.9rem; min-width: 0; }
+      /* katman ambiyansı: derin katlar backdrop'u yeniden boyar (body[data-layer], live() günceller) */
+      body[data-layer="2"] #stage-backdrop { --amb-a: #2a130b; }
+      body[data-layer="3"] #stage-backdrop { --amb-a: #180f2e; }
+      body[data-layer="4"] #stage-backdrop { --amb-a: #0f2320; }
       .content.tabfade { animation: tabfade 0.22s ease-out; }
       @keyframes tabfade { from { opacity: 0.3; transform: translateY(5px); } }
-      .logpanel { grid-area: log; display: flex; gap: 0.5rem; flex-wrap: wrap; }
-      .logcol { flex: 1 1 160px; min-width: 0; }
-      .logcol h3 { margin: 0 0 0.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+
+      /* ---- Sağ dock: 4 alan ikonu ---- */
+      .dock { grid-area: dock; display: flex; flex-direction: column; gap: 0.4rem; align-items: center;
+        padding: 0.8rem 0.4rem; border: 1px solid var(--chitin); border-radius: var(--rad);
+        background: linear-gradient(180deg, rgba(21,19,28,0.9), rgba(14,12,20,0.9)); }
+      .dock .areabtn { width: 50px; height: 54px; border-radius: 11px; border: 1px solid var(--chitin);
+        background: transparent; color: var(--ash); display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 3px; font-size: 1.15rem; cursor: pointer; transition: all 0.2s; }
+      .dock .areabtn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6;
+        stroke-linecap: round; stroke-linejoin: round; }
+      .dock .areabtn small { font-size: 0.5rem; letter-spacing: 0.06em; font-family: var(--disp);
+        text-transform: uppercase; }
+      .dock .areabtn:hover { color: var(--bone); border-color: var(--venom-dim); }
+      .dock .areabtn.active { color: var(--abyss); background: linear-gradient(180deg, var(--venom), var(--venom-dim));
+        border-color: var(--venom); box-shadow: 0 0 12px rgba(138,178,63,0.35); }
+
+      /* ---- Alt olay akışı: tek satır; tıkla → geçmiş ---- */
+      .stream { grid-area: stream; position: relative; border: 1px solid var(--chitin); border-radius: var(--rad);
+        background: linear-gradient(180deg, rgba(19,16,25,0.92), rgba(12,10,17,0.92)); font-family: var(--mono);
+        font-size: 0.74rem; color: var(--ash); cursor: pointer; overflow: hidden; }
+      .stream .tick { height: 38px; display: flex; align-items: center; gap: 0.5rem; padding: 0 0.9rem;
+        white-space: nowrap; overflow: hidden; }
+      .stream .tick .chev { color: var(--venom); transition: transform 0.2s; }
+      .stream.open .tick .chev { transform: rotate(90deg); }
+      .stream .full { position: absolute; bottom: 100%; left: 0; right: 0; max-height: 0; overflow-y: auto;
+        background: rgba(12,10,17,0.98); border-top: 1px solid var(--chitin); transition: max-height 0.25s ease; }
+      .stream.open .full { max-height: 44vh; }
+      .stream .full div { padding: 0.24rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); white-space: normal; }
+      .ev-combat { color: #d4837f; } .ev-discovery { color: #7fb0d4; } .ev-loot { color: var(--sp); } .ev-lore { color: #b79de0; }
+
+      /* ---- Çerçeve durumları: düşük can / açlık (prototip frame'leri) ---- */
+      .frame { position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: 0; transition: opacity 0.5s; }
+      .frame.lowhp { background: radial-gradient(120% 90% at 50% 50%, transparent 58%, rgba(187,65,64,0.34)); }
+      .frame.starve { background: radial-gradient(115% 90% at 50% 50%, transparent 54%, rgba(0,0,0,0.62)); }
+      body.lowhp .frame.lowhp { opacity: 1; animation: frame-pulse 1.15s ease-in-out infinite; }
+      body.starve .frame.starve { opacity: 1; }
+      @keyframes frame-pulse { 50% { opacity: 0.4; } }
 
       .tabbtn {
         display: flex; align-items: center; gap: 0.55rem;
@@ -771,39 +869,38 @@
       .version-pop li { font-size: 0.76rem; color: var(--ash); margin: 0.1rem 0; }
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
-      @media (max-width: 640px) {
-        /* background-attachment: fixed is ignored/janky on iOS Safari — let it scroll there.
-           body[data-layer] variants redeclare the shorthand, so they need the same override. */
-        /* bottom padding clears the fixed dock (4 area buttons) + #mobhud strip above it */
-        body, body[data-layer] { padding: 0.4rem; padding-bottom: calc(1rem + 92px + env(safe-area-inset-bottom, 0px)); background-attachment: scroll; }
-        .duel-you img, .duel-you svg.head { width: 54px; height: 54px; }
-        .duel { gap: 0.4rem; }
-        .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
-        /* Faz 3: the sidebar becomes a fixed bottom dock (thumb-first) — 4 area buttons */
-        .sidebar {
-          position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60;
-          flex-direction: row; gap: 0.3rem;
+      @media (max-width: 760px) {
+        /* Mobil sahne düzeni: üst / sol ray (yatay şerit) / sahne / olay akışı + sabit alt dock. */
+        body { overflow: auto; }
+        .game { height: auto; min-height: 100dvh; grid-template-columns: 1fr; grid-template-rows: auto auto 1fr auto;
+          grid-template-areas: "top" "rail" "stage" "stream"; gap: 0.4rem; padding: 0.4rem;
+          padding-bottom: calc(0.4rem + 66px + env(safe-area-inset-bottom, 0px)); }
+        /* sol ray → yatay kompakt şerit (totem solda, vitals+aksiyon sağda) */
+        .rail { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.7rem; overflow: visible; }
+        .totem { width: 82px; height: 82px; margin: 0; }
+        .totem .core .totem-img { width: 52px; height: 52px; } .totem .core svg.head { width: 44px; height: 44px; }
+        .rl-vitals { flex: 1; min-width: 130px; width: auto; }
+        .rl-form { order: 5; width: 100%; }
+        .rl-lv { order: 6; }
+        .rl-evolve.ready { order: 4; flex-basis: 100%; }
+        .rl-acts { order: 7; }
+        #stagewrap { min-height: 46vh; }
+        .content { position: static; height: auto; }
+        /* sağ dock → sabit alt gezinme çubuğu (başparmak) */
+        .dock { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60; flex-direction: row;
+          justify-content: space-around; gap: 0.3rem; border: none; border-top: 1px solid var(--chitin); border-radius: 0;
           padding: 0.3rem 0.4rem calc(0.3rem + env(safe-area-inset-bottom, 0px));
-          background: linear-gradient(180deg, rgba(19, 16, 25, 0.97), rgba(12, 10, 17, 0.97));
-          border-top: 1px solid var(--chitin); box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.45);
-        }
-        #mobhud { display: flex; bottom: 62px; padding-bottom: 4px; }
+          box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.45); }
+        .dock .areabtn { flex: 1; width: auto; height: 48px; }
         .drawer { top: auto; left: 0; right: 0; bottom: 62px; height: 74vh; width: auto;
           border-left: none; border-top: 1px solid var(--chitin); border-radius: 16px 16px 0 0;
           transform: translateY(115%); }
         .drawer.open { transform: none; box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.55); }
+        .stream .full { max-height: 40vh; }
         /* 30px+ touch targets — desktop-sized 24–30px controls are too easy to fat-finger */
         .equipbtn, .statadd, .discard { min-height: 40px; min-width: 44px; }
         .subtab { min-height: 38px; }
         .dmap-floor { grid-template-columns: 18px repeat(var(--cols), 30px); }
-        .tabbtn { flex: 1 1 0; min-width: 0; justify-content: center; padding: 0.5rem 0.3rem; min-height: 46px; font-size: 0.72rem; }
-        .tabbtn svg { width: 16px; height: 16px; }
-        /* compact 2-col vitals — the old single column ate a third of the viewport */
-        .topbar .bars { grid-template-columns: 1fr 1fr; gap: 0.1rem 0.8rem; }
-        .topbar .statline { margin-bottom: 0.2rem; }
-        .topbar .bars .row span:first-child { font-size: 0.76rem; }
-        .topbar .bars .row span:last-child { font-size: 0.72rem; }
-        .topbar .bars .bar { height: 8px; }
         .topbar { padding: 0.5rem 0.7rem; }
         .topbar .sub { font-size: 0.75rem; }
         #weekly-badge .wk-name { display: none; } /* dar ekranda sadece 🌊 ikonu */
@@ -871,27 +968,75 @@
       /* Enemy panel — fixed minimum height so layout doesn't jump when a foe dies/spawns. */
       .enemy-panel { min-height: 130px; }
       /* --- duel stage: the player faces the enemy on the combat screen --- */
-      .duel { display: flex; align-items: center; gap: 0.6rem; }
-      .duel-you { flex: none; text-align: center; position: relative; }
+      /* savaş ekranında düşman paneli = sahnenin kendisi: çerçevesiz, başlıksız (köşe etiketleri yeter) */
+      .enemy-panel { border: none; background: transparent; padding: 0; margin: 0 0 0.4rem; overflow: visible; }
+      .enemy-panel > h2 { display: none; }
+      /* ===== Savaş sahnesi (gui-prototype "duel"): karşılıklı iki figür, gölge, yüzen plaka ===== */
+      .duel { position: relative; display: flex; align-items: flex-end; justify-content: space-between;
+        min-height: 300px; padding: 3.4rem 11% 1.6rem; }
+      .duel.empty { align-items: center; justify-content: center; min-height: 220px; }
+      .stage-idle { font-family: var(--disp); letter-spacing: 0.18em; text-transform: uppercase;
+        font-size: 0.82rem; color: var(--ash); text-align: center; }
+      .actor { position: relative; text-align: center; flex: none; }
+      .actor .fig { font-size: 74px; line-height: 1; display: inline-block;
+        filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.6)); transition: filter 0.5s; }
+      .actor .fig .fig-img { width: 92px; height: 92px; object-fit: contain; display: block; }
+      .actor .fig svg.head { width: 78px; height: 78px; }
+      .actor.you .fig { animation: fig-breathe 3.2s ease-in-out infinite; }
+      .actor.foe .fig { animation: fig-breathe 2.6s ease-in-out infinite 0.6s; }
+      @keyframes fig-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+      /* 0.5s lunge keyframe restarts on each 1s combat re-render → syncs to the round (Ali's trick) */
+      .duel.fighting .actor.you .fig { animation: fig-breathe 3.2s ease-in-out infinite, lungeR 1s ease-out; }
+      .duel.fighting .actor.foe .fig { animation: fig-breathe 2.6s ease-in-out infinite 0.6s, lungeL 1s ease-out; }
+      @keyframes lungeR { 0% { transform: translateX(0); } 20% { transform: translateX(26px) scale(1.09); } 44% { transform: translateX(0); } }
+      @keyframes lungeL { 0% { transform: translateX(0); } 42% { transform: translateX(0); } 58% { transform: translateX(-26px) scale(1.09); } 82% { transform: translateX(0); } }
+      /* appraisal yok → düşman kapkara siluet (bilgi = güç). netleşince filtre kalkar. */
+      .actor.foe .fig.veiled { filter: brightness(0) drop-shadow(0 14px 14px rgba(0, 0, 0, 0.6)) blur(1.4px); }
+      .shadowe { width: 84px; height: 13px; margin: 6px auto 0; border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(0, 0, 0, 0.7), transparent); }
       /* komutanın yanındaki minyon sürüsü (sol kenarda dikey, hafif salınım) */
-      .duel-minions {
-        position: absolute; left: -20px; bottom: 2px; display: flex; flex-direction: column;
-        gap: 2px; font-size: 15px; line-height: 1; pointer-events: none;
-        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6));
-      }
+      .duel-minions { position: absolute; left: -22px; bottom: 14px; display: flex; flex-direction: column;
+        gap: 2px; font-size: 17px; line-height: 1; pointer-events: none;
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6)); z-index: 3; }
       .duel-minions span { display: block; animation: minion-bob 2.2s ease-in-out infinite; }
       @keyframes minion-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-      .duel-you img, .duel-you svg.head { width: 72px; height: 72px; max-width: 72px; margin: 0;
-        object-fit: contain; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6)); }
-      /* 1s keyframe restarts on each combat re-render → lunge syncs to the round (same trick as enemy-attack) */
-      .duel-you.fighting { animation: player-attack 1s ease-out; }
-      @keyframes player-attack {
-        16% { transform: translateX(9px) scale(1.08); }
-        34% { transform: translateX(0) scale(1); }
-        100% { transform: translateX(0) scale(1); }
-      }
-      .duel-mid { flex: none; color: var(--ash); opacity: 0.5; font-size: 0.95rem; }
-      .duel-foe { flex: 1; min-width: 0; }
+
+      /* düşmanın üstünde yüzen bilgi plakası — appraisal ile kademeli açılır */
+      .foeplate { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+        min-width: 168px; max-width: 240px; background: rgba(12, 10, 18, 0.82); border: 1px solid var(--chitin);
+        border-radius: 9px; padding: 0.35rem 0.6rem 0.45rem; backdrop-filter: blur(3px); z-index: 2; }
+      .foeplate .fname { font-family: var(--disp); font-size: 0.8rem; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .foeplate .fname.veilname { color: var(--ash); filter: blur(2.4px); }
+      .foeplate .ftags { font-family: var(--mono); font-size: 0.62rem; color: var(--ash); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .foeplate .fbar { height: 7px; border-radius: 4px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; margin-top: 5px; }
+      .foeplate .fbar i { display: block; height: 100%; background: linear-gradient(180deg, #d4655f, var(--blood)); transition: width 0.4s ease-out; }
+      .foeplate.boss { border-color: var(--sp); box-shadow: 0 0 18px rgba(210, 167, 58, 0.25); }
+      .foeplate.boss .fbar i { background: linear-gradient(180deg, #f0b25f, #c9822a); }
+      .foeplate.elite { border-color: #e6c558; }
+      .foeplate.slam { animation: foe-slam 0.55s cubic-bezier(0.2, 1.6, 0.4, 1); }
+      @keyframes foe-slam { from { transform: translateX(-50%) scale(1.7); opacity: 0; } }
+      .foe-badges { position: absolute; top: -0.5rem; right: -0.4rem; display: flex; flex-direction: column;
+        align-items: flex-end; gap: 3px; z-index: 4; }
+
+      /* köşe etiketleri: oda konumu + kill kotası / boss */
+      .roomtag, .quota { position: absolute; top: 0.6rem; font-family: var(--mono); font-size: 0.7rem;
+        color: var(--ash); background: rgba(10, 9, 16, 0.6); border: 1px solid var(--chitin);
+        padding: 0.18rem 0.5rem; border-radius: 7px; z-index: 3; }
+      .roomtag { left: 0.6rem; } .roomtag b { color: var(--venom); }
+      .quota { right: 0.6rem; } .quota.boss { color: var(--sp); border-color: var(--sp); }
+
+      /* ölünce XP barına uçan ışık zerresi (damage-text-layer içine eklenir) */
+      .xp-wisp { position: fixed; width: 11px; height: 11px; border-radius: 50%;
+        background: radial-gradient(circle, #fff, var(--venom) 55%, transparent);
+        box-shadow: 0 0 12px var(--venom); pointer-events: none; z-index: 99999;
+        animation: xp-wisp-fly 0.8s ease-in forwards; }
+      @keyframes xp-wisp-fly { to { transform: translate(var(--wx), var(--wy)) scale(0.4); opacity: 0.2; } }
+
+      /* rest sahnesi: kamp ateşi / meditasyon kürecikleri */
+      .rest-stage .campfire { font-size: 38px; filter: drop-shadow(0 0 20px rgba(224, 144, 47, 0.6)); animation: fig-breathe 1.6s ease-in-out infinite; }
+      .rest-stage .med-orb { width: 60px; height: 60px; border-radius: 50%; filter: blur(3px);
+        background: radial-gradient(circle, rgba(120, 170, 235, 0.7), transparent 70%); animation: fig-breathe 2.4s ease-in-out infinite; }
       /* --- dungeon layer ambience: deeper layers retint the abyss (body data-layer set per tick) --- */
       body[data-layer="2"] { background: radial-gradient(1100px 480px at 50% -8%, #2a1610 0%, var(--abyss) 62%) fixed, var(--abyss); }
       body[data-layer="3"] { background: radial-gradient(1100px 480px at 50% -8%, #101a26 0%, var(--abyss) 62%) fixed, var(--abyss); }
@@ -936,14 +1081,15 @@
       .human-path-btn:hover { border-color: var(--venom); }
 
       /* Kill quota badge */
-      .kill-badge { position: absolute; top: 0.2rem; right: 0.2rem; font-size: 0.72rem; font-family: var(--mono); color: var(--ash); background: rgba(0,0,0,0.55); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; }
+      /* Rozetler artık .foe-badges (flex sütun) içinde dikey yığılır — hepsi statik konumlu. */
+      .kill-badge, .elite-badge, .boss-badge { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.04em;
+        border-radius: 6px; padding: 0.08rem 0.4rem; pointer-events: none; white-space: nowrap; }
+      .kill-badge { font-family: var(--mono); font-weight: 400; color: var(--ash); background: rgba(0, 0, 0, 0.6); }
       .kill-badge.kill-quota-met { color: var(--venom); font-weight: 700; }
-      .elite-badge { position: absolute; top: 0.2rem; left: 0.2rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; box-shadow: 0 0 8px rgba(230,197,88,0.6); z-index: 2; }
-      /* Boss faz rozetleri (v1.23.41) — sağ kenarda dikey yığılır; kill-badge ile çakışmaz */
-      .boss-badge { position: absolute; right: 0.2rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; z-index: 2; }
-      .boss-badge.enr { top: 1.6rem; color: #ffd9d0; background: linear-gradient(#7a2a20, #4a150f); box-shadow: 0 0 8px rgba(224, 90, 60, 0.55); }
-      .boss-badge.weak { top: 2.9rem; color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); box-shadow: 0 0 8px rgba(230, 197, 88, 0.55); }
-      .boss-badge.chg { top: 4.2rem; color: #0d1b24; background: linear-gradient(#9fd8ff, #4f86c2); box-shadow: 0 0 10px rgba(120, 190, 255, 0.65); animation: pulse 0.8s ease-in-out infinite; }
+      .elite-badge { color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); box-shadow: 0 0 8px rgba(230, 197, 88, 0.6); }
+      .boss-badge.enr { color: #ffd9d0; background: linear-gradient(#7a2a20, #4a150f); box-shadow: 0 0 8px rgba(224, 90, 60, 0.55); }
+      .boss-badge.weak { color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); box-shadow: 0 0 8px rgba(230, 197, 88, 0.55); }
+      .boss-badge.chg { color: #0d1b24; background: linear-gradient(#9fd8ff, #4f86c2); box-shadow: 0 0 10px rgba(120, 190, 255, 0.65); animation: pulse 0.8s ease-in-out infinite; }
 
       /* Log panels — collapsible */
       .logpanel { display: flex; flex-direction: column; gap: 0.35rem; }

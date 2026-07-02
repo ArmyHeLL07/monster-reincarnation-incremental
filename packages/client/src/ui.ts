@@ -193,8 +193,6 @@ type LogCat = 'combat' | 'discovery' | 'loot' | 'lore';
 const logs: Record<LogCat, string[]> = { combat: [], discovery: [], loot: [], lore: [] };
 /** Lore log is persistent — never cleared (player reads books there). */
 const LORE_LOG_CAP = 200;
-/** Whether each log panel is expanded (default: combat open, rest collapsed). */
-const logOpen: Record<LogCat, boolean> = { combat: true, discovery: false, loot: false, lore: false };
 
 /** Route a log line to its stream so combat spam never buries loot/discovery. */
 function logCategory(key: string): LogCat {
@@ -217,12 +215,18 @@ const TOAST_KEYS = new Set([
   'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn', 'log.devour_skill', 'log.quest_done',
 ]);
 
+/** Birleşik olay akışı (alt şerit): kategori renk sınıfı için saklanır (ev-combat/loot/…). */
+const stream: { text: string; cat: LogCat }[] = [];
+const STREAM_CAP = 120;
+
 export function pushLog(key: string, params?: Record<string, string | number>): void {
   const cat = logCategory(key);
   const text = tmsg(key, params);
   logs[cat].unshift(text);
   const cap = cat === 'lore' ? LORE_LOG_CAP : LOG_CAP;
   if (logs[cat].length > cap) logs[cat].length = cap;
+  stream.unshift({ text, cat });
+  if (stream.length > STREAM_CAP) stream.length = STREAM_CAP;
   if (key.startsWith('log.discover') || TOAST_KEYS.has(key)) pushToast(text);
 }
 
@@ -331,6 +335,8 @@ export function resetUi(): void {
   expandedSkill = null;
   selectedEvoNodeId = null;
   evoOverlayOpen = false;
+  lastEnemyKey = '';
+  lastKillTotal = -1;
   stageTab = 'combat';
   drawerTab = null;
   logs.combat.length = 0;
@@ -372,14 +378,49 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
   app.innerHTML = `
     <div class="game">
       <header id="topbar" class="topbar"></header>
-      <nav id="sidebar" class="sidebar">
-        <aside id="ministatus" class="ministatus" aria-label="status"></aside>
+      <!-- Sahne kabuğu (gui-prototype.html): sol ray = beden (totem + halkalar + aksiyonlar). -->
+      <aside id="rail" class="rail" aria-label="status">
+        <div class="totem" id="totem">
+          <div class="ring hg" id="rl-hg" style="--v:0"></div>
+          <div class="ring sp" id="rl-sp" style="--v:100"></div>
+          <div class="ring mp" id="rl-mp" style="--v:100"></div>
+          <div class="ring hp" id="rl-hp" style="--v:100"></div>
+          <div class="core" id="totem-core"></div>
+        </div>
+        <div class="rl-vitals">
+          <span><i style="background:#6fae53"></i>${t('ui.hp')} <b id="rl-hp-v"></b></span>
+          <span><i style="background:var(--mp)"></i>${t('ui.mp')} <b id="rl-mp-v"></b></span>
+          <span><i style="background:var(--sp)"></i>${t('ui.sp')} <b id="rl-sp-v"></b></span>
+          <span><i id="rl-hg-i" style="background:#a04a3c"></i>${t('ui.hunger')} <b id="rl-hg-v"></b></span>
+        </div>
+        <div class="rl-form" id="rl-form"></div>
+        <div class="rl-lv">
+          <div class="rl-lvtxt"><span id="rl-tlv"></span><span id="rl-xp"></span></div>
+          <div class="lvbar"><i id="rl-xp-f"></i></div>
+        </div>
+        <button id="rl-evolve" class="rl-evolve">✦ ${t('ui.evolve')} ✦</button>
+        <div class="rl-acts">
+          <button id="rl-combat" title="${t('tab.combat')}">⚔</button>
+          <button id="rl-rest" title="${t('act.rest')}">🛏</button>
+          <button id="rl-forage" title="${t('ui.forage_btn')}">🍃</button>
+        </div>
+      </aside>
+      <div id="stagewrap">
+        <div id="stage-backdrop" aria-hidden="true"><div class="groundline"></div></div>
+        <main id="content" class="content"></main>
+      </div>
+      <!-- Sağ rıhtım: 4 alan ikonu (mobilde alt gezinme çubuğu olur). -->
+      <nav id="dock" class="dock">
         ${AREA_LIST.map((a) => {
           const iconTab: Tab = a === 'av' ? 'combat' : a === 'beden' ? 'body' : a === 'zihin' ? 'lore' : 'stats';
-          return `<button class="tabbtn areabtn" data-area="${a}">${ICONS[iconTab]}<span>${t(`area.${a}`)}</span></button>`;
+          return `<button class="areabtn" data-area="${a}">${ICONS[iconTab]}<small>${t(`area.${a}`)}</small></button>`;
         }).join('')}
       </nav>
-      <main id="content" class="content"></main>
+      <!-- Tek satır olay akışı: son olay görünür, tıklayınca geçmiş açılır (eski 4 sütunlu log yerine). -->
+      <footer id="stream" class="stream">
+        <div class="full" id="stream-full"></div>
+        <div class="tick"><span class="chev">▸</span><span id="stream-last"></span></div>
+      </footer>
       <!-- Faz 3: drawer over the stage — beden/zihin/ruh/settings/guide render here; combat keeps ticking behind. -->
       <aside id="drawer" class="drawer" aria-label="panel">
         <div class="drawer-head">
@@ -388,29 +429,15 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
         </div>
         <div id="drawer-body"></div>
       </aside>
-      <section class="logpanel">
-        ${(['combat', 'discovery', 'loot', 'lore'] as LogCat[]).map((cat) => `
-        <div class="logcol">
-          <div class="logcol-header" data-logcat="${cat}">
-            <h3>${t(`ui.log_${cat}`)}</h3>
-            <span class="logcol-toggle">${logOpen[cat] ? '▲' : '▼'}</span>
-          </div>
-          <ul class="logcol-body${cat === 'lore' ? ' lore-body' : ' short-body'}${logOpen[cat] ? '' : ' collapsed'}" id="log-${cat}"></ul>
-        </div>`).join('')}
-      </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
       <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
       <!-- Faz 4a: tam ekran evrim ağacı (takımyıldız) — çekmecenin üstünde, tutorial'ın altında. -->
       <div id="evo-overlay" class="evo-overlay hidden" aria-label="evolution tree"></div>
       <!-- Floating damage text overlay layer -->
       <div id="damage-text-layer" style="position:fixed; inset:0; pointer-events:none; z-index:99999;"></div>
-      <!-- Slim fixed vitals strip — visible on mobile only (CSS); bars driven by updateMini. -->
-      <div id="mobhud" aria-hidden="true">
-        <div class="mhbar"><i id="mh-hp-f" style="background:#6fae53"></i></div>
-        <div class="mhbar"><i id="mh-mp-f" style="background:var(--mp)"></i></div>
-        <div class="mhbar"><i id="mh-sp-f" style="background:var(--sp)"></i></div>
-        <div class="mhbar"><i id="mh-hunger-f"></i></div>
-      </div>
+      <!-- Çerçeve durumları: düşük can kenar kanaması + açlık karartması (body.lowhp/.starve). -->
+      <div class="frame lowhp" aria-hidden="true"></div>
+      <div class="frame starve" aria-hidden="true"></div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.areabtn').forEach((b) => {
@@ -432,6 +459,15 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
   app.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('button')) sfx('button');
   });
+  // Çekmece açıkken sahnenin boşluğuna (dışına) tıkla → kapat. Muaf: çekmecenin kendisi, onu
+  // aç/kapat eden dock alan butonları ve üst-bardaki ⚙/📖 ikonları (yoksa açar-açmaz kapanır).
+  app.addEventListener('click', (e) => {
+    if (!drawerTab) return;
+    const el = e.target as HTMLElement;
+    if (el.closest('#drawer') || el.closest('.areabtn') || el.closest('#open-settings') || el.closest('#open-guide')) return;
+    drawerTab = null;
+    renderTab();
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && evoOverlayOpen) { closeEvoOverlay(); return; }
     if (e.key === 'Escape' && drawerTab) { drawerTab = null; renderTab(); }
@@ -452,18 +488,28 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     drawerTab = (b.getAttribute('data-tab') as Tab) ?? drawerTab;
     renderDrawer();
   });
-  // Log panel collapse/expand
-  app.querySelectorAll<HTMLElement>('.logcol-header[data-logcat]').forEach((hdr) => {
-    hdr.addEventListener('click', () => {
-      const cat = hdr.getAttribute('data-logcat') as LogCat;
-      if (!cat) return;
-      logOpen[cat] = !logOpen[cat];
-      const body = hdr.nextElementSibling as HTMLElement | null;
-      const toggle = hdr.querySelector<HTMLElement>('.logcol-toggle');
-      if (body) body.classList.toggle('collapsed', !logOpen[cat]);
-      if (toggle) toggle.textContent = logOpen[cat] ? '▲' : '▼';
-    });
+  // Sol ray aksiyonları: savaş/dinlen/yemek-ara + evrim (takımyıldız ağacını açar).
+  app.querySelector<HTMLButtonElement>('#rl-combat')?.addEventListener('click', () => ACTIONS.onSetAction('combat'));
+  app.querySelector<HTMLButtonElement>('#rl-rest')?.addEventListener('click', () => ACTIONS.onSetAction('rest'));
+  app.querySelector<HTMLButtonElement>('#rl-forage')?.addEventListener('click', () => ACTIONS.onForage());
+  app.querySelector<HTMLButtonElement>('#rl-evolve')?.addEventListener('click', openEvoOverlay);
+  // Olay akışı: tıkla → geçmiş açılır/kapanır (içerik live()'da yalnız açıkken boyanır).
+  app.querySelector<HTMLElement>('#stream')?.addEventListener('click', () => {
+    document.querySelector<HTMLElement>('#stream')?.classList.toggle('open');
   });
+  // Sahne parçacıkları: backdrop sabittir (content her tik yeniden çizilse de bunlar yaşar).
+  const bd = app.querySelector<HTMLElement>('#stage-backdrop');
+  if (bd) {
+    for (let i = 0; i < 10; i++) {
+      const p = document.createElement('i');
+      p.className = 'part';
+      p.style.left = `${5 + Math.random() * 90}%`;
+      p.style.bottom = `${Math.random() * 45}%`;
+      p.style.animationDuration = `${9 + Math.random() * 14}s`;
+      p.style.animationDelay = `${-Math.random() * 12}s`;
+      bd.appendChild(p);
+    }
+  }
   document.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.guide-link');
     if (!btn) return;
@@ -510,8 +556,8 @@ function spawnFloatingText(text: string, color: string, target: 'player' | 'enem
 
   let targetEl: HTMLElement | null = null;
   if (target === 'player') {
-    // #ministatus is display:none on mobile → zero rect → text would spawn at the top-left corner.
-    const mini = document.querySelector<HTMLElement>('#ministatus');
+    // Görünmeyen hedef = sıfır rect → sayı sol-üst köşede belirirdi; totem görünmüyorsa topbar.
+    const mini = document.querySelector<HTMLElement>('#totem');
     targetEl = mini && mini.offsetWidth > 0 ? mini : document.querySelector<HTMLElement>('#topbar');
   } else {
     targetEl = document.querySelector<HTMLElement>('.enemy-panel');
@@ -592,14 +638,15 @@ export function live(state: GameState): void {
     }
     updateTopbar(state);
   }
-  const mini = document.querySelector<HTMLElement>('#ministatus');
-  if (mini) {
-    if (!mini.firstElementChild) mini.innerHTML = miniStatusHtml();
-    updateMini(state);
-  }
-  for (const cat of ['combat', 'discovery', 'loot', 'lore'] as LogCat[]) {
-    const el = document.querySelector<HTMLElement>(`#log-${cat}`);
-    if (el) el.innerHTML = logs[cat].map((l) => `<li>${l}</li>`).join('');
+  updateRail(state);
+  syncKillWisp(state); // düşman öldüğünde sahneden XP barına uçan ışık zerresi
+  // Olay akışı: tek satırda en yeni olay; geçmiş yalnız açıkken boyanır (perf).
+  const last = stream[0];
+  const sl = document.querySelector<HTMLElement>('#stream-last');
+  if (sl && last) sl.innerHTML = `<span class="ev-${last.cat}">${last.text}</span>`;
+  if (document.querySelector('#stream')?.classList.contains('open')) {
+    const sf = document.querySelector<HTMLElement>('#stream-full');
+    if (sf) sf.innerHTML = stream.map((e) => `<div class="ev-${e.cat}">${e.text}</div>`).join('');
   }
   // The stage is always live (combat/map tick every second behind the drawer).
   // Don't wipe the boss-riddle input while the player is typing in it.
@@ -865,45 +912,45 @@ function updateTopbar(state: GameState): void {
   setTxt('tb-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)} · ${t(`hunger.${hs}`)}`);
 }
 
-/** Mini HUD row skeleton (stable `#id-f` fill for smooth slide). */
-function miniBarSkel(id: string, label: string, color: string): string {
-  return `<div class="mr"><span style="color:${color}">${label}</span><span id="${id}-v"></span></div><div class="mbar"><i id="${id}-f" style="width:0;background:${color}"></i></div>`;
-}
-
-/** Compact always-on status HUD (sidebar). Skeleton; values filled by updateMini → smooth bars. */
-function miniStatusHtml(): string {
-  return `<div class="mf" id="ms-form"></div>
-    <div class="mr"><span id="ms-tlv"></span><span id="ms-pos"></span></div>
-    ${miniBarSkel('ms-hp', t('ui.hp'), '#6fae53')}
-    ${miniBarSkel('ms-mp', t('ui.mp'), 'var(--mp)')}
-    ${miniBarSkel('ms-sp', t('ui.sp'), 'var(--sp)')}
-    <div class="mr"><span id="ms-hunger-l">${t('ui.hunger')}</span><span id="ms-hunger-v"></span></div><div class="mbar"><i id="ms-hunger-f" style="width:0"></i></div>`;
-}
-
-function updateMini(state: GameState): void {
-  const form = currentForm(state, CONTENT);
-  setTxt('ms-form', form ? t(form.locKey) : '');
-  setTxt('ms-tlv', `${state.tier >= 1 ? `T${state.tier} ` : ''}${t('ui.lv')} ${state.level}`);
-  setTxt('ms-pos', `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`);
-  setW('ms-hp', state.hp, state.maxHp); setTxt('ms-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
-  setLow('ms-hp', state.hp, state.maxHp);
-  setLow('mh-hp', state.hp, state.maxHp);
-  setW('ms-mp', state.mp, state.maxMp); setTxt('ms-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
-  setW('ms-sp', state.sp, state.maxSp); setTxt('ms-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
+// ---- sol ray: totem + halkalar (Sahne kabuğu, gui-prototype "beden" rayı) ----------------------
+let railFormId = ''; // portre yalnız form değişince yeniden çizilir (img her tik yüklenmesin)
+function updateRail(state: GameState): void {
+  const ring = (id: string, v: number, max: number): void => {
+    const el = document.querySelector<HTMLElement>(`#${id}`);
+    if (el) el.style.setProperty('--v', String(Math.max(0, Math.min(100, max > 0 ? (v / max) * 100 : 0))));
+  };
+  ring('rl-hp', state.hp, state.maxHp);
+  ring('rl-mp', state.mp, state.maxMp);
+  ring('rl-sp', state.sp, state.maxSp);
+  ring('rl-hg', state.hunger, MAX_HUNGER);
+  document.querySelector<HTMLElement>('#rl-hp')?.classList.toggle('low', state.maxHp > 0 && state.hp / state.maxHp < 0.25);
+  setTxt('rl-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setTxt('rl-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
+  setTxt('rl-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
   const hs = hungerStage(state.hunger);
-  setW('ms-hunger', state.hunger, MAX_HUNGER);
-  const hf = document.querySelector<HTMLElement>('#ms-hunger-f');
-  if (hf) hf.style.background = HUNGER_COLORS[hs];
-  const hl = document.querySelector<HTMLElement>('#ms-hunger-l');
-  if (hl) hl.style.color = HUNGER_COLORS[hs];
-  setTxt('ms-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)}`);
-  // Mobile #mobhud strip mirrors the same vitals (own ids — setW is a no-op where absent).
-  setW('mh-hp', state.hp, state.maxHp);
-  setW('mh-mp', state.mp, state.maxMp);
-  setW('mh-sp', state.sp, state.maxSp);
-  setW('mh-hunger', state.hunger, MAX_HUNGER);
-  const mhf = document.querySelector<HTMLElement>('#mh-hunger-f');
-  if (mhf) mhf.style.background = HUNGER_COLORS[hs];
+  setTxt('rl-hg-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)}`);
+  const hgi = document.querySelector<HTMLElement>('#rl-hg-i');
+  if (hgi) hgi.style.background = HUNGER_COLORS[hs];
+  const form = currentForm(state, CONTENT);
+  setTxt('rl-form', form ? t(form.locKey) : '');
+  setTxt('rl-tlv', `${state.tier >= 1 ? `T${state.tier} · ` : ''}${t('ui.lv')} ${state.level} · ${state.pos.layer}.${state.pos.floor}.${state.pos.room}`);
+  const capped = state.level >= LEVEL_CAP;
+  setTxt('rl-xp', capped ? 'MAX' : `${state.xp}/${xpToNext(state.level)}`);
+  const xf = document.querySelector<HTMLElement>('#rl-xp-f');
+  if (xf) xf.style.width = `${capped ? 100 : Math.min(100, (state.xp / Math.max(1, xpToNext(state.level))) * 100)}%`;
+  if (railFormId !== state.formId) {
+    railFormId = state.formId;
+    const core = document.querySelector<HTMLElement>('#totem-core');
+    if (core) core.innerHTML = playerFigureHtml(state, 'totem-img');
+  }
+  document.querySelector<HTMLElement>('#rl-evolve')?.classList.toggle('ready', evolutionReady(state, CONTENT));
+  document.querySelector<HTMLElement>('#rl-combat')?.classList.toggle('on', state.action === 'combat');
+  document.querySelector<HTMLElement>('#rl-rest')?.classList.toggle('on', state.action === 'rest' || state.action === 'meditate');
+  const fb = document.querySelector<HTMLButtonElement>('#rl-forage');
+  if (fb) fb.disabled = (state.forageCD ?? 0) > 0;
+  // Çerçeve durumları: düşük can kenar kanaması + açlık karartması (prototip frame'leri).
+  document.body.classList.toggle('lowhp', state.maxHp > 0 && state.hp / state.maxHp < 0.25);
+  document.body.classList.toggle('starve', state.hunger >= MAX_HUNGER * 0.75);
 }
 
 function hungerStage(h: number): number {
@@ -1223,19 +1270,11 @@ const DMG_COLORS: Record<string, string> = {
   acid: '#b6d33f', lightning: '#d2a73a', magic: '#9a7fd0', fear: '#a4506a', soul: '#c0626f',
 };
 
-/** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled.
- *  `active` = combat is live → the portrait gets a per-tick attack lunge (synced to the 1s round). */
-function enemyPortrait(inst: NonNullable<GameState['enemy']>, active: boolean): string {
-  // Elites take a gold frame + glow so they read as special at a glance, over the element colour.
-  const color = inst.elite ? '#e6c558' : (DMG_COLORS[inst.damageType] ?? '#989384');
-  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : inst.elite ? 'box-shadow:0 0 14px #e6c558;' : '';
-  const anim = active ? ' combat-active' : ' idle-foe';
-  // A hand-drawn portrait when available; otherwise the emoji glyph.
-  const inner = inst.image
-    ? `<img class="eportrait-img" src="${assetUrl(inst.image)}" alt="" loading="lazy" />`
+/** The foe's stage figure: hand-drawn PNG when available, else the emoji glyph (sized big on the stage). */
+function foeFigHtml(inst: NonNullable<GameState['enemy']>): string {
+  return inst.image
+    ? `<img class="fig-img" src="${assetUrl(inst.image)}" alt="" loading="lazy" />`
     : (inst.icon ?? '❓');
-  // color:${color} so the boss-glow keyframe's currentColor matches the element's element-colour.
-  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${inst.elite ? ' elite' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
 }
 
 /** Resolve an asset path under the Vite base (handles the GitHub Pages "/<repo>/" base). */
@@ -1271,62 +1310,121 @@ function playerFigureHtml(state: GameState, cls: string): string {
   return headSvg(state);
 }
 
-/** Animated player presence while resting / meditating — portrait + live HP/SP/MP bars. */
+/** Animated player presence while resting / meditating — figure on the stage + a campfire + live bars. */
 function restStage(state: GameState): string {
   const kind = state.action === 'meditate' ? 'meditating' : 'resting';
   const figure = playerFigureHtml(state, 'rest-portrait');
   const hp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">HP</span>${bar(state.hp, state.maxHp, '#6fae53')}<span class="muted" style="font-size:0.78rem">${Math.round(state.hp)}/${state.maxHp}</span></div>`;
   const mp = state.maxMp > 0 ? `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">MP</span>${bar(state.mp, state.maxMp, '#4f86c2')}<span class="muted" style="font-size:0.78rem">${Math.round(state.mp)}/${state.maxMp}</span></div>` : '';
   const sp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">SP</span>${bar(state.sp, state.maxSp, '#d2a73a')}<span class="muted" style="font-size:0.78rem">${Math.round(state.sp)}/${state.maxSp}</span></div>`;
-  return `<div class="rest-stage ${kind}"><span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span><div class="rest-bars">${hp}${mp}${sp}</div></div>`;
+  // Meditasyon = mavi ışık kürecikleri; dinlenme = kamp ateşi (prototipteki campfire).
+  const glow = kind === 'meditating' ? '<div class="med-orb"></div>' : '<div class="campfire">🔥</div>';
+  return `<div class="rest-stage ${kind}">${glow}<span class="rest-aura">${figure}</span><span class="rest-label muted">${t(`act.${state.action}`)}</span><div class="rest-bars">${hp}${mp}${sp}</div></div>`;
 }
 
+// Yeni düşman belirince plakayı bir kez "slam" ile göstermek için son düşmanın kimliğini izler.
+let lastEnemyKey = '';
+// Ölüm başına bir kez XP-wisp uçurmak için toplam kill sayısını izler (-1 = henüz tohumlanmadı).
+let lastKillTotal = -1;
+
+/** Düşman ölünce sahneden (düşman aktörü) sol raydaki XP barına uçan ışık zerresi. */
+function syncKillWisp(state: GameState): void {
+  const total = state.kills ?? 0;
+  if (lastKillTotal < 0) { lastKillTotal = total; return; } // ilk sync sessiz (save yükleme replay etmesin)
+  if (total <= lastKillTotal) { lastKillTotal = total; return; }
+  lastKillTotal = total;
+  const foe = document.querySelector<HTMLElement>('.actor.foe .fig');
+  const target = document.querySelector<HTMLElement>('#rl-xp-f');
+  const layerEl = document.querySelector<HTMLElement>('#damage-text-layer');
+  if (!foe || !target || !layerEl) return;
+  const f = foe.getBoundingClientRect();
+  const tb = target.getBoundingClientRect();
+  const w = document.createElement('div');
+  w.className = 'xp-wisp';
+  w.style.left = `${f.left + f.width / 2}px`;
+  w.style.top = `${f.top + f.height / 2}px`;
+  w.style.setProperty('--wx', `${tb.left + tb.width / 2 - (f.left + f.width / 2)}px`);
+  w.style.setProperty('--wy', `${tb.top + tb.height / 2 - (f.top + f.height / 2)}px`);
+  layerEl.appendChild(w);
+  setTimeout(() => w.remove(), 800);
+}
+
+/** Savaş sahnesi (gui-prototype "duel"): karşılıklı iki figür (nefes + hamle), yere düşen gölge,
+ *  appraisal'sız düşman kapkara siluet, üstünde yüzen bilgi plakası (kademeli açılır) + slam ile
+ *  beliriş, köşede oda/kota etiketi. Bizim eklerimiz üstte: boss faz rozetleri + minyon figürleri. */
 function enemyView(state: GameState): string {
   const inst = state.enemy;
   if (!inst) {
     if (state.action === 'rest' || state.action === 'meditate') return restStage(state);
-    if (state.action === 'combat' && state.roomCleared) return `<p class="muted">${t('ui.boss_cleared')}</p>`;
-    return `<p class="muted">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p>`;
+    if (state.action === 'combat' && state.roomCleared) return `<div class="duel empty"><p class="stage-idle">${t('ui.boss_cleared')}</p></div>`;
+    return `<div class="duel empty"><p class="stage-idle">${state.action === 'combat' ? t('ui.no_enemy') : t(`act.${state.action}`)}</p></div>`;
   }
-  const portrait = enemyPortrait(inst, state.action === 'combat');
+  const combat = state.action === 'combat';
   const layer = CONTENT.dungeon.layers.find((l) => l.id === state.pos.layer);
   const isBossRoom = !!layer && state.pos.room >= roomsOf(state, layer, state.pos.floor);
   const quota = roomQuota(state);
-  const killBadge = (!isBossRoom && state.action === 'combat')
+  const foeColor = inst.elite ? '#e6c558' : (DMG_COLORS[inst.damageType] ?? '#989384');
+
+  // Appraisal kademesi: siluet(0) → isim(1) → tip(2) → ATK(3) → HP(4) → zayıflık(5). "Bilgi = güç."
+  const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
+  const et = tier + (inst.analyzed ? 1 : 0);
+  const veiled = tier < 1;
+  const name = veiled
+    ? '???'
+    : `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${t(inst.locKey)}`;
+  const tags: string[] = [];
+  if (veiled) {
+    tags.push(t('ui.enemy_veiled'));
+  } else {
+    if (et >= 2) tags.push(`${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}`);
+    if (et >= 3) tags.push(`ATK ${inst.attack}`);
+    if (et >= 4) tags.push(`${Math.round(inst.hp)}/${inst.maxHp}`);
+    if (et >= 5) {
+      const w = weaknessOf(CONTENT, inst.damageType);
+      if (w) tags.push(`${t('ui.weak_to')}: ${t(`dmgtype.${w}`)}`);
+    }
+  }
+
+  // Rozetler (bizim eklerimiz) — plakanın üstünde dikey yığın.
+  const killBadge = (!isBossRoom && combat)
     ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
   const eliteBadge = inst.elite ? `<span class="elite-badge">⭐ ${t('ui.elite')}</span>` : '';
-  // Boss faz rozetleri (v1.23.41): öfke / zayıflık penceresi / güç toplama — appraisal'sız da görünür
-  // (tehdit dili görsel; sayı/stat sızdırmaz).
   const bossFx = inst.isBoss
     ? `${inst.bossEnraged ? `<span class="boss-badge enr">🔥 ${t('ui.boss_enraged')}</span>` : ''}` +
       `${(inst.bossWeakRounds ?? 0) > 0 ? `<span class="boss-badge weak">💥 ${t('ui.boss_weak')}</span>` : ''}` +
       `${inst.bossCharged ? `<span class="boss-badge chg">⚡ ${t('ui.boss_charging')}</span>` : ''}`
     : '';
-  // Duel stage: the player's figure faces the foe (lunge keyframe re-syncs on each combat re-render).
-  const duel = (foeHtml: string) => `<div class="duel">
-    <div class="duel-you${state.action === 'combat' ? ' fighting' : ''}">${minionFigsHtml(state)}${playerFigureHtml(state, 'duel-portrait')}</div>
-    <span class="duel-mid">⚔</span>
-    <div class="duel-foe">${foeHtml}</div></div>`;
-  const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
-  if (tier < 1) {
-    // No "seeing eye" slotted — you see the creature's shape but never its true stats.
-    const mark = inst.isBoss ? '☠ ' : '';
-    return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${bossFx}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`);
-  }
-  const baseName = t(inst.locKey);
-  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${baseName}`;
-  const et = tier + (inst.analyzed ? 1 : 0); // a deep-read (Analyze) reveals one tier deeper, on the enemy
-  const bits: string[] = [`<b>${name}</b>`];
-  if (et >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
-  if (et >= 3) bits.push(`ATK ${inst.attack}`);
-  const hpText = et >= 4 ? `${Math.round(inst.hp)}/${inst.maxHp}` : '';
-  let weak = '';
-  if (et >= 5) {
-    const w = weaknessOf(CONTENT, inst.damageType);
-    if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
-  }
-  return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${bossFx}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`);
+
+  // Yeni düşman mı? → plaka bir kez "slam" ile büyüyerek gelir (her tik değil).
+  const enemyKey = `${inst.id}|${inst.maxHp}|${state.roomKillCount ?? 0}|${state.pos.layer}.${state.pos.floor}.${state.pos.room}`;
+  const fresh = combat && enemyKey !== lastEnemyKey;
+  lastEnemyKey = enemyKey;
+
+  const roomTag = `<div class="roomtag">📍 <b>${state.pos.layer}.${state.pos.floor}.${state.pos.room}</b></div>`;
+  const quotaTag = isBossRoom
+    ? `<div class="quota boss">☠ ${t('ui.boss')}</div>`
+    : combat ? `<div class="quota">⚔ ${state.roomKillCount ?? 0}/${quota}</div>` : '';
+
+  return `
+    <div class="duel${combat ? ' fighting' : ''}">
+      ${roomTag}${quotaTag}
+      <div class="actor you">
+        ${minionFigsHtml(state)}
+        <span class="fig">${playerFigureHtml(state, 'fig-img')}</span>
+        <div class="shadowe"></div>
+      </div>
+      <div class="actor foe">
+        <div class="foeplate${inst.isBoss ? ' boss' : ''}${inst.elite ? ' elite' : ''}${fresh ? ' slam' : ''}" style="--fc:${foeColor}">
+          <div class="foe-badges">${killBadge}${eliteBadge}${bossFx}</div>
+          <div class="fname${veiled ? ' veilname' : ''}">${name}</div>
+          ${tags.length ? `<div class="ftags">${tags.join(' · ')}</div>` : ''}
+          <div class="fbar"><i style="width:${Math.max(0, (inst.hp / inst.maxHp) * 100)}%"></i></div>
+        </div>
+        <span class="fig${veiled ? ' veiled' : ''}" style="color:${foeColor}">${foeFigHtml(inst)}</span>
+        <div class="shadowe"></div>
+      </div>
+    </div>`;
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */

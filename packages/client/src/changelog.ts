@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.45';
+export const VERSION = '1.23.46';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.46',
+    date: '2026-07-02',
+    tr: [
+      'YENİ ARAYÜZ — "Sahne": oyun artık sabit tam-ekran bir sahne. Solda beden totemi (canavarının portresi + çevresinde HP/MP/SP/açlık halkaları + aksiyonlar), ortada savaş sahnesi, sağda 4 alan ikonu, altta tek satır olay akışı (tıkla → geçmiş açılır)',
+      'savaş sahnesi güçlendi: sen ve düşman karşılıklı durup nefes alıyor ve her turda birbirine hamle yapıyor; düşman incelenmemişse kapkara siluet, üstündeki plaka appraisal ile kademeli açılıyor (isim→tip→ATK→HP→zayıflık) ve yeni düşman "slam" ile beliriyor; ölünce XP\'ye ışık süzülüyor',
+      'düşük canda ekran kenarı kanıyor, açlıkta karartıyor; dinlenmede kamp ateşi yanıyor; derin katlarda sahne rengi değişiyor',
+      'panel (Beden/Zihin/Ruh) açıkken sahnenin boşluğuna tıklayınca kapanıyor',
+    ],
+    en: [
+      'NEW UI — "Stage": the game is now a fixed full-screen stage. Left: a body totem (your monster\'s portrait ringed by HP/MP/SP/hunger + actions); center: the combat stage; right: the 4 area icons; bottom: a single-line event stream (tap → history)',
+      'the combat scene is stronger: you and the foe face off, breathing and lunging at each other each round; an unappraised foe is a black silhouette whose floating plate reveals progressively (name→type→ATK→HP→weakness), and new foes arrive with a "slam"; a light wisp flies to your XP on a kill',
+      'low HP bleeds the screen edges, hunger darkens them; a campfire burns while resting; deeper layers retint the stage',
+      'tapping the stage outside an open panel (Body/Mind/Soul) now closes it',
+    ],
+    ru: [
+      'НОВЫЙ ИНТЕРФЕЙС — «Сцена»: игра теперь фиксированная полноэкранная сцена. Слева тотем тела (портрет монстра в кольцах HP/MP/SP/голода + действия), в центре сцена боя, справа 4 значка областей, снизу однострочный поток событий (нажатие → история)',
+      'сцена боя усилилась: ты и враг стоите друг напротив друга, дышите и делаете выпады каждый раунд; неизученный враг — чёрный силуэт, чья плашка раскрывается постепенно (имя→тип→АТК→HP→слабость), новые враги появляются со «slam»; при убийстве огонёк летит к твоему опыту',
+      'при низком HP края экрана кровоточат, при голоде темнеют; во время отдыха горит костёр; на глубине сцена меняет оттенок',
+      'нажатие на сцену вне открытой панели (Тело/Разум/Душа) теперь закрывает её',
+    ],
+  },
   {
     v: '1.23.45',
     date: '2026-07-02',
