@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.37';
+export const VERSION = '1.23.38';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.38',
+    date: '2026-07-02',
+    tr: [
+      'metin: tutorial, ipucu, kılavuz ve log mesajları yeni arayüz diline geçirildi — eski "sekme" yönlendirmeleri artık Av sahnesi / Beden / Zihin / Ruh alanlarını gösteriyor (3 dilde, 71 metin)',
+    ],
+    en: [
+      'text: tutorial, hint, guide and log messages now speak the new UI language — old "tab" directions now point to the Hunt stage / Body / Mind / Soul areas (71 strings across 3 languages)',
+    ],
+    ru: [
+      'текст: обучение, подсказки, руководство и лог переведены на язык нового интерфейса — старые направления «вкладка» теперь указывают на сцену Охоты / Тело / Разум / Душу (71 строка в 3 языках)',
+    ],
+  },
   {
     v: '1.23.37',
     date: '2026-07-02',
