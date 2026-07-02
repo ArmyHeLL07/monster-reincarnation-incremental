@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.40';
+export const VERSION = '1.23.41';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.41',
+    date: '2026-07-02',
+    tr: [
+      'yeni: boss savaşları artık fazlı — %50 canda boss öfkeye kapılır (saldırı +%30) ama 2 tur savunmasız kalır (aldığı hasar ×1.5): vurma penceren bu',
+      'yeni: boss her 3 saldırıda bir "güç toplar" (⚡ uyarısı) — sıradaki vuruş ×2.5 hasar; savuşturursan ya da o an dinlenmeye çekilirsen şarj boşa gider',
+      'düşman panelinde boss durum rozetleri: 🔥 öfkeli · 💥 savunmasız · ⚡ güç topluyor',
+    ],
+    en: [
+      'new: boss fights now have phases — at 50% HP the boss enrages (attack +30%) but is vulnerable for 2 rounds (takes ×1.5 damage): that\'s your window',
+      'new: every 3rd attack the boss "gathers power" (⚡ warning) — the next blow deals ×2.5 damage; dodging it or retreating to rest wastes the charge',
+      'boss status badges on the enemy panel: 🔥 enraged · 💥 vulnerable · ⚡ charging',
+    ],
+    ru: [
+      'новое: у боссов появились фазы — на 50% HP босс впадает в ярость (атака +30%), но 2 хода уязвим (получает ×1.5 урона): это твоё окно',
+      'новое: каждую 3-ю атаку босс «копит силу» (предупреждение ⚡) — следующий удар наносит ×2.5 урона; уклонение или отход на отдых тратит заряд впустую',
+      'значки состояния босса на панели врага: 🔥 в ярости · 💥 уязвим · ⚡ копит силу',
+    ],
+  },
   {
     v: '1.23.40',
     date: '2026-07-02',

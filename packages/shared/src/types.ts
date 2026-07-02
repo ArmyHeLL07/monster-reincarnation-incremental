@@ -281,6 +281,26 @@ export interface Enemy {
   grantSkills?: string[];
   /** Special combat behaviour — what makes this monster fight differently (not just element/stats). */
   behavior?: EnemyBehavior;
+  /** Boss faz ayarları — bu arketip boss olarak doğduğunda kod varsayılanlarını (combat.ts
+   *  BOSS_PHASES) kısmen ezer; `false` = bu arketip boss'ken faz mekaniği tamamen kapalı. */
+  phases?: Partial<BossPhaseCfg> | false;
+}
+
+/** Boss faz mekanikleri (v1.23.41): %HP öfke geçişi + telegraflı şarjlı vuruş + zayıflık penceresi.
+ *  Varsayılanlar kodda (combat.ts BOSS_PHASES); enemies.json arketip başına override edebilir. */
+export interface BossPhaseCfg {
+  /** Bu HP oranının altına İLK inişte öfke fazına geçer. */
+  enrageAtPct: number;
+  /** Öfke fazında saldırı çarpanı. */
+  enrageAtkMult: number;
+  /** Faz geçişinde boss'un savunmasız kaldığı tur (tick) sayısı. */
+  weaknessRounds: number;
+  /** Zayıflık penceresi boyunca boss'un ALDIĞI hasar çarpanı. */
+  weaknessTakenMult: number;
+  /** Her N saldırıda bir güç toplar (telegraf); offline simülasyonda atlanır. */
+  telegraphEvery: number;
+  /** Şarjlı vuruşun hasar çarpanı (savuşturma/geri çekilme şarjı boşa düşürür). */
+  telegraphMult: number;
 }
 
 /** Optional behaviour modifiers that give monsters distinct fight patterns. */

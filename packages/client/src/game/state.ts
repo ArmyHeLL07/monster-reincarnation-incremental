@@ -104,6 +104,15 @@ export interface EnemyInstance {
   behavior?: EnemyBehavior;
   /** A rare elite variant — tougher (more HP/ATK) but drops far more EP/XP. Marked with a star badge. */
   elite?: boolean;
+  // --- Boss faz durumu (v1.23.41, sadece isBoss iken kullanılır) ---
+  /** Öfke fazına geçti (bir kez tetiklenir; saldırıları ×enrageAtkMult). */
+  bossEnraged?: boolean;
+  /** Faz geçişi sonrası kalan zayıflık turu — bu pencerede aldığı hasar ×weaknessTakenMult. */
+  bossWeakRounds?: number;
+  /** Telegraf sayacı: her saldırıda artar, telegraphEvery'ye ulaşınca şarj başlar. */
+  bossCharge?: number;
+  /** Bir sonraki vuruş şarjlı (×telegraphMult); savuşturulursa boşa gider. */
+  bossCharged?: boolean;
 }
 
 export const MAX_HUNGER = 100;

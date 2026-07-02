@@ -1215,6 +1215,13 @@ function enemyView(state: GameState): string {
     ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
   const eliteBadge = inst.elite ? `<span class="elite-badge">⭐ ${t('ui.elite')}</span>` : '';
+  // Boss faz rozetleri (v1.23.41): öfke / zayıflık penceresi / güç toplama — appraisal'sız da görünür
+  // (tehdit dili görsel; sayı/stat sızdırmaz).
+  const bossFx = inst.isBoss
+    ? `${inst.bossEnraged ? `<span class="boss-badge enr">🔥 ${t('ui.boss_enraged')}</span>` : ''}` +
+      `${(inst.bossWeakRounds ?? 0) > 0 ? `<span class="boss-badge weak">💥 ${t('ui.boss_weak')}</span>` : ''}` +
+      `${inst.bossCharged ? `<span class="boss-badge chg">⚡ ${t('ui.boss_charging')}</span>` : ''}`
+    : '';
   // Duel stage: the player's figure faces the foe (lunge keyframe re-syncs on each combat re-render).
   const duel = (foeHtml: string) => `<div class="duel">
     <div class="duel-you${state.action === 'combat' ? ' fighting' : ''}">${playerFigureHtml(state, 'duel-portrait')}</div>
@@ -1224,7 +1231,7 @@ function enemyView(state: GameState): string {
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`);
+    return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${bossFx}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`);
   }
   const baseName = t(inst.locKey);
   const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${baseName}`;
@@ -1238,7 +1245,7 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`);
+  return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${bossFx}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`);
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */

@@ -1,6 +1,6 @@
-import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
+import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger, BossPhaseCfg } from '@mri/shared';
 import type { Content } from './content';
-import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
+import type { GameState, SkillSlot, ResistSlot, LogEvent, EnemyInstance } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat, minionDef, minionEffMult, minionLimit, minionStage, syncMinionStage } from './state';
 import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
@@ -78,6 +78,40 @@ const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
 export const XP_PER_EP = 8;
+
+// --- Boss faz mekanikleri (Ali devir listesi #1, v1.23.41) ---------------------------------------
+// Boss artık "sadece büyük düşman" değil: %50 canda öfke fazı (+ATK, kısa zayıflık penceresi) ve
+// her N saldırıda telegraf edilen şarjlı vuruş. Varsayılanlar burada; enemies.json arketip başına
+// `phases` alanıyla ezebilir (minyon tablosuyla aynı data-driven desen), `phases:false` kapatır.
+const BOSS_PHASES: BossPhaseCfg = {
+  enrageAtPct: 0.5,
+  enrageAtkMult: 1.3,
+  weaknessRounds: 2,
+  weaknessTakenMult: 1.5,
+  telegraphEvery: 3,
+  telegraphMult: 2.5,
+};
+function bossPhaseCfg(content: Content, enemy: EnemyInstance): BossPhaseCfg | null {
+  if (!enemy.isBoss) return null;
+  const p = content.enemies.get(enemy.id)?.phases;
+  if (p === false) return null;
+  return p ? { ...BOSS_PHASES, ...p } : BOSS_PHASES;
+}
+/** Zayıflık penceresi açıkken boss'un aldığı hasar çarpanı (değilse 1). */
+function bossTakenMult(content: Content, enemy: EnemyInstance): number {
+  if (!enemy.isBoss || (enemy.bossWeakRounds ?? 0) <= 0) return 1;
+  return bossPhaseCfg(content, enemy)?.weaknessTakenMult ?? 1;
+}
+/** Hasar SONRASI çağrılır: eşiğin altına ilk inişte öfke fazını + zayıflık penceresini açar. */
+function checkBossPhase(content: Content, enemy: EnemyInstance, log: Log): void {
+  const cfg = bossPhaseCfg(content, enemy);
+  if (!cfg || enemy.bossEnraged || enemy.hp <= 0) return;
+  if (enemy.hp <= enemy.maxHp * cfg.enrageAtPct) {
+    enemy.bossEnraged = true;
+    enemy.bossWeakRounds = cfg.weaknessRounds;
+    log({ key: 'log.boss_enrage', params: { enemy: enemy.locKey } });
+  }
+}
 const SIN_PER_KILL = 3; // kin kills feed the dark axis (GDD §C)
 const SIN_PER_KILL_BOSS = 15; // boss kin = heinous transgression
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
@@ -170,6 +204,8 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     return; // frozen — no hunger, no regen, nothing happens
   }
   state.totalTicks = (state.totalTicks ?? 0) + 1;
+  // Boss şarjlı vuruşu: oyuncu geri çekilirse (dinlen/meditasyon) şarj boşa gider — kaçınma yolu.
+  if (state.action !== 'combat' && state.enemy?.bossCharged) state.enemy.bossCharged = false;
   checkAchievements(state, content, log); // unlock milestones + grant rewards (idempotent, cheap)
   checkQuests(state, content, log); // fill/complete repeatable quests
   checkLoreMastery(state, content, log); // grant racial lore-mastery passive when all a race's books are read
@@ -191,6 +227,8 @@ export function tick(state: GameState, content: Content, log: Log, isOffline: bo
     const b = aggregateBonuses(state, content);
     state.hunger = Math.min(MAX_HUNGER, state.hunger + HUNGER_RISE_COMBAT * b.hungerMult * (diffDef(state, content).brutal ? 1.5 : 1));
     combatRound(state, content, log, b, isOffline);
+    // Boss zayıflık penceresi tur (tick) bazında kapanır — pencere combatRound içinde uygulandı.
+    if (state.enemy?.isBoss && (state.enemy.bossWeakRounds ?? 0) > 0) state.enemy.bossWeakRounds = (state.enemy.bossWeakRounds ?? 1) - 1;
     tryAutoEvent(state, content, log); // auto-resolve events/riddles in combat too, not just rest
     processStatuses(state, content, log); // lingering DoT (poison/fire/…) keeps ticking
     if (state.hp <= 0) onDeath(state, content, log, b);
@@ -555,7 +593,9 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
           finalDmg = Math.max(1, Math.round(dmg * (1 - state.enemy.behavior.armorPct)));
         }
       }
+      finalDmg = Math.round(finalDmg * bossTakenMult(content, state.enemy));
       state.enemy.hp -= finalDmg;
+      checkBossPhase(content, state.enemy, log);
       if (isPhysical) {
         log({ key: 'log.minion_dps_phys', params: { dmg: finalDmg } });
       } else {
@@ -569,8 +609,8 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
     state.enemy.atkCd -= 1;
     if (state.enemy.atkCd <= 0) {
       state.enemy.atkCd = ENEMY_ATK_INTERVAL;
-      enemyAttack(state, content, log, b);
-      if (state.enemy?.behavior?.doubleStrike && state.hp > 0) enemyAttack(state, content, log, b); // strikes twice
+      enemyAttack(state, content, log, b, isOffline);
+      if (state.enemy?.behavior?.doubleStrike && state.hp > 0) enemyAttack(state, content, log, b, isOffline); // strikes twice
       if (state.enemy?.behavior?.regen) {
         const heal = Math.round(state.enemy.maxHp * state.enemy.behavior.regen);
         state.enemy.hp = Math.min(state.enemy.maxHp, state.enemy.hp + heal);
@@ -1197,7 +1237,9 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     state.screenShake = 15; // Trigger screen shake
   }
 
+  dmg = Math.round(dmg * bossTakenMult(content, enemy)); // boss zayıflık penceresi (faz geçişi)
   enemy.hp -= dmg;
+  checkBossPhase(content, enemy, log);
   log({ key: isCrit ? 'log.attack_crit' : 'log.attack', params: { skill: def.locKeyName, dmg, type: dmgTypeKey(def.damageType) } });
 
   // --- Add floating combat text ---
@@ -1236,11 +1278,13 @@ function fireGaze(state: GameState, content: Content, log: Log): void {
   const gz = gazeAttack(state, content);
   if (gz.damage > 0 && state.mp >= gz.mpCost) {
     state.mp -= gz.mpCost;
-    enemy.hp -= gz.damage;
-    log({ key: 'log.gaze_hit', params: { dmg: gz.damage } });
+    const gdmg = Math.round(gz.damage * bossTakenMult(content, enemy));
+    enemy.hp -= gdmg;
+    checkBossPhase(content, enemy, log);
+    log({ key: 'log.gaze_hit', params: { dmg: gdmg } });
     if (!state.floatingTexts) state.floatingTexts = [];
-    state.floatingTexts.push({ text: `${gz.damage}`, color: 'cyan', target: 'enemy', ts: Date.now() });
-    if (state.combatTracker) state.combatTracker.damage += gz.damage;
+    state.floatingTexts.push({ text: `${gdmg}`, color: 'cyan', target: 'enemy', ts: Date.now() });
+    if (state.combatTracker) state.combatTracker.damage += gdmg;
   }
 }
 
@@ -1347,20 +1391,40 @@ export function useSkillManual(state: GameState, content: Content, id: string, l
   }
 }
 
-function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): void {
+function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses, isOffline = false): void {
   const enemy = state.enemy;
   if (!enemy) return;
   if (Math.random() < gazeNegateChance(state, content)) {
+    if (enemy.bossCharged) enemy.bossCharged = false; // şarjlı vuruş savuşturuldu — boşa gitti
     log({ key: 'log.flee', params: { enemy: enemy.locKey } });
     return;
   }
   if (Math.random() < dodgeChance(state, b)) {
+    if (enemy.bossCharged) enemy.bossCharged = false; // şarjlı vuruş savuşturuldu — boşa gitti
     log({ key: 'log.dodge', params: { enemy: enemy.locKey } });
     return;
   }
   const resMult = diffDef(state, content).resistMult ?? 1; // Easy trains resistances very slowly
   const types = enemy.damageType2 ? [enemy.damageType, enemy.damageType2] : [enemy.damageType];
-  let share = enemy.attack / types.length;
+  // Boss fazları: öfke çarpanı + telegraf/şarjlı vuruş döngüsü (telegraf offline simde atlanır).
+  const bpc = bossPhaseCfg(content, enemy);
+  let bossMult = 1;
+  if (bpc) {
+    if (enemy.bossEnraged) bossMult *= bpc.enrageAtkMult;
+    if (enemy.bossCharged) {
+      bossMult *= bpc.telegraphMult;
+      enemy.bossCharged = false;
+      log({ key: 'log.boss_slam', params: { enemy: enemy.locKey } });
+    } else if (!isOffline) {
+      enemy.bossCharge = (enemy.bossCharge ?? 0) + 1;
+      if (enemy.bossCharge >= bpc.telegraphEvery) {
+        enemy.bossCharge = 0;
+        enemy.bossCharged = true;
+        log({ key: 'log.boss_charging', params: { enemy: enemy.locKey } });
+      }
+    }
+  }
+  let share = (enemy.attack * bossMult) / types.length;
   if (enemy.behavior?.enrage && enemy.hp < enemy.maxHp * 0.3) share *= 1 + enemy.behavior.enrage; // cornered → fiercer
   const statusChance = STATUS_CHANCE * (enemy.behavior?.statusBoost ?? 1); // status specialists apply more
   // Group nullification and Ultimate Nullification reductions (computed once, applied per-hit).
