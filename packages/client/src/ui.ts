@@ -669,9 +669,6 @@ function topbarHtml(): string {
     </div>
     <p class="sub" id="tb-sub"></p>
     <div class="bars">
-      <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem;font-size:0.78rem;color:rgba(255,255,255,0.4);">
-        ${t('ui.hp')}/${t('ui.mp')}/${t('ui.sp')}
-      </div>
       ${statBarSkel('tb-hp', t('ui.hp'), '#6fae53')}
       ${statBarSkel('tb-mp', t('ui.mp'), '#4f86c2')}
       ${statBarSkel('tb-sp', t('ui.sp'), '#d2a73a')}

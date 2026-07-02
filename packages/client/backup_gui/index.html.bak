@@ -3,8 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monster Reincarnation</title>
+    <title>Monster Reincarnation — incremental monster evolution RPG</title>
     <meta name="theme-color" content="#0a0910" />
+    <meta name="description" content="A dark incremental RPG: reincarnate as the weakest monster and claw your way up. Damage taken becomes resistance, skills evolve, and 11 races branch through deep evolution trees. Inspired by 'So I'm a Spider, So What?'. Free in your browser." />
+    <link rel="canonical" href="https://armyhell07.github.io/monster-reincarnation-incremental/" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='55' font-size='76' text-anchor='middle' dominant-baseline='central'>🕷️</text></svg>" />
+    <!-- Social share preview (Open Graph + Twitter) — canonical origin is Cloudflare. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Monster Reincarnation" />
+    <meta property="og:title" content="Monster Reincarnation — incremental monster evolution RPG" />
+    <meta property="og:description" content="Reincarnate as the weakest monster and evolve. Damage taken becomes resistance, skills evolve, 11 races branch into deep evolution trees. Free in your browser." />
+    <meta property="og:url" content="https://armyhell07.github.io/monster-reincarnation-incremental/" />
+    <meta property="og:image" content="https://armyhell07.github.io/monster-reincarnation-incremental/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Monster Reincarnation — incremental monster evolution RPG" />
+    <meta name="twitter:description" content="Reincarnate as the weakest monster and evolve. Damage taken becomes resistance, skills evolve, 11 races branch into deep evolution trees. Free in your browser." />
+    <meta name="twitter:image" content="https://armyhell07.github.io/monster-reincarnation-incremental/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -106,7 +120,11 @@
       button.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
       button:disabled { opacity: 0.4; cursor: default; }
       button:active { transform: translateY(1px); }
-      select { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); }
+      /* font-size ≥16px on form fields — iOS Safari auto-zooms into anything smaller on focus. */
+      select, input[type="text"] { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); font-size: 1rem; }
+      /* Spam-tapping game controls shouldn't start text selection on touch. */
+      button, .dcell, .eq-slot { -webkit-user-select: none; user-select: none; }
+      .dcell, .eq-slot { touch-action: manipulation; }
 
       .actbtn { flex: 1 1 auto; }
       .castbtn { flex: 1 1 auto; }
@@ -129,6 +147,11 @@
       .ministatus .mbar { height: 7px; border-radius: 4px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; margin: 2px 0 5px; }
       .ministatus .mbar > i { display: block; height: 100%; transition: width 0.55s ease-out; }
       .skillgroup h3 { margin: 0.55rem 0 0.2rem; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+      /* Slim fixed vitals strip (HP/MP/SP/hunger) — mobile only; the sidebar HUD is hidden there,
+         so without this the player loses sight of HP the moment the top bar scrolls away. */
+      #mobhud { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; flex-direction: column; gap: 2px; padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(10, 9, 16, 0.92); border-top: 1px solid var(--chitin); pointer-events: none; }
+      #mobhud .mhbar { height: 4px; border-radius: 2px; background: #0e0c14; overflow: hidden; }
+      #mobhud .mhbar > i { display: block; height: 100%; width: 0; transition: width 0.55s ease-out; }
       /* Skills screen: list (left) + fusion lab (right); category sub-tabs above the list. */
       .skillscols { display: grid; gap: 0.6rem; grid-template-columns: 1fr 300px; align-items: start; }
       @media (max-width: 760px) { .skillscols { grid-template-columns: 1fr; } }
@@ -472,6 +495,11 @@
         animation: evo-burst-text 1.9s ease-out forwards;
       }
       .evo-burst-text span { display: block; margin-top: 0.35rem; font-size: 1.55rem; color: var(--ember); letter-spacing: 0.12em; }
+      /* Achievement burst — same animation as evolution, gold-tinted to set it apart. */
+      .ach-burst .evo-burst-ring { background: radial-gradient(circle, rgba(230, 197, 88, 0.95), rgba(201, 162, 58, 0.45) 42%, transparent 70%); }
+      .ach-burst .evo-burst-rays { background: linear-gradient(transparent, rgba(230, 197, 88, 0.6), transparent); }
+      .ach-burst .evo-burst-text { text-shadow: 0 0 14px #e6c558, 0 0 30px #c9a23a; }
+      .ach-burst .evo-burst-text span { color: #e6c558; }
       @keyframes evo-burst-ring { 0% { transform: scale(0.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(24); opacity: 0; } }
       @keyframes evo-burst-rays { 0% { transform: scale(0.2) rotate(0deg); opacity: 0; } 25% { opacity: 0.9; } 100% { transform: scale(1.4) rotate(40deg); opacity: 0; } }
       @keyframes evo-burst-text {
@@ -573,9 +601,16 @@
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
-        body { padding: 0.4rem; }
+        /* background-attachment: fixed is ignored/janky on iOS Safari — let it scroll there. */
+        /* extra bottom padding keeps content clear of the fixed #mobhud strip */
+        body { padding: 0.4rem; padding-bottom: calc(1rem + 24px + env(safe-area-inset-bottom, 0px)); background-attachment: scroll; }
         .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
-        .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; }
+        .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; position: sticky; top: 0; z-index: 50; background: var(--abyss); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55); }
+        #mobhud { display: flex; }
+        /* 30px+ touch targets — desktop-sized 24–30px controls are too easy to fat-finger */
+        .equipbtn, .statadd, .discard { min-height: 40px; min-width: 44px; }
+        .subtab { min-height: 38px; }
+        .dmap-floor { grid-template-columns: 18px repeat(var(--cols), 30px); }
         .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; min-height: 40px; font-size: 0.75rem; }
         .tabbtn svg { width: 15px; height: 15px; }
         .topbar .bars { grid-template-columns: 1fr; gap: 0.2rem; }
@@ -685,6 +720,7 @@
       /* Kill quota badge */
       .kill-badge { position: absolute; top: 0.2rem; right: 0.2rem; font-size: 0.72rem; font-family: var(--mono); color: var(--ash); background: rgba(0,0,0,0.55); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; }
       .kill-badge.kill-quota-met { color: var(--venom); font-weight: 700; }
+      .elite-badge { position: absolute; top: 0.2rem; left: 0.2rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: #1a160c; background: linear-gradient(#f0d877, #c9a23a); border-radius: 6px; padding: 0.1rem 0.4rem; pointer-events: none; box-shadow: 0 0 8px rgba(230,197,88,0.6); z-index: 2; }
 
       /* Log panels — collapsible */
       .logpanel { display: flex; flex-direction: column; gap: 0.35rem; }
@@ -725,10 +761,62 @@
         transition: background 0.15s;
       }
       .guide-link:hover { background: rgba(255,255,255,0.18); color: #fff; }
+      @keyframes floatUpFade {
+        0% {
+          transform: translate(-50%, 0) scale(0.8);
+          opacity: 0;
+        }
+        15% {
+          transform: translate(-50%, -20px) scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -80px) scale(1);
+          opacity: 0;
+        }
+      }
+      .floating-damage-text {
+        animation: floatUpFade 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      }
+      @keyframes shakeAnimation {
+        0% { transform: translate(0, 0); }
+        10% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+        20% { transform: translate(4px, -3px) rotate(0.5deg); }
+        30% { transform: translate(-3px, -4px) rotate(-0.5deg); }
+        40% { transform: translate(3px, 4px) rotate(0.5deg); }
+        50% { transform: translate(-4px, 2px) rotate(0deg); }
+        60% { transform: translate(4px, -2px) rotate(-0.5deg); }
+        70% { transform: translate(-3px, 3px) rotate(0.5deg); }
+        80% { transform: translate(3px, -3px) rotate(-0.5deg); }
+        90% { transform: translate(-2px, -2px) rotate(0deg); }
+        100% { transform: translate(0, 0); }
+      }
+      .shake {
+        animation: shakeAnimation 0.3s ease-in-out;
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
+
+    <!-- Privacy link — the save lives in the player's own browser; no account, no ads, no tracking. -->
+    <div id="site-footer" style="text-align:center; margin:0.3rem auto 0.7rem; font-size:0.66rem;">
+      <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ash); opacity:0.65; text-decoration:none;">Gizlilik · Privacy Policy</a>
+    </div>
+    <!-- Boot-crash safety net: if the bundle throws before the game renders, show the error instead
+         of a blank page (ES5-only on purpose — must run even on browsers the bundle can't parse). -->
+    <script>
+      window.addEventListener('error', function (e) {
+        if (!e.message && !e.error) return; // resource-load errors (img/script 404) aren't boot crashes
+        var app = document.getElementById('app');
+        if (app && !app.firstChild) {
+          app.innerHTML = '<div style="max-width:520px;margin:2rem auto;padding:1rem;font-family:monospace;font-size:0.8rem;color:#d8d2c4;border:1px solid #5a4a3a;border-radius:8px;">' +
+            '<b>Oyun başlatılamadı / Game failed to start</b><br><br>' +
+            String((e.error && e.error.message) || e.message || e).replace(/</g, '&lt;') +
+            '<br><br>Tarayıcınızı güncelleyip tekrar deneyin · Try updating your browser</div>';
+        }
+      }, true);
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,12 +1,13 @@
 import { loadI18n, t } from './i18n';
 import { loadContent, type Content } from './game/content';
+import { loadLangContent } from './game/langContent';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
-import { applyRace } from './game/race';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, abandonRiddleForBoss, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { applyRace, OFFICIAL_RACES } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
-import { evolve, remapRemovedForms } from './game/evolution';
+import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
 import { fuse, registerFusionSkill } from './game/fusion';
 import { rebirth } from './game/rebirth';
 import { buySoulUpgrade } from './game/soul';
@@ -16,24 +17,38 @@ import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
 import { markSeenSkills } from './game/skill_tree';
-import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, type UiActions } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, showUpdateBanner, type UiActions } from './ui';
+import { VERSION } from './changelog';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
 
 
+/** First-run language: honour a saved choice, else detect from the browser (tr/ru/en). */
+function detectLang(): 'tr' | 'en' | 'ru' {
+  const l = (navigator.language || '').toLowerCase();
+  if (l.startsWith('tr')) return 'tr';
+  if (l.startsWith('ru')) return 'ru';
+  return 'en';
+}
+
 async function init(): Promise<void> {
   const base = import.meta.env.BASE_URL;
   let state = load() ?? newGame();
   migrate(state);
-  const lang = state.lang ?? 'en';
+  const lang = state.lang ?? detectLang();
+  state.lang = lang; // persist the detected/chosen language so the UI (incl. race-select) reflects it
+  document.documentElement.lang = lang; // keep <html lang> in sync with the active language (SEO/a11y)
   await loadI18n(base, lang);
+  await loadLangContent(base, lang); // native riddles + lore for this language
   const content = await loadContent(base);
+  // Register fused skills FIRST so repairSave/ensureEquipped recognize them — otherwise
+  // ensureEquipped pruned equipped fusion skills on every load (they weren't in content yet).
+  for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
   recomputeMaxes(state);
   repairSave(state, content); // content-aware fixes (dedupe skill lineages, remap removed forms) — BEFORE offline
   ensureLayerRooms(state, content); // roll this player's random rooms-per-floor once
   ensureEquipped(state, content); // backfill the equipped loadout from owned active skills
-  for (const r of Object.values(state.fusionCache)) registerFusionSkill(content, r);
 
   function logFn(e: LogEvent): void {
     pushLog(e.key, e.params);
@@ -83,6 +98,8 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onSaveLoadout: (slot) => { saveLoadout(state, slot); save(state); render(state); },
+    onLoadLoadout: (slot) => { loadLoadout(state, content, slot); save(state); render(state); },
     onBuySoul: (id) => {
       if (buySoulUpgrade(state, id)) {
         recomputeMaxes(state);
@@ -157,6 +174,12 @@ async function init(): Promise<void> {
       save(state);
       render(state);
       if (ok) playEvolveEffect(state.formId); // celebrate the new form (state.formId is now the target)
+    },
+    onSwitchBranch: (formId) => {
+      const ok = switchBranch(state, content, formId, logFn);
+      save(state);
+      render(state);
+      if (ok) playEvolveEffect(state.formId); // same celebration as an evolution
     },
     onFuse: (a, b) => {
       const r = fuse(state, content, a, b, logFn);
@@ -255,6 +278,7 @@ async function init(): Promise<void> {
     onToggleAutoExplore: () => { state.autoSearchExplore = !state.autoSearchExplore; save(state); render(state); },
     onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
     onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
+    onSetMoralMode: (mode) => { state.moralAutoMode = mode; save(state); render(state); },
     onSpawnMinion: (type) => {
       if (spawnMinion(state, type)) {
         logFn({ key: `log.minion_spawned_${type}` });
@@ -277,6 +301,24 @@ async function init(): Promise<void> {
     },
     onChooseRebirthPerk: (perkId) => {
       chooseRebirthPerk(state, perkId);
+      save(state);
+      render(state);
+    },
+    onToggleAutoCastSkills: () => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoCastSkills = !state.autoCombatConfig.autoCastSkills;
+      save(state);
+      render(state);
+    },
+    onToggleAutoHeal: () => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoHealEnabled = !state.autoCombatConfig.autoHealEnabled;
+      save(state);
+      render(state);
+    },
+    onSetAutoHealThreshold: (val) => {
+      if (!state.autoCombatConfig) state.autoCombatConfig = { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+      state.autoCombatConfig.autoHealThreshold = val / 100;
       save(state);
       render(state);
     },
@@ -313,6 +355,10 @@ async function init(): Promise<void> {
       save(state);
       render(state);
     },
+    onIntSkipRiddle: () => {
+      if (intSkipRiddle(state, content, logFn)) { save(state); render(state); }
+    },
+    onAbandonRiddle: () => { abandonRiddleForBoss(state, content, logFn); save(state); render(state); },
     onBossChoice: (mode, difficulty) => {
       chooseBossOption(state, content, mode, difficulty, logFn);
       save(state);
@@ -324,9 +370,44 @@ async function init(): Promise<void> {
       render(state);
     },
     onSelectRace: (raceId) => {
+      if (!OFFICIAL_RACES.has(raceId)) return; // unofficial races are locked until their content is ready
       if (state.kills > 0 || state.tier > 0 || state.level > 1) return; // race locked after first kill
       applyRace(state, raceId, content);
       state.raceConfirmed = true;
+      save(state);
+      render(state);
+    },
+    onEnterStory: () => {
+      save(state); // preserve the current (normal) save in its own slot
+      const existing = load('story');
+      if (existing) {
+        state = existing; // continue an in-progress story run
+        migrate(state);
+      } else {
+        state = newGame();
+        state.mode = 'story';
+        state.raceConfirmed = false; // triggers the truck-kun opening + race choice
+      }
+      resetUi();
+      save(state);
+      render(state);
+    },
+    onExitStory: () => {
+      save(state); // preserve the story save in its own slot
+      const normal = load('normal');
+      state = normal ?? newGame();
+      migrate(state);
+      resetUi();
+      save(state);
+      render(state);
+    },
+    onStoryChoice: (choiceId) => {
+      const ch = content.story.opening.choices.find((c) => c.id === choiceId);
+      if (!ch) return;
+      applyRace(state, ch.race, content); // sets race-specific form/skills/stats
+      state.raceConfirmed = true;
+      const first = [...content.story.chapters].sort((a, b) => a.order - b.order)[0];
+      state.storyChapter = first ? first.id : '';
       save(state);
       render(state);
     },
@@ -405,9 +486,10 @@ async function init(): Promise<void> {
     },
     onSetLang: (l) => {
       state.lang = l;
-      void loadI18n(base, l).then(() => {
+      document.documentElement.lang = l;
+      void Promise.all([loadI18n(base, l), loadLangContent(base, l)]).then(() => {
         save(state);
-        mount(state, content, actions); // re-build shell so sidebar tab labels update too
+        mount(state, content, actions); // re-build shell so sidebar tab labels + native riddles/lore update
       });
     },
     onSaveNow: () => {
@@ -429,6 +511,11 @@ async function init(): Promise<void> {
     },
     onChooseHumanPath: (pathId) => {
       chooseHumanPath(state, content, pathId, logFn);
+      save(state);
+      render(state);
+    },
+    onKeepGrow: () => {
+      keepGrowing(state, content, logFn);
       save(state);
       render(state);
     },
@@ -465,6 +552,22 @@ async function init(): Promise<void> {
     live(state);
   });
   clock.start();
+
+  // Don't let players get stuck on a stale cached build: drop any old service worker, and poll for a
+  // newer deployed version (version.json is emitted at build time), offering a one-click refresh.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+  }
+  const checkVersion = async (): Promise<void> => {
+    try {
+      const r = await fetch(`${base}version.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!r.ok) return;
+      const data = (await r.json()) as { version?: string };
+      if (data.version && data.version !== VERSION) showUpdateBanner();
+    } catch { /* offline or not deployed yet — ignore */ }
+  };
+  void checkVersion();
+  setInterval(() => void checkVersion(), 180_000); // re-check every 3 minutes
 
   window.addEventListener('beforeunload', () => save(state));
 
@@ -589,15 +692,69 @@ function migrate(s: GameState): void {
   if (!Number.isFinite(s.hp)) s.hp = Number.isFinite(s.maxHp) ? s.maxHp : 1;
   if (!Number.isFinite(s.mp)) s.mp = Number.isFinite(s.maxMp) ? s.maxMp : 0;
   if (!Number.isFinite(s.sp)) s.sp = Number.isFinite(s.maxSp) ? s.maxSp : 0;
+  // stats feed recomputeMaxes() — a single NaN stat makes maxHp/maxMp/maxSp NaN and soft-locks the
+  // game, so sanitize each to a finite value (audit #5: corrupt or hand-edited saves).
+  if (!s.stats || typeof s.stats !== 'object') {
+    s.stats = d.stats;
+  } else {
+    const ds = d.stats as Record<string, number>;
+    const ss = s.stats as Record<string, number>;
+    for (const k of Object.keys(ds)) ss[k] = Number.isFinite(ss[k]) ? Math.max(1, Math.floor(ss[k])) : ds[k];
+  }
+  if (!Number.isFinite(s.level) || s.level < 1) s.level = 1;
+  for (const k of ['xp', 'statPoints', 'tier', 'ep', 'kills', 'hunger'] as const) {
+    if (!Number.isFinite(s[k])) s[k] = 0;
+  }
+  // SECURITY: drop id-bearing fields a crafted/imported save could weaponise — an id like
+  // "<img onerror=…>" renders raw via the t() name fallback (→ stored XSS on import). Real skill
+  // ids (incl. fused fz_… combos) only use [A-Za-z0-9_+-]; anything else is malicious data.
+  const idOk = (id: unknown): id is string => typeof id === 'string' && /^[\w+-]+$/.test(id);
+  s.skills = (s.skills ?? []).filter((sk) => sk != null && idOk(sk.id));
+  s.equipped = (s.equipped ?? []).filter(idOk);
+  s.loadouts = (s.loadouts ?? []).map((lo) => (Array.isArray(lo) ? lo.filter(idOk) : []));
+  for (const eye of Object.keys(s.eyeAssignments ?? {})) {
+    if (s.eyeAssignments[eye] != null && !idOk(s.eyeAssignments[eye])) s.eyeAssignments[eye] = null;
+  }
+  // raceId/formId/etc. have raw text fallbacks ("…: state.raceId") rendered OUTSIDE t(), and the
+  // persisted combat foe's image/icon go straight into <img src>/text — so a tampered save could
+  // inject markup there even with t() escaping. Reset/clear anything that isn't a plain id.
+  if (!idOk(s.raceId)) s.raceId = d.raceId;
+  if (s.formId != null && !idOk(s.formId)) s.formId = d.formId;
+  if (s.replicatedRace != null && !idOk(s.replicatedRace)) s.replicatedRace = undefined;
+  if (s.humanPath != null && !idOk(s.humanPath)) s.humanPath = undefined;
+  if (s.enemy) {
+    const e = s.enemy as { id?: unknown; image?: unknown; icon?: unknown; name?: unknown };
+    const strSafe = (v: unknown): boolean => v == null || (typeof v === 'string' && !/[<>"]/.test(v));
+    if (!idOk(typeof e.id === 'string' ? e.id : '') || !strSafe(e.image) || !strSafe(e.icon) || !strSafe(e.name)) {
+      s.enemy = null; // tampered foe — drop it; the room re-spawns a fresh one
+    }
+  }
   // v8 fields — Human Path, room kill quota, skill tree reveal, Threshold Endurance (Faz 3/4)
   s.humanPath ??= undefined;
   s.pendingHumanPath ??= false;
+  s.evolveAckCount ??= 0;
+  s.loadouts ??= [];
+  s.achievements ??= [];
+  s.loreMasteries ??= [];
+  s.mode ??= 'normal';
+  s.storyChapter ??= '';
+  s.storyCleared ??= [];
+  s.storyEnded ??= false;
+  s.activeQuests ??= [];
+  s.questsDone ??= 0;
+  s.fusionCount ??= 0;
+  s.branchSwitchCount ??= 0;
+  s.deaths ??= 0;
+  s.racesPlayed ??= [];
+  s.gatekeepersByRace ??= [];
+  s.treesCompleted ??= [];
   s.roomKillCount ??= 0;
   s.roomEnemyId ??= null;
   s.seenSkillIds ??= [];
   s.nearDeathCount ??= 0;
   s.vitEnduranceXP ??= 0;
   s.vitEndurancePerm ??= 0;
+  s.absorbVit ??= 0;
   // v9 fields — Yemek Ara forage mechanic
   s.forageCD ??= 0;
   s.pendingForage ??= null;
@@ -612,6 +769,7 @@ function migrate(s: GameState): void {
   s.searchCD ??= 0;
   s.autoEventDecision ??= false;
   s.autoEventPuzzleMode ??= 'skip';
+  s.moralAutoMode ??= 'ask';
   // v12 fields — EP Shop
   s.epStatsBought ??= 0;
   s.tempBuffs ??= {};
@@ -682,7 +840,7 @@ const REPO = 'https://github.com/ArmyHeLL07/monster-reincarnation-incremental';
 function openIssue(state: GameState, kind: 'bug' | 'suggestion'): void {
   const desc = window.prompt(t(kind === 'bug' ? 'ui.bug_prompt' : 'ui.suggest_prompt')) ?? '';
   if (!desc.trim()) return;
-  const tag = kind === 'bug' ? '[bug]' : '[öneri]';
+  const tag = kind === 'bug' ? '[bug]' : '[suggestion]';
   const label = kind === 'bug' ? 'bug' : 'enhancement';
   const footer =
     kind === 'bug'

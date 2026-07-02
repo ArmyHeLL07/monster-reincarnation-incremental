@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.29';
+export const VERSION = '1.23.30';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.30',
+    date: '2026-07-02',
+    tr: [
+      'görsel: arayüz cilası — panel başlıklarına ince ayraç çizgisi, barlara parlaklık dokusu, ekran kenarlarına derinlik (vinyet), boss çerçevesi turuncu',
+      'görsel: koyu temaya uygun ince kaydırma çubukları; klavye gezinmesinde görünür odak halkası',
+      'mobil: üst bar kompaktlaştı (2 sütun) — savaş ekranı artık ilk bakışta görünüyor',
+      'masaüstü: oyun alanı biraz genişledi (980→1060px); log panelinde en yeni satır vurgulanıyor',
+    ],
+    en: [
+      'visual: UI polish — ruled divider on panel titles, sheen on resource bars, edge vignette for depth, boss portraits framed in ember',
+      'visual: slim dark-theme scrollbars; visible focus ring for keyboard navigation',
+      'mobile: compact 2-column top bar — the combat screen now fits the first view',
+      'desktop: play area slightly wider (980→1060px); newest log line is highlighted',
+    ],
+    ru: [
+      'визуал: полировка интерфейса — линии-разделители у заголовков панелей, блик на полосах ресурсов, виньетка по краям экрана, рамка босса цвета углей',
+      'визуал: тонкие тёмные полосы прокрутки; видимое кольцо фокуса при навигации с клавиатуры',
+      'мобильные: компактная верхняя панель в 2 колонки — экран боя теперь виден с первого взгляда',
+      'десктоп: игровая область немного шире (980→1060px); последняя строка лога подсвечивается',
+    ],
+  },
   {
     v: '1.23.29',
     date: '2026-07-02',

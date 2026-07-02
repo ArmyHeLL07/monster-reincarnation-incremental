@@ -1,24 +1,29 @@
-import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot } from '@mri/shared';
+import type { FusionResult, StatKey, Difficulty, Skill, DungeonLayer, LootItem, LootRarity, EquipSlot, Achievement } from '@mri/shared';
 import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
 import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
-import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost } from './game/loot';
+import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
 import { equipSetTier, specStat } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
-import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { currentForm, evolutionReady, evolutionTreeView, isHumanoidForm, availableEvolutions, canEvolve, secretMet, switchBranchCost, switchableTargets, type EvoNode, type EvoNodeStatus } from './game/evolution';
+import { achievementMetric } from './game/achievements';
+import { questProgress } from './game/quests';
+import { riddleById, loreById, storyText, storyLines } from './game/langContent';
 import { condMet, foresee, reqText } from './game/roomevents';
 import { isRiddleLocked, lockRemainingMin } from './game/riddles';
 import { maxFoodSlots, refrigerated, isRotten, SPOIL_THRESHOLD } from './game/inventory';
-import { xpToNext, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost } from './game/combat';
+import { xpToNext, resistReduction, weaknessOf, skillSlots, floorsOf, roomsOf, levelPower, respecCost, roomQuota, rebirthMult, currentRoomModifier, SECRET_HARVEST_SOULS, SECRET_LABYRINTH_KILLS, epStatCost, EP_BUFF_DEFS, injectSkillXpCost, roomPreview, FORESIGHT_WIS_EXACT, FORESIGHT_WIS_ENEMY, LOADOUT_SLOTS, RIDDLE_INT_SOLVE } from './game/combat';
 import { buildSkillChains, skillNodeStatus, derivedSkillsView } from './game/skill_tree';
 import { resolveFusion } from './game/fusion';
+import { OFFICIAL_RACES } from './game/race';
 import { forageReveal } from './game/forage';
 import { canRebirth } from './game/rebirth';
 import { SOUL_UPGRADES, soulLevel, soulUpgradeCost } from './game/soul';
 import { diffDef } from './game/difficulty';
+import { computeAnalyticsSummary } from './game/analytics';
 import { t, tmsg } from './i18n';
 import { VERSION, CHANGELOG } from './changelog';
 import { TUTORIAL_STEPS, HINT_DEFS, shouldShowHint, markHintSeen, type TutorialStep } from './tutorial';
@@ -32,12 +37,16 @@ export interface UiActions {
   onToggleAutoAdvance: () => void;
   onToggleEquip: (id: string) => void;
   onUnequipAll: () => void;
+  onSaveLoadout: (slot: number) => void;
+  onLoadLoadout: (slot: number) => void;
   onDeleteSkill: (id: string) => void;
   onSacrificeSkill: (id: string) => void;
   onSelectLayer: (layerId: number) => void;
   onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
+  onKeepGrow: () => void;
+  onSwitchBranch: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
   onAssignEye: (slotId: string, abilityId: string) => void;
   onCycleMode: (slotId: string) => void;
@@ -63,12 +72,20 @@ export interface UiActions {
   onAnswerRoom: (answer: string) => void;
   onChooseEvent: (i: number) => void;
   onAnswerBossRiddle: (answer: string) => void;
+  onIntSkipRiddle: () => void;
+  onAbandonRiddle: () => void;
   onBossChoice: (mode: 'skip' | 'fight', difficulty: string) => void;
   onRepairScar: () => void;
   onSetDifficulty: (d: Difficulty) => void;
   onTogglePermadeath: () => void;
   onToggleModifierFreeRooms: () => void;
   onSelectRace: (raceId: string) => void;
+  /** Story mode: enter (save normal, then continue or start a fresh story run). */
+  onEnterStory: () => void;
+  /** Story mode: leave back to normal/sandbox. */
+  onExitStory: () => void;
+  /** Story mode opening: pick the "last thought" → starting race + first chapter. */
+  onStoryChoice: (choiceId: string) => void;
   onSetRoom: (floor: number, room: number) => void;
   onEquipItem: (uid: string) => void;
   onUnequipSlot: (slot: EquipSlot) => void;
@@ -93,10 +110,14 @@ export interface UiActions {
   onToggleAutoExplore(): void;
   onToggleAutoEvent(): void;
   onSetPuzzleMode(mode: 'skip' | 'solve'): void;
+  onSetMoralMode(mode: 'ask' | 'spare' | 'devour'): void;
   onSpawnMinion(type: 'dps' | 'tank' | 'utility'): void;
   onSpinWeb(): void;
   onCollectWeb(): void;
   onChooseRebirthPerk(perkId: string): void;
+  onToggleAutoCastSkills?: () => void;
+  onToggleAutoHeal?: () => void;
+  onSetAutoHealThreshold?: (val: number) => void;
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
@@ -159,9 +180,9 @@ function logCategory(key: string): LogCat {
 const TOAST_KEYS = new Set([
   'log.fuse_new', 'log.ruler_unlock', 'log.taboo_authority', 'log.meditation_unlock', 'log.zen',
   'log.search_room', 'log.search_book', 'log.room_solved', 'log.learn_regen', 'log.gatekeeper_down',
-  'log.evolve', 'log.evolve_form', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
+  'log.evolve', 'log.evolve_form', 'log.branch_switch', 'log.achievement', 'log.fusion_death', 'log.eyefuse', 'log.eyefuse_blind',
   'log.sin_kill', 'log.evolve_ambush', 'log.skill_sacrificed',
-  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain',
+  'log.harvest_festival', 'log.labyrinth_awakening', 'log.soul_gain', 'log.elite_spawn', 'log.devour_skill', 'log.quest_done',
 ]);
 
 export function pushLog(key: string, params?: Record<string, string | number>): void {
@@ -304,11 +325,22 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
       <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
+      <!-- Floating damage text overlay layer -->
+      <div id="damage-text-layer" style="position:fixed; inset:0; pointer-events:none; z-index:99999;"></div>
+      <!-- Slim fixed vitals strip — visible on mobile only (CSS); bars driven by updateMini. -->
+      <div id="mobhud" aria-hidden="true">
+        <div class="mhbar"><i id="mh-hp-f" style="background:#6fae53"></i></div>
+        <div class="mhbar"><i id="mh-mp-f" style="background:var(--mp)"></i></div>
+        <div class="mhbar"><i id="mh-sp-f" style="background:var(--sp)"></i></div>
+        <div class="mhbar"><i id="mh-hunger-f"></i></div>
+      </div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
     b.addEventListener('click', () => {
       activeTab = (b.getAttribute('data-tab') as Tab) ?? 'combat';
+      // On mobile the tab row scrolls horizontally — bring a half-visible tapped tab fully into view.
+      b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
       renderTab();
     });
   });
@@ -364,9 +396,67 @@ function structureSig(state: GameState): string {
   ].join('|');
 }
 
+function spawnFloatingText(text: string, color: string, target: 'player' | 'enemy'): void {
+  const layer = document.querySelector<HTMLElement>('#damage-text-layer');
+  if (!layer) return;
+
+  let targetEl: HTMLElement | null = null;
+  if (target === 'player') {
+    // #ministatus is display:none on mobile → zero rect → text would spawn at the top-left corner.
+    const mini = document.querySelector<HTMLElement>('#ministatus');
+    targetEl = mini && mini.offsetWidth > 0 ? mini : document.querySelector<HTMLElement>('#topbar');
+  } else {
+    targetEl = document.querySelector<HTMLElement>('.enemy-panel');
+  }
+
+  if (!targetEl) return;
+  const rect = targetEl.getBoundingClientRect();
+  const x = rect.left + rect.width / 2 + (Math.random() - 0.5) * 40;
+  const y = rect.top + rect.height / 2 + (Math.random() - 0.5) * 20;
+
+  const el = document.createElement('div');
+  el.className = 'floating-damage-text';
+  el.style.position = 'fixed';
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.style.color = color;
+  el.style.pointerEvents = 'none';
+  el.style.fontWeight = 'bold';
+  el.style.fontSize = '1.6rem';
+  el.style.fontFamily = 'var(--disp), sans-serif';
+  el.style.zIndex = '99999';
+  el.style.textShadow = '1px 1px 3px black, -1px -1px 3px black';
+  el.style.whiteSpace = 'nowrap';
+  el.textContent = text;
+
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
 /** Per-tick light update: top bar + mini HUD (smooth bars), logs, and the active tab. */
 export function live(state: GameState): void {
   CURSTATE = state;
+  syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
+  syncLoreMasteryFx(state); // …and for any racial lore-mastery passive earned this tick
+
+  // --- Render floating combat texts (QoL/R3) ---
+  if (state.floatingTexts && state.floatingTexts.length > 0) {
+    for (const f of state.floatingTexts) {
+      spawnFloatingText(f.text, f.color, f.target);
+    }
+    state.floatingTexts = []; // clear queue
+  }
+
+  // --- Screen Shake (QoL/R3) ---
+  if (state.screenShake > 0) {
+    const gameEl = document.querySelector<HTMLElement>('.game');
+    if (gameEl) {
+      gameEl.classList.remove('shake');
+      void gameEl.offsetWidth; // trigger reflow
+      gameEl.classList.add('shake');
+    }
+    state.screenShake = 0; // reset
+  }
   const top = document.querySelector<HTMLElement>('#topbar');
   if (top) {
     if (!top.firstElementChild) {
@@ -430,6 +520,72 @@ export function playEvolveEffect(formId: string): void {
     `<div class="evo-burst-text">✦ ${t('ui.evolved')} ✦<span>${name}</span></div>`;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2000);
+}
+
+/** One-shot achievement celebration — reuses the evolution burst (centred, same look) with the
+ *  achievement icon + name. Imperative (appended to <body>) so ticks don't replay it. */
+export function playAchievementEffect(a: Achievement): void {
+  const rp: Record<string, string> = a.param ? { race: t(`race.${a.param}.name`) } : {};
+  const name = t(`${a.locKey}.name`, rp);
+  const el = document.createElement('div');
+  el.className = 'evo-burst ach-burst';
+  el.innerHTML =
+    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
+    `<div class="evo-burst-text">${a.icon} ${t('ui.achievement_unlocked')} ${a.icon}<span>${name}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// Achievements unlock passively during ticks (not via a user action), so the render loop diffs
+// state.achievements against what it has already celebrated and fires the burst for new ones.
+// The first sync seeds the set silently so loading a save doesn't replay every past achievement.
+let achFxSeeded = false;
+const celebratedAch = new Set<string>();
+function syncAchievementFx(state: GameState): void {
+  const cur = state.achievements ?? [];
+  if (!achFxSeeded) {
+    for (const id of cur) celebratedAch.add(id);
+    achFxSeeded = true;
+    return;
+  }
+  for (const id of cur) {
+    if (celebratedAch.has(id)) continue;
+    celebratedAch.add(id);
+    const a = CONTENT.achievements.get(id);
+    if (a) playAchievementEffect(a);
+  }
+}
+
+/** One-shot lore-mastery celebration — same centred burst as achievements, book-themed. */
+export function playLoreMasteryEffect(def: Skill): void {
+  const name = t(def.locKeyName);
+  const el = document.createElement('div');
+  el.className = 'evo-burst ach-burst';
+  el.innerHTML =
+    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
+    `<div class="evo-burst-text">📖 ${t('ui.lore_mastery_unlocked')} 📖<span>${name}</span></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// Lore-mastery passives are granted passively during ticks (checkLoreMastery), so the render loop
+// diffs state.loreMasteries against what it has already celebrated and fires the burst for new ones.
+// The first sync seeds the set silently so loading a save doesn't replay past unlocks.
+let loreFxSeeded = false;
+const celebratedLore = new Set<string>();
+function syncLoreMasteryFx(state: GameState): void {
+  const cur = state.loreMasteries ?? [];
+  if (!loreFxSeeded) {
+    for (const id of cur) celebratedLore.add(id);
+    loreFxSeeded = true;
+    return;
+  }
+  for (const id of cur) {
+    if (celebratedLore.has(id)) continue;
+    celebratedLore.add(id);
+    const def = CONTENT.skills.get(id);
+    if (def) playLoreMasteryEffect(def);
+  }
 }
 
 /** One-shot rebirth celebration: a death→soul-light→rebirth arc. Imperative + auto-removed. */
@@ -567,6 +723,13 @@ function updateMini(state: GameState): void {
   const hl = document.querySelector<HTMLElement>('#ms-hunger-l');
   if (hl) hl.style.color = HUNGER_COLORS[hs];
   setTxt('ms-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)}`);
+  // Mobile #mobhud strip mirrors the same vitals (own ids — setW is a no-op where absent).
+  setW('mh-hp', state.hp, state.maxHp);
+  setW('mh-mp', state.mp, state.maxMp);
+  setW('mh-sp', state.sp, state.maxSp);
+  setW('mh-hunger', state.hunger, MAX_HUNGER);
+  const mhf = document.querySelector<HTMLElement>('#mh-hunger-f');
+  if (mhf) mhf.style.background = HUNGER_COLORS[hs];
 }
 
 function hungerStage(h: number): number {
@@ -593,8 +756,13 @@ function renderTab(): void {
     b.classList.toggle('active', b.getAttribute('data-tab') === activeTab);
   });
   if (!CURSTATE.raceConfirmed) {
-    el.innerHTML = raceSelectScreen(CURSTATE);
-    wireRaceSelect(el);
+    if (CURSTATE.mode === 'story') {
+      el.innerHTML = storyIntroScreen(CURSTATE);
+      wireStoryIntro(el);
+    } else {
+      el.innerHTML = raceSelectScreen(CURSTATE);
+      wireRaceSelect(el);
+    }
     return;
   }
   if (CURSTATE.pendingRebirthPerk) {
@@ -604,7 +772,7 @@ function renderTab(): void {
   }
   switch (activeTab) {
     case 'combat':
-      el.innerHTML = combatTab(CURSTATE);
+      el.innerHTML = storyBannerHtml(CURSTATE) + combatTab(CURSTATE);
       wireCombat(el);
       break;
     case 'map':
@@ -721,6 +889,9 @@ function renderItemDetail(state: GameState): string {
     );
     reqLine = `<div class="it-req"><span class="muted">${t('ui.it_req')}:</span> ${parts.join(' · ')}</div>`;
   }
+  const score = itemScore(it);
+  const scoreLine = `<div class="it-score" style="font-size:0.85rem; margin-top:0.4rem; color:var(--ember); font-weight:bold;">${t('ui.power_score')}: ${Math.round(score)}</div>`;
+
   const fCost = forgeCost(it);
   const actions = bagItem
     ? `<button class="it-equip" data-uid="${it.uid}"${canEquip(state, it) ? '' : ' disabled'}>${t('ui.equip')}</button>
@@ -729,6 +900,7 @@ function renderItemDetail(state: GameState): string {
     : `<button class="it-unequip" data-slot="${equippedSlot}">${t('ui.unequip')}</button>`;
   return `<section class="panel it-detail r-${it.rarity}">
     <div class="row"><span class="it-name r-${it.rarity}">${it.icon} ${lootDisplayName(it)}</span><span class="muted">${t(`rarity.${it.rarity}`)} · ${t(`slot.${it.type === 'accessory' ? 'acc1' : it.type}`)}</span></div>
+    ${scoreLine}
     <ul class="it-stats">${lines}</ul>${reqLine}${compare}
     <div class="controls">${actions}</div></section>`;
 }
@@ -744,16 +916,38 @@ function inventoryTab(state: GameState): string {
   const slotCell = (slot: EquipSlot): string => {
     const it = state.equipment[slot];
     if (!it) return `<div class="eq-slot empty" data-eqslot="${slot}"><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
-    return `<div class="eq-slot r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-eqslot="${slot}" data-uid="${it.uid}" title="${lootDisplayName(it)}">
+    return `<div class="eq-slot r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-eqslot="${slot}" data-uid="${it.uid}" title="${lootDisplayName(it)} (${t('ui.power_score')}: ${Math.round(itemScore(it))})">
       <span class="eq-ic">${it.icon}</span><span class="eq-lbl">${t(`slot.${slot}`)}</span></div>`;
   };
   const doll = `<div class="paperdoll">${EQUIP_SLOTS.map(slotCell).join('')}</div>`;
   const sorted = [...state.inventoryItems].sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity));
   const bag = sorted.length
-    ? sorted.map((it) => `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)}">${it.icon}</button>`).join('')
+    ? sorted.map((it) => {
+        // Calculate power score comparison with equipped item
+        let slot: EquipSlot = it.type as EquipSlot;
+        if (it.type === 'accessory') {
+          const acc1 = state.equipment.acc1;
+          const acc2 = state.equipment.acc2;
+          const s1 = acc1 ? itemScore(acc1) : 0;
+          const s2 = acc2 ? itemScore(acc2) : 0;
+          slot = s1 <= s2 ? 'acc1' : 'acc2';
+        }
+        const equipped = state.equipment[slot];
+        const eqScore = equipped ? itemScore(equipped) : 0;
+        const score = itemScore(it);
+        let badge = '';
+        if (eqScore > 0) {
+          const diff = Math.round(((score - eqScore) / eqScore) * 100);
+          const color = diff >= 0 ? '#4caf50' : '#bb4140';
+          badge = `<span style="font-size:0.75rem; color:${color}; font-weight:bold; margin-left:0.35rem;">(${diff >= 0 ? '+' : ''}${diff}%)</span>`;
+        } else {
+          badge = `<span style="font-size:0.75rem; color:#4caf50; font-weight:bold; margin-left:0.35rem;">(New)</span>`;
+        }
+        return `<button class="bag-cell r-${it.rarity}${selectedItemUid === it.uid ? ' sel' : ''}" data-uid="${it.uid}" title="${lootDisplayName(it)} (${t('ui.power_score')}: ${Math.round(score)})">${it.icon}${badge}</button>`;
+      }).join('')
     : `<p class="muted">${t('ui.bag_empty')}</p>`;
   const toolbar = `<div class="controls" style="margin:.2rem 0 0">
-      <button class="inv-auto ghost">${t('ui.auto_equip')}</button>
+      <button class="inv-auto ghost">${t('ui.equip_best')}</button>
       <button class="inv-scrap ghost">${t('ui.scrap_common')}</button>
     </div>`;
   return `
@@ -802,7 +996,7 @@ function ownsSkill(state: GameState, id: string): boolean {
 /** A feature unlocks once the player has READ the deep layer (INT-gated) of a matching lore book —
  *  merely FINDING the book is not enough (deep-read book ids live in state.discoveries). */
 function loreUnlocked(state: GameState, hint: string): boolean {
-  return state.discoveries.some((id) => CONTENT.books.get(id)?.hints === hint);
+  return state.discoveries.some((id) => loreById(id)?.hints === hint);
 }
 
 /** Element → portrait frame colour (visual flavour only). */
@@ -814,15 +1008,16 @@ const DMG_COLORS: Record<string, string> = {
 /** The enemy "skin": its emoji on an element-coloured frame (bosses glow). Shown even when veiled.
  *  `active` = combat is live → the portrait gets a per-tick attack lunge (synced to the 1s round). */
 function enemyPortrait(inst: NonNullable<GameState['enemy']>, active: boolean): string {
-  const color = DMG_COLORS[inst.damageType] ?? '#989384';
-  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : '';
+  // Elites take a gold frame + glow so they read as special at a glance, over the element colour.
+  const color = inst.elite ? '#e6c558' : (DMG_COLORS[inst.damageType] ?? '#989384');
+  const glow = inst.isBoss ? `box-shadow:0 0 16px ${color};` : inst.elite ? 'box-shadow:0 0 14px #e6c558;' : '';
   const anim = active ? ' combat-active' : ' idle-foe';
   // A hand-drawn portrait when available; otherwise the emoji glyph.
   const inner = inst.image
     ? `<img class="eportrait-img" src="${assetUrl(inst.image)}" alt="" loading="lazy" />`
     : (inst.icon ?? '❓');
   // color:${color} so the boss-glow keyframe's currentColor matches the element's element-colour.
-  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
+  return `<div class="eportrait${inst.isBoss ? ' boss' : ''}${inst.elite ? ' elite' : ''}${anim}${inst.image ? ' has-img' : ''}" style="border-color:${color};color:${color};${glow}">${inner}</div>`;
 }
 
 /** Resolve an asset path under the Vite base (handles the GitHub Pages "/<repo>/" base). */
@@ -832,7 +1027,7 @@ function assetUrl(rel: string): string {
 }
 
 /** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
-const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human']);
+const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human', 'beastkin', 'demon', 'vampire', 'lycan', 'celestial']);
 
 /** Animated player presence while resting / meditating — portrait + live HP/SP/MP bars. */
 function restStage(state: GameState): string {
@@ -866,14 +1061,15 @@ function enemyView(state: GameState): string {
   const killBadge = (!isBossRoom && state.action === 'combat')
     ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
+  const eliteBadge = inst.elite ? `<span class="elite-badge">⭐ ${t('ui.elite')}</span>` : '';
   const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return `<div class="erow" style="position:relative">${killBadge}${portrait}<div><div><b>${mark}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
+    return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
   }
   const baseName = t(inst.locKey);
-  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${baseName}`;
+  const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${baseName}`;
   const et = tier + (inst.analyzed ? 1 : 0); // a deep-read (Analyze) reveals one tier deeper, on the enemy
   const bits: string[] = [`<b>${name}</b>`];
   if (et >= 2) bits.push(`[${t(`dmgtype.${inst.damageType}`)}${inst.damageType2 ? '+' + t(`dmgtype.${inst.damageType2}`) : ''}]`);
@@ -884,7 +1080,7 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return `<div class="erow" style="position:relative">${killBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
+  return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */
@@ -914,8 +1110,19 @@ function eventPanel(state: GameState): string {
 function bossRiddlePanel(state: GameState): string {
   const br = state.bossRiddle;
   if (!br) return '';
-  const riddle = CONTENT.bossRiddles.get(br.riddleId);
+  const riddle = riddleById(br.riddleId);
   if (!riddle) return '';
+  // Hard lore-gate: if the riddle needs lore the player hasn't found, lock it — they must fight the boss.
+  if (riddle.loreReq && !state.booksFound.includes(riddle.loreReq) && br.attempts >= 0) {
+    const loreTitle = loreById(riddle.loreReq)?.title ?? riddle.loreReq;
+    return `<section class="panel brpanel"><div class="ev-head">🧩 <b>${t('ui.br_title')}</b></div>
+      <p>${riddle.text}</p>
+      <p style="color:#c9a23a;font-size:0.85rem">🔒 ${t('ui.br_lore_locked', { lore: loreTitle })}</p>
+      <div class="ev-choices">
+        <button class="evchoice" id="br-abandon">⚔️ ${t('ui.br_fight_instead')}</button>
+        ${state.stats.INT >= RIDDLE_INT_SOLVE ? `<button id="br-intskip" class="ghost" title="${t('ui.br_intskip_hint')}">🧠 ${t('ui.br_intskip')}</button>` : ''}
+      </div></section>`;
+  }
   if (br.attempts === -1) {
     return `<section class="panel brpanel"><div class="ev-head">🗝️ <b>${t('ui.br_solved_title')}</b></div>
       <p>${t('ui.br_choose')}</p>
@@ -929,11 +1136,12 @@ function bossRiddlePanel(state: GameState): string {
       </div></section>`;
   }
   return `<section class="panel brpanel"><div class="ev-head">🧩 <b>${t('ui.br_title')}</b> <span class="muted">${t('ui.br_attempts', { left: 3 - br.attempts })}</span></div>
-    <p>${t(riddle.locKey)}</p>
-    <p class="muted" style="font-size:0.8rem">↪ ${t(riddle.locKeyClue)}</p>
+    <p>${riddle.text}</p>
+    <p class="muted" style="font-size:0.8rem">↪ ${riddle.clue}</p>
     <div class="controls">
       <input id="br-input" type="text" placeholder="${t('ui.answer')}" autocomplete="off" />
       <button id="br-answer">${t('ui.solve')}</button>
+      ${state.stats.INT >= RIDDLE_INT_SOLVE ? `<button id="br-intskip" class="ghost" title="${t('ui.br_intskip_hint')}">🧠 ${t('ui.br_intskip')}</button>` : `<span class="muted" style="font-size:.72rem">🧠 INT ${RIDDLE_INT_SOLVE}</span>`}
     </div></section>`;
 }
 
@@ -981,11 +1189,11 @@ function raceSigPanel(state: GameState): string {
       return sigBlock('🪨', t('sig.golem'), `${layers}/5`, sig, 5, '#9a8a6a',
         t('sig.golem_hint', { absorb: layers * 3 }));
     }
-    case 'beastman': {
+    case 'beastkin': {
       const stacks = Math.floor(sig);
       const bonus = stacks * 5;
-      return sigBlock('🐾', t('sig.beastman'), `${stacks}/10`, sig, 10, '#8a3a3a',
-        stacks > 0 ? t('sig.beastman_hint', { stacks, bonus }) : t('sig.beastman_empty'));
+      return sigBlock('🐾', t('sig.beastkin'), `${stacks}/10`, sig, 10, '#8a3a3a',
+        stacks > 0 ? t('sig.beastkin_hint', { stacks, bonus }) : t('sig.beastkin_empty'));
     }
     default:
       return '';
@@ -1164,6 +1372,97 @@ function exploreAutoToggle(state: GameState): string {
   </button>`;
 }
 
+/** Combat-tab banner shown at the level cap when an evolution is available: lists each open form with
+ *  an Evolve button, plus a "Keep Growing" button when higher-tier siblings are still locked (the C
+ *  mechanic — lets a staggered node be caught early or climbed past). Soft: combat keeps running. */
+function evolveBannerHtml(state: GameState): string {
+  if (state.level < LEVEL_CAP || state.pendingHumanPath) return '';
+  const selectable = availableEvolutions(state, CONTENT).filter((f) => secretMet(state, f));
+  const open = selectable.filter((f) => canEvolve(state, f));
+  if (open.length === 0) return '';
+  const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
+  const rows = open
+    .map((f) => {
+      const rare = f.secret ? ` <span style="color:#e6c558">✦ ${t('ui.evo_rare')}</span>` : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin:.25rem 0">
+        <span><b>${t(f.locKey)}</b>${rare}</span>
+        <button class="evo-action-btn active" data-form="${f.id}" style="min-height:32px;padding:.3rem 1rem">${t('ui.evolve')}</button>
+      </div>`;
+    })
+    .join('');
+  const growBtn =
+    state.tier < needTier
+      ? `<button id="keep-grow" class="ghost" style="width:100%;margin-top:.4rem">${t('ui.keep_growing')} →</button>`
+      : '';
+  return `<section class="panel" style="border-color:#c9a23a">
+    <div style="font-weight:bold;color:#e6c558;margin-bottom:.3rem">✦ ${t('ui.evolve_ready_banner')}</div>
+    ${rows}${growBtn}
+  </section>`;
+}
+
+function autoCombatPanel(state: GameState): string {
+  const cfg = state.autoCombatConfig || { autoCastSkills: false, autoHealEnabled: false, autoHealThreshold: 0.35 };
+  return `
+    <section class="panel autocombat-panel" style="border-color:var(--chitin);">
+      <h2>⚔ ${t('ui.autocombat_title')}</h2>
+      <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
+        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <input type="checkbox" id="ac-cast" ${cfg.autoCastSkills ? 'checked' : ''} />
+          <span>${t('ui.autocombat_cast')}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <input type="checkbox" id="ac-heal" ${cfg.autoHealEnabled ? 'checked' : ''} />
+          <span>${t('ui.autocombat_heal')}</span>
+        </label>
+        ${cfg.autoHealEnabled ? `
+        <div style="display:flex; align-items:center; gap:0.8rem; margin-left:1.5rem;">
+          <span>${t('ui.autocombat_threshold')}:</span>
+          <input type="range" id="ac-threshold" min="10" max="90" step="5" value="${Math.round(cfg.autoHealThreshold * 100)}" style="flex:1;" />
+          <span style="font-family:var(--mono); min-width:2.5rem; text-align:right;">%${Math.round(cfg.autoHealThreshold * 100)}</span>
+        </div>` : ''}
+      </div>
+    </section>
+  `;
+}
+
+/**
+ * Nullification roadmap: shows the path from resistances → group nullification → ultimate.
+ * Each step's name is revealed only if the player owns it OR has Insight ("knowledge = power");
+ * otherwise it shows as "???".
+ */
+function nullificationRoadmap(state: GameState): string {
+  const mergers = [...CONTENT.resistanceMergers.values()];
+  if (mergers.length === 0) return '';
+  const hasInsight = ownsSkill(state, 'insight');
+  const owns = (id: string) => state.skills.some((s) => s.id === id);
+  const rows = mergers
+    .map((m) => {
+      const achieved = owns(m.id);
+      const total = m.requires.length;
+      const have = m.requires.filter((req) => owns(req.skillId)).length;
+      const chips = m.requires
+        .map((req) => {
+          const rdef = CONTENT.skills.get(req.skillId);
+          const nm = rdef ? t(rdef.locKeyName) : req.skillId;
+          if (owns(req.skillId)) return `<span style="color:var(--venom)">✓ ${nm}</span>`;
+          if (hasInsight) return `<span class="muted">${nm}</span>`;
+          return `<span class="muted">???</span>`;
+        })
+        .join(' · ');
+      const status = achieved
+        ? `<span style="color:var(--gold)">✦ ${t('ui.nullif_achieved')}</span>`
+        : `<span class="muted">${have}/${total}</span>`;
+      return `<li style="margin-bottom:0.45rem"><b>${t(m.locKey)}</b> — ${status}<div style="font-size:0.78rem;margin-top:0.15rem">${chips}</div></li>`;
+    })
+    .join('');
+  return `
+    <section class="panel">
+      <h2>${t('ui.nullif_roadmap')}</h2>
+      <ul style="list-style:none;padding-left:0;margin:0">${rows}</ul>
+      ${hasInsight ? '' : `<p class="muted" style="font-size:0.8rem;margin:0.4rem 0 0">${t('ui.nullif_hint')}</p>`}
+    </section>`;
+}
+
 function combatTab(state: GameState): string {
   // An open map event takes over the dungeon view — no combat until a choice is made.
   if (state.pendingEvent) return eventPanel(state);
@@ -1178,8 +1477,9 @@ function combatTab(state: GameState): string {
     .map((r) => {
       const def = CONTENT.resistances.get(r.id);
       const name = def ? t(def.locKey) : r.id;
-      const right = r.nullified && def ? t(def.nullityKey) : `${t('ui.lv')} ${r.level} · ${Math.min(r.level * 5, 90)}%`;
-      return `<li><b>${name}</b> — ${right}</li>`;
+      // Effective per-type reduction (innate slot ≤20% or resistance-chain tier ≤85%).
+      const pct = def ? Math.round(resistReduction(state, CONTENT, def.damageType) * 100) : 0;
+      return `<li><b>${name}</b> — ${t('ui.lv')} ${r.level} · ${pct}%</li>`;
     })
     .join('');
   const act = (a: 'combat' | 'rest' | 'idle', label: string) =>
@@ -1216,6 +1516,7 @@ function combatTab(state: GameState): string {
     : (state.modifierFreeRooms ? `<p class="muted" style="margin:.4rem 0 0;color:#4caf50">✨ ${t('ui.room_modifier_free')}</p>` : '');
   const sigPanel = raceSigPanel(state);
   return `
+    ${evolveBannerHtml(state)}
     <section class="panel enemy-panel">
       <h2>${t('ui.enemy')}</h2>
       ${enemyView(state)}
@@ -1232,6 +1533,7 @@ function combatTab(state: GameState): string {
     </div>
     ${state.action === 'meditate' ? `<section class="panel">${medBarHtml(state)}</section>` : ''}
     ${advanceControls(state)}
+    ${roomPreviewHtml(state)}
     ${skillBar(state)}
     <div class="controls">
       ${deepBtn}
@@ -1241,10 +1543,12 @@ function combatTab(state: GameState): string {
     </div>
     ${foragePanel(state)}
     ${webPanel(state)}
+    ${autoCombatPanel(state)}
     <section class="panel">
       <h2>${t('ui.resistances')}</h2>
       <ul>${resists}</ul>
     </section>
+    ${nullificationRoadmap(state)}
   `;
 }
 
@@ -1255,6 +1559,27 @@ function advanceControls(state: GameState): string {
   const advBtn = canManualAdvance ? `<button id="advance" class="advbtn">${t('ui.advance')}</button>` : '';
   const autoBtn = `<button id="autoadvance" class="${state.autoAdvance ? 'active' : 'ghost'}">${t('ui.autoadvance')}: ${state.autoAdvance ? t('ui.on') : t('ui.off')}</button>`;
   return `<div class="controls">${advBtn}${autoBtn}</div>`;
+}
+
+/** Önsezi: WIS-tiered foresight of the next room (knowledge = survival). Empty below the WIS threshold. */
+function roomPreviewHtml(state: GameState): string {
+  const f = roomPreview(state, CONTENT);
+  if (!f) return '';
+  const parts: string[] = [];
+  if (f.wis >= FORESIGHT_WIS_EXACT) {
+    if (f.modifierKey) parts.push(`🌫 ${t(f.modifierKey + '.name')}`);
+    if (f.hazardKey) parts.push(`${f.hazardIcon ?? '⚠'} ${t(f.hazardKey + '.name')}`);
+    if (f.hasEvent) parts.push(`${f.eventIcon ?? '❓'} ${f.moral ? t('ui.foresee_moral') : t('ui.foresee_event')}`);
+    if (parts.length === 0) parts.push(`✓ ${t('ui.foresee_calm')}`);
+  } else {
+    parts.push(f.danger ? `⚠ ${t('ui.foresee_danger')}` : `✓ ${t('ui.foresee_calm')}`);
+    if (f.hasEvent) parts.push(`❓ ${t('ui.foresee_event')}`);
+  }
+  if (f.wis >= FORESIGHT_WIS_ENEMY && f.enemyPool.length) {
+    const names = f.enemyPool.slice(0, 3).map((id) => { const e = CONTENT.enemies.get(id); return e ? t(e.locKey) : id; }).join(', ');
+    parts.push(`⚔ ${names}`);
+  }
+  return `<section class="panel" style="border-color:#9a7fd0;padding:.4rem .6rem"><p class="muted" style="margin:0;font-size:.82rem">🔮 ${t('ui.foresee_next')}: ${parts.join(' · ')}</p></section>`;
 }
 
 /** Combat mode toggle + equipped skill cast buttons (with live cooldown). */
@@ -1313,12 +1638,31 @@ function wireCombat(el: HTMLElement): void {
     const input = el.querySelector<HTMLInputElement>('#br-input');
     if (input && input.value.trim()) ACTIONS.onAnswerBossRiddle(input.value);
   });
+  el.querySelector<HTMLButtonElement>('#br-intskip')?.addEventListener('click', () => ACTIONS.onIntSkipRiddle());
+  el.querySelector<HTMLButtonElement>('#br-abandon')?.addEventListener('click', () => ACTIONS.onAbandonRiddle());
   el.querySelector<HTMLButtonElement>('.br-skip')?.addEventListener('click', () => ACTIONS.onBossChoice('skip', ''));
   el.querySelectorAll<HTMLButtonElement>('.br-fight').forEach((b) =>
     b.addEventListener('click', () => ACTIONS.onBossChoice('fight', b.dataset.diff ?? 'normal')),
   );
   el.querySelector<HTMLButtonElement>('#web-spin')?.addEventListener('click', () => ACTIONS.onSpinWeb());
   el.querySelector<HTMLButtonElement>('#web-collect')?.addEventListener('click', () => ACTIONS.onCollectWeb());
+  // Evolve banner (level-cap, combat tab): evolve now or keep growing toward higher-tier siblings.
+  el.querySelectorAll<HTMLButtonElement>('.evo-action-btn[data-form]').forEach((b) => {
+    b.addEventListener('click', () => { const f = b.getAttribute('data-form'); if (f) ACTIONS.onEvolve(f); });
+  });
+  el.querySelector<HTMLButtonElement>('#keep-grow')?.addEventListener('click', ACTIONS.onKeepGrow);
+
+  // --- Auto-Combat Macros event listeners (QoL/R2) ---
+  el.querySelector<HTMLInputElement>('#ac-cast')?.addEventListener('change', () => {
+    ACTIONS.onToggleAutoCastSkills?.();
+  });
+  el.querySelector<HTMLInputElement>('#ac-heal')?.addEventListener('change', () => {
+    ACTIONS.onToggleAutoHeal?.();
+  });
+  el.querySelector<HTMLInputElement>('#ac-threshold')?.addEventListener('input', (e) => {
+    const val = Number((e.target as HTMLInputElement).value);
+    ACTIONS.onSetAutoHealThreshold?.(val);
+  });
 }
 
 // ---- MAP -------------------------------------------------------------------
@@ -1422,8 +1766,8 @@ function mapTab(state: GameState): string {
           ${bossSoon}
         </span>
         <div class="floor-nav" style="display: flex; gap: 0.3rem;">
-          <button class="floor-nav-btn" data-dir="down" ${state.pos.floor <= 1 ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_down')}">▼</button>
-          <button class="floor-nav-btn" data-dir="up" ${state.pos.floor >= reachedFloors ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_up')}">▲</button>
+          <button class="floor-nav-btn" data-dir="down" ${state.pos.floor <= 1 ? 'disabled' : ''} style="min-width: 44px; height: 36px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_down')}">▼</button>
+          <button class="floor-nav-btn" data-dir="up" ${state.pos.floor >= reachedFloors ? 'disabled' : ''} style="min-width: 44px; height: 36px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_up')}">▲</button>
         </div>
       </div>
 
@@ -1530,7 +1874,7 @@ function skillRow(state: GameState, s: { id: string; level: number; exp: number;
   const exp = expandedSkill === s.id;
   const dmgBit = active ? ` · ⚔${def?.damage}${def?.damageType ? ` ${t(`dmgtype.${def.damageType}`)}` : ''}` : '';
   const acq = exp && def?.acquireKey ? `<div class="skilldesc" style="opacity:.75">↳ ${t('ui.acquire_how')}: ${t(def.acquireKey)}</div>` : '';
-  const sacUnlocked = state.discoveries.some((id) => CONTENT.books.has(id)); // deep-read a Sacrifice Journal (INT)
+  const sacUnlocked = state.discoveries.some((id) => !!loreById(id)); // deep-read a lore tome (INT)
   const sacBtn = sacUnlocked
     ? `<button class="sacskill ghost" data-sac="${s.id}">${t('ui.sacrifice')}</button>`
     : `<span class="muted" style="font-size:.78rem">${t('ui.sacrifice_locked')}</span>`;
@@ -1624,6 +1968,20 @@ function skillTreePanel(state: GameState): string {
   </section>`;
 }
 
+/** Loadout preset bar: save the current equipped build to a slot, or load a saved one. */
+function loadoutBar(state: GameState): string {
+  const slots = Array.from({ length: LOADOUT_SLOTS }, (_, i) => {
+    const saved = state.loadouts?.[i] ?? [];
+    const has = saved.length > 0;
+    return `<span style="display:inline-flex;gap:.2rem;align-items:center;margin-right:.5rem">
+      <span class="muted" style="font-size:.72rem">${t('ui.loadout_slot')}${i + 1}</span>
+      <button class="loadout-save" data-slot="${i}" style="font-size:.68rem;padding:.15rem .4rem" title="${t('ui.loadout_save')}">💾</button>
+      <button class="loadout-load" data-slot="${i}" style="font-size:.68rem;padding:.15rem .4rem"${has ? '' : ' disabled'} title="${t('ui.loadout_load')}">📥${has ? ` ${saved.length}` : ''}</button>
+    </span>`;
+  }).join('');
+  return `<div class="row" style="flex-wrap:wrap;margin-top:.4rem"><span class="muted" style="font-size:.72rem">${t('ui.loadouts')}:</span> ${slots}</div>`;
+}
+
 function skillsTab(state: GameState): string {
   // Human Path selection takes priority — blocks everything else until chosen
   if (state.pendingHumanPath) {
@@ -1652,7 +2010,7 @@ function skillsTab(state: GameState): string {
   const unequipAllBtn = state.equipped.length > 0
     ? `<button id="unequip-all" class="ghost" style="font-size:.72rem;padding:.2rem .5rem">${t('ui.unequip_all')}</button>`
     : '';
-  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)} ${unequipAllBtn}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul></section>`;
+  const listPanel = `<section class="panel"><div class="row"><h2 style="margin:0">${t('ui.skills')}</h2><span class="muted">${t('ui.equipped')} ${state.equipped.length}/${skillSlots(state)} ${unequipAllBtn}</span></div><div class="subtabs">${subtabs}</div><ul>${rows}</ul>${loadoutBar(state)}</section>`;
   if (!selectedA && fusableSkills(state)[0]) selectedA = fusableSkills(state)[0].id;
   if (!selectedB && fusableSkills(state)[1]) selectedB = fusableSkills(state)[1].id;
   const opts = (sel: string | null) =>
@@ -1693,7 +2051,19 @@ function skillsTab(state: GameState): string {
       if (aSpec !== bSpec) return bSpec - aSpec;
       return b.mag - a.mag;
     });
-    const top = list.slice(0, 3);
+    // Dedupe by effect so the same result isn't suggested from multiple combos
+    // (e.g. death_scythe+X and toxic_cloud+X both → envenom_pierce). Sorted best-first,
+    // so the first combo per effect wins; 'mix' stays varied (each is a distinct coined result).
+    const seenEffect = new Set<string>();
+    const top: Sugg[] = [];
+    for (const s of list) {
+      if (s.effect !== 'mix') {
+        if (seenEffect.has(s.effect)) continue;
+        seenEffect.add(s.effect);
+      }
+      top.push(s);
+      if (top.length >= 3) break;
+    }
     if (!top.length) return '';
     const rows = top.map(({ a, b, cls, effect, mag }) => {
       const clsIcon  = cls === 'synergy' ? '▲' : '◆';
@@ -1781,6 +2151,10 @@ function wireSkills(el: HTMLElement): void {
     });
   });
   el.querySelector<HTMLButtonElement>('#unequip-all')?.addEventListener('click', () => ACTIONS.onUnequipAll());
+  el.querySelectorAll<HTMLButtonElement>('.loadout-save[data-slot]').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onSaveLoadout(Number(b.getAttribute('data-slot')))));
+  el.querySelectorAll<HTMLButtonElement>('.loadout-load[data-slot]').forEach((b) =>
+    b.addEventListener('click', () => ACTIONS.onLoadLoadout(Number(b.getAttribute('data-slot')))));
   el.querySelectorAll<HTMLButtonElement>('.subtab[data-part]').forEach((b) => {
     b.addEventListener('click', () => {
       activeSkillPart = (b.getAttribute('data-part') as 'arm' | 'leg' | 'body' | 'eye') ?? 'arm';
@@ -1995,14 +2369,14 @@ function loreTab(state: GameState): string {
 
   const books = state.booksFound.length
     ? [...state.booksFound]
-        .map((id) => CONTENT.books.get(id))
+        .map((id) => loreById(id))
         .filter((b): b is NonNullable<typeof b> => !!b)
         .sort((a, b) => a.order - b.order)
         .map((bk) => {
           const read = state.discoveries.includes(bk.id);
           const deep = state.stats.INT >= bk.intReq;
           const tag = read ? '✓' : deep ? '★' : `INT ${bk.intReq}`;
-          return `<li><button class="readbook" data-book="${bk.id}">${t('book.' + bk.id + '.title')}</button> <span class="muted">${tag}</span></li>`;
+          return `<li><button class="readbook" data-book="${bk.id}">${bk.title}</button> <span class="muted">${tag}</span></li>`;
         })
         .join('')
     : `<span class="muted">${t('ui.empty')}</span>`;
@@ -2057,43 +2431,44 @@ function evolutionTree(state: GameState): string {
     selectedEvoNodeId = nodes[0]?.id || null;
   }
 
-  const tiers = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
-  const maxTier = tiers.length > 1 ? tiers[tiers.length - 1] : 1;
+  const maxTier = Math.max(1, ...nodes.map((n) => n.tier));
 
   const coords = new Map<string, { x: number; y: number }>();
   const marginY = 12; // vertical margin percentage
+  const marginX = 6;
 
-  for (const tier of tiers) {
-    const tierNodes = nodes.filter((n) => n.tier === tier);
-    if (tier > 0) {
-      tierNodes.sort((a, b) => {
-        const getParentAvgX = (node: EvoNode): number => {
-          if (!node.parents.length) return 50;
-          let sum = 0, count = 0;
-          for (const pId of node.parents) {
-            const pCoord = coords.get(pId);
-            if (pCoord) { sum += pCoord.x; count++; }
-          }
-          return count > 0 ? sum / count : 50;
-        };
-        const ax = getParentAvgX(a);
-        const bx = getParentAvgX(b);
-        if (Math.abs(ax - bx) < 0.01) {
-          return a.id.localeCompare(b.id);
-        }
-        return ax - bx;
-      });
-    } else {
-      tierNodes.sort((a, b) => a.id.localeCompare(b.id));
-    }
-
-    for (let i = 0; i < tierNodes.length; i++) {
-      const node = tierNodes[i];
-      const x = ((i + 0.5) / tierNodes.length) * 100;
-      const y = 100 - marginY - (tier / maxTier) * (100 - 2 * marginY);
-      coords.set(node.id, { x, y });
-    }
+  // Layered (Sugiyama-style) layout: place nodes by tier (y); within each tier run a few
+  // barycenter passes (order by the average position of parents + children) to cut edge
+  // crossings, then snap to a shared column grid with narrower tiers centred. This keeps the
+  // diverge-then-converge evolution DAGs balanced — a child-centred "tidy tree" collapses them
+  // (these trees fan out then funnel back into a single ultimate form).
+  const tierList = [...new Set(nodes.map((n) => n.tier))].sort((a, b) => a - b);
+  const byTier = new Map<number, EvoNode[]>(
+    tierList.map((t) => [t, nodes.filter((n) => n.tier === t).sort((a, b) => a.id.localeCompare(b.id))]),
+  );
+  const idx = new Map<string, number>();
+  const reindex = (): void => { for (const t of tierList) byTier.get(t)!.forEach((n, i) => idx.set(n.id, i)); };
+  reindex();
+  const bary = (n: EvoNode, ids: string[]): number => {
+    const ps = ids.map((id) => idx.get(id)).filter((v): v is number => v !== undefined);
+    return ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : (idx.get(n.id) ?? 0);
+  };
+  for (let pass = 0; pass < 4; pass++) {
+    for (const t of tierList) { byTier.get(t)!.sort((a, b) => bary(a, a.parents) - bary(b, b.parents)); reindex(); }
+    for (let i = tierList.length - 1; i >= 0; i--) { const t = tierList[i]; byTier.get(t)!.sort((a, b) => bary(a, a.children) - bary(b, b.children)); reindex(); }
   }
+  const maxWidth = Math.max(1, ...tierList.map((t) => byTier.get(t)!.length));
+  for (const t of tierList) {
+    const arr = byTier.get(t)!;
+    const offset = (maxWidth - arr.length) / 2; // centre narrower tiers within the shared grid
+    arr.forEach((n, i) => {
+      const x = marginX + ((i + offset + 0.5) / maxWidth) * (100 - 2 * marginX);
+      const y = 100 - marginY - (t / maxTier) * (100 - 2 * marginY);
+      coords.set(n.id, { x, y });
+    });
+  }
+  // Wider trees need more horizontal room: scale the container so nodes don't cram (viewport scrolls).
+  const treeW = Math.max(680, maxWidth * 64);
 
   let pathsHtml = '';
   for (const node of nodes) {
@@ -2140,7 +2515,7 @@ function evolutionTree(state: GameState): string {
 
   return `
     <div class="evotree-viewport">
-      <div class="evotree-container">
+      <div class="evotree-container" style="min-width:${treeW}px;">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="evotree-svg">
           ${pathsHtml}
         </svg>
@@ -2210,12 +2585,21 @@ function evolutionInfoCard(state: GameState): string {
       ? t('ui.evo_locked', { lv: n.levelReq })
       : `${t('ui.evo_locked_tier')} T${n.tierReq}`;
 
+  // A 'missed' node is an unchosen sibling branch — offer a high-EP re-route into it.
+  const switchCost = switchBranchCost(state);
+  const isSwitchable = n.status === 'missed' && switchableTargets(state, CONTENT).some((f) => f.id === n.id);
+  const switchBtn = isSwitchable
+    ? (state.ep ?? 0) >= switchCost
+      ? `<button class="branch-switch-btn" data-switch="${n.id}" style="min-height:36px; padding:0.4rem 1rem; border-color:#c9a23a; color:#e6c558;">${t('ui.switch_branch')} · ${switchCost} EP</button>`
+      : `<button disabled style="min-height:36px; padding:0.4rem 1rem; opacity:0.5;">${t('ui.switch_branch')} · ${switchCost} EP</button>`
+    : '';
+
   const actionBtn =
     n.status === 'available'
       ? `<button class="evo-action-btn active" data-form="${n.id}" style="min-height:36px; padding:0.4rem 1.2rem;">${t('ui.evolve')}</button>`
       : n.status === 'locked'
         ? `<button disabled style="min-height:36px; padding:0.4rem 1.2rem; opacity:0.5;">${lockedReason}</button>`
-        : '';
+        : switchBtn;
 
   return `
     <div class="evo-info-card status-${n.status}">
@@ -2280,6 +2664,38 @@ function specBuffPanel(state: GameState): string {
   return `<p style="font-size:.82rem;margin:.35rem 0 0;color:${colour}">${icon} ${t('ui.spec_buff')}: <b>${label}</b></p>`;
 }
 
+function analyticsPanel(state: GameState): string {
+  const summary = computeAnalyticsSummary(state);
+  if (summary.totalEncounters === 0) {
+    return `
+      <section class="panel">
+        <h2>📊 ${t('ui.analytics_title')}</h2>
+        <p class="muted" style="margin:0.5rem 0 0;">${t('ui.analytics_none')}</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="panel">
+      <h2>📊 ${t('ui.analytics_title')}</h2>
+      <div style="display:flex; flex-direction:column; gap:0.4rem; margin-top:0.5rem; font-size:0.85rem;">
+        <div class="row">
+          <span class="muted">${t('ui.analytics_dps')}</span>
+          <b style="font-family:var(--mono); color:#e0902f;">${summary.avgDps}</b>
+        </div>
+        <div class="row">
+          <span class="muted">${t('ui.analytics_ep')}</span>
+          <b style="font-family:var(--mono); color:#bb4140;">${summary.avgEpPerSec}</b>
+        </div>
+        <div class="row">
+          <span class="muted">${t('ui.analytics_regen')}</span>
+          <b style="font-family:var(--mono); color:#6fae53;">${summary.avgRegenEfficiency}</b>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function statsTab(state: GameState): string {
   const statRows = STATS.map(
     (k) =>
@@ -2299,7 +2715,10 @@ function statsTab(state: GameState): string {
       ${respecCost(state) > 0 ? `<button id="respec" class="ghost"${state.ep >= respecCost(state) ? '' : ' disabled'}>${t('ui.respec')} (${respecCost(state)} EP)</button>` : ''}
     </section>
     ${epShopPanel(state)}
+    ${questsPanel(state)}
     ${statisticsPanel(state)}
+    ${analyticsPanel(state)}
+    ${achievementsPanel(state)}
     ${minionPanel(state)}
     ${mutationsPanel(state)}
     ${perksPanel(state)}
@@ -2353,6 +2772,60 @@ function minionPanel(state: GameState): string {
       </ul>
     </section>
   `;
+}
+
+function questsPanel(state: GameState): string {
+  if (!CONTENT.quests || CONTENT.quests.size === 0) return '';
+  const rows = (state.activeQuests ?? [])
+    .map((q) => {
+      const def = CONTENT.quests.get(q.id);
+      if (!def) return '';
+      const { cur, target } = questProgress(state, CONTENT, q);
+      const name = t(`${def.locKey}.name`);
+      const desc = t(`${def.locKey}.desc`);
+      const reward = [def.reward.ep ? `+${def.reward.ep} EP` : '', def.reward.statPoints ? `+${def.reward.statPoints} SP` : ''].filter(Boolean).join(' ');
+      return `<div style="margin:.35rem 0">
+        <div class="row" style="font-size:.85rem"><span>${def.icon} <b>${name}</b> <span class="muted" style="font-size:.72rem">${desc}</span></span><span class="muted" style="font-size:.78rem">${cur}/${target} · ${reward}</span></div>
+        ${bar(cur, target, '#6fae53')}
+      </div>`;
+    })
+    .join('');
+  if (!rows) return '';
+  return `<section class="panel"><h2>${t('ui.quests_title')}</h2>${rows}</section>`;
+}
+
+let achievementsOpen = false; // Stats-tab achievements list starts collapsed (32 rows = a lot of scroll)
+
+function achievementsPanel(state: GameState): string {
+  const all = [...CONTENT.achievements.values()];
+  if (all.length === 0) return '';
+  const unlocked = new Set(state.achievements ?? []);
+  const header = `<h2 id="ach-toggle" style="cursor:pointer;user-select:none;margin:0">${achievementsOpen ? '▾' : '▸'} ${t('ui.achievements_title')} <span class="muted" style="font-size:.8rem">${unlocked.size}/${all.length}</span></h2>`;
+  if (!achievementsOpen) return `<section class="panel">${header}</section>`;
+  const rows = all
+    .map((a) => {
+      const got = unlocked.has(a.id);
+      const rp: Record<string, string> = a.param ? { race: t(`race.${a.param}.name`) } : {};
+      const name = t(`${a.locKey}.name`, rp);
+      const desc = t(`${a.locKey}.desc`, rp);
+      if (got) {
+        return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0">
+          <span style="font-size:1.2rem">${a.icon}</span>
+          <span><b style="color:#e6c558">${name}</b><br><span class="muted" style="font-size:.75rem">${desc}</span></span>
+        </div>`;
+      }
+      const prog = `${Math.min(achievementMetric(state, a.metric, a.param), a.threshold)}/${a.threshold}`;
+      return `<div style="display:flex;gap:.5rem;align-items:center;margin:.3rem 0;opacity:.45">
+        <span style="font-size:1.2rem;filter:grayscale(1)">${a.icon}</span>
+        <span><b>${name}</b> <span class="muted" style="font-size:.72rem">(${prog})</span><br><span class="muted" style="font-size:.75rem">${desc}</span></span>
+      </div>`;
+    })
+    .join('');
+  return `
+    <section class="panel">
+      ${header}
+      ${rows}
+    </section>`;
 }
 
 function statisticsPanel(state: GameState): string {
@@ -2421,6 +2894,7 @@ function raceSelectScreen(state: GameState): string {
   const raceCards = [...CONTENT.races.values()]
     .map((r) => {
       const active = r.id === state.raceId;
+      const locked = !OFFICIAL_RACES.has(r.id);
       const eyeCount = r.head.eyes.length;
       const startSkillNames = (r.startSkills ?? [])
         .map((id) => {
@@ -2431,11 +2905,12 @@ function raceSelectScreen(state: GameState): string {
       // The race's own portrait fills the card behind a dark gradient (keeps text legible).
       const bg = `linear-gradient(180deg, rgba(14,12,20,0.15) 0%, rgba(14,12,20,0.55) 55%, rgba(14,12,20,0.92) 100%), url('${assetUrl(`races/${r.id}.png`)}')`;
       return `
-        <button class="race-card${active ? ' race-card-active' : ''}" data-race="${r.id}" style="background-image:${bg}">
+        <button class="race-card${active ? ' race-card-active' : ''}${locked ? ' race-card-locked' : ''}"${locked ? ' disabled' : ` data-race="${r.id}"`} style="background-image:${bg}${locked ? ';filter:grayscale(0.75) brightness(0.55)' : ''}">
+          ${locked ? `<div style="position:absolute;top:0.4rem;right:0.5rem;font-size:0.7rem;background:rgba(0,0,0,0.65);border-radius:6px;padding:0.12rem 0.45rem;color:var(--ash)">🔒 ${t('ui.race_locked')}</div>` : ''}
           <div class="race-card-name">${t(r.locKey)}</div>
           <div class="muted">${t('ui.eyes')}: ${eyeCount}</div>
-          ${startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
-          ${raceHintPanel(r.id, state.lang ?? 'en')}
+          ${locked ? '' : startSkillNames ? `<div class="muted" style="font-size:0.8rem">${startSkillNames}</div>` : ''}
+          ${locked ? '' : raceHintPanel(r.id, state.lang ?? 'en')}
         </button>`;
     })
     .join('');
@@ -2444,17 +2919,24 @@ function raceSelectScreen(state: GameState): string {
     <section class="panel" style="max-width:min(960px,100%);margin:2rem auto">
       <h2>${t('ui.race_select')}</h2>
       <p class="muted">${t('ui.race_select_info')}</p>
+      <div class="controls" style="margin-bottom:0.8rem;">
+        ${(['tr', 'en', 'ru'] as const).map((l) => `<button class="lang${state.lang === l ? ' active' : ''}" data-lang="${l}">${({ tr: 'Türkçe', en: 'English', ru: 'Русский' } as Record<string, string>)[l]}</button>`).join('')}
+      </div>
       <div class="race-grid">${raceCards}</div>
       <div style="margin-top:1.2rem">
         <button id="confirm-race" class="actbtn active">
           ${t('ui.pick_race')}: ${curRace ? t(curRace.locKey) : state.raceId}
         </button>
+        <button id="enter-story" class="ghost" style="margin-left:0.6rem">${t('ui.story_mode')}</button>
       </div>
     </section>
   `;
 }
 
 function wireRaceSelect(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.lang').forEach((b) => {
+    b.addEventListener('click', () => ACTIONS.onSetLang(b.getAttribute('data-lang') as 'tr' | 'en' | 'ru'));
+  });
   el.querySelectorAll<HTMLButtonElement>('.race-card').forEach((b) => {
     b.addEventListener('click', () => {
       const r = b.getAttribute('data-race');
@@ -2464,6 +2946,55 @@ function wireRaceSelect(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#confirm-race')?.addEventListener('click', () => {
     ACTIONS.onSelectRace(CURSTATE.raceId); // confirm current selection
   });
+  el.querySelector<HTMLButtonElement>('#enter-story')?.addEventListener('click', () => ACTIONS.onEnterStory());
+}
+
+/** Story-mode narration banner atop the combat view: chapter intro while in progress, ending when done. */
+function storyBannerHtml(state: GameState): string {
+  if (state.mode !== 'story') return '';
+  const txt = state.storyEnded ? storyText('ending') : storyText(`intro.${state.storyChapter}`);
+  if (!txt) return '';
+  const head = state.storyEnded ? t('ui.story_the_end') : t('ui.story_chapter');
+  return `<section class="panel" style="border-color:#7a5cc0">
+    <div style="font-weight:bold;color:#b79cf0;margin-bottom:.3rem">📖 ${head}</div>
+    <div style="opacity:.92;line-height:1.5">${txt}</div>
+  </section>`;
+}
+
+/** Story-Mode opening: the truck-kun death scene + the "last thought" → starting race choice. */
+function storyIntroScreen(state: GameState): string {
+  void state;
+  const lines = storyLines('opening.truck').map((p) => `<p style="margin:0.4rem 0;line-height:1.6">${p}</p>`).join('');
+  const choices = CONTENT.story.opening.choices.map((c) => {
+    const race = CONTENT.races.get(c.race);
+    const raceName = race ? t(race.locKey) : c.race;
+    return `
+      <button class="race-card" data-choice="${c.id}" style="text-align:left">
+        <div style="font-size:1.05rem">${storyText(`choice.${c.id}`)}</div>
+        <div class="muted" style="font-size:0.8rem;margin-top:0.3rem">→ ${raceName}</div>
+      </button>`;
+  }).join('');
+  return `
+    <section class="panel" style="max-width:min(720px,100%);margin:2rem auto">
+      <h2>${t('ui.story_mode')}</h2>
+      <div style="opacity:0.92;margin:1rem 0">${lines}</div>
+      <p class="muted" style="margin-top:1rem">${storyText('opening.prompt')}</p>
+      <div class="race-grid" style="margin-top:0.6rem">${choices}</div>
+      <div style="margin-top:1.2rem">
+        <button id="story-cancel" class="ghost">${t('ui.story_cancel')}</button>
+      </div>
+    </section>
+  `;
+}
+
+function wireStoryIntro(el: HTMLElement): void {
+  el.querySelectorAll<HTMLButtonElement>('.race-card').forEach((b) => {
+    b.addEventListener('click', () => {
+      const c = b.getAttribute('data-choice');
+      if (c) ACTIONS.onStoryChoice(c);
+    });
+  });
+  el.querySelector<HTMLButtonElement>('#story-cancel')?.addEventListener('click', () => ACTIONS.onExitStory());
 }
 
 function racePanel(state: GameState): string {
@@ -2474,7 +3005,8 @@ function racePanel(state: GameState): string {
     ? [...CONTENT.races.values()]
         .map((r) => {
           const active = r.id === state.raceId;
-          return `<button class="racepick${active ? ' active' : ''}" data-race="${r.id}">${t(r.locKey)}</button>`;
+          const locked = !OFFICIAL_RACES.has(r.id);
+          return `<button class="racepick${active ? ' active' : ''}"${locked ? ' disabled' : ` data-race="${r.id}"`}>${t(r.locKey)}${locked ? ' 🔒' : ''}</button>`;
         })
         .join('')
     : '';
@@ -2576,6 +3108,16 @@ function wireStats(el: HTMLElement): void {
       if (f) ACTIONS.onEvolve(f);
     });
   });
+  el.querySelectorAll<HTMLButtonElement>('.branch-switch-btn[data-switch]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const f = b.getAttribute('data-switch');
+      if (f) ACTIONS.onSwitchBranch(f);
+    });
+  });
+  el.querySelector<HTMLElement>('#ach-toggle')?.addEventListener('click', () => {
+    achievementsOpen = !achievementsOpen;
+    render(CURSTATE);
+  });
   el.querySelector<HTMLButtonElement>('#rebirth')?.addEventListener('click', ACTIONS.onRebirth);
   el.querySelector<HTMLButtonElement>('#repair')?.addEventListener('click', ACTIONS.onRepairScar);
   el.querySelectorAll<HTMLButtonElement>('.spawn-minion-btn').forEach((b) => {
@@ -2675,6 +3217,20 @@ async function loadRaceHints(base: string): Promise<void> {
   }
 }
 
+/** Bottom banner shown when a newer build has been deployed — one click reloads to the fresh version. */
+export function showUpdateBanner(): void {
+  if (document.getElementById('update-banner')) return;
+  const el = document.createElement('div');
+  el.id = 'update-banner';
+  el.style.cssText =
+    'position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:0.8rem;align-items:center;' +
+    'background:linear-gradient(180deg,#20300f,#16110f);border:1px solid var(--venom);border-radius:10px;padding:0.55rem 0.9rem;' +
+    'box-shadow:0 8px 24px rgba(0,0,0,0.6);font-size:0.88rem;color:var(--bone);max-width:92vw;';
+  el.innerHTML = `<span>🔄 ${t('ui.update_available')}</span><button id="update-reload" class="active" style="min-height:36px;padding:0.3rem 0.85rem;">${t('ui.refresh')}</button>`;
+  document.body.appendChild(el);
+  el.querySelector<HTMLButtonElement>('#update-reload')?.addEventListener('click', () => location.reload());
+}
+
 function raceHintPanel(raceId: string, lang: string): string {
   if (!raceHintsCache) return '';
   const hint = raceHintsCache[raceId];
@@ -2764,7 +3320,7 @@ function settingsTab(state: GameState): string {
         <button id="auto-event-toggle" class="${state.autoEventDecision ? 'actbtn active' : 'ghost'}">
           ${t('auto.event.label')}: ${state.autoEventDecision ? t('auto.on') : t('auto.off')}
         </button>
-        <span class="muted" style="font-size:0.78rem">${t('auto.event.hint')}</span>
+        <span style="font-size:0.78rem;color:${state.stats.INT >= 50 ? '#7a6' : '#c66'}">${t('auto.event.hint')} (INT: ${state.stats.INT}/50)</span>
       </div>
       ${state.autoEventDecision ? `
       <div class="controls" style="margin-top:0.4rem;">
@@ -2776,6 +3332,15 @@ function settingsTab(state: GameState): string {
           ${t('auto.puzzle.solve')}
         </button>
       </div>` : ''}
+    </section>
+    <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.moral_auto')}</h3>
+      <div class="controls">
+        <button id="moral-ask" class="${state.moralAutoMode === 'ask' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_ask')}</button>
+        <button id="moral-spare" class="${state.moralAutoMode === 'spare' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_spare')}</button>
+        <button id="moral-devour" class="${state.moralAutoMode === 'devour' ? 'actbtn active' : 'ghost'}" style="font-size:0.8rem">${t('ui.moral_devour')}</button>
+      </div>
+      <span class="muted" style="font-size:0.78rem">${t('ui.moral_auto_hint')}</span>
     </section>
     <section class="panel">
       <div class="controls">
@@ -2790,9 +3355,42 @@ function settingsTab(state: GameState): string {
       </div>
       <div class="controls">
         <button id="tutorial-reopen">${t('tut.reopen')}</button>
+        <button id="mode-switch" class="ghost">${state.mode === 'story' ? t('ui.story_back') : t('ui.story_mode')}</button>
       </div>
     </section>
+    <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.support_title')}</h3>
+      <div class="controls">
+        <button id="patreon-link" class="actbtn">${t('ui.support')}</button>
+        ${location.hostname.endsWith('github.io') ? `<button id="play-supported" class="ghost">${t('ui.play_supported')}</button>` : ''}
+      </div>
+      ${location.hostname.endsWith('github.io') ? `<span class="muted" style="font-size:0.78rem">${t('ui.play_supported_hint')}</span>` : ''}
+    </section>
+    <section class="panel">
+      <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('ui.supporters_title')}</h3>
+      ${supportersHtml()}
+    </section>
   `;
+}
+
+/** Render the in-game supporters list (from data/supporters.json), grouped by tier. */
+function supportersHtml(): string {
+  const s = CONTENT.supporters;
+  const esc = (n: string): string =>
+    n.replace(/[&<>"]/g, (c) => (({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as Record<string, string>)[c] ?? c));
+  const groups: Array<[string[], string, string]> = [
+    [s.apex ?? [], '👑 Apex', '#e6c558'],
+    [s.evolved ?? [], '🐉 Evolved', '#e0902f'],
+    [s.spiderling ?? [], '🕷️ Spiderling', '#8ab23f'],
+  ];
+  const total = groups.reduce((n, [list]) => n + list.length, 0);
+  if (total === 0) return `<p class="muted" style="font-size:0.82rem">${t('ui.supporters_empty')}</p>`;
+  return groups
+    .filter(([list]) => list.length > 0)
+    .map(([list, label, color]) =>
+      `<div style="margin:0.35rem 0"><span style="color:${color};font-family:var(--disp);font-size:0.78rem;letter-spacing:0.06em">${label}</span> <span style="font-size:0.85rem;color:var(--bone)">${list.map(esc).join(' · ')}</span></div>`,
+    )
+    .join('');
 }
 
 function wireSettings(el: HTMLElement): void {
@@ -2811,10 +3409,18 @@ function wireSettings(el: HTMLElement): void {
   el.querySelector<HTMLButtonElement>('#importsave')?.addEventListener('click', ACTIONS.onImportSave);
   el.querySelector<HTMLButtonElement>('#bugreport')?.addEventListener('click', ACTIONS.onBugReport);
   el.querySelector<HTMLButtonElement>('#suggest')?.addEventListener('click', ACTIONS.onSuggest);
+  el.querySelector<HTMLButtonElement>('#patreon-link')?.addEventListener('click', () => window.open('https://www.patreon.com/cw/ArmyHeLL07', '_blank', 'noopener'));
+  el.querySelector<HTMLButtonElement>('#play-supported')?.addEventListener('click', () => window.open('https://monster-reincarnation.pages.dev', '_blank', 'noopener'));
   el.querySelector<HTMLButtonElement>('#reset')?.addEventListener('click', ACTIONS.onReset);
   el.querySelector<HTMLButtonElement>('#tutorial-reopen')?.addEventListener('click', ACTIONS.onTutorialReopen);
+  el.querySelector<HTMLButtonElement>('#mode-switch')?.addEventListener('click', () => {
+    if (CURSTATE.mode === 'story') ACTIONS.onExitStory(); else ACTIONS.onEnterStory();
+  });
   el.querySelector<HTMLButtonElement>('#modifier-free-toggle')?.addEventListener('click', ACTIONS.onToggleModifierFreeRooms);
   el.querySelector<HTMLButtonElement>('#auto-event-toggle')?.addEventListener('click', ACTIONS.onToggleAutoEvent);
+  el.querySelector<HTMLButtonElement>('#moral-ask')?.addEventListener('click', () => ACTIONS.onSetMoralMode('ask'));
+  el.querySelector<HTMLButtonElement>('#moral-spare')?.addEventListener('click', () => ACTIONS.onSetMoralMode('spare'));
+  el.querySelector<HTMLButtonElement>('#moral-devour')?.addEventListener('click', () => ACTIONS.onSetMoralMode('devour'));
   el.querySelector<HTMLButtonElement>('#puzzle-skip')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('skip'));
   el.querySelector<HTMLButtonElement>('#puzzle-solve')?.addEventListener('click', () => ACTIONS.onSetPuzzleMode('solve'));
 }

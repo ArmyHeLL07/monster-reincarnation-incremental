@@ -41,23 +41,36 @@
         --body: system-ui, -apple-system, sans-serif;
         --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
       }
-      * { box-sizing: border-box; }
+      * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--chitin) transparent; }
+      ::-webkit-scrollbar { width: 9px; height: 9px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--chitin); border-radius: 5px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--venom-dim); }
+      :focus-visible { outline: 2px solid var(--venom); outline-offset: 2px; }
       body {
         margin: 0; padding: 0.7rem; line-height: 1.5; color: var(--bone);
         font-family: var(--body); -webkit-text-size-adjust: 100%;
         background: radial-gradient(1100px 480px at 50% -8%, #1b1828 0%, var(--abyss) 62%) fixed, var(--abyss);
       }
+      /* Soft vignette for depth — sits under all fixed chrome (toasts 60, mobhud 55, tutorial 1000). */
+      body::after {
+        content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 4;
+        background: radial-gradient(130% 100% at 50% 0%, transparent 58%, rgba(0, 0, 0, 0.26) 100%);
+      }
       h2 {
+        display: flex; align-items: center; gap: 0.55rem;
         font-family: var(--disp); font-weight: 700; font-size: 0.86rem;
         letter-spacing: 0.14em; text-transform: uppercase; color: var(--venom);
         margin: 0 0 0.6rem;
       }
+      /* ruled line after each panel title — ties the headers together visually */
+      h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--chitin), transparent); }
       ul { padding-left: 1.1rem; margin: 0; }
       li { margin: 0.32rem 0; }
       .muted { color: var(--ash); }
 
       .game {
-        display: grid; gap: 0.6rem; max-width: 980px; margin: 0 auto;
+        display: grid; gap: 0.6rem; max-width: 1060px; margin: 0 auto;
         grid-template-columns: 200px 1fr;
         grid-template-areas: "top top" "side main" "side log";
       }
@@ -106,7 +119,12 @@
       .row span:last-child { font-family: var(--mono); color: var(--bone); font-size: 0.85rem; }
       .statline { margin-bottom: 0.45rem; }
       .bar { height: 10px; border-radius: 6px; background: #0e0c14; overflow: hidden; border: 1px solid #241f2e; }
-      .bar-fill { height: 100%; transition: width 0.6s ease-out; box-shadow: 0 0 8px rgba(0, 0, 0, 0.3) inset; }
+      .bar-fill {
+        height: 100%; transition: width 0.6s ease-out; box-shadow: 0 0 8px rgba(0, 0, 0, 0.3) inset;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
+      }
+      /* the enemy's HP bar is the focal point of the combat screen — make it read at a glance */
+      .enemy-panel .bar { height: 14px; border-radius: 7px; }
 
       .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
       button {
@@ -115,7 +133,8 @@
         background: linear-gradient(180deg, #272233, #1d1a27); color: var(--bone);
         transition: border-color 0.15s, background 0.15s, opacity 0.15s;
       }
-      button:hover { border-color: var(--venom-dim); }
+      /* brightness() lightens whatever background the button already has (dark or venom-active) */
+      button:hover:not(:disabled) { border-color: var(--venom-dim); filter: brightness(1.1); }
       button.ghost { background: #191522; }
       button.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
       button:disabled { opacity: 0.4; cursor: default; }
@@ -418,8 +437,9 @@
         width: 64px; height: 64px; font-size: 2.2rem; line-height: 1;
         border: 2px solid var(--chitin); border-radius: 12px;
         background: radial-gradient(circle at 50% 38%, #23202e, #0e0c14);
+        box-shadow: 0 10px 16px -8px rgba(0, 0, 0, 0.75);
       }
-      .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; }
+      .eportrait.boss { width: 78px; height: 78px; font-size: 2.7rem; border-color: var(--ember); }
       /* Hand-drawn portraits: larger frame, image fills it (transparent PNGs). */
       .eportrait.has-img { width: 84px; height: 84px; overflow: hidden; }
       .eportrait.boss.has-img { width: 104px; height: 104px; }
@@ -613,7 +633,12 @@
         .dmap-floor { grid-template-columns: 18px repeat(var(--cols), 30px); }
         .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; min-height: 40px; font-size: 0.75rem; }
         .tabbtn svg { width: 15px; height: 15px; }
-        .topbar .bars { grid-template-columns: 1fr; gap: 0.2rem; }
+        /* compact 2-col vitals — the old single column ate a third of the viewport */
+        .topbar .bars { grid-template-columns: 1fr 1fr; gap: 0.1rem 0.8rem; }
+        .topbar .statline { margin-bottom: 0.2rem; }
+        .topbar .bars .row span:first-child { font-size: 0.76rem; }
+        .topbar .bars .row span:last-child { font-size: 0.72rem; }
+        .topbar .bars .bar { height: 8px; }
         .topbar { padding: 0.5rem 0.7rem; }
         .topbar .sub { font-size: 0.75rem; }
         .panel { padding: 0.6rem 0.75rem; margin: 0 0 0.5rem; }
@@ -730,6 +755,7 @@
       .logcol-body { overflow-y: auto; padding: 0.3rem 0.7rem; background: #0e0c14; border: 1px solid var(--chitin); border-top: none; border-radius: 0 0 8px 8px; margin-bottom: 0.15rem; }
       .logcol-body.collapsed { display: none; }
       .logcol-body li { margin: 0.18rem 0; font-size: 0.8rem; }
+      .logcol-body li:first-child { color: var(--bone); }
       .logcol-body.lore-body { max-height: 240px; }
       .logcol-body.short-body { max-height: 140px; }
       .forage-panel { border: 1px solid var(--venom); background: #0e1208; margin-top: .5rem; }
