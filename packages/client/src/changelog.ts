@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.42';
+export const VERSION = '1.23.43';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.43',
+    date: '2026-07-02',
+    tr: [
+      'görsel: minyonların artık düello sahnesinde komutanın yanında duruyor — sürü büyüdükçe (1/4/8+) figür sayısı artar, ırk hattına göre görünüm değişir (üzerine gel → toplam sayı)',
+    ],
+    en: [
+      'visual: your minions now stand beside their commander on the duel stage — more figures appear as the swarm grows (1/4/8+), styled by race line (hover → total count)',
+    ],
+    ru: [
+      'визуал: миньоны теперь стоят рядом с командиром на сцене дуэли — фигурок больше по мере роста роя (1/4/8+), вид зависит от линии расы (наведение → общее число)',
+    ],
+  },
   {
     v: '1.23.42',
     date: '2026-07-02',

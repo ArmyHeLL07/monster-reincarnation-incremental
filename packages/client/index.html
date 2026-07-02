@@ -872,7 +872,15 @@
       .enemy-panel { min-height: 130px; }
       /* --- duel stage: the player faces the enemy on the combat screen --- */
       .duel { display: flex; align-items: center; gap: 0.6rem; }
-      .duel-you { flex: none; text-align: center; }
+      .duel-you { flex: none; text-align: center; position: relative; }
+      /* komutanın yanındaki minyon sürüsü (sol kenarda dikey, hafif salınım) */
+      .duel-minions {
+        position: absolute; left: -20px; bottom: 2px; display: flex; flex-direction: column;
+        gap: 2px; font-size: 15px; line-height: 1; pointer-events: none;
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.6));
+      }
+      .duel-minions span { display: block; animation: minion-bob 2.2s ease-in-out infinite; }
+      @keyframes minion-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
       .duel-you img, .duel-you svg.head { width: 72px; height: 72px; max-width: 72px; margin: 0;
         object-fit: contain; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6)); }
       /* 1s keyframe restarts on each combat re-render → lunge syncs to the round (same trick as enemy-attack) */

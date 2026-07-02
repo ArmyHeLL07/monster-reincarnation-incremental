@@ -1196,6 +1196,22 @@ function assetUrl(rel: string): string {
 /** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
 const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human', 'beastkin', 'demon', 'vampire', 'lycan', 'celestial']);
 
+/** Sahnedeki minyon figürleri (Ali listesi #5, v1.23.43): komutanın yanında sürü büyüklüğüne göre
+ *  1-3 küçük figür belirir (1+ / 4+ / 8+ minyon). Irk hattına göre glif; sayı title'da. */
+const MINION_FIGS: Record<string, string> = {
+  spider: '🕷', skeleton: '💀', demon: '😈', vampire: '🦇', lycan: '🐺',
+  slime: '🟢', golem: '🗿', wyrmling: '🐉', celestial: '✨', beastkin: '🐾',
+};
+function minionFigsHtml(state: GameState): string {
+  if (!state.minions || !minionStage(state)) return '';
+  const total = state.minions.dps + state.minions.tank + state.minions.utility;
+  if (total <= 0) return '';
+  const n = total >= 8 ? 3 : total >= 4 ? 2 : 1;
+  const glyph = MINION_FIGS[state.raceId] ?? '•';
+  const spans = Array.from({ length: n }, (_, i) => `<span style="animation-delay:${(i * 0.4).toFixed(1)}s">${glyph}</span>`).join('');
+  return `<div class="duel-minions" title="×${total}">${spans}</div>`;
+}
+
 /** The player's visual: hand-drawn form/race portrait when available, else the procedural head SVG. */
 function playerFigureHtml(state: GameState, cls: string): string {
   const form = currentForm(state, CONTENT);
@@ -1238,7 +1254,7 @@ function enemyView(state: GameState): string {
     : '';
   // Duel stage: the player's figure faces the foe (lunge keyframe re-syncs on each combat re-render).
   const duel = (foeHtml: string) => `<div class="duel">
-    <div class="duel-you${state.action === 'combat' ? ' fighting' : ''}">${playerFigureHtml(state, 'duel-portrait')}</div>
+    <div class="duel-you${state.action === 'combat' ? ' fighting' : ''}">${minionFigsHtml(state)}${playerFigureHtml(state, 'duel-portrait')}</div>
     <span class="duel-mid">⚔</span>
     <div class="duel-foe">${foeHtml}</div></div>`;
   const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
