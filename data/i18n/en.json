@@ -1498,6 +1498,8 @@
   "log.gluttony_awaken": "🌀 The Black Hole in your stomach awakens — Gluttony active!",
   "log.meditation_unlock": "From the long silence, a power was born… (Stillness)",
   "log.gatekeeper_down": "The Gatekeeper falls! Rebirth is now possible (Soul area).",
+  "ui.sound_toggle": "Sound effects",
+  "ui.sound_hint": "Hit, crit, evolution, death, achievement and button sounds. Off by default — so long sessions stay quiet.",
   "ui.leaderboard": "Leaderboard",
   "ui.lb_submit": "Submit My Score",
   "ui.lb_as": "as {name}",

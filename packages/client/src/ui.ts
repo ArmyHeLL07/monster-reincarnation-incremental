@@ -4,6 +4,7 @@ import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
 import { currentWeekly } from './game/weekly';
+import { sfx } from './sfx';
 import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, minionDef, minionLimit, minionStage } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
@@ -48,6 +49,8 @@ export interface UiActions {
   onEvolve: (formId: string) => void;
   /** Liderlik: rumuz iste + skoru gönder (opt-in). */
   onSubmitScore: () => void;
+  /** Ses efektlerini aç/kapat (opt-in). */
+  onToggleSound: () => void;
   onKeepGrow: () => void;
   onSwitchBranch: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -425,6 +428,10 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     });
   });
   app.querySelector('#drawer-close')?.addEventListener('click', () => { drawerTab = null; renderTab(); });
+  // Ses (opt-in): her buton dokunuşunda minik tık — sfx() kapalıyken anında no-op.
+  app.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('button')) sfx('button');
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && evoOverlayOpen) { closeEvoOverlay(); return; }
     if (e.key === 'Escape' && drawerTab) { drawerTab = null; renderTab(); }
@@ -548,6 +555,7 @@ export function live(state: GameState): void {
   if (state.floatingTexts && state.floatingTexts.length > 0) {
     for (const f of state.floatingTexts) {
       spawnFloatingText(f.text, f.color, f.target);
+      sfx(f.target === 'player' ? 'hurt' : f.text.startsWith('CRIT') ? 'crit' : 'hit');
     }
     state.floatingTexts = []; // clear queue
   }
@@ -634,6 +642,7 @@ export function playEvolveEffect(formId: string): void {
     '<div class="cer-silk"></div><div class="evo-burst-ring"></div>' +
     `<div class="cer-name"><small>— ${t('ui.evolution')} —</small><b>${name}</b></div>`;
   document.body.appendChild(el);
+  sfx('evolve');
   setTimeout(() => el.remove(), 2700);
 }
 
@@ -648,6 +657,7 @@ export function playAchievementEffect(a: Achievement): void {
     '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
     `<div class="evo-burst-text">${a.icon} ${t('ui.achievement_unlocked')} ${a.icon}<span>${name}</span></div>`;
   document.body.appendChild(el);
+  sfx('achievement');
   setTimeout(() => el.remove(), 2200);
 }
 
@@ -711,6 +721,7 @@ export function playRebirthEffect(state: GameState): void {
     '<div class="rb-veil"></div><div class="rb-soul"></div>' +
     `<div class="rb-text">✦ ${t('ui.reborn')} ✦<span>${t('ui.rebirths')}: ${state.rebirthCount}</span></div>`;
   document.body.appendChild(el);
+  sfx('death');
   setTimeout(() => el.remove(), 2500);
 }
 
@@ -3621,6 +3632,12 @@ function settingsTab(state: GameState): string {
       <p class="muted">${t('ui.modifier_free_hint')}</p>
     </section>
     <section class="panel">
+      <div class="row"><span>🔊 ${t('ui.sound_toggle')}</span>
+        <button id="sound-toggle" class="${state.soundOn ? 'actbtn active' : 'ghost'}">${state.soundOn ? t('ui.on') : t('ui.off')}</button>
+      </div>
+      <p class="muted">${t('ui.sound_hint')}</p>
+    </section>
+    <section class="panel">
       <div class="row"><span>🏆 ${t('ui.leaderboard')}</span>
         <button id="lb-submit-settings" class="ghost">📡 ${t('ui.lb_submit')}</button>
       </div>
@@ -3706,6 +3723,7 @@ function supportersHtml(): string {
 }
 
 function wireSettings(el: HTMLElement): void {
+  el.querySelector<HTMLButtonElement>('#sound-toggle')?.addEventListener('click', () => ACTIONS.onToggleSound());
   el.querySelector<HTMLButtonElement>('#lb-submit-settings')?.addEventListener('click', () => ACTIONS.onSubmitScore());
   el.querySelectorAll<HTMLButtonElement>('.autosave').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetAutosave(Number(b.getAttribute('data-min'))));

@@ -1498,6 +1498,8 @@
   "log.gluttony_awaken": "🌀 Midendeki Kara Delik uyandı — Oburluk (Gluttony) aktif!",
   "log.meditation_unlock": "Uzun sessizlikten bir güç doğdu… (Durağanlık)",
   "log.gatekeeper_down": "Gatekeeper düştü! Yeniden doğuş artık mümkün (Ruh alanı).",
+  "ui.sound_toggle": "Ses efektleri",
+  "ui.sound_hint": "Vuruş, kritik, evrim, ölüm, başarım ve buton sesleri. Varsayılan kapalı — uzun oturumlarda rahatsız etmesin diye.",
   "ui.leaderboard": "Liderlik Tablosu",
   "ui.lb_submit": "Skorumu Gönder",
   "ui.lb_as": "rumuz: {name}",

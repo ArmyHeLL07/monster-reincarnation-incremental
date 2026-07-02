@@ -202,6 +202,8 @@ export interface GameState {
   modifierFreeRooms: boolean;
   /** Liderlik rumuzu (opt-in; ilk gönderimde sorulur, saklanır). */
   scoreName?: string;
+  /** Ses efektleri (opt-in — varsayılan kapalı; Ayarlar'dan açılır). */
+  soundOn?: boolean;
   /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
   hellClears: string[];
 

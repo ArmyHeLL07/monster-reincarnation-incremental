@@ -19,6 +19,7 @@ import { load, save, clear } from './game/save';
 import { markSeenSkills } from './game/skill_tree';
 import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, showUpdateBanner, showOfflineSummary, type OfflineSummary, type UiActions } from './ui';
 import { VERSION } from './changelog';
+import { setSfxEnabled } from './sfx';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
@@ -57,6 +58,7 @@ async function init(): Promise<void> {
   }
 
   const offlineSummary = applyOffline(state, content, logFn);
+  setSfxEnabled(!!state.soundOn); // kayıtlı tercih (ctx askıdaysa ilk kullanıcı jestiyle açılır)
 
   const actions: UiActions = {
     onSetAction: (a) => {
@@ -281,6 +283,12 @@ async function init(): Promise<void> {
     onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
     onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
     onSetMoralMode: (mode) => { state.moralAutoMode = mode; save(state); render(state); },
+    onToggleSound: () => {
+      state.soundOn = !state.soundOn;
+      setSfxEnabled(!!state.soundOn);
+      save(state);
+      render(state);
+    },
     // Liderlik (v1.23.44, opt-in): rumuz iste → hayat-boyu en derin konum + rebirth'ü gönder.
     // Rumuz istemcide VE sunucuda doğrulanır; tablo render'ı ayrıca escape eder (XSS kuralı).
     onSubmitScore: async () => {

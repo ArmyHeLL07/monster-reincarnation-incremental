@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.44';
+export const VERSION = '1.23.45';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.45',
+    date: '2026-07-02',
+    tr: [
+      'yeni: ses efektleri (isteğe bağlı) — vuruş, kritik, hasar alma, evrim töreni, ölüm/yeniden doğuş, başarım ve buton tıkları',
+      'Ayarlar\'dan açılır, varsayılan KAPALI — saatlerce açık kalan sekme sessiz kalsın diye; ses dosyası yok, efektler anında sentezlenir (oyun 1 bayt bile ağırlaşmadı)',
+    ],
+    en: [
+      'new: sound effects (opt-in) — hits, crits, damage taken, the evolution ceremony, death/rebirth, achievements and button clicks',
+      'enable in Settings, OFF by default — so a tab left open for hours stays quiet; no audio files, effects are synthesized live (the game didn\'t gain a single byte)',
+    ],
+    ru: [
+      'новое: звуковые эффекты (по желанию) — удары, криты, получение урона, церемония эволюции, смерть/перерождение, достижения и клики кнопок',
+      'включается в Настройках, по умолчанию ВЫКЛ — чтобы вкладка, открытая часами, оставалась тихой; аудиофайлов нет, эффекты синтезируются на лету (игра не потяжелела ни на байт)',
+    ],
+  },
   {
     v: '1.23.44',
     date: '2026-07-02',
