@@ -1,7 +1,7 @@
 import type { EvolutionForm, StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, LogEvent } from './state';
-import { recomputeMaxes } from './state';
+import { recomputeMaxes, minionStage, syncMinionStage } from './state';
 import { MUTATION_POOL } from './mutations';
 
 type Log = (e: LogEvent) => void;
@@ -108,7 +108,9 @@ export function evolve(state: GameState, content: Content, formId: string, log: 
   }
   state.formId = formId;
   if (!state.formHistory.includes(formId)) state.formHistory.push(formId);
+  const minionsBefore = minionStage(state); // minions evolve with their commander (compare after tier++)
   state.tier = Math.min(10, state.tier + 1); // advance evolution tier; level resets (caps at T10)
+  syncMinionStage(state, minionsBefore, log);
   state.level = 1;
   state.xp = 0;
   state.evolveAckCount = 0; // new node → fresh "keep growing" acknowledgement

@@ -4,7 +4,7 @@ import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
 import { REBIRTH_PERKS } from './game/teachings';
-import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, minionDef, minionLimit } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, minionDef, minionLimit, minionStage } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
 import { equipSetTier, specStat } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
@@ -2777,6 +2777,8 @@ function minionPanel(state: GameState): string {
   }
   const limit = minionLimit(state);
   const total = state.minions.dps + state.minions.tank + state.minions.utility;
+  const stage = minionStage(state);
+  const next = mdef.stages.find((s) => s.tierReq > state.tier) ?? null;
 
   return `
     <section class="panel">
@@ -2785,6 +2787,11 @@ function minionPanel(state: GameState): string {
         <span>${t('ui.minions_limit')}:</span>
         <span><b>${total} / ${limit}</b></span>
       </div>
+      ${stage ? `<div class="row">
+        <span>${t('ui.minion_form')}:</span>
+        <span><b>${t(stage.nameKey)}</b>${stage.mult > 1 ? ` <span class="muted">×${stage.mult}</span>` : ''}</span>
+      </div>` : ''}
+      ${next ? `<p class="muted" style="font-size:0.78rem;margin:0.15rem 0 0.35rem">↑ ${t('ui.minion_next', { tier: next.tierReq })}: <b>${t(next.nameKey)}</b></p>` : ''}
       <ul style="margin-top:0.5rem; list-style:none; padding:0;">
         <li style="margin-bottom:0.5rem;">
           <div class="row">

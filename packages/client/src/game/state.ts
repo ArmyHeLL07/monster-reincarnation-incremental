@@ -457,6 +457,14 @@ export function equipStatBonus(state: GameState): Record<StatKey, number> {
 }
 
 // --- minions: which races command them (data-driven — was hardcoded to spider) -----------------
+export interface MinionStage {
+  /** Player evolution tier at which the minions take this form. */
+  tierReq: number;
+  /** Display-name i18n key (panel + the "minions evolved" log line). */
+  nameKey: string;
+  /** Multiplier on minion dps / tank HP / utility at this stage. */
+  mult: number;
+}
 export interface MinionRaceDef {
   /** Minimum evolution tier before summoning unlocks. */
   tierReq: number;
@@ -464,20 +472,57 @@ export interface MinionRaceDef {
   sovereignForm: string;
   /** Panel title i18n key. */
   titleKey: string;
+  /** Ascending tierReq — minions evolve alongside the player (first entry = tierReq). */
+  stages: MinionStage[];
 }
 export const MINION_RACES: Record<string, MinionRaceDef> = {
-  spider:   { tierReq: 5, sovereignForm: 'arachnid_sovereign', titleKey: 'ui.queen_panel' },
-  skeleton: { tierReq: 5, sovereignForm: 'undead_sovereign',   titleKey: 'ui.boneherd_panel' },
-  demon:    { tierReq: 5, sovereignForm: 'demon_overlord',     titleKey: 'ui.legion_panel' },
+  spider: { tierReq: 5, sovereignForm: 'arachnid_sovereign', titleKey: 'ui.queen_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.spider.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.spider.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.spider.3', mult: 1.6 },
+  ] },
+  skeleton: { tierReq: 5, sovereignForm: 'undead_sovereign', titleKey: 'ui.boneherd_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.skeleton.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.skeleton.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.skeleton.3', mult: 1.6 },
+  ] },
+  demon: { tierReq: 5, sovereignForm: 'demon_overlord', titleKey: 'ui.legion_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.demon.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.demon.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.demon.3', mult: 1.6 },
+  ] },
 };
 /** The minion config for this player, or null when their race/tier can't command minions yet. */
 export function minionDef(state: GameState): MinionRaceDef | null {
   const d = MINION_RACES[state.raceId];
   return d && state.tier >= d.tierReq ? d : null;
 }
-/** ×1.5 to minion dps/tank/utility while in the race's commander form. */
+/** The minions' current evolution stage for this player (highest stage whose tierReq is met). */
+export function minionStage(state: GameState): MinionStage | null {
+  const d = MINION_RACES[state.raceId];
+  if (!d) return null;
+  let cur: MinionStage | null = null;
+  for (const s of d.stages) if (state.tier >= s.tierReq) cur = s;
+  return cur;
+}
+/** Minion effectiveness: stage multiplier × 1.5 while in the race's commander form. */
 export function minionEffMult(state: GameState): number {
-  return state.formId === MINION_RACES[state.raceId]?.sovereignForm ? 1.5 : 1;
+  const sovereign = state.formId === MINION_RACES[state.raceId]?.sovereignForm ? 1.5 : 1;
+  return (minionStage(state)?.mult ?? 1) * sovereign;
+}
+/** Call after a tier change: rescales a live tank pool and reports the minions' new form.
+ *  `before` = minionStage() captured before the tier changed. */
+export function syncMinionStage(state: GameState, before: MinionStage | null, log: (e: LogEvent) => void): void {
+  const after = minionStage(state);
+  if (!after || after === before) return;
+  const total = state.minions ? state.minions.dps + state.minions.tank + state.minions.utility : 0;
+  if (total === 0) return; // nothing summoned — the new stage simply applies to future spawns
+  if (state.minions && state.minions.tank > 0 && before) {
+    const ratio = after.mult / before.mult;
+    state.minions.tankMaxHp = Math.round(state.minions.tankMaxHp * ratio);
+    state.minions.tankHp = Math.round(state.minions.tankHp * ratio);
+  }
+  log({ key: 'log.minions_evolved', params: { name: after.nameKey } });
 }
 /** Max simultaneous minions: WIS/level scaling, ×2 in the commander form, + Queen's Blessing perks. */
 export function minionLimit(state: GameState): number {

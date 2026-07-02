@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.32';
+export const VERSION = '1.23.33';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.33',
+    date: '2026-07-02',
+    tr: [
+      'yeni: minyonlar artık komutanlarıyla birlikte evrimleşiyor — T7 ve T9\'da form atlar, güçleri artar (İskelet → Şövalye İskelet → Ölüm Muhafızı; örümcek ve şeytan hatları da dahil)',
+      'minyon panelinde mevcut form ve sıradaki evrim gösteriliyor; evrim anında canlı tank sürüsünün HP havuzu yeni güçle ölçekleniyor',
+    ],
+    en: [
+      'new: minions now evolve alongside their commander — at T7 and T9 they take stronger forms (Skeleton → Skeleton Knight → Death Guard; spider and demon lines too)',
+      'the minion panel shows the current form and the next evolution; a live tank swarm\'s HP pool rescales at the moment of evolution',
+    ],
+    ru: [
+      'новое: миньоны теперь эволюционируют вместе с командиром — на T7 и T9 принимают более сильные формы (Скелет → Скелет-рыцарь → Страж смерти; линии паука и демона тоже)',
+      'панель миньонов показывает текущую форму и следующую эволюцию; HP живого танк-роя масштабируется в момент эволюции',
+    ],
+  },
   {
     v: '1.23.32',
     date: '2026-07-02',

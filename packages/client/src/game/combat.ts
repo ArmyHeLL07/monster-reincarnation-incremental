@@ -1,7 +1,7 @@
 import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
-import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat, minionDef, minionEffMult, minionLimit } from './state';
+import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat, minionDef, minionEffMult, minionLimit, minionStage, syncMinionStage } from './state';
 import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
@@ -1538,7 +1538,9 @@ function tryAutoTierAdvance(state: GameState, content: Content, log: Log): boole
   const needTier = selectable.length ? Math.max(...selectable.map((f) => f.tierReq ?? 0)) : 0;
   if (state.tier >= needTier) return false; // top of node — every branch already open
   if (state.tier >= 10) return false; // T10 with tierReq still blocking = design gap, don't spiral
+  const minionsBefore = minionStage(state); // minions evolve with their commander
   state.tier = Math.min(10, state.tier + 1);
+  syncMinionStage(state, minionsBefore, log);
   state.level = 1;
   state.xp = 0;
   state.statPoints += 1;
