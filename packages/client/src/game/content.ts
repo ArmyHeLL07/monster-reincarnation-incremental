@@ -17,6 +17,7 @@ import type {
   Quest,
   StoryConfig,
   SupportersData,
+  WeeklyMod,
 } from '@mri/shared';
 
 // Loaded game content (data-driven — everything comes from /data JSON).
@@ -44,10 +45,12 @@ export interface Content {
   story: StoryConfig;
   /** Patreon supporters by tier (manually maintained; auto via Worker later). */
   supporters: SupportersData;
+  /** Haftalık global modifiyer havuzu ("Derinlik Akıntısı") — bkz. weekly.ts. */
+  weekly: WeeklyMod[];
 }
 
 export async function loadContent(base: string): Promise<Content> {
-  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives, story, supporters] =
+  const [skills, resistances, enemies, races, forms, fusionRules, dungeon, rooms, ruler, difficulties, elements, events, forageableFoods, resistanceMergerList, achievements, quests, lorePassives, story, supporters, weekly] =
     await Promise.all([
       fetchJson<Skill[]>(`${base}skills.json`),
       fetchJson<Resistance[]>(`${base}resistances.json`),
@@ -68,6 +71,8 @@ export async function loadContent(base: string): Promise<Content> {
       fetchJson<Skill[]>(`${base}lore_passives.json`),
       fetchJson<StoryConfig>(`${base}story/story.json`),
       fetchSupporters(base),
+      // Haftalık modifiyer havuzu — dosya yoksa/bozuksa oyun onsuz da açılmalı.
+      fetchJson<WeeklyMod[]>(`${base}weekly.json`).catch(() => [] as WeeklyMod[]),
     ]);
   return {
     skills: byId([...skills, ...lorePassives]),
@@ -88,6 +93,7 @@ export async function loadContent(base: string): Promise<Content> {
     quests: byId(quests),
     story,
     supporters,
+    weekly,
   };
 }
 

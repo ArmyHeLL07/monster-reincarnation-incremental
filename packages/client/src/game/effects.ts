@@ -2,6 +2,7 @@ import type { StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState } from './state';
 import { MAX_HUNGER, minionEffMult } from './state';
+import { currentWeekly } from './weekly';
 import { sigBoneArmor } from './signature';
 import { soulLevel } from './soul';
 import { currentRoomModifier } from './combat';
@@ -254,6 +255,14 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
   if (spec === 'AGI')  b.dodgeBonus += 0.25;  // Ghost Step: dodge +25%
   if (spec === 'WIS')  b.xpMult     += 0.5;   // Sage's Path: XP +50%
   if (spec === 'LUCK') b.lootMult   += 1.0;   // Fortune's Child: loot ×2
+
+  // Haftalık "Derinlik Akıntısı" (data/weekly.json): tüm birikimlerin ÜSTÜNE çarpan olarak biner.
+  const wk = currentWeekly(content);
+  if (wk) {
+    if (wk.xpMult) b.xpMult *= wk.xpMult;
+    if (wk.lootMult) b.lootMult *= wk.lootMult;
+    if (wk.hungerMult) b.hungerMult *= wk.hungerMult;
+  }
 
   return b;
 }

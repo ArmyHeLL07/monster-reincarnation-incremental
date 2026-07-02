@@ -3,6 +3,7 @@ import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent, EnemyInstance } from './state';
 import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat, minionDef, minionEffMult, minionLimit, minionStage, syncMinionStage } from './state';
 import { currentRoomHazard } from './hazards';
+import { currentWeekly } from './weekly';
 import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
 import { appraisalAssigned, appraisalTier, gazeNegateChance, gazeAttack } from './eyes';
@@ -593,6 +594,10 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
           finalDmg = Math.max(1, Math.round(dmg * (1 - state.enemy.behavior.armorPct)));
         }
       }
+      if (!isPhysical) {
+        const wkMin = currentWeekly(content);
+        if (wkMin?.poisonDmgMult) finalDmg = Math.round(finalDmg * wkMin.poisonDmgMult); // haftalık akıntı (minyon zehri)
+      }
       finalDmg = Math.round(finalDmg * bossTakenMult(content, state.enemy));
       state.enemy.hp -= finalDmg;
       checkBossPhase(content, state.enemy, log);
@@ -989,7 +994,8 @@ function makeEnemy(state: GameState, content: Content, archId: string, isBoss: b
   const rbMult = rebirthMult(state);
   const roomMod = currentRoomModifier(state, content);
   const roomAtkBonus = roomMod?.enemyAtkBonus ?? 0;
-  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * (elite ? ELITE_HP : 1) * diff.enemyMult * mult * rbMult;
+  const hpMult = (1 + depth * DEPTH_HP) * (isBoss ? BOSS_HP : 1) * (elite ? ELITE_HP : 1) * diff.enemyMult * mult * rbMult
+    * (isBoss ? (currentWeekly(content)?.bossHpMult ?? 1) : 1); // haftalık akıntı (boss HP)
   const atkMult = (1 + depth * DEPTH_ATK) * (isBoss ? BOSS_ATK : 1) * (elite ? ELITE_ATK : 1) * diff.enemyMult * mult * rbMult * (1 + roomAtkBonus);
   const hp = Math.round(def.hp * hpMult);
   return {
@@ -1237,6 +1243,8 @@ function castSkill(state: GameState, content: Content, id: string, log: Log, b: 
     state.screenShake = 15; // Trigger screen shake
   }
 
+  const wkAtk = currentWeekly(content);
+  if (wkAtk?.poisonDmgMult && def.damageType === 'poison') dmg = Math.round(dmg * wkAtk.poisonDmgMult); // haftalık akıntı
   dmg = Math.round(dmg * bossTakenMult(content, enemy)); // boss zayıflık penceresi (faz geçişi)
   enemy.hp -= dmg;
   checkBossPhase(content, enemy, log);

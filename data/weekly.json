@@ -1,0 +1,6 @@
+[
+  { "id": "venom_current", "locKey": "weekly.venom_current", "poisonDmgMult": 2 },
+  { "id": "swift_growth", "locKey": "weekly.swift_growth", "xpMult": 1.2 },
+  { "id": "hungry_depths", "locKey": "weekly.hungry_depths", "hungerMult": 1.5, "lootMult": 1.5 },
+  { "id": "weakened_wards", "locKey": "weekly.weakened_wards", "bossHpMult": 0.8 }
+]

@@ -3,6 +3,7 @@ import type { Content } from './game/content';
 import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
+import { currentWeekly } from './game/weekly';
 import { REBIRTH_PERKS } from './game/teachings';
 import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, minionDef, minionLimit, minionStage } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
@@ -573,6 +574,11 @@ export function live(state: GameState): void {
       }
       top.querySelector('#open-settings')?.addEventListener('click', () => { openTabState('settings'); renderTab(); });
       top.querySelector('#open-guide')?.addEventListener('click', () => { openTabState('guide'); renderTab(); });
+      // Haftalık modifiyer rozeti: hover title masaüstünde; tıklama/tap açıklamayı toast olarak basar.
+      top.querySelector('#weekly-badge')?.addEventListener('click', () => {
+        const w = currentWeekly(CONTENT);
+        if (w) pushToast(`🌊 ${t(w.locKey)} — ${t(`${w.locKey}.desc`)}`);
+      });
     }
     updateTopbar(state);
   }
@@ -749,6 +755,13 @@ function statBarSkel(id: string, label: string, color: string): string {
 
 /** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
 /** Version badge (top bar) — hover/tap to reveal the changelog popover. */
+/** Haftalık "Derinlik Akıntısı" rozeti (v1.23.42) — hover'da açıklama; tıklayınca toast (mobil). */
+function weeklyBadge(): string {
+  const w = currentWeekly(CONTENT);
+  if (!w) return '';
+  return `<button id="weekly-badge" class="fs-btn" title="${t(`${w.locKey}.desc`)}" style="min-height:32px;padding:0.2rem 0.55rem;font-size:0.72rem;display:flex;align-items:center;gap:0.3rem;border-color:#3a5a6a;color:#9fd8ff;">🌊 <span class="wk-name">${t(w.locKey)}</span></button>`;
+}
+
 function versionBadge(): string {
   // Match the app's language exactly (default English when no saved preference); ru falls back to en.
   const lang = CURSTATE?.lang ?? 'en';
@@ -768,6 +781,7 @@ function topbarHtml(): string {
     <div class="brand-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
       <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
       <div style="display:flex; align-items:center; gap:0.5rem;">
+        ${weeklyBadge()}
         ${versionBadge()}
         <button id="open-guide" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.55rem; font-size: 0.9rem;" aria-label="${t('tab.guide')}" title="${t('tab.guide')}">📖</button>
         <button id="open-settings" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.55rem; font-size: 0.9rem;" aria-label="${t('tab.settings')}" title="${t('tab.settings')}">⚙</button>

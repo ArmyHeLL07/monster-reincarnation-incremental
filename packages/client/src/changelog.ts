@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.41';
+export const VERSION = '1.23.42';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.42',
+    date: '2026-07-02',
+    tr: [
+      'yeni: "Derinlik Akıntısı" — her hafta değişen global bir kural: Zehir Akıntısı (zehir hasarın ×2) · Hızlı Büyüme (skill deneyimi +%20) · Aç Derinlikler (açlık ×1.5 ama av verimi ×1.5) · Zayıflamış Muhafızlar (boss HP -%20)',
+      'üst barda 🌊 rozeti aktif akıntıyı gösterir — üzerine gel (veya dokun) açıklamayı görürsün; herkes aynı haftayı görür, sunucu gerekmez',
+    ],
+    en: [
+      'new: "Depth Current" — a global rule that changes weekly: Venom Current (your poison damage ×2) · Swift Growth (skill exp +20%) · Hungry Depths (hunger ×1.5 but hunt yield ×1.5) · Weakened Wards (boss HP -20%)',
+      'the 🌊 badge in the top bar shows the active current — hover (or tap) for the description; everyone sees the same week, no server needed',
+    ],
+    ru: [
+      'новое: «Глубинное течение» — глобальное правило, меняющееся раз в неделю: Ядовитое течение (твой урон ядом ×2) · Быстрый рост (опыт навыков +20%) · Голодные глубины (голод ×1.5, но добыча ×1.5) · Ослабшие стражи (HP боссов -20%)',
+      'значок 🌊 в верхней панели показывает активное течение — наведи (или коснись) для описания; все видят одну и ту же неделю, сервер не нужен',
+    ],
+  },
   {
     v: '1.23.41',
     date: '2026-07-02',

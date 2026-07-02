@@ -321,6 +321,25 @@ export interface EnemyBehavior {
   nullifier?: boolean;
 }
 
+/** Haftalık global modifiyer ("Derinlik Akıntısı", v1.23.42) — data/weekly.json havuzundan
+ *  `floor(now / 604800000) % pool.length` ile seçilir: sunucu gerekmez, herkes aynı haftayı görür.
+ *  Tüm çarpanlar opsiyoneldir; 1 = etkisiz. */
+export interface WeeklyMod {
+  id: string;
+  /** İsim anahtarı; açıklaması `<locKey>.desc`. */
+  locKey: string;
+  /** Skill deneyimi çarpanı (aggregateBonuses.xpMult ile çarpılır). */
+  xpMult?: number;
+  /** EP/yağma/doyum çarpanı (lootMult). */
+  lootMult?: number;
+  /** Açlık hızı çarpanı (>1 = debuff). */
+  hungerMult?: number;
+  /** Oyuncunun zehir hasarı çarpanı (skill + minyon zehir vuruşları). */
+  poisonDmgMult?: number;
+  /** Boss HP çarpanı (0.8 = -%20; makeEnemy'de uygulanır). */
+  bossHpMult?: number;
+}
+
 /** A content zone — a pool of enemies plus a stamina-drain multiplier. */
 export interface Zone {
   id: string;
