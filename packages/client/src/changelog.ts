@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.35';
+export const VERSION = '1.23.36';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.36',
+    date: '2026-07-02',
+    tr: [
+      'yeni arayüz (Sahne Faz 2+3): 10 sekme 4 alana indi — Av (Savaş+Harita), Beden (Skiller+Beden+Envanter), Zihin (Keşif+Yaratıklar), Ruh (Statlar)',
+      'Beden/Zihin/Ruh artık sahnenin ÜZERİNE açılan bir panel — savaş arkada canlı akmaya devam ediyor; ✕ veya Esc ile kapanır',
+      'mobilde alt gezinme çubuğu (başparmak erişimi) + paneller alttan kayan sayfa; Ayarlar ve Kılavuz üst bardaki ⚙/📖 ikonlarına taşındı',
+    ],
+    en: [
+      'new UI (Stage Phase 2+3): 10 tabs collapsed into 4 areas — Hunt (Combat+Map), Body (Skills+Body+Inventory), Mind (Lore+Bestiary), Soul (Stats)',
+      'Body/Mind/Soul now open as a panel OVER the stage — combat keeps running live behind it; close with ✕ or Esc',
+      'mobile gets a bottom navigation dock (thumb-first) + panels slide up as sheets; Settings and Guide moved to the ⚙/📖 topbar icons',
+    ],
+    ru: [
+      'новый интерфейс (Сцена, фазы 2+3): 10 вкладок сведены в 4 области — Охота (Бой+Карта), Тело (Навыки+Тело+Инвентарь), Разум (Знания+Бестиарий), Душа (Статы)',
+      'Тело/Разум/Душа открываются панелью ПОВЕРХ сцены — бой продолжается за ней; закрытие ✕ или Esc',
+      'на мобильных — нижняя панель навигации + выезжающие снизу листы; Настройки и Руководство перенесены на иконки ⚙/📖 в верхней панели',
+    ],
+  },
   {
     v: '1.23.35',
     date: '2026-07-02',

@@ -121,7 +121,6 @@ export interface UiActions {
 }
 
 type Tab = 'combat' | 'map' | 'skills' | 'body' | 'inventory' | 'lore' | 'bestiary' | 'stats' | 'settings' | 'guide';
-const TABS: Tab[] = ['combat', 'map', 'skills', 'body', 'inventory', 'lore', 'bestiary', 'stats', 'settings', 'guide'];
 const STATS: StatKey[] = ['STR', 'VIT', 'AGI', 'INT', 'WIS', 'LUCK'];
 const LOG_CAP = 80;
 
@@ -143,7 +142,31 @@ const ICONS: Record<Tab, string> = {
 let CONTENT: Content;
 let ACTIONS: UiActions;
 let CURSTATE: GameState;
-let activeTab: Tab = 'combat';
+// ---- 4-area navigation (Sahne Faz 2/3) -------------------------------------
+// The stage (av: combat/map) is always the base screen; beden/zihin/ruh and the
+// settings/guide topbar icons open a DRAWER over it — the game keeps ticking behind.
+type Area = 'av' | 'beden' | 'zihin' | 'ruh';
+const AREAS: Record<Area, Tab[]> = {
+  av: ['combat', 'map'],
+  beden: ['skills', 'body', 'inventory'],
+  zihin: ['lore', 'bestiary'],
+  ruh: ['stats'],
+};
+const AREA_LIST: Area[] = ['av', 'beden', 'zihin', 'ruh'];
+let stageTab: 'combat' | 'map' = 'combat';
+let drawerTab: Tab | null = null;
+function areaOf(tab: Tab): Area | null {
+  return AREA_LIST.find((a) => AREAS[a].includes(tab)) ?? null;
+}
+/** Route a tab request to its surface: combat/map → stage, everything else → drawer. */
+function openTabState(tab: Tab): void {
+  if (tab === 'combat' || tab === 'map') {
+    stageTab = tab;
+    drawerTab = null;
+  } else {
+    drawerTab = tab;
+  }
+}
 let selectedA: string | null = null;
 let selectedB: string | null = null;
 let selectedEye: string | null = null;
@@ -236,7 +259,7 @@ function pushHintToast(hintId: string, targetTab: string | null, guideAnchor: st
     const tab = btn.getAttribute('data-tab') as Tab | null;
     const anchor = btn.getAttribute('data-anchor') ?? '';
     if (tab) {
-      activeTab = tab;
+      openTabState(tab);
       renderTab();
       setTimeout(() => {
         const target = document.querySelector<HTMLElement>(`#${anchor}`);
@@ -298,7 +321,8 @@ export function resetUi(): void {
   lastFusion = null;
   expandedSkill = null;
   selectedEvoNodeId = null;
-  activeTab = 'combat';
+  stageTab = 'combat';
+  drawerTab = null;
   logs.combat.length = 0;
   logs.discovery.length = 0;
   logs.loot.length = 0;
@@ -340,11 +364,20 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       <header id="topbar" class="topbar"></header>
       <nav id="sidebar" class="sidebar">
         <aside id="ministatus" class="ministatus" aria-label="status"></aside>
-        ${TABS.map((tb) => {
-          return `<button class="tabbtn" data-tab="${tb}">${ICONS[tb]}<span>${t(`tab.${tb}`)}</span></button>`;
+        ${AREA_LIST.map((a) => {
+          const iconTab: Tab = a === 'av' ? 'combat' : a === 'beden' ? 'body' : a === 'zihin' ? 'lore' : 'stats';
+          return `<button class="tabbtn areabtn" data-area="${a}">${ICONS[iconTab]}<span>${t(`area.${a}`)}</span></button>`;
         }).join('')}
       </nav>
       <main id="content" class="content"></main>
+      <!-- Faz 3: drawer over the stage — beden/zihin/ruh/settings/guide render here; combat keeps ticking behind. -->
+      <aside id="drawer" class="drawer" aria-label="panel">
+        <div class="drawer-head">
+          <div class="subtabs" id="drawer-subtabs"></div>
+          <button id="drawer-close" class="drawer-x" aria-label="close">✕</button>
+        </div>
+        <div id="drawer-body"></div>
+      </aside>
       <section class="logpanel">
         ${(['combat', 'discovery', 'loot', 'lore'] as LogCat[]).map((cat) => `
         <div class="logcol">
@@ -368,16 +401,39 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       </div>
     </div>
   `;
-  app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
+  app.querySelectorAll<HTMLButtonElement>('.areabtn').forEach((b) => {
     b.addEventListener('click', () => {
-      activeTab = (b.getAttribute('data-tab') as Tab) ?? 'combat';
-      // On mobile the tab row scrolls horizontally — bring a half-visible tapped tab fully into view.
-      b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-      // Re-arm the one-shot content fade (on #content itself so per-tick innerHTML swaps don't replay it).
-      const c = document.querySelector<HTMLElement>('#content');
-      if (c) { c.classList.remove('tabfade'); void c.offsetWidth; c.classList.add('tabfade'); }
+      const a = (b.getAttribute('data-area') as Area) ?? 'av';
+      if (a === 'av') {
+        drawerTab = null; // back to the stage
+      } else if (drawerTab && areaOf(drawerTab) === a) {
+        drawerTab = null; // re-tap the open area = close
+      } else {
+        const tabs = AREAS[a].filter((tb) => tb !== 'inventory' || isHumanoid(CURSTATE));
+        drawerTab = tabs[0];
+      }
       renderTab();
     });
+  });
+  app.querySelector('#drawer-close')?.addEventListener('click', () => { drawerTab = null; renderTab(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawerTab) { drawerTab = null; renderTab(); }
+  });
+  // Stage sub-tabs (Savaş/Harita) live inside #content and re-render every tick → delegate.
+  app.querySelector('#content')?.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-stagetab]');
+    if (!b) return;
+    stageTab = (b.getAttribute('data-stagetab') as 'combat' | 'map') ?? 'combat';
+    const c = document.querySelector<HTMLElement>('#content');
+    if (c) { c.classList.remove('tabfade'); void c.offsetWidth; c.classList.add('tabfade'); }
+    renderStage();
+  });
+  // Drawer sub-tabs (area screens) — also delegated (re-rendered on every drawer paint).
+  app.querySelector('#drawer-subtabs')?.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tab]');
+    if (!b) return;
+    drawerTab = (b.getAttribute('data-tab') as Tab) ?? drawerTab;
+    renderDrawer();
   });
   // Log panel collapse/expand
   app.querySelectorAll<HTMLElement>('.logcol-header[data-logcat]').forEach((hdr) => {
@@ -396,7 +452,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
     if (!btn) return;
     const anchor = btn.getAttribute('data-guide');
     if (!anchor) return;
-    activeTab = 'guide';
+    openTabState('guide');
     renderTab();
     setTimeout(() => {
       const el = document.querySelector<HTMLElement>(`#${anchor}`);
@@ -506,6 +562,8 @@ export function live(state: GameState): void {
           fsBtn.addEventListener('click', toggleFullscreen);
         }
       }
+      top.querySelector('#open-settings')?.addEventListener('click', () => { openTabState('settings'); renderTab(); });
+      top.querySelector('#open-guide')?.addEventListener('click', () => { openTabState('guide'); renderTab(); });
     }
     updateTopbar(state);
   }
@@ -518,20 +576,20 @@ export function live(state: GameState): void {
     const el = document.querySelector<HTMLElement>(`#log-${cat}`);
     if (el) el.innerHTML = logs[cat].map((l) => `<li>${l}</li>`).join('');
   }
-  if (activeTab === 'combat' || activeTab === 'map') {
-    // Don't wipe the boss-riddle input while the player is typing in it.
-    if (document.activeElement?.id !== 'br-input') renderTab();
-  } else if (activeTab === 'lore') {
+  // The stage is always live (combat/map tick every second behind the drawer).
+  // Don't wipe the boss-riddle input while the player is typing in it.
+  if (document.activeElement?.id !== 'br-input') renderStage();
+  if (drawerTab === 'lore') {
     // Live-update just the meditation bar (full re-render would clobber the riddle input).
     const ml = document.querySelector<HTMLElement>('#medlive');
     if (ml) ml.innerHTML = medBarHtml(state);
-  } else {
-    // skills / body / stats: refresh only when something structural changed (a new unlock appears
-    // in the SAME tab without needing to switch away and back).
+  } else if (drawerTab) {
+    // skills / body / stats…: refresh only when something structural changed (a new unlock appears
+    // in the SAME screen without needing to close and reopen the drawer).
     const sig = structureSig(state);
     if (sig !== lastStructSig) {
       lastStructSig = sig;
-      renderTab();
+      renderDrawer();
     }
   }
 }
@@ -699,6 +757,8 @@ function topbarHtml(): string {
       <div class="brand"><span class="mark">${EYE_SVG}</span>${t('app.title')}</div>
       <div style="display:flex; align-items:center; gap:0.5rem;">
         ${versionBadge()}
+        <button id="open-guide" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.55rem; font-size: 0.9rem;" aria-label="${t('tab.guide')}" title="${t('tab.guide')}">📖</button>
+        <button id="open-settings" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.55rem; font-size: 0.9rem;" aria-label="${t('tab.settings')}" title="${t('tab.settings')}">⚙</button>
         <button id="fs-toggle" class="fs-btn" style="min-height: 32px; padding: 0.2rem 0.6rem; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
           <span class="fs-icon">⛶</span> <span class="fs-text">${t('ui.fullscreen')}</span>
         </button>
@@ -782,17 +842,28 @@ function isHumanoid(state: GameState): boolean {
   return isHumanoidForm(state, CONTENT); // humanoid race OR a humanoid form (slime's Rimuru path)
 }
 
+/** Refresh everything visible: the stage and (when open) the drawer. */
 function renderTab(): void {
+  renderStage();
+  renderDrawer();
+}
+
+/** Area buttons' active state + drawer visibility. */
+function syncChrome(): void {
+  const activeArea: Area | null = drawerTab ? areaOf(drawerTab) : 'av';
+  document.querySelectorAll<HTMLButtonElement>('.areabtn').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('data-area') === activeArea);
+  });
+  document.querySelector('#drawer')?.classList.toggle('open', drawerTab !== null);
+}
+
+/** The base screen: race/perk pick when pending, else the stage (combat/map) + its sub-tab strip. */
+function renderStage(): void {
   const el = document.querySelector<HTMLElement>('#content');
   if (!el) return;
-  // The Inventory tab exists only for humanoid races; monsters never see it.
-  const invBtn = document.querySelector<HTMLElement>('.tabbtn[data-tab="inventory"]');
-  if (invBtn) invBtn.style.display = isHumanoid(CURSTATE) ? '' : 'none';
-  if (activeTab === 'inventory' && !isHumanoid(CURSTATE)) activeTab = 'combat';
-  document.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
-    b.classList.toggle('active', b.getAttribute('data-tab') === activeTab);
-  });
   if (!CURSTATE.raceConfirmed) {
+    drawerTab = null; // nothing to browse before a race exists
+    syncChrome();
     if (CURSTATE.mode === 'story') {
       el.innerHTML = storyIntroScreen(CURSTATE);
       wireStoryIntro(el);
@@ -805,9 +876,42 @@ function renderTab(): void {
   if (CURSTATE.pendingRebirthPerk) {
     el.innerHTML = rebirthPerkSelectScreen(CURSTATE);
     wireRebirthPerkSelect(el);
+    syncChrome();
     return;
   }
-  switch (activeTab) {
+  renderInto(el, stageTab);
+  el.insertAdjacentHTML(
+    'afterbegin',
+    `<div class="subtabs stage-subtabs">${(['combat', 'map'] as const)
+      .map((tb) => `<button class="subtab${stageTab === tb ? ' active' : ''}" data-stagetab="${tb}">${t(`tab.${tb}`)}</button>`)
+      .join('')}</div>`,
+  );
+  syncChrome();
+}
+
+/** The drawer: an area's screen over the stage. Empty/hidden when drawerTab is null. */
+function renderDrawer(): void {
+  syncChrome();
+  const body = document.querySelector<HTMLElement>('#drawer-body');
+  const subt = document.querySelector<HTMLElement>('#drawer-subtabs');
+  if (!body || !subt) return;
+  if (!drawerTab) {
+    body.innerHTML = '';
+    subt.innerHTML = '';
+    return;
+  }
+  if (drawerTab === 'inventory' && !isHumanoid(CURSTATE)) drawerTab = 'skills'; // monsters never see it
+  const area = areaOf(drawerTab);
+  const tabs = area ? AREAS[area].filter((tb) => tb !== 'inventory' || isHumanoid(CURSTATE)) : [drawerTab];
+  subt.innerHTML = tabs
+    .map((tb) => `<button class="subtab${tb === drawerTab ? ' active' : ''}" data-tab="${tb}">${t(`tab.${tb}`)}</button>`)
+    .join('');
+  renderInto(body, drawerTab);
+}
+
+/** Paint one tab's screen into a host element (stage or drawer body). */
+function renderInto(el: HTMLElement, tab: Tab): void {
+  switch (tab) {
     case 'combat':
       el.innerHTML = storyBannerHtml(CURSTATE) + combatTab(CURSTATE);
       wireCombat(el);
@@ -3241,7 +3345,7 @@ function wireTutorialOverlay(overlay: HTMLElement): void {
       const tab = btn.getAttribute('data-tab') as Tab | null;
       const sel = btn.getAttribute('data-sel');
       if (tab) {
-        activeTab = tab;
+        openTabState(tab);
         renderTab();
         if (sel) {
           setTimeout(() => {
