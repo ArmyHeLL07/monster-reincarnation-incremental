@@ -646,9 +646,11 @@
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
-        /* background-attachment: fixed is ignored/janky on iOS Safari — let it scroll there. */
-        /* extra bottom padding keeps content clear of the fixed #mobhud strip */
-        body { padding: 0.4rem; padding-bottom: calc(1rem + 24px + env(safe-area-inset-bottom, 0px)); background-attachment: scroll; }
+        /* background-attachment: fixed is ignored/janky on iOS Safari — let it scroll there.
+           body[data-layer] variants redeclare the shorthand, so they need the same override. */
+        body, body[data-layer] { padding: 0.4rem; padding-bottom: calc(1rem + 24px + env(safe-area-inset-bottom, 0px)); background-attachment: scroll; }
+        .duel-you img, .duel-you svg.head { width: 54px; height: 54px; }
+        .duel { gap: 0.4rem; }
         .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
         .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; position: sticky; top: 0; z-index: 50; background: var(--abyss); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55); }
         #mobhud { display: flex; }
@@ -729,6 +731,24 @@
       .beh-tag { background: rgba(138,178,63,0.15); border: 1px solid rgba(138,178,63,0.3); border-radius: 4px; padding: 0.1rem 0.3rem; font-size: 0.68rem; color: var(--venom); }
       /* Enemy panel — fixed minimum height so layout doesn't jump when a foe dies/spawns. */
       .enemy-panel { min-height: 130px; }
+      /* --- duel stage: the player faces the enemy on the combat screen --- */
+      .duel { display: flex; align-items: center; gap: 0.6rem; }
+      .duel-you { flex: none; text-align: center; }
+      .duel-you img, .duel-you svg.head { width: 72px; height: 72px; max-width: 72px; margin: 0;
+        object-fit: contain; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6)); }
+      /* 1s keyframe restarts on each combat re-render → lunge syncs to the round (same trick as enemy-attack) */
+      .duel-you.fighting { animation: player-attack 1s ease-out; }
+      @keyframes player-attack {
+        16% { transform: translateX(9px) scale(1.08); }
+        34% { transform: translateX(0) scale(1); }
+        100% { transform: translateX(0) scale(1); }
+      }
+      .duel-mid { flex: none; color: var(--ash); opacity: 0.5; font-size: 0.95rem; }
+      .duel-foe { flex: 1; min-width: 0; }
+      /* --- dungeon layer ambience: deeper layers retint the abyss (body data-layer set per tick) --- */
+      body[data-layer="2"] { background: radial-gradient(1100px 480px at 50% -8%, #2a1610 0%, var(--abyss) 62%) fixed, var(--abyss); }
+      body[data-layer="3"] { background: radial-gradient(1100px 480px at 50% -8%, #101a26 0%, var(--abyss) 62%) fixed, var(--abyss); }
+      body[data-layer="4"] { background: radial-gradient(1100px 480px at 50% -8%, #1c1030 0%, var(--abyss) 62%) fixed, var(--abyss); }
       /* Soul prestige tree */
       .soul-panel { border-color: rgba(154,127,208,0.4); }
       .soul-bal { font-family: var(--disp); color: #b79de0; font-weight: 600; }
