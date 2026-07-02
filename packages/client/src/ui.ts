@@ -536,6 +536,8 @@ export function live(state: GameState): void {
   CURSTATE = state;
   // Deeper dungeon layers retint the page ambience (body[data-layer] CSS).
   if (document.body.dataset.layer !== String(state.pos.layer)) document.body.dataset.layer = String(state.pos.layer);
+  // Faz 4b: UI kromu tier ile süslenir (panel kenarları/başlıklar — body[data-tier] CSS).
+  if (document.body.dataset.tier !== String(state.tier)) document.body.dataset.tier = String(state.tier);
   syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
   syncLoreMasteryFx(state); // …and for any racial lore-mastery passive earned this tick
 
@@ -619,11 +621,12 @@ export function playEvolveEffect(formId: string): void {
   const name = form ? t(form.locKey) : '';
   const el = document.createElement('div');
   el.className = 'evo-burst';
+  // Faz 4b töreni: ipek sarma (dönen konik ışınlar) + Cinzel isim plakası (~2.6s).
   el.innerHTML =
-    '<div class="evo-burst-ring"></div><div class="evo-burst-rays"></div>' +
-    `<div class="evo-burst-text">✦ ${t('ui.evolved')} ✦<span>${name}</span></div>`;
+    '<div class="cer-silk"></div><div class="evo-burst-ring"></div>' +
+    `<div class="cer-name"><small>— ${t('ui.evolution')} —</small><b>${name}</b></div>`;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2000);
+  setTimeout(() => el.remove(), 2700);
 }
 
 /** One-shot achievement celebration — reuses the evolution burst (centred, same look) with the

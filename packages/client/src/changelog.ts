@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.39';
+export const VERSION = '1.23.40';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.40',
+    date: '2026-07-02',
+    tr: [
+      'görsel (Sahne Faz 4b): evrim artık bir tören — ekranı ipek sarar, dönüşüm ışıkla tamamlanır ve yeni formun adı plakayla belirir',
+      'görsel: arayüz tier ile birlikte "süsleniyor" — T3+\'ta panel kenarları soyunun rengini almaya başlar, T9-T10\'da altın işlemeye döner (hareket azaltma ayarı hepsini kapatır)',
+    ],
+    en: [
+      'visual (Stage Phase 4b): evolution is now a ceremony — silk wraps the screen, the transformation completes in light, and the new form\'s name appears on a plate',
+      'visual: the UI gets "dressed" with your tier — from T3 panel edges start taking your lineage\'s hue, turning gold-trimmed at T9-T10 (reduced-motion setting disables all of it)',
+    ],
+    ru: [
+      'визуал (Сцена, фаза 4b): эволюция теперь церемония — экран оплетает шёлк, превращение завершается светом, и имя новой формы появляется на плашке',
+      'визуал: интерфейс «наряжается» с ростом тира — с T3 рамки панелей принимают оттенок твоей линии, а на T9-T10 становятся золотыми (настройка уменьшения движения всё отключает)',
+    ],
+  },
   {
     v: '1.23.39',
     date: '2026-07-02',

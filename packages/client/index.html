@@ -633,6 +633,42 @@
       /* Achievement burst — same animation as evolution, gold-tinted to set it apart. */
       .ach-burst .evo-burst-ring { background: radial-gradient(circle, rgba(230, 197, 88, 0.95), rgba(201, 162, 58, 0.45) 42%, transparent 70%); }
       .ach-burst .evo-burst-rays { background: linear-gradient(transparent, rgba(230, 197, 88, 0.6), transparent); }
+
+      /* ---- Faz 4b: evrim töreni — ipek sarma + isim plakası (prototipteki silkwrap/cername) ---- */
+      .cer-silk {
+        position: absolute; inset: 0; opacity: 0;
+        background:
+          repeating-conic-gradient(from 0deg, rgba(232, 227, 214, 0.16) 0 2deg, transparent 2deg 24deg),
+          radial-gradient(circle, rgba(232, 227, 214, 0.3), rgba(10, 9, 16, 0.94) 60%);
+        animation: cer-silkwrap 2.6s ease-in-out forwards;
+      }
+      @keyframes cer-silkwrap {
+        12%  { opacity: 1; transform: scale(1) rotate(0); }
+        55%  { opacity: 1; transform: scale(1.15) rotate(18deg); }
+        70%  { opacity: 1; }
+        100% { opacity: 0; transform: scale(1.35) rotate(26deg); }
+      }
+      .cer-name {
+        position: relative; text-align: center; font-family: var(--disp); text-transform: uppercase;
+        color: var(--bone); letter-spacing: 0.24em; opacity: 0; animation: cer-name 2.6s ease-out forwards;
+      }
+      .cer-name small { display: block; font-size: 0.78rem; color: #d2a73a; margin-bottom: 0.5rem; letter-spacing: 0.3em; }
+      .cer-name b { font-size: 1.7rem; text-shadow: 0 0 18px #d2a73a, 0 0 42px var(--venom); }
+      @keyframes cer-name {
+        0%, 42% { opacity: 0; transform: scale(0.8); }
+        58%     { opacity: 1; transform: scale(1.1); }
+        68%     { transform: scale(1); }
+        86%     { opacity: 1; }
+        100%    { opacity: 0; }
+      }
+
+      /* ---- Faz 4b: UI kromu tier ile süslenir (body[data-tier], live() günceller) ---- */
+      body[data-tier="3"] .panel, body[data-tier="4"] .panel { border-color: #3a4030; }
+      body[data-tier="5"] .panel, body[data-tier="6"] .panel { border-color: #4a5a34; }
+      body[data-tier="7"] .panel, body[data-tier="8"] .panel { border-color: #5d7040; box-shadow: 0 0 14px rgba(138, 178, 63, 0.07); }
+      body[data-tier="9"] .panel, body[data-tier="10"] .panel { border-color: #8a6a2c; box-shadow: 0 0 16px rgba(201, 162, 58, 0.10); }
+      body[data-tier="9"] h2, body[data-tier="10"] h2 { color: #d9b64a; }
+      body[data-tier="9"] h2::after, body[data-tier="10"] h2::after { background: linear-gradient(90deg, #8a6a2c, transparent); }
       .ach-burst .evo-burst-text { text-shadow: 0 0 14px #e6c558, 0 0 30px #c9a23a; }
       .ach-burst .evo-burst-text span { color: #e6c558; }
       @keyframes evo-burst-ring { 0% { transform: scale(0.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(24); opacity: 0; } }
