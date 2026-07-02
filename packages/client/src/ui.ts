@@ -293,6 +293,10 @@ function setTxt(id: string, txt: string): void {
   const e = document.querySelector<HTMLElement>(`#${id}`);
   if (e) e.textContent = txt;
 }
+/** Toggle the low-HP pulse class on a bar fill (`#id-f`) when the ratio drops under 25%. */
+function setLow(id: string, v: number, max: number): void {
+  document.querySelector<HTMLElement>(`#${id}-f`)?.classList.toggle('low', max > 0 && v / max < 0.25);
+}
 
 // ---- shell -----------------------------------------------------------------
 
@@ -341,6 +345,9 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       activeTab = (b.getAttribute('data-tab') as Tab) ?? 'combat';
       // On mobile the tab row scrolls horizontally — bring a half-visible tapped tab fully into view.
       b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      // Re-arm the one-shot content fade (on #content itself so per-tick innerHTML swaps don't replay it).
+      const c = document.querySelector<HTMLElement>('#content');
+      if (c) { c.classList.remove('tabfade'); void c.offsetWidth; c.classList.add('tabfade'); }
       renderTab();
     });
   });
@@ -681,6 +688,7 @@ function updateTopbar(state: GameState): void {
   const sub = document.querySelector<HTMLElement>('#tb-sub');
   if (sub) sub.innerHTML = subLine(state);
   setW('tb-hp', state.hp, state.maxHp); setTxt('tb-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setLow('tb-hp', state.hp, state.maxHp);
   setW('tb-mp', state.mp, state.maxMp); setTxt('tb-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
   setW('tb-sp', state.sp, state.maxSp); setTxt('tb-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
   const hs = hungerStage(state.hunger);
@@ -711,6 +719,8 @@ function updateMini(state: GameState): void {
   setTxt('ms-tlv', `${state.tier >= 1 ? `T${state.tier} ` : ''}${t('ui.lv')} ${state.level}`);
   setTxt('ms-pos', `${state.pos.layer}.${state.pos.floor}.${state.pos.room}`);
   setW('ms-hp', state.hp, state.maxHp); setTxt('ms-hp-v', `${Math.round(state.hp)}/${Math.round(state.maxHp)}`);
+  setLow('ms-hp', state.hp, state.maxHp);
+  setLow('mh-hp', state.hp, state.maxHp);
   setW('ms-mp', state.mp, state.maxMp); setTxt('ms-mp-v', `${Math.round(state.mp)}/${Math.round(state.maxMp)}`);
   setW('ms-sp', state.sp, state.maxSp); setTxt('ms-sp-v', `${Math.round(state.sp)}/${Math.round(state.maxSp)}`);
   const hs = hungerStage(state.hunger);

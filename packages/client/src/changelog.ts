@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.30';
+export const VERSION = '1.23.31';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.31',
+    date: '2026-07-02',
+    tr: [
+      'görsel: canın %25 altına düşünce HP barı nabız gibi atarak uyarıyor (tüm HUD\'larda)',
+      'görsel: sekme değişiminde yumuşak içerik geçişi; bildirimler kayarak geliyor; ırk kartları üzerine gelince yükseliyor',
+      'görsel: düşman paneli boş durumu artık sahne gibi ortalanmış; bestiary tablosunda zebra satırlar',
+      'görsel: masaüstünde yan menü butonları üzerine gelince kayıyor; metin seçimi ve devre dışı butonlar temaya uygun',
+    ],
+    en: [
+      'visual: the HP bar now pulses as a warning when health drops below 25% (all HUDs)',
+      'visual: smooth content transition on tab switch; toasts slide in; race cards lift on hover',
+      'visual: the empty enemy panel state is now centered like a stage; zebra rows in the bestiary table',
+      'visual: desktop sidebar buttons slide on hover; text selection and disabled buttons match the theme',
+    ],
+    ru: [
+      'визуал: полоса HP пульсирует как предупреждение, когда здоровье падает ниже 25% (во всех HUD)',
+      'визуал: плавный переход контента при смене вкладки; уведомления въезжают; карточки рас приподнимаются при наведении',
+      'визуал: пустое состояние панели врага теперь по центру, как сцена; полосатые строки в таблице бестиария',
+      'визуал: кнопки бокового меню сдвигаются при наведении; выделение текста и отключённые кнопки в стиле темы',
+    ],
+  },
   {
     v: '1.23.30',
     date: '2026-07-02',

@@ -47,6 +47,8 @@
       ::-webkit-scrollbar-thumb { background: var(--chitin); border-radius: 5px; }
       ::-webkit-scrollbar-thumb:hover { background: var(--venom-dim); }
       :focus-visible { outline: 2px solid var(--venom); outline-offset: 2px; }
+      ::selection { background: var(--venom-dim); color: var(--bone); }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0; padding: 0.7rem; line-height: 1.5; color: var(--bone);
         font-family: var(--body); -webkit-text-size-adjust: 100%;
@@ -90,6 +92,9 @@
 
       .sidebar { grid-area: side; display: flex; flex-direction: column; gap: 0.4rem; }
       .content { grid-area: main; min-width: 0; }
+      /* one-shot fade when the player switches tabs (class re-armed by the tab click handler) */
+      .content.tabfade { animation: tabfade 0.22s ease-out; }
+      @keyframes tabfade { from { opacity: 0.3; transform: translateY(5px); } }
       .logpanel { grid-area: log; display: flex; gap: 0.5rem; flex-wrap: wrap; }
       .logcol { flex: 1 1 160px; min-width: 0; }
       .logcol h3 { margin: 0 0 0.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
@@ -99,7 +104,7 @@
         background: linear-gradient(180deg, #1d1928, #161320); color: var(--ash);
         border: 1px solid var(--chitin); border-radius: 10px; min-height: 46px; padding: 0.5rem 0.75rem;
         font-family: var(--disp); font-weight: 600; letter-spacing: 0.08em; font-size: 0.82rem;
-        text-transform: uppercase; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+        text-transform: uppercase; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
       }
       .tabbtn svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
       .tabbtn:hover { color: var(--bone); border-color: var(--venom-dim); }
@@ -125,6 +130,14 @@
       }
       /* the enemy's HP bar is the focal point of the combat screen — make it read at a glance */
       .enemy-panel .bar { height: 14px; border-radius: 7px; }
+      /* idle/cleared state right after the panel title — quiet, centered, stage-like */
+      .enemy-panel h2 + p.muted {
+        text-align: center; padding: 1.1rem 0 1.2rem; margin: 0;
+        font-family: var(--disp); letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.8rem;
+      }
+      /* low-HP warning: the fill pulses when HP drops under 25% (class toggled from updateTopbar/Mini) */
+      .bar-fill.low, .mbar > i.low, .mhbar > i.low { animation: hp-low 1.1s ease-in-out infinite; }
+      @keyframes hp-low { 50% { filter: brightness(1.6) saturate(1.5); } }
 
       .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
       button {
@@ -137,7 +150,7 @@
       button:hover:not(:disabled) { border-color: var(--venom-dim); filter: brightness(1.1); }
       button.ghost { background: #191522; }
       button.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
-      button:disabled { opacity: 0.4; cursor: default; }
+      button:disabled { opacity: 0.4; cursor: default; filter: grayscale(0.4); }
       button:active { transform: translateY(1px); }
       /* font-size ≥16px on form fields — iOS Safari auto-zooms into anything smaller on focus. */
       select, input[type="text"] { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); font-size: 1rem; }
@@ -180,10 +193,14 @@
       .subtab.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); }
       /* HUD lives in the sidebar (desktop/tablet) → hide the duplicate top bars there.
          On mobile the sidebar is a horizontal row, so hide the HUD and use the top bars instead. */
-      @media (min-width: 641px) { .topbar .bars { display: none; } }
+      @media (min-width: 641px) {
+        .topbar .bars { display: none; }
+        .tabbtn:hover:not(.active) { transform: translateX(3px); }
+      }
       @media (max-width: 640px) { .ministatus { display: none; } }
       .toasts { position: fixed; top: 0.6rem; right: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; z-index: 60; max-width: 72vw; pointer-events: none; }
-      .toast { background: linear-gradient(180deg, #20300f, #16110f); border: 1px solid var(--venom); border-left: 3px solid var(--venom); color: var(--bone); padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: auto; cursor: pointer; }
+      .toast { background: linear-gradient(180deg, #20300f, #16110f); border: 1px solid var(--venom); border-left: 3px solid var(--venom); color: var(--bone); padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: auto; cursor: pointer; animation: toast-in 0.3s ease-out; }
+      @keyframes toast-in { from { opacity: 0; transform: translateX(26px); } }
       .toast::after { content: " ✕"; color: var(--ash); font-size: 0.72rem; }
       .toast.out { opacity: 0; transform: translateX(24px); }
       .floorbtn { min-width: 40px; min-height: 36px; padding: 0.2rem 0.5rem; flex: 0 0 auto; }
@@ -660,12 +677,12 @@
         display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
         background: linear-gradient(180deg, #1e1a2c, #151220); border: 1px solid var(--chitin);
         border-radius: 10px; padding: 0.8rem 0.9rem; min-height: 210px; text-align: left;
-        cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+        cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
         /* the race portrait sits behind, a dark gradient keeps the text readable */
         background-size: cover; background-position: center 22%; background-repeat: no-repeat;
         justify-content: flex-end; position: relative; overflow: hidden;
       }
-      .race-card:hover { border-color: var(--venom-dim); }
+      .race-card:hover { border-color: var(--venom-dim); transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5); }
       .race-card-active { border-color: var(--venom) !important; box-shadow: 0 0 14px rgba(138, 178, 63, 0.45); }
       .race-card-name { font-family: var(--disp); font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone); font-weight: 600; text-shadow: 0 1px 3px #000; }
       .race-card .muted { text-shadow: 0 1px 3px #000; }
@@ -693,6 +710,7 @@
       .bestiary-detail-pane h3 { font-family: var(--disp); font-size: 1.15rem; color: var(--ember); margin: 0 0 0.5rem; text-align: center; }
       .bestiary-detail-table { width: 100%; border-collapse: collapse; margin-top: 0.6rem; margin-bottom: 0.8rem; font-size: 0.85rem; }
       .bestiary-detail-table td { padding: 0.35rem 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+      .bestiary-detail-table tr:nth-child(odd) td { background: rgba(255, 255, 255, 0.025); }
       .bestiary-detail-table td:first-child { font-weight: 600; color: var(--ash); width: 45%; }
       .bestiary-detail-table td:last-child { font-family: var(--mono); text-align: right; }
       .bestiary-flavor {
