@@ -77,7 +77,7 @@ const ABSORB_VIT_CHANCE = 0.02;   // chance for permanent +1 VIT (biomass growth
 const REST_MULT = 0.7; // rest is deliberately slow (~70% of before)
 const COMBAT_MP_REGEN = 1; // MP slowly recovers even mid-combat
 const STAT_POINTS_PER_LEVEL = 3;
-const XP_PER_EP = 8;
+export const XP_PER_EP = 8;
 const SIN_PER_KILL = 3; // kin kills feed the dark axis (GDD §C)
 const SIN_PER_KILL_BOSS = 15; // boss kin = heinous transgression
 const AUTO_POWER_PER_LEVEL = 0.015; // each effective level grants +1.5% outgoing damage (auto power)
@@ -1562,7 +1562,7 @@ export function keepGrowing(state: GameState, content: Content, log: Log): boole
   return tryAutoTierAdvance(state, content, log);
 }
 
-function gainXp(state: GameState, content: Content, amount: number, log: Log): void {
+export function gainXp(state: GameState, content: Content, amount: number, log: Log): void {
   if (state.level >= LEVEL_CAP) {
     tryAutoTierAdvance(state, content, log);
     return;

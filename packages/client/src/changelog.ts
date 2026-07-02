@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.36';
+export const VERSION = '1.23.37';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.37',
+    date: '2026-07-02',
+    tr: [
+      'fix: uzun aradan (2+ saat) dönünce oyun saniyelerce donuyordu — ilk 10 dakika birebir simüle ediliyor, kalanı ölçülen hızla anında hesaplanıyor (EP/av/seviye kazanımları korunur)',
+      'not: çok uzun offline dönüşlerde eşya ve skill seviyesi kazanımı ilk simüle edilen pencereden gelir — dengeli ve kasıtlı',
+    ],
+    en: [
+      'fix: returning after a long absence (2h+) froze the game for seconds — the first 10 minutes are simulated 1:1, the rest is applied instantly from measured rates (EP/kills/levels preserved)',
+      'note: on very long offline returns, item and skill-level gains come from the simulated window only — balanced and intentional',
+    ],
+    ru: [
+      'fix: возврат после долгого отсутствия (2ч+) замораживал игру на секунды — первые 10 минут симулируются точно, остальное применяется мгновенно по измеренной скорости (ОЭ/добыча/уровни сохраняются)',
+      'примечание: при очень долгом оффлайне предметы и уровни навыков начисляются только за симулированное окно — сбалансировано и намеренно',
+    ],
+  },
   {
     v: '1.23.36',
     date: '2026-07-02',

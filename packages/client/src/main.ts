@@ -4,7 +4,7 @@ import { loadLangContent } from './game/langContent';
 import { GameClock } from './game/clock';
 import { newGame, recomputeMaxes, emptyEquipment, emptyAllocated, type GameState, type LogEvent } from './game/state';
 import { equipItem, unequipItem, discardItem, forgeItem, forgeCost, autoEquipBest, scrapUpTo, lootDisplayName } from './game/loot';
-import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, abandonRiddleForBoss, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb } from './game/combat';
+import { tick, deepRead, allocStat, courtDeath, ensureLayerRooms, useSkillManual, toggleEquip, unequipAll, ensureEquipped, eatFood, advanceRoom, removeSkill, sacrificeSkill, chooseEvent, answerBossRiddle, intSkipRiddle, abandonRiddleForBoss, chooseBossOption, dedupeSkills, respecStats, hasSkillLine, skillSlots, chooseHumanPath, keepGrowing, saveLoadout, loadLoadout, buyStatPointEp, buyTempBuff, injectSkillXp, spawnMinion, spinWeb, collectWeb, gainXp, XP_PER_EP } from './game/combat';
 import { applyRace, OFFICIAL_RACES } from './game/race';
 import { assignEye, cycleEyeMode, clearEye, fuseEyes } from './game/eyes';
 import { evolve, remapRemovedForms, switchBranch } from './game/evolution';
@@ -22,6 +22,7 @@ import { VERSION } from './changelog';
 import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
+const OFFLINE_EXACT_TICKS = 600; // simulated 1:1; the rest is extrapolated (2h+ returns froze the page)
 
 
 /** First-run language: honour a saved choice, else detect from the browser (tr/ru/en). */
@@ -822,8 +823,33 @@ function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => 
     skillLv: state.skills.reduce((a, s) => a + s.level, 0),
     items: state.inventoryItems.length,
   };
-  const silent: (e: LogEvent) => void = () => {};
-  for (let i = 0; i < ticks; i++) tick(state, content, silent, true);
+  // Only the first stretch is simulated 1:1 (captures ramp-up, hunger equilibrium, deaths) —
+  // running every tick synchronously froze the page for seconds after long absences.
+  const exact = Math.min(ticks, OFFLINE_EXACT_TICKS);
+  let died = false;
+  const silent: (e: LogEvent) => void = (e) => {
+    if (e.key === 'log.death' || e.key === 'log.permadeath') died = true;
+  };
+  for (let i = 0; i < exact; i++) tick(state, content, silent, true);
+  const remaining = ticks - exact;
+  // Extrapolate the remainder from the measured window: EP/kill rates scale linearly; XP follows EP
+  // (kills grant gainXp(ep × XP_PER_EP)), fed in chunks so level-ups and tier advances replay the
+  // real curve instead of clipping at the first cap. Rest/meditate pools cap within the exact
+  // window and a death means the window's rates don't describe a survivor — both skip this.
+  if (remaining > 0 && !died && state.action === 'combat') {
+    const epRate = Math.max(0, (state.ep - before.ep) / exact);
+    const killRate = Math.max(0, (state.kills - before.kills) / exact);
+    const extraEp = Math.round(epRate * remaining);
+    state.ep += extraEp;
+    state.kills += Math.round(killRate * remaining);
+    let xpLeft = extraEp * XP_PER_EP;
+    const xpChunk = Math.max(1, Math.ceil(xpLeft / 40));
+    while (xpLeft > 0) {
+      const give = Math.min(xpChunk, xpLeft);
+      gainXp(state, content, give, silent);
+      xpLeft -= give;
+    }
+  }
   // Sleepless Mind (soul) / Sloth (ruler): idle yield multiplier — extra EP on top of what was simulated.
   const idleBonus = aggregateBonuses(state, content).idleMult - 1;
   if (idleBonus > 0) state.ep += Math.round((state.ep - before.ep) * idleBonus);
