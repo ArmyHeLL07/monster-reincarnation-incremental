@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.31';
+export const VERSION = '1.23.32';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.32',
+    date: '2026-07-02',
+    tr: [
+      'yeni: "Sen Yokken" özeti — 2 dakikadan uzun aradan dönünce av, seviye, EP, skill ve eşya kazanımlarını gösteren karşılama kartı',
+      'yeni: oyun artık telefona kurulabiliyor (Ana Ekrana Ekle) — tam ekran, tarayıcı çubuğu yok',
+      'yeni: minyonlar artık sadece örümceğe özel değil — İskelet (Kemik Orduları, undead_sovereign) ve Şeytan (Cehennem Lejyonu, demon_overlord) T5+ formları da minyon komuta ediyor',
+    ],
+    en: [
+      'new: "While You Were Away" summary — returning after 2+ minutes shows a welcome card with kills, levels, EP, skill-ups and loot',
+      'new: the game is now installable on your phone (Add to Home Screen) — fullscreen, no browser chrome',
+      'new: minions are no longer spider-only — Skeleton (Bone Legion, undead_sovereign) and Demon (Infernal Legion, demon_overlord) T5+ forms also command minions',
+    ],
+    ru: [
+      'новое: сводка "Пока тебя не было" — после 2+ минут отсутствия карточка показывает добычу, уровни, ОЭ, навыки и предметы',
+      'новое: игру можно установить на телефон (Добавить на главный экран) — полный экран, без браузерной рамки',
+      'новое: миньоны больше не только у паука — Скелет (Костяной легион, undead_sovereign) и Демон (Адский легион, demon_overlord) на T5+ тоже командуют миньонами',
+    ],
+  },
   {
     v: '1.23.31',
     date: '2026-07-02',

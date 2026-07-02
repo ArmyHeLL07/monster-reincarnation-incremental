@@ -456,6 +456,36 @@ export function equipStatBonus(state: GameState): Record<StatKey, number> {
   return out;
 }
 
+// --- minions: which races command them (data-driven — was hardcoded to spider) -----------------
+export interface MinionRaceDef {
+  /** Minimum evolution tier before summoning unlocks. */
+  tierReq: number;
+  /** The race's commander form: minion cap ×2, effectiveness ×1.5. */
+  sovereignForm: string;
+  /** Panel title i18n key. */
+  titleKey: string;
+}
+export const MINION_RACES: Record<string, MinionRaceDef> = {
+  spider:   { tierReq: 5, sovereignForm: 'arachnid_sovereign', titleKey: 'ui.queen_panel' },
+  skeleton: { tierReq: 5, sovereignForm: 'undead_sovereign',   titleKey: 'ui.boneherd_panel' },
+  demon:    { tierReq: 5, sovereignForm: 'demon_overlord',     titleKey: 'ui.legion_panel' },
+};
+/** The minion config for this player, or null when their race/tier can't command minions yet. */
+export function minionDef(state: GameState): MinionRaceDef | null {
+  const d = MINION_RACES[state.raceId];
+  return d && state.tier >= d.tierReq ? d : null;
+}
+/** ×1.5 to minion dps/tank/utility while in the race's commander form. */
+export function minionEffMult(state: GameState): number {
+  return state.formId === MINION_RACES[state.raceId]?.sovereignForm ? 1.5 : 1;
+}
+/** Max simultaneous minions: WIS/level scaling, ×2 in the commander form, + Queen's Blessing perks. */
+export function minionLimit(state: GameState): number {
+  const capMult = state.formId === MINION_RACES[state.raceId]?.sovereignForm ? 2 : 1;
+  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
+  return Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * capMult + perkBonus;
+}
+
 /** Effective value of one stat = allocated base + equipment bonus + rebirth perks. */
 export function effStat(state: GameState, k: StatKey): number {
   let val = state.stats[k] + equipStatBonus(state)[k];

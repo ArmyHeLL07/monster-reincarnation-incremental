@@ -1,7 +1,7 @@
 import type { DamageType, StatKey, Skill, DungeonLayer, ResistanceMerger } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState, SkillSlot, ResistSlot, LogEvent } from './state';
-import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat } from './state';
+import { recomputeMaxes, newGame, MAX_HUNGER, LEVEL_CAP, MAX_INVENTORY, effStat, minionDef, minionEffMult, minionLimit } from './state';
 import { currentRoomHazard } from './hazards';
 import { generateLoot, lootDisplayName } from './loot';
 import { isHumanoidForm, availableEvolutions, canEvolve, secretMet, ownsSkillLine } from './evolution';
@@ -545,8 +545,7 @@ function combatRound(state: GameState, content: Content, log: Log, b: Bonuses, i
   }
   // DPS Minions damage tick
   if (state.enemy && state.minions && state.minions.dps > 0) {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
+    const effMult = minionEffMult(state);
     const dmg = Math.round((5 + Math.max(effStat(state, 'INT'), effStat(state, 'WIS')) * 0.15) * state.minions.dps * effMult);
     if (dmg > 0) {
       const isPhysical = Math.random() < 0.5;
@@ -1413,8 +1412,7 @@ function enemyAttack(state: GameState, content: Content, log: Log, b: Bonuses): 
   }
   // Tank Minion damage absorption
   if (state.minions && state.minions.tank > 0 && totalTaken > 0) {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
+    const effMult = minionEffMult(state);
     const absorbPct = Math.min(0.75, state.minions.tank * 0.15 * effMult);
     const absorbed = Math.round(totalTaken * absorbPct);
     if (absorbed > 0) {
@@ -2515,11 +2513,11 @@ export function tickWeb(state: GameState, b: Bonuses, log: Log, isOffline: boole
 }
 
 export function spawnMinion(state: GameState, type: 'dps' | 'tank' | 'utility'): boolean {
+  if (!minionDef(state)) return false; // race/tier can't command minions (guard here, not only in the UI)
   if (!state.minions) {
     state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
   }
-  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
-  const limit = (Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1)) + perkBonus;
+  const limit = minionLimit(state);
   const currentTotal = state.minions.dps + state.minions.tank + state.minions.utility;
   if (currentTotal >= limit) return false;
   if (state.sp < 10 || state.mp < 5) return false;
@@ -2530,9 +2528,7 @@ export function spawnMinion(state: GameState, type: 'dps' | 'tank' | 'utility'):
 
   state.minions[type]++;
   if (type === 'tank') {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
-    state.minions.tankMaxHp = (20 + effStat(state, 'VIT') * 2) * state.minions.tank * effMult;
+    state.minions.tankMaxHp = (20 + effStat(state, 'VIT') * 2) * state.minions.tank * minionEffMult(state);
     state.minions.tankHp = state.minions.tankMaxHp;
   }
   return true;

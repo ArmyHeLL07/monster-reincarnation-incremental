@@ -8,6 +8,14 @@
     <meta name="description" content="A dark incremental RPG: reincarnate as the weakest monster and claw your way up. Damage taken becomes resistance, skills evolve, and 11 races branch through deep evolution trees. Inspired by 'So I'm a Spider, So What?'. Free in your browser." />
     <link rel="canonical" href="https://armyhell07.github.io/monster-reincarnation-incremental/" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='55' font-size='76' text-anchor='middle' dominant-baseline='central'>🕷️</text></svg>" />
+    <!-- PWA: installable from the browser menu ("Add to Home Screen"). No service worker on
+         purpose — offline caching would fight the version.json live-update flow. -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Monster Re" />
     <!-- Social share preview (Open Graph + Twitter) — canonical origin is Cloudflare. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Monster Reincarnation" />

@@ -17,7 +17,7 @@ import { search, readBook, answerRoom, repairScar } from './game/discovery';
 import { forage, eatFoundFood, discardFoundFood } from './game/forage';
 import { load, save, clear } from './game/save';
 import { markSeenSkills } from './game/skill_tree';
-import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, showUpdateBanner, type UiActions } from './ui';
+import { mount, live, render, pushLog, setLastFusion, resetUi, playEvolveEffect, playRebirthEffect, showUpdateBanner, showOfflineSummary, type OfflineSummary, type UiActions } from './ui';
 import { VERSION } from './changelog';
 import type { Difficulty } from '@mri/shared';
 
@@ -54,7 +54,7 @@ async function init(): Promise<void> {
     pushLog(e.key, e.params);
   }
 
-  applyOffline(state, content, logFn);
+  const offlineSummary = applyOffline(state, content, logFn);
 
   const actions: UiActions = {
     onSetAction: (a) => {
@@ -542,6 +542,7 @@ async function init(): Promise<void> {
   };
 
   mount(state, content, actions);
+  if (offlineSummary) showOfflineSummary(offlineSummary);
 
   let ticks = 0;
   const clock = new GameClock(1000, () => {
@@ -810,18 +811,33 @@ function repairSave(state: GameState, content: Content): void {
   applyStartSkillFix(state, content);
 }
 
-/** Simulate elapsed offline time for the active action (idle = frozen, no offline). */
-function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => void): void {
+/** Simulate elapsed offline time for the active action (idle = frozen, no offline).
+ *  Returns a welcome-back summary (null when away too briefly to be worth a card). */
+function applyOffline(state: GameState, content: Content, log: (e: LogEvent) => void): OfflineSummary | null {
   const elapsedSec = Math.floor((Date.now() - state.lastSeen) / 1000);
-  if (elapsedSec < 5 || state.action === 'idle') return;
+  if (elapsedSec < 5 || state.action === 'idle') return null;
   const ticks = Math.min(elapsedSec, OFFLINE_TICK_CAP);
-  const beforeEp = state.ep;
+  const before = {
+    ep: state.ep, kills: state.kills, level: state.level,
+    skillLv: state.skills.reduce((a, s) => a + s.level, 0),
+    items: state.inventoryItems.length,
+  };
   const silent: (e: LogEvent) => void = () => {};
   for (let i = 0; i < ticks; i++) tick(state, content, silent, true);
   // Sleepless Mind (soul) / Sloth (ruler): idle yield multiplier — extra EP on top of what was simulated.
   const idleBonus = aggregateBonuses(state, content).idleMult - 1;
-  if (idleBonus > 0) state.ep += Math.round((state.ep - beforeEp) * idleBonus);
-  log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - beforeEp } });
+  if (idleBonus > 0) state.ep += Math.round((state.ep - before.ep) * idleBonus);
+  log({ key: 'log.offline', params: { sec: ticks, ep: state.ep - before.ep } });
+  if (ticks < 120) return null; // quick refresh — the log line is enough
+  // Diffs can go negative if the run ended offline (rebirth resets kills); the card shows only gains.
+  return {
+    sec: ticks,
+    ep: state.ep - before.ep,
+    kills: state.kills - before.kills,
+    levels: state.level - before.level,
+    skillUps: state.skills.reduce((a, s) => a + s.level, 0) - before.skillLv,
+    items: state.inventoryItems.length - before.items,
+  };
 }
 
 function download(filename: string, text: string): void {

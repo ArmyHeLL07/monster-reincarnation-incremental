@@ -4,7 +4,7 @@ import type { GameState } from './game/state';
 import { MUTATION_POOL } from './game/mutations';
 import { currentRoomHazard } from './game/hazards';
 import { REBIRTH_PERKS } from './game/teachings';
-import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, effStat } from './game/state';
+import { MAX_HUNGER, LEVEL_CAP, MEDITATION_MAX, MAX_INVENTORY, equipStatBonus, minionDef, minionLimit } from './game/state';
 import { EQUIP_SLOTS, lootDisplayName, unmetReqs, canEquip, forgeCost, itemScore } from './game/loot';
 import { equipSetTier, specStat } from './game/effects';
 import { appraisalTier, ownedEyeAbilities, isAbilityAssigned } from './game/eyes';
@@ -262,6 +262,34 @@ function checkAndShowHints(state: GameState): void {
 
 export function setLastFusion(r: FusionResult): void {
   lastFusion = r;
+}
+
+/** Welcome-back card data — built by applyOffline (main.ts), only positive diffs are shown. */
+export interface OfflineSummary {
+  sec: number; ep: number; kills: number; levels: number; skillUps: number; items: number;
+}
+
+/** One-shot "while you were away" card. Reuses the tutorial overlay/box styling. */
+export function showOfflineSummary(s: OfflineSummary): void {
+  const h = Math.floor(s.sec / 3600), m = Math.floor((s.sec % 3600) / 60);
+  const time = h > 0 ? t('ui.offline_away_h', { h, m }) : t('ui.offline_away_m', { m: Math.max(1, m) });
+  const rows: string[] = [
+    ...(s.kills > 0 ? [`⚔ ${t('ui.offline_kills', { n: s.kills })}`] : []),
+    ...(s.levels > 0 ? [`▲ ${t('ui.offline_levels', { n: s.levels })}`] : []),
+    ...(s.ep > 0 ? [`🧬 ${t('ui.offline_ep', { n: s.ep })}`] : []),
+    ...(s.skillUps > 0 ? [`✳ ${t('ui.offline_skillups', { n: s.skillUps })}`] : []),
+    ...(s.items > 0 ? [`🎒 ${t('ui.offline_loot', { n: s.items })}`] : []),
+  ];
+  const el = document.createElement('div');
+  el.className = 'tutorial-overlay';
+  el.innerHTML = `<div class="tutorial-box">
+    <h2>🌙 ${t('ui.offline_title')}</h2>
+    <p class="muted" style="margin-bottom:0.8rem">${time}</p>
+    ${rows.length ? `<ul style="list-style:none;padding:0;margin:0 0 1.2rem">${rows.map((r) => `<li style="margin:0.35rem 0">${r}</li>`).join('')}</ul>` : `<p>${t('ui.offline_quiet')}</p>`}
+    <div class="tutorial-actions"><button id="offline-ok">${t('ui.offline_close')}</button></div>
+  </div>`;
+  el.querySelector('#offline-ok')?.addEventListener('click', () => el.remove());
+  document.body.appendChild(el);
 }
 export function resetUi(): void {
   selectedEye = null;
@@ -2742,17 +2770,17 @@ function statsTab(state: GameState): string {
 }
 
 function minionPanel(state: GameState): string {
-  if (state.raceId !== 'spider' || state.tier < 5) return '';
+  const mdef = minionDef(state); // spider/skeleton/demon at tier 5+ (MINION_RACES, state.ts)
+  if (!mdef) return '';
   if (!state.minions) {
     state.minions = { dps: 0, tank: 0, utility: 0, tankHp: 0, tankMaxHp: 0 };
   }
-  const perkBonus = state.rebirthPerks?.filter((p) => p === 'queens_blessing').length ?? 0;
-  const limit = (Math.max(1, Math.floor(effStat(state, 'WIS') / 10) + Math.floor(state.level / 5)) * (state.formId === 'arachnid_sovereign' ? 2 : 1)) + perkBonus;
+  const limit = minionLimit(state);
   const total = state.minions.dps + state.minions.tank + state.minions.utility;
-  
+
   return `
     <section class="panel">
-      <h2>${t('ui.queen_panel')}</h2>
+      <h2>${t(mdef.titleKey)}</h2>
       <div class="row">
         <span>${t('ui.minions_limit')}:</span>
         <span><b>${total} / ${limit}</b></span>

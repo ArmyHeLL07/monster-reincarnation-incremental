@@ -1,7 +1,7 @@
 import type { StatKey } from '@mri/shared';
 import type { Content } from './content';
 import type { GameState } from './state';
-import { MAX_HUNGER } from './state';
+import { MAX_HUNGER, minionEffMult } from './state';
 import { sigBoneArmor } from './signature';
 import { soulLevel } from './soul';
 import { currentRoomModifier } from './combat';
@@ -241,8 +241,7 @@ export function aggregateBonuses(state: GameState, content: Content): Bonuses {
   }
 
   if (state.minions && state.minions.utility > 0) {
-    const isSovereign = state.formId === 'arachnid_sovereign';
-    const effMult = isSovereign ? 1.5 : 1;
+    const effMult = minionEffMult(state);
     b.lootMult *= (1 + state.minions.utility * 0.05 * effMult);
     b.hungerMult *= Math.max(0.5, 1 - state.minions.utility * 0.03 * effMult);
   }
