@@ -471,6 +471,8 @@ function spawnFloatingText(text: string, color: string, target: 'player' | 'enem
 /** Per-tick light update: top bar + mini HUD (smooth bars), logs, and the active tab. */
 export function live(state: GameState): void {
   CURSTATE = state;
+  // Deeper dungeon layers retint the page ambience (body[data-layer] CSS).
+  if (document.body.dataset.layer !== String(state.pos.layer)) document.body.dataset.layer = String(state.pos.layer);
   syncAchievementFx(state); // fire a centred burst for any achievement unlocked this tick
   syncLoreMasteryFx(state); // …and for any racial lore-mastery passive earned this tick
 
@@ -1064,18 +1066,18 @@ function assetUrl(rel: string): string {
 /** Race ids that have a hand-drawn portrait under data/races/<id>.png. */
 const RACE_PORTRAITS = new Set(['spider', 'slime', 'skeleton', 'wyrmling', 'golem', 'human', 'beastkin', 'demon', 'vampire', 'lycan', 'celestial']);
 
+/** The player's visual: hand-drawn form/race portrait when available, else the procedural head SVG. */
+function playerFigureHtml(state: GameState, cls: string): string {
+  const form = currentForm(state, CONTENT);
+  if (form?.image) return `<img class="${cls}" src="${assetUrl(form.image)}" alt="" />`;
+  if (RACE_PORTRAITS.has(state.raceId)) return `<img class="${cls}" src="${assetUrl(`races/${state.raceId}.png`)}" alt="" />`;
+  return headSvg(state);
+}
+
 /** Animated player presence while resting / meditating — portrait + live HP/SP/MP bars. */
 function restStage(state: GameState): string {
   const kind = state.action === 'meditate' ? 'meditating' : 'resting';
-  const form = currentForm(state, CONTENT);
-  let figure: string;
-  if (form?.image) {
-    figure = `<img class="rest-portrait" src="${assetUrl(form.image)}" alt="" />`;
-  } else if (RACE_PORTRAITS.has(state.raceId)) {
-    figure = `<img class="rest-portrait" src="${assetUrl(`races/${state.raceId}.png`)}" alt="" />`;
-  } else {
-    figure = headSvg(state);
-  }
+  const figure = playerFigureHtml(state, 'rest-portrait');
   const hp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">HP</span>${bar(state.hp, state.maxHp, '#6fae53')}<span class="muted" style="font-size:0.78rem">${Math.round(state.hp)}/${state.maxHp}</span></div>`;
   const mp = state.maxMp > 0 ? `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">MP</span>${bar(state.mp, state.maxMp, '#4f86c2')}<span class="muted" style="font-size:0.78rem">${Math.round(state.mp)}/${state.maxMp}</span></div>` : '';
   const sp = `<div class="rest-bar-row"><span class="muted" style="font-size:0.78rem">SP</span>${bar(state.sp, state.maxSp, '#d2a73a')}<span class="muted" style="font-size:0.78rem">${Math.round(state.sp)}/${state.maxSp}</span></div>`;
@@ -1097,11 +1099,16 @@ function enemyView(state: GameState): string {
     ? `<span class="kill-badge${(state.roomKillCount ?? 0) >= quota ? ' kill-quota-met' : ''}">${state.roomKillCount ?? 0}/${quota}</span>`
     : '';
   const eliteBadge = inst.elite ? `<span class="elite-badge">⭐ ${t('ui.elite')}</span>` : '';
+  // Duel stage: the player's figure faces the foe (lunge keyframe re-syncs on each combat re-render).
+  const duel = (foeHtml: string) => `<div class="duel">
+    <div class="duel-you${state.action === 'combat' ? ' fighting' : ''}">${playerFigureHtml(state, 'duel-portrait')}</div>
+    <span class="duel-mid">⚔</span>
+    <div class="duel-foe">${foeHtml}</div></div>`;
   const tier = Math.max(appraisalTier(state), inst.analyzed ? 1 : 0);
   if (tier < 1) {
     // No "seeing eye" slotted — you see the creature's shape but never its true stats.
     const mark = inst.isBoss ? '☠ ' : '';
-    return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`;
+    return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div><div><b>${mark}${inst.elite ? '⭐ ' : ''}${t('ui.unknown')}</b></div><div class="muted" style="font-size:0.82rem">${t('ui.enemy_veiled')}</div>${bar(inst.hp, inst.maxHp, '#bb4140')}</div></div>`);
   }
   const baseName = t(inst.locKey);
   const name = `${inst.analyzed ? '🔍 ' : ''}${inst.isBoss ? '☠ ' : ''}${inst.elite ? '⭐ ' : ''}${baseName}`;
@@ -1115,7 +1122,7 @@ function enemyView(state: GameState): string {
     const w = weaknessOf(CONTENT, inst.damageType);
     if (w) weak = `<div class="muted" style="font-size:0.78rem">${t('ui.weak_to')}: <b style="color:var(--venom)">${t(`dmgtype.${w}`)}</b></div>`;
   }
-  return `<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`;
+  return duel(`<div class="erow" style="position:relative">${killBadge}${eliteBadge}${portrait}<div style="flex:1">${bits.join(' · ')} ${hpText}${bar(inst.hp, inst.maxHp, '#bb4140')}${weak}</div></div>`);
 }
 
 /** A choice-based map event: text + choice buttons (gated/foresighted), blocks combat. */

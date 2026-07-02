@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.34';
+export const VERSION = '1.23.35';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.35',
+    date: '2026-07-02',
+    tr: [
+      'görsel: savaş ekranı artık bir düello sahnesi — canavarın düşmanın karşısında duruyor ve her turda saldırı hamlesi yapıyor ("Sahne" arayüz vizyonunun 1. fazı)',
+      'görsel: zindan katmanları atmosferi değiştiriyor — derinlere indikçe ekranın ışığı katmana göre boyanıyor (Magma közleri, Çekirdek moru)',
+    ],
+    en: [
+      'visual: the combat screen is now a duel stage — your monster stands opposite the foe and lunges with each round (phase 1 of the "Stage" UI vision)',
+      'visual: dungeon layers set the atmosphere — as you descend, the ambient light retints per layer (Magma embers, Core violet)',
+    ],
+    ru: [
+      'визуал: экран боя теперь дуэльная сцена — ваш монстр стоит напротив врага и делает выпад каждый раунд (фаза 1 концепции «Сцена»)',
+      'визуал: слои подземелья задают атмосферу — при спуске окружающий свет перекрашивается по слою (угли Магмы, фиолет Ядра)',
+    ],
+  },
   {
     v: '1.23.34',
     date: '2026-07-02',
