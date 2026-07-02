@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.28';
+export const VERSION = '1.23.29';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.29',
+    date: '2026-07-02',
+    tr: [
+      'mobil: ekranın altına ince bir HP/MP/SP/açlık şeridi eklendi — savaşta aşağı kaydırınca canın artık görünür kalıyor',
+      'mobil: sekme çubuğu artık yukarı yapışıyor (sticky) — sekme değiştirmek için en üste kaydırmak gerekmiyor',
+      'mobil fix: hasar sayıları ekranın sol üst köşesinde belirmiyor, karakterin üstünde çıkıyor',
+      'mobil: bilmece cevap kutusu artık temaya uygun ve odaklanınca iOS ekranı yakınlaştırmıyor; küçük butonlar (kuşan/stat/kat/oda) parmakla basılabilir boyuta büyütüldü',
+    ],
+    en: [
+      'mobile: slim HP/MP/SP/hunger strip pinned to the bottom of the screen — your health stays visible while scrolling in combat',
+      'mobile: the tab bar is now sticky at the top — no more scrolling back up to switch tabs',
+      'mobile fix: damage numbers no longer spawn in the top-left corner of the screen, they appear over your character',
+      'mobile: the riddle answer box is now themed and no longer triggers iOS zoom on focus; small buttons (equip/stat/floor/room) enlarged to finger-friendly sizes',
+    ],
+    ru: [
+      'мобильные: тонкая полоса HP/MP/SP/голода закреплена внизу экрана — здоровье видно при прокрутке в бою',
+      'мобильные: панель вкладок теперь закреплена сверху — не нужно прокручивать вверх для смены вкладки',
+      'мобильный fix: числа урона больше не появляются в левом верхнем углу экрана — они показываются над персонажем',
+      'мобильные: поле ответа на загадку оформлено в стиле игры и больше не вызывает зум iOS; мелкие кнопки (экипировка/статы/этаж/комната) увеличены для пальцев',
+    ],
+  },
   {
     v: '1.23.28',
     date: '2026-07-02',

@@ -327,11 +327,20 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
       <!-- Floating damage text overlay layer -->
       <div id="damage-text-layer" style="position:fixed; inset:0; pointer-events:none; z-index:99999;"></div>
+      <!-- Slim fixed vitals strip — visible on mobile only (CSS); bars driven by updateMini. -->
+      <div id="mobhud" aria-hidden="true">
+        <div class="mhbar"><i id="mh-hp-f" style="background:#6fae53"></i></div>
+        <div class="mhbar"><i id="mh-mp-f" style="background:var(--mp)"></i></div>
+        <div class="mhbar"><i id="mh-sp-f" style="background:var(--sp)"></i></div>
+        <div class="mhbar"><i id="mh-hunger-f"></i></div>
+      </div>
     </div>
   `;
   app.querySelectorAll<HTMLButtonElement>('.tabbtn').forEach((b) => {
     b.addEventListener('click', () => {
       activeTab = (b.getAttribute('data-tab') as Tab) ?? 'combat';
+      // On mobile the tab row scrolls horizontally — bring a half-visible tapped tab fully into view.
+      b.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
       renderTab();
     });
   });
@@ -393,7 +402,9 @@ function spawnFloatingText(text: string, color: string, target: 'player' | 'enem
 
   let targetEl: HTMLElement | null = null;
   if (target === 'player') {
-    targetEl = document.querySelector<HTMLElement>('#ministatus') || document.querySelector<HTMLElement>('#topbar');
+    // #ministatus is display:none on mobile → zero rect → text would spawn at the top-left corner.
+    const mini = document.querySelector<HTMLElement>('#ministatus');
+    targetEl = mini && mini.offsetWidth > 0 ? mini : document.querySelector<HTMLElement>('#topbar');
   } else {
     targetEl = document.querySelector<HTMLElement>('.enemy-panel');
   }
@@ -712,6 +723,13 @@ function updateMini(state: GameState): void {
   const hl = document.querySelector<HTMLElement>('#ms-hunger-l');
   if (hl) hl.style.color = HUNGER_COLORS[hs];
   setTxt('ms-hunger-v', `%${Math.round((state.hunger / MAX_HUNGER) * 100)}`);
+  // Mobile #mobhud strip mirrors the same vitals (own ids — setW is a no-op where absent).
+  setW('mh-hp', state.hp, state.maxHp);
+  setW('mh-mp', state.mp, state.maxMp);
+  setW('mh-sp', state.sp, state.maxSp);
+  setW('mh-hunger', state.hunger, MAX_HUNGER);
+  const mhf = document.querySelector<HTMLElement>('#mh-hunger-f');
+  if (mhf) mhf.style.background = HUNGER_COLORS[hs];
 }
 
 function hungerStage(h: number): number {
@@ -1748,8 +1766,8 @@ function mapTab(state: GameState): string {
           ${bossSoon}
         </span>
         <div class="floor-nav" style="display: flex; gap: 0.3rem;">
-          <button class="floor-nav-btn" data-dir="down" ${state.pos.floor <= 1 ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_down')}">▼</button>
-          <button class="floor-nav-btn" data-dir="up" ${state.pos.floor >= reachedFloors ? 'disabled' : ''} style="min-width: 32px; height: 28px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_up')}">▲</button>
+          <button class="floor-nav-btn" data-dir="down" ${state.pos.floor <= 1 ? 'disabled' : ''} style="min-width: 44px; height: 36px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_down')}">▼</button>
+          <button class="floor-nav-btn" data-dir="up" ${state.pos.floor >= reachedFloors ? 'disabled' : ''} style="min-width: 44px; height: 36px; padding: 0; font-size: 0.75rem;" title="${t('ui.go_up')}">▲</button>
         </div>
       </div>
 

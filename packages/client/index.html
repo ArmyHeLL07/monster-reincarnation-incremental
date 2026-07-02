@@ -120,7 +120,11 @@
       button.active { background: linear-gradient(180deg, var(--venom), var(--venom-dim)); color: var(--abyss); border-color: var(--venom); box-shadow: 0 0 12px rgba(138, 178, 63, 0.28); }
       button:disabled { opacity: 0.4; cursor: default; }
       button:active { transform: translateY(1px); }
-      select { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); }
+      /* font-size ≥16px on form fields — iOS Safari auto-zooms into anything smaller on focus. */
+      select, input[type="text"] { min-height: 44px; border-radius: 10px; background: #1d1a27; color: var(--bone); border: 1px solid var(--chitin); padding: 0 0.5rem; flex: 1 1 auto; font-family: var(--body); font-size: 1rem; }
+      /* Spam-tapping game controls shouldn't start text selection on touch. */
+      button, .dcell, .eq-slot { -webkit-user-select: none; user-select: none; }
+      .dcell, .eq-slot { touch-action: manipulation; }
 
       .actbtn { flex: 1 1 auto; }
       .castbtn { flex: 1 1 auto; }
@@ -143,6 +147,11 @@
       .ministatus .mbar { height: 7px; border-radius: 4px; background: #0e0c14; border: 1px solid #241f2e; overflow: hidden; margin: 2px 0 5px; }
       .ministatus .mbar > i { display: block; height: 100%; transition: width 0.55s ease-out; }
       .skillgroup h3 { margin: 0.55rem 0 0.2rem; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--venom); }
+      /* Slim fixed vitals strip (HP/MP/SP/hunger) — mobile only; the sidebar HUD is hidden there,
+         so without this the player loses sight of HP the moment the top bar scrolls away. */
+      #mobhud { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; flex-direction: column; gap: 2px; padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(10, 9, 16, 0.92); border-top: 1px solid var(--chitin); pointer-events: none; }
+      #mobhud .mhbar { height: 4px; border-radius: 2px; background: #0e0c14; overflow: hidden; }
+      #mobhud .mhbar > i { display: block; height: 100%; width: 0; transition: width 0.55s ease-out; }
       /* Skills screen: list (left) + fusion lab (right); category sub-tabs above the list. */
       .skillscols { display: grid; gap: 0.6rem; grid-template-columns: 1fr 300px; align-items: start; }
       @media (max-width: 760px) { .skillscols { grid-template-columns: 1fr; } }
@@ -592,9 +601,16 @@
 
       @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
       @media (max-width: 640px) {
-        body { padding: 0.4rem; }
+        /* background-attachment: fixed is ignored/janky on iOS Safari — let it scroll there. */
+        /* extra bottom padding keeps content clear of the fixed #mobhud strip */
+        body { padding: 0.4rem; padding-bottom: calc(1rem + 24px + env(safe-area-inset-bottom, 0px)); background-attachment: scroll; }
         .game { grid-template-columns: 1fr; grid-template-areas: "top" "side" "main" "log"; gap: 0.4rem; }
-        .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; }
+        .sidebar { flex-direction: row; overflow-x: auto; padding-bottom: 0.2rem; position: sticky; top: 0; z-index: 50; background: var(--abyss); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55); }
+        #mobhud { display: flex; }
+        /* 30px+ touch targets — desktop-sized 24–30px controls are too easy to fat-finger */
+        .equipbtn, .statadd, .discard { min-height: 40px; min-width: 44px; }
+        .subtab { min-height: 38px; }
+        .dmap-floor { grid-template-columns: 18px repeat(var(--cols), 30px); }
         .tabbtn { flex: 1 0 auto; justify-content: center; min-width: 76px; padding: 0.5rem 0.4rem; min-height: 40px; font-size: 0.75rem; }
         .tabbtn svg { width: 15px; height: 15px; }
         .topbar .bars { grid-template-columns: 1fr; gap: 0.2rem; }
