@@ -19,3 +19,13 @@ crons = ["0 6 * * *"]
 # [[kv_namespaces]]
 # binding = "FUSION_CACHE"
 # id = "<kv-namespace-id>"
+
+# Liderlik tablosu (v1.23.44) — açmak için:
+#   1) npx wrangler kv namespace create SCORES   → çıkan id'yi aşağıya yaz
+#   2) alttaki iki satırın başındaki # işaretlerini kaldır
+#   3) npm run server:deploy   (Atıl çalıştırır — production)
+# Bağlanana kadar /score ve /leaderboard uçları zararsız 503/boş döner; istemci bunu sessizce gizler.
+#
+# [[kv_namespaces]]
+# binding = "SCORES"
+# id = "<kv-namespace-id>"

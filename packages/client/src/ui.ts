@@ -46,6 +46,8 @@ export interface UiActions {
   onSetPos: (layerId: number, floor: number) => void;
   onAllocStat: (stat: StatKey) => void;
   onEvolve: (formId: string) => void;
+  /** Liderlik: rumuz iste + skoru gönder (opt-in). */
+  onSubmitScore: () => void;
   onKeepGrow: () => void;
   onSwitchBranch: (formId: string) => void;
   onFuse: (aId: string, bId: string) => void;
@@ -755,6 +757,44 @@ function statBarSkel(id: string, label: string, color: string): string {
 
 /** Top bar SKELETON (values filled by updateTopbar so the bars keep their elements → smooth slide). */
 /** Version badge (top bar) — hover/tap to reveal the changelog popover. */
+// ---- Liderlik tablosu (v1.23.44, Ali listesi #3) — Ruh alanında top-20, gönderim opt-in --------
+const LB_URL = 'https://mri-server.armyhell07.workers.dev/leaderboard';
+interface LbEntry { name: string; layer: number; floor: number; rebirths: number; form: string }
+let lbCache: LbEntry[] | null = null; // null = henüz yüklenmedi
+let lbAt = 0;
+/** Tabloyu en fazla 5 dk'da bir çeker; sunucu bağlanmamışsa/eriş yoksa sessizce boş kalır. */
+function ensureLeaderboard(): void {
+  if (Date.now() - lbAt < 300_000) return;
+  lbAt = Date.now();
+  fetch(LB_URL)
+    .then((r) => (r.ok ? (r.json() as Promise<LbEntry[]>) : []))
+    .then((j) => {
+      lbCache = Array.isArray(j) ? j : [];
+      if (drawerTab === 'stats') renderDrawer(); // panel açıksa taze veriyle boya
+    })
+    .catch(() => { lbCache = lbCache ?? []; });
+}
+function leaderboardPanel(state: GameState): string {
+  // Sunucudan gelen isimler ekstra escape edilir — t()'den geçmeyen tek dış-veri render'ı (XSS kuralı).
+  const esc = (s: string): string => s.replace(/[<>"&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', '&': '&amp;' })[c] ?? c);
+  const rows =
+    lbCache === null
+      ? `<p class="muted" style="margin:0.4rem 0 0">…</p>`
+      : lbCache.length === 0
+        ? `<p class="muted" style="margin:0.4rem 0 0">${t('ui.lb_empty')}</p>`
+        : `<ol style="margin:0.4rem 0 0;padding-left:1.4rem;font-size:0.85rem">${lbCache
+            .slice(0, 20)
+            .map((e) => `<li style="margin:0.2rem 0"><b>${esc(String(e.name ?? ''))}</b> <span class="muted">— ${Number(e.layer) || 0}.${Number(e.floor) || 0} · ✦${Number(e.rebirths) || 0}</span></li>`)
+            .join('')}</ol>`;
+  return `
+    <section class="panel">
+      <h2>🏆 ${t('ui.leaderboard')}</h2>
+      ${rows}
+      <button id="lb-submit" class="ghost" style="margin-top:0.6rem">📡 ${t('ui.lb_submit')}${state.scoreName ? ` <span class="muted">(${t('ui.lb_as', { name: state.scoreName })})</span>` : ''}</button>
+    </section>
+  `;
+}
+
 /** Haftalık "Derinlik Akıntısı" rozeti (v1.23.42) — hover'da açıklama; tıklayınca toast (mobil). */
 function weeklyBadge(): string {
   const w = currentWeekly(CONTENT);
@@ -2977,6 +3017,7 @@ function statsTab(state: GameState): string {
     ${minionPanel(state)}
     ${mutationsPanel(state)}
     ${perksPanel(state)}
+    ${leaderboardPanel(state)}
     <section class="panel" style="overflow: visible;">
       <h2>${t('ui.evolution')}<button id="evo-fullscreen" class="ghost" style="min-height:32px;padding:0.2rem 0.7rem;font-size:0.72rem;font-family:var(--body);letter-spacing:normal;text-transform:none;">⛶ ${t('ui.evo_fullscreen')}</button></h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
@@ -3377,6 +3418,8 @@ function wireStats(el: HTMLElement): void {
     });
   });
   el.querySelector<HTMLButtonElement>('#evo-fullscreen')?.addEventListener('click', openEvoOverlay);
+  el.querySelector<HTMLButtonElement>('#lb-submit')?.addEventListener('click', () => ACTIONS.onSubmitScore());
+  ensureLeaderboard(); // Ruh alanı açık — tabloyu (en fazla 5 dk'da bir) tazele
   el.querySelector<HTMLElement>('#ach-toggle')?.addEventListener('click', () => {
     achievementsOpen = !achievementsOpen;
     render(CURSTATE);
@@ -3578,6 +3621,12 @@ function settingsTab(state: GameState): string {
       <p class="muted">${t('ui.modifier_free_hint')}</p>
     </section>
     <section class="panel">
+      <div class="row"><span>🏆 ${t('ui.leaderboard')}</span>
+        <button id="lb-submit-settings" class="ghost">📡 ${t('ui.lb_submit')}</button>
+      </div>
+      <p class="muted">${t('ui.lb_hint')}</p>
+    </section>
+    <section class="panel">
       <h3 style="margin-bottom:0.5rem;font-size:0.9rem;">${t('auto.event.label')}</h3>
       <div class="controls">
         <button id="auto-event-toggle" class="${state.autoEventDecision ? 'actbtn active' : 'ghost'}">
@@ -3657,6 +3706,7 @@ function supportersHtml(): string {
 }
 
 function wireSettings(el: HTMLElement): void {
+  el.querySelector<HTMLButtonElement>('#lb-submit-settings')?.addEventListener('click', () => ACTIONS.onSubmitScore());
   el.querySelectorAll<HTMLButtonElement>('.autosave').forEach((b) => {
     b.addEventListener('click', () => ACTIONS.onSetAutosave(Number(b.getAttribute('data-min'))));
   });

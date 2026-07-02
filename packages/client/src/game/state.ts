@@ -200,6 +200,8 @@ export interface GameState {
   permadeath: boolean;
   /** Settings toggle: allow modifier-free rooms (base 10% + LUCK×0.5% chance). Default off. */
   modifierFreeRooms: boolean;
+  /** Liderlik rumuzu (opt-in; ilk gönderimde sorulur, saklanır). */
+  scoreName?: string;
   /** Race ids that have cleared Hell with permadeath — permanent, race-specific reward. */
   hellClears: string[];
 

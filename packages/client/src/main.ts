@@ -23,6 +23,7 @@ import type { Difficulty } from '@mri/shared';
 
 const OFFLINE_TICK_CAP = 28800; // 8 hours cap
 const OFFLINE_EXACT_TICKS = 600; // simulated 1:1; the rest is extrapolated (2h+ returns froze the page)
+const WORKER_URL = 'https://mri-server.armyhell07.workers.dev'; // leaderboard (skor opt-in)
 
 
 /** First-run language: honour a saved choice, else detect from the browser (tr/ru/en). */
@@ -280,6 +281,27 @@ async function init(): Promise<void> {
     onToggleAutoEvent: () => { state.autoEventDecision = !state.autoEventDecision; save(state); render(state); },
     onSetPuzzleMode: (mode) => { state.autoEventPuzzleMode = mode; save(state); render(state); },
     onSetMoralMode: (mode) => { state.moralAutoMode = mode; save(state); render(state); },
+    // Liderlik (v1.23.44, opt-in): rumuz iste → hayat-boyu en derin konum + rebirth'ü gönder.
+    // Rumuz istemcide VE sunucuda doğrulanır; tablo render'ı ayrıca escape eder (XSS kuralı).
+    onSubmitScore: async () => {
+      const entered = prompt(t('ui.lb_name_prompt'), state.scoreName ?? '');
+      if (entered == null) return; // vazgeçti
+      const name = entered.trim();
+      if (!/^[\p{L}\p{N} ._-]{2,24}$/u.test(name)) { alert(t('ui.lb_bad_name')); return; }
+      state.scoreName = name;
+      save(state);
+      try {
+        const r = await fetch(`${WORKER_URL}/score`, {
+          method: 'POST',
+          body: JSON.stringify({ name, layer: state.deepestLayer, floor: state.deepestFloor, rebirths: state.rebirthCount, form: state.formId }),
+        });
+        const j = (await r.json()) as { ok?: boolean; rank?: number };
+        alert(r.ok && j.ok ? t('ui.lb_sent', { rank: j.rank ?? '—' }) : t('ui.lb_fail'));
+      } catch {
+        alert(t('ui.lb_fail'));
+      }
+      render(state);
+    },
     onSpawnMinion: (type) => {
       if (spawnMinion(state, type)) {
         logFn({ key: `log.minion_spawned_${type}` });
@@ -720,6 +742,7 @@ function migrate(s: GameState): void {
   // raceId/formId/etc. have raw text fallbacks ("…: state.raceId") rendered OUTSIDE t(), and the
   // persisted combat foe's image/icon go straight into <img src>/text — so a tampered save could
   // inject markup there even with t() escaping. Reset/clear anything that isn't a plain id.
+  if (s.scoreName != null && !(typeof s.scoreName === 'string' && /^[\p{L}\p{N} ._-]{2,24}$/u.test(s.scoreName))) s.scoreName = undefined;
   if (!idOk(s.raceId)) s.raceId = d.raceId;
   if (s.formId != null && !idOk(s.formId)) s.formId = d.formId;
   if (s.replicatedRace != null && !idOk(s.replicatedRace)) s.replicatedRace = undefined;

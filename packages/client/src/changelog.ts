@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.43';
+export const VERSION = '1.23.44';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,25 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.44',
+    date: '2026-07-02',
+    tr: [
+      'yeni: küresel Liderlik Tablosu (Ruh alanında, top-20) — en derin konum + rebirth sayısına göre sıralanır',
+      'tamamen isteğe bağlı: Ayarlar\'dan (veya tablodaki butondan) "Skorumu Gönder" — sadece rumuz + en derin konum + rebirth gönderilir, başka hiçbir veri gitmez',
+      'not: tablo sunucusu açılana kadar panel sessizce boş görünür',
+    ],
+    en: [
+      'new: global Leaderboard (Soul area, top-20) — ranked by deepest position + rebirth count',
+      'fully opt-in: "Submit My Score" from Settings (or the board button) — only nickname + deepest position + rebirths are sent, nothing else',
+      'note: until the board server is switched on, the panel quietly stays empty',
+    ],
+    ru: [
+      'новое: глобальная Таблица лидеров (область Душа, топ-20) — по самой глубокой позиции + числу перерождений',
+      'полностью опционально: «Отправить результат» в Настройках (или кнопкой у таблицы) — отправляются только ник + глубочайшая позиция + перерождения, ничего больше',
+      'примечание: пока сервер таблицы не включён, панель просто остаётся пустой',
+    ],
+  },
   {
     v: '1.23.43',
     date: '2026-07-02',

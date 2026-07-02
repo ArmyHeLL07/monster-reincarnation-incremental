@@ -7,6 +7,8 @@ export interface Env {
   FUSION_CACHE?: KVNamespace;
   /** KV — cached supporters list + the rotating Patreon refresh token. */
   SUPPORTERS?: KVNamespace;
+  /** KV — global leaderboard ("board" anahtarında top-100). Bind in wrangler.toml when ready. */
+  SCORES?: KVNamespace;
   /** Patreon API client creds — set via `wrangler secret put` (never committed). */
   PATREON_CLIENT_ID?: string;
   PATREON_CLIENT_SECRET?: string;
@@ -42,6 +44,50 @@ export default {
       } catch (e) {
         return json({ ok: false, error: (e as Error).message }, 500);
       }
+    }
+
+    // --- Liderlik tablosu (v1.23.44, opt-in) --------------------------------------------------
+    // Tek "board" anahtarında top-100; isim başına bir giriş, yüksek skor kazanır. KV
+    // read-modify-write yarışı bu ölçekte kabul edilebilir. Rumuz SUNUCUDA da doğrulanır
+    // (2-24, harf/rakam/boşluk/._- — <>" imkânsız; istemci yine de escape eder).
+    if (pathname === '/score' && req.method === 'POST') {
+      if (!env.SCORES) return json({ error: 'unavailable' }, 503);
+      const raw = await req.text();
+      if (raw.length > 1024) return json({ error: 'too_large' }, 413);
+      let body: Record<string, unknown>;
+      try { body = JSON.parse(raw) as Record<string, unknown>; } catch { return json({ error: 'bad_json' }, 400); }
+      const name = typeof body.name === 'string' ? body.name.trim() : '';
+      if (!/^[\p{L}\p{N} ._-]{2,24}$/u.test(name)) return json({ error: 'bad_name' }, 400);
+      const num = (v: unknown, max: number): number =>
+        typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), max) : 0;
+      const entry: ScoreEntry = {
+        name,
+        layer: num(body.layer, 99),
+        floor: num(body.floor, 999),
+        rebirths: num(body.rebirths, 99_999),
+        form: typeof body.form === 'string' && /^[\w+-]{0,48}$/.test(body.form) ? body.form : '',
+        ts: Date.now(),
+      };
+      if (entry.layer < 1) return json({ error: 'bad_score' }, 400);
+      const board = JSON.parse((await env.SCORES.get('board')) ?? '[]') as ScoreEntry[];
+      const key = name.toLocaleLowerCase();
+      const i = board.findIndex((e) => e.name.toLocaleLowerCase() === key);
+      if (i >= 0) {
+        if (scoreOf(entry) <= scoreOf(board[i])) return json({ ok: true, kept: true });
+        board[i] = entry;
+      } else {
+        board.push(entry);
+      }
+      board.sort((a, b) => scoreOf(b) - scoreOf(a));
+      board.length = Math.min(board.length, 100);
+      await env.SCORES.put('board', JSON.stringify(board));
+      return json({ ok: true, rank: board.findIndex((e) => e.name.toLocaleLowerCase() === key) + 1 });
+    }
+    if (pathname === '/leaderboard' && req.method === 'GET') {
+      const data = env.SCORES ? await env.SCORES.get('board') : null;
+      return new Response(data ?? '[]', {
+        headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300', ...CORS },
+      });
     }
 
     // Mailbox: client drops a session summary (no personal data — behavior only).
@@ -162,6 +208,20 @@ async function syncPatreon(env: Env): Promise<SupportersData> {
 }
 
 /** Constant-time string compare so secret checks don't leak length/content via response timing. */
+/** Liderlik girişi — istemciden gelen alanlar doğrulanmış/kelepçelenmiş halde saklanır. */
+interface ScoreEntry {
+  name: string;
+  layer: number;
+  floor: number;
+  rebirths: number;
+  form: string;
+  ts: number;
+}
+/** Sıralama metriği: en derin kat baskın, kat içi ilerleme sonra, rebirth kırılım. */
+function scoreOf(e: ScoreEntry): number {
+  return e.layer * 1_000_000 + e.floor * 100 + Math.min(e.rebirths, 99);
+}
+
 function timingSafeEqual(a: string, b: string): boolean {
   let diff = a.length ^ b.length;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i % (b.length || 1));
