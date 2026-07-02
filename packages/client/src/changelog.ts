@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.33';
+export const VERSION = '1.23.34';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.34',
+    date: '2026-07-02',
+    tr: [
+      'yeni: minyon komutası 10 ırka yayıldı — Vampir (Gece Sarayı: Yarasa Sürüsü→Kan Kulu→Kan Muhafızı), Lycan (Kurt Sürüsü), Slime (Bölünme), Golem (Taş Ordusu), Wyrmling (Yuva), Göksel (Işık Konseyi), Beastkin (Av Sürüsü) — hepsi T5\'te açılır, T7/T9\'da evrimleşir',
+      'İnsan bilinçli olarak minyonsuz: onun kimliği teçhizat ve yol seçimi',
+    ],
+    en: [
+      'new: minion command extended to 10 races — Vampire (Night Court: Bat Swarm→Blood Thrall→Blood Guard), Lycan (Wolf Pack), Slime (Division), Golem (Stone Host), Wyrmling (Brood), Celestial (Choir of Light), Beastkin (Hunting Pack) — all unlock at T5 and evolve at T7/T9',
+      'Human deliberately has no minions: their identity is gear and path choices',
+    ],
+    ru: [
+      'новое: командование миньонами теперь у 10 рас — Вампир (Ночной двор: Стая мышей→Трэлл→Кровавый страж), Ликан (Волчья стая), Слизь (Деление), Голем (Каменное воинство), Вирмлинг (Выводок), Небесный (Хор света), Зверолюд (Охотничья стая) — открываются на T5, эволюционируют на T7/T9',
+      'У Человека миньонов намеренно нет: его сила — снаряжение и выбор пути',
+    ],
+  },
   {
     v: '1.23.33',
     date: '2026-07-02',

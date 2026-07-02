@@ -491,6 +491,42 @@ export const MINION_RACES: Record<string, MinionRaceDef> = {
     { tierReq: 7, nameKey: 'minion.demon.2', mult: 1.3 },
     { tierReq: 9, nameKey: 'minion.demon.3', mult: 1.6 },
   ] },
+  vampire: { tierReq: 5, sovereignForm: 'blood_emperor', titleKey: 'ui.nightcourt_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.vampire.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.vampire.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.vampire.3', mult: 1.6 },
+  ] },
+  lycan: { tierReq: 5, sovereignForm: 'alpha_lord', titleKey: 'ui.wolfpack_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.lycan.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.lycan.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.lycan.3', mult: 1.6 },
+  ] },
+  slime: { tierReq: 5, sovereignForm: 'demon_lord_rimuru', titleKey: 'ui.division_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.slime.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.slime.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.slime.3', mult: 1.6 },
+  ] },
+  golem: { tierReq: 5, sovereignForm: 'golem_sovereign', titleKey: 'ui.stonehost_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.golem.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.golem.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.golem.3', mult: 1.6 },
+  ] },
+  wyrmling: { tierReq: 5, sovereignForm: 'dragon_sovereign', titleKey: 'ui.brood_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.wyrmling.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.wyrmling.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.wyrmling.3', mult: 1.6 },
+  ] },
+  celestial: { tierReq: 5, sovereignForm: 'radiant_sovereign', titleKey: 'ui.choir_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.celestial.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.celestial.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.celestial.3', mult: 1.6 },
+  ] },
+  beastkin: { tierReq: 5, sovereignForm: 'warlord_beast', titleKey: 'ui.huntpack_panel', stages: [
+    { tierReq: 5, nameKey: 'minion.beastkin.1', mult: 1 },
+    { tierReq: 7, nameKey: 'minion.beastkin.2', mult: 1.3 },
+    { tierReq: 9, nameKey: 'minion.beastkin.3', mult: 1.6 },
+  ] },
+  // human: intentionally no minions — their identity is gear, paths and versatility, not summoning.
 };
 /** The minion config for this player, or null when their race/tier can't command minions yet. */
 export function minionDef(state: GameState): MinionRaceDef | null {
