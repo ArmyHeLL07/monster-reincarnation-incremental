@@ -866,6 +866,7 @@
   "quest.q_naturalist.name": "Naturalist",
   "quest.q_naturalist.desc": "Encounter 3 different monster types",
   "ui.evo_tree": "Evolution Tree",
+  "ui.evo_fullscreen": "Full Screen",
   "ui.evo_lineage": "Lineage",
   "ui.evo_locked": "Locked",
   "ui.evo_locked_tier": "Needs",

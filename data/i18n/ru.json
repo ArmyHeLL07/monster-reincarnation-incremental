@@ -866,6 +866,7 @@
   "quest.q_naturalist.name": "Натуралист",
   "quest.q_naturalist.desc": "Встреть 3 разных вида монстров",
   "ui.evo_tree": "Древо эволюции",
+  "ui.evo_fullscreen": "На весь экран",
   "ui.evo_lineage": "Родословная",
   "ui.evo_locked": "Заблокировано",
   "ui.evo_locked_tier": "Нужно",

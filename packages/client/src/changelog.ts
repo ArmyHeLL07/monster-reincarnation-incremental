@@ -1,7 +1,7 @@
 // Player-facing changelog. UPDATE THIS with every gameplay change: bump VERSION and add an entry
 // at the TOP of CHANGELOG (newest first). Shown via the version badge in the top bar.
 
-export const VERSION = '1.23.38';
+export const VERSION = '1.23.39';
 
 export interface ChangelogEntry {
   v: string;
@@ -14,6 +14,22 @@ export interface ChangelogEntry {
 
 /** Newest first. The first entry is treated as "this version". */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    v: '1.23.39',
+    date: '2026-07-02',
+    tr: [
+      'yeni (Sahne Faz 4a): tam ekran takımyıldız evrim ağacı — yıldızlı zemin üzerinde soy çizgin yeşil, bulunduğun form mor nabız, açık evrimler altın parlıyor; kaçırılan dallar ve gizli formlar sisli',
+      'açılış: Ruh alanındaki Evrim panelinde "⛶ Tam Ekran" + savaştaki "Evrimleşebilirsin!" bildirimindeki 🌌 butonu; evrim ve dal değişimi doğrudan ağaçtan yapılabiliyor (Esc/✕ kapatır)',
+    ],
+    en: [
+      'new (Stage Phase 4a): full-screen constellation evolution tree — your lineage glows green over a starfield, your current form pulses purple, open evolutions shine gold; missed branches and hidden forms stay misty',
+      'open it via "⛶ Full Screen" on the Evolution panel (Soul area) or the 🌌 button on the "You can evolve!" combat banner; evolving and branch-switching work right from the tree (Esc/✕ closes)',
+    ],
+    ru: [
+      'новое (Сцена, фаза 4a): дерево эволюции на весь экран в виде созвездия — твоя линия светится зелёным на звёздном фоне, текущая форма пульсирует фиолетовым, открытые эволюции сияют золотом; упущенные ветви и скрытые формы в тумане',
+      'открытие: «⛶ На весь экран» на панели Эволюции (область Душа) или кнопка 🌌 в баннере «Можно эволюционировать!»; эволюция и смена ветви работают прямо из дерева (Esc/✕ закрывает)',
+    ],
+  },
   {
     v: '1.23.38',
     date: '2026-07-02',

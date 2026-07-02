@@ -178,6 +178,9 @@ let activeSkillTreeCat: string = 'all';
 let expandedSkill: string | null = null;
 let lastFusion: FusionResult | null = null;
 let selectedEvoNodeId: string | null = null;
+// Faz 4a: tam ekran takımyıldız evrim ağacı — sahnenin/çekmecenin üstünde bir overlay.
+let evoOverlayOpen = false;
+let lastEvoSig = '';
 let selectedItemUid: string | null = null;
 let selectedBestiaryId: string | null = null;
 type LogCat = 'combat' | 'discovery' | 'loot' | 'lore';
@@ -321,6 +324,7 @@ export function resetUi(): void {
   lastFusion = null;
   expandedSkill = null;
   selectedEvoNodeId = null;
+  evoOverlayOpen = false;
   stageTab = 'combat';
   drawerTab = null;
   logs.combat.length = 0;
@@ -390,6 +394,8 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
       </section>
       <div id="toasts" class="toasts" aria-live="polite"></div>
       <div id="tutorial-overlay" class="tutorial-overlay hidden"></div>
+      <!-- Faz 4a: tam ekran evrim ağacı (takımyıldız) — çekmecenin üstünde, tutorial'ın altında. -->
+      <div id="evo-overlay" class="evo-overlay hidden" aria-label="evolution tree"></div>
       <!-- Floating damage text overlay layer -->
       <div id="damage-text-layer" style="position:fixed; inset:0; pointer-events:none; z-index:99999;"></div>
       <!-- Slim fixed vitals strip — visible on mobile only (CSS); bars driven by updateMini. -->
@@ -417,6 +423,7 @@ export function mount(state: GameState, content: Content, actions: UiActions): v
   });
   app.querySelector('#drawer-close')?.addEventListener('click', () => { drawerTab = null; renderTab(); });
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && evoOverlayOpen) { closeEvoOverlay(); return; }
     if (e.key === 'Escape' && drawerTab) { drawerTab = null; renderTab(); }
   });
   // Stage sub-tabs (Savaş/Harita) live inside #content and re-render every tick → delegate.
@@ -592,6 +599,8 @@ export function live(state: GameState): void {
       renderDrawer();
     }
   }
+  // Faz 4a: açık evrim overlay'i de yapısal değişimde tazelenir (yeni form açılması vb.).
+  if (evoOverlayOpen && structureSig(state) !== lastEvoSig) renderEvoOverlay();
 }
 
 /** Full refresh of the active tab + chrome — after an action or tab switch. */
@@ -1541,7 +1550,10 @@ function evolveBannerHtml(state: GameState): string {
       ? `<button id="keep-grow" class="ghost" style="width:100%;margin-top:.4rem">${t('ui.keep_growing')} →</button>`
       : '';
   return `<section class="panel" style="border-color:#c9a23a">
-    <div style="font-weight:bold;color:#e6c558;margin-bottom:.3rem">✦ ${t('ui.evolve_ready_banner')}</div>
+    <div style="font-weight:bold;color:#e6c558;margin-bottom:.3rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">
+      <span>✦ ${t('ui.evolve_ready_banner')}</span>
+      <button class="evo-tree-open ghost" style="min-height:30px;padding:.2rem .6rem;font-size:.72rem;flex:none">🌌 ${t('ui.evo_tree')}</button>
+    </div>
     ${rows}${growBtn}
   </section>`;
 }
@@ -1797,6 +1809,7 @@ function wireCombat(el: HTMLElement): void {
     b.addEventListener('click', () => { const f = b.getAttribute('data-form'); if (f) ACTIONS.onEvolve(f); });
   });
   el.querySelector<HTMLButtonElement>('#keep-grow')?.addEventListener('click', ACTIONS.onKeepGrow);
+  el.querySelectorAll<HTMLButtonElement>('.evo-tree-open').forEach((b) => b.addEventListener('click', openEvoOverlay));
 
   // --- Auto-Combat Macros event listeners (QoL/R2) ---
   el.querySelector<HTMLInputElement>('#ac-cast')?.addEventListener('change', () => {
@@ -2565,8 +2578,9 @@ function evoStatusText(status: EvoNodeStatus): string {
   return s === key ? status : s; // unknown status → raw
 }
 
-/** Dikey dallanan evrim ağacı (alttan-yukarı dairesel düğümler ve SVG bağlantıları) */
-function evolutionTree(state: GameState): string {
+/** Dikey dallanan evrim ağacı (alttan-yukarı dairesel düğümler ve SVG bağlantıları).
+ *  `big` = tam ekran overlay sunumu: aynı layout, daha geniş ızgara (Faz 4a). */
+function evolutionTree(state: GameState, big = false): string {
   const nodes: EvoNode[] = evolutionTreeView(state, CONTENT);
   if (!nodes.length) return '';
 
@@ -2614,7 +2628,7 @@ function evolutionTree(state: GameState): string {
     });
   }
   // Wider trees need more horizontal room: scale the container so nodes don't cram (viewport scrolls).
-  const treeW = Math.max(680, maxWidth * 64);
+  const treeW = big ? Math.max(920, maxWidth * 96) : Math.max(680, maxWidth * 64);
 
   let pathsHtml = '';
   for (const node of nodes) {
@@ -2661,7 +2675,7 @@ function evolutionTree(state: GameState): string {
 
   return `
     <div class="evotree-viewport">
-      <div class="evotree-container" style="min-width:${treeW}px;">
+      <div class="evotree-container${big ? ' big' : ''}" style="min-width:${treeW}px;">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="evotree-svg">
           ${pathsHtml}
         </svg>
@@ -2769,6 +2783,61 @@ function evolutionInfoCard(state: GameState): string {
   `;
 }
 
+// ---- Faz 4a: tam ekran "takımyıldız" evrim ağacı overlay'i ----------------------------------
+function openEvoOverlay(): void {
+  evoOverlayOpen = true;
+  renderEvoOverlay();
+}
+function closeEvoOverlay(): void {
+  evoOverlayOpen = false;
+  const el = document.querySelector<HTMLElement>('#evo-overlay');
+  if (el) { el.classList.add('hidden'); el.innerHTML = ''; }
+}
+/** Overlay'i (yıldızlı zemin + büyük ağaç + bilgi kartı) baştan boyar. Ağaç/bilgi HTML'i panelle
+ *  ortak (evolutionTree/evolutionInfoCard) — tek veri modeli, iki sunum. */
+function renderEvoOverlay(): void {
+  const el = document.querySelector<HTMLElement>('#evo-overlay');
+  if (!el || !evoOverlayOpen) return;
+  const state = CURSTATE;
+  lastEvoSig = structureSig(state);
+  const form = currentForm(state, CONTENT);
+  const legend = (['current', 'available', 'past', 'locked', 'missed', 'hidden'] as EvoNodeStatus[])
+    .map((s) => `<span class="evo-ov-key ${s}"><i></i>${evoStatusText(s)}</span>`)
+    .join('');
+  el.innerHTML = `
+    <div class="evo-ov-stars" aria-hidden="true"></div>
+    <div class="evo-ov-head">
+      <div class="evo-ov-title">🌌 ${t('ui.evo_tree')}<span class="muted"> — ${form ? t(form.locKey) : ''}</span></div>
+      <div class="evo-ov-legend">${legend}</div>
+      <button id="evo-ov-close" class="evo-ov-x" aria-label="close">✕</button>
+    </div>
+    ${evolutionTree(state, true)}
+    <div class="evo-ov-info">${evolutionInfoCard(state)}</div>
+  `;
+  el.classList.remove('hidden');
+  el.querySelector<HTMLButtonElement>('#evo-ov-close')?.addEventListener('click', closeEvoOverlay);
+  el.querySelectorAll<HTMLElement>('.evo-node[data-form-id]').forEach((node) => {
+    node.addEventListener('click', () => {
+      const id = node.getAttribute('data-form-id');
+      if (id) { selectedEvoNodeId = id; renderEvoOverlay(); }
+    });
+  });
+  // Evrim/dal değişimi state'i köklü değiştirir → overlay kapanır, tören sahnede görünür kalır.
+  el.querySelectorAll<HTMLButtonElement>('.evo-action-btn[data-form]').forEach((b) => {
+    b.addEventListener('click', () => { const f = b.getAttribute('data-form'); if (f) { closeEvoOverlay(); ACTIONS.onEvolve(f); } });
+  });
+  el.querySelectorAll<HTMLButtonElement>('.branch-switch-btn[data-switch]').forEach((b) => {
+    b.addEventListener('click', () => { const f = b.getAttribute('data-switch'); if (f) { closeEvoOverlay(); ACTIONS.onSwitchBranch(f); } });
+  });
+  // Seçili (yoksa mevcut) düğümü görüş alanının ortasına getir.
+  const focus = el.querySelector<HTMLElement>('.evo-node.selected') ?? el.querySelector<HTMLElement>('.evo-node.current');
+  const vp = el.querySelector<HTMLElement>('.evotree-viewport');
+  if (focus && vp) {
+    vp.scrollLeft = focus.offsetLeft - vp.clientWidth / 2;
+    vp.scrollTop = focus.offsetTop - vp.clientHeight / 2;
+  }
+}
+
 /** Kill counter + (slime/spider) progress toward their hidden evolution path. */
 function killStatsHtml(state: GameState): string {
   const kills = state.kills ?? 0;
@@ -2869,7 +2938,7 @@ function statsTab(state: GameState): string {
     ${mutationsPanel(state)}
     ${perksPanel(state)}
     <section class="panel" style="overflow: visible;">
-      <h2>${t('ui.evolution')}</h2>
+      <h2>${t('ui.evolution')}<button id="evo-fullscreen" class="ghost" style="min-height:32px;padding:0.2rem 0.7rem;font-size:0.72rem;font-family:var(--body);letter-spacing:normal;text-transform:none;">⛶ ${t('ui.evo_fullscreen')}</button></h2>
       <p class="muted">${t('ui.form')}: <b>${form ? t(form.locKey) : state.formId}</b></p>
       ${treeHtml}
       ${infoCardHtml}
@@ -3267,6 +3336,7 @@ function wireStats(el: HTMLElement): void {
       if (f) ACTIONS.onSwitchBranch(f);
     });
   });
+  el.querySelector<HTMLButtonElement>('#evo-fullscreen')?.addEventListener('click', openEvoOverlay);
   el.querySelector<HTMLElement>('#ach-toggle')?.addEventListener('click', () => {
     achievementsOpen = !achievementsOpen;
     render(CURSTATE);

@@ -866,6 +866,7 @@
   "quest.q_naturalist.name": "Doğabilimci",
   "quest.q_naturalist.desc": "3 farklı canavar türüyle karşılaş",
   "ui.evo_tree": "Evrim Ağacı",
+  "ui.evo_fullscreen": "Tam Ekran",
   "ui.evo_lineage": "Soyun",
   "ui.evo_locked": "Kilitli",
   "ui.evo_locked_tier": "Gerekli:",
